@@ -174,4 +174,4 @@ This project is proprietary and confidential. All rights reserved.
 
 ---
 
-Built with ❤️ using modern web technologies for seamless financial management.
+Built with ❤️ using modern web technologies for seamless financial management.# OFFICIALFLINTAPP
