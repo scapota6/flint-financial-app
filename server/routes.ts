@@ -3129,7 +3129,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   };
 
   // Apply middleware to all SnapTrade account routes
-  app.use('/api/snaptrade/accounts/:accountId/*', resolveSnapTradeContext);
+  // DISABLED: This middleware conflicts with the router in server/routes/snaptrade-accounts.ts
+  // app.use('/api/snaptrade/accounts/:accountId/*', resolveSnapTradeContext);
 
   // 1) Account Details (identity/meta)
   app.get('/api/snaptrade/accounts/:accountId/details', async (req, res) => {
