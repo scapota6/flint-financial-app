@@ -248,28 +248,22 @@ export default function SimpleConnectButtons({ accounts, userTier, isAdmin }: Si
     }
   });
 
-  // SnapTrade Connect mutation - simplified
+  // SnapTrade Connect mutation - using working endpoint
   const snapTradeConnectMutation = useMutation({
     mutationFn: async () => {
       console.log('📈 SnapTrade Connect: Starting brokerage connection');
       
-      // Get user ID for SnapTrade registration
-      const userResp = await apiRequest("/api/auth/user");
-      if (!userResp.ok) throw new Error("Authentication required");
-      const currentUser = await userResp.json();
-      
-      const resp = await apiRequest("/api/connections/snaptrade/register", {
-        method: "POST",
-        headers: { 
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ userId: currentUser.id })
+      const response = await fetch('/api/snaptrade/register', {
+        method: 'POST',
+        credentials: 'include'
       });
-
-      // Handle both Response and plain JSON from apiRequest
-      const data = (typeof resp?.json === 'function') ? await resp.json() : resp;
-      if (resp?.ok === false || (resp?.status && !resp.ok)) throw new Error(data?.message || "Failed to start SnapTrade Connect");
-
+      
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data?.error || data?.message || "Failed to start SnapTrade Connect");
+      }
+      
       const url: string | undefined = data?.redirectUrl;
       if (!url) throw new Error("No SnapTrade Connect URL returned");
       

@@ -204,7 +204,21 @@ export default function ConnectedAccounts({
                           variant="outline" 
                           size="sm" 
                           className="text-red-400 hover:text-red-300 border-red-400 hover:border-red-300 interactive-glow focus-visible:outline-red-400"
-                          onClick={handleConnectBrokerage}
+                          onClick={async () => {
+                            try {
+                              const response = await fetch('/api/snaptrade/register', {
+                                method: 'POST',
+                                credentials: 'include'
+                              });
+                              const data = await response.json();
+                              
+                              if (data.redirectUrl) {
+                                window.location.href = data.redirectUrl;
+                              }
+                            } catch (error) {
+                              console.error('Failed to start SnapTrade connection:', error);
+                            }
+                          }}
                         >
                           <RefreshCw className="h-3 w-3 mr-1" />
                           Resync
