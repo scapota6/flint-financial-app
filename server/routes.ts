@@ -2690,44 +2690,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const users = await storage.getAllUsers();
       const connectedAccounts = await storage.getConnectedAccounts('');
       
-      // Get real SnapTrade user counts
-      let snaptradeStats = {
-        totalUsers: 0,
-        connectedUsers: 0,
-        activeConnections: 0
-      };
+      // Get SnapTrade user counts from connected accounts (not from SnapTrade API)
+      const snaptradeAccounts = connectedAccounts.filter(acc => acc.provider === 'snaptrade');
+      const uniqueSnaptradeUsers = new Set(snaptradeAccounts.map(acc => acc.userId));
       
-      try {
-        if (authApi && accountsApi) {
-          const { data: snaptradeUsers } = await authApi.listSnapTradeUsers();
-          snaptradeStats.totalUsers = snaptradeUsers.length;
-          
-          // Count users with active connections
-          let connectedCount = 0;
-          let activeConnectionsCount = 0;
-          
-          for (const snapUser of snaptradeUsers) {
-            try {
-              const accountsResponse = await accountsApi.listUserAccounts({
-                userId: snapUser.userId,
-                userSecret: snapUser.userSecret
-              });
-              if (accountsResponse.data && accountsResponse.data.length > 0) {
-                connectedCount++;
-                activeConnectionsCount += accountsResponse.data.length;
-              }
-            } catch (accountError) {
-              // User exists but has no valid connections
-              continue;
-            }
-          }
-          
-          snaptradeStats.connectedUsers = connectedCount;
-          snaptradeStats.activeConnections = activeConnectionsCount;
-        }
-      } catch (snaptradeError) {
-        console.error('Error fetching SnapTrade stats:', snaptradeError);
-      }
+      const snaptradeStats = {
+        totalUsers: uniqueSnaptradeUsers.size, // Unique Flint users with SnapTrade accounts
+        connectedUsers: uniqueSnaptradeUsers.size, // Same as total since all have active accounts
+        activeConnections: snaptradeAccounts.length // Total brokerage accounts
+      };
       
       const stats = {
         totalUsers: users.length,
