@@ -66,11 +66,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       // Validate that connection actually worked by checking for accounts
-      if (userId && userSecret && snaptradeClient) {
+      if (userId && userSecret) {
         try {
           console.log('🔍 Validating SnapTrade connection for user:', userId);
           
-          const accountsResponse = await snaptradeClient.accountInformation.listUserAccounts({
+          const accountsResponse = await accountsApi.listUserAccounts({
             userId: userId as string,
             userSecret: userSecret as string
           });
@@ -89,7 +89,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             console.log('❌ Connection failed - no accounts found');
             // Clean up user with no connections
             try {
-              await snaptradeClient.authentication.deleteSnapTradeUser({ 
+              await authApi.deleteSnapTradeUser({ 
                 userId: userId as string 
               });
               console.log('🧹 Deleted user with no connections');
