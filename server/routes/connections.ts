@@ -84,8 +84,9 @@ router.post("/snaptrade/register", isAuthenticated, async (req: any, res) => {
           };
           // Store locally for faster lookup
           await saveSnapUser({ 
-            userId: userId, // Flint user ID as key
-            userSecret: existingUser.userSecret 
+            userId: existingUser.userId, // SnapTrade UUID
+            userSecret: existingUser.userSecret,
+            flintUserId: userId // Flint user ID as key
           });
         } else {
           // Generate a unique SnapTrade user ID (must be UUID format)
@@ -104,8 +105,9 @@ router.post("/snaptrade/register", isAuthenticated, async (req: any, res) => {
             
             // Store credentials in file-based storage (using Flint user ID as key)
             await saveSnapUser({ 
-              userId: userId, // Use Flint user ID as key for lookup
-              userSecret: registerData.userSecret! 
+              userId: registerData.userId!, // SnapTrade UUID
+              userSecret: registerData.userSecret!,
+              flintUserId: userId // Flint user ID as key for lookup
             });
             
             snaptradeUser = { userId: registerData.userId!, userSecret: registerData.userSecret! };
@@ -138,8 +140,9 @@ router.post("/snaptrade/register", isAuthenticated, async (req: any, res) => {
         });
         
         await saveSnapUser({ 
-          userId: userId,
-          userSecret: registerData.userSecret! 
+          userId: registerData.userId!,
+          userSecret: registerData.userSecret!,
+          flintUserId: userId
         });
         
         snaptradeUser = { userId: registerData.userId!, userSecret: registerData.userSecret! };
@@ -201,7 +204,7 @@ router.get("/snaptrade/callback", isAuthenticated, async (req: any, res) => {
     }
     
     // Fetch connected accounts from SnapTrade
-    const { data: accounts } = await snaptradeClient.accountInformation.listUserAccounts({
+    const { data: accounts } = await accountsApi.listUserAccounts({
       userId: snaptradeUser.userId!,
       userSecret: snaptradeUser.userSecret
     });
