@@ -248,14 +248,22 @@ export default function SimpleConnectButtons({ accounts, userTier, isAdmin }: Si
     }
   });
 
-  // SnapTrade Connect mutation - using working endpoint
+  // SnapTrade Connect mutation - using working endpoint with CSRF
   const snapTradeConnectMutation = useMutation({
     mutationFn: async () => {
       console.log('📈 SnapTrade Connect: Starting brokerage connection');
       
+      // Get CSRF token first
+      const csrfResp = await fetch('/api/csrf-token', { credentials: 'include' });
+      const { csrfToken } = await csrfResp.json();
+      
       const response = await fetch('/api/snaptrade/register', {
         method: 'POST',
-        credentials: 'include'
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-csrf-token': csrfToken
+        }
       });
       
       const data = await response.json();

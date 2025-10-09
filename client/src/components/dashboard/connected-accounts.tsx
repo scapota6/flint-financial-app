@@ -206,9 +206,17 @@ export default function ConnectedAccounts({
                           className="text-red-400 hover:text-red-300 border-red-400 hover:border-red-300 interactive-glow focus-visible:outline-red-400"
                           onClick={async () => {
                             try {
+                              // Get CSRF token first
+                              const csrfResp = await fetch('/api/csrf-token', { credentials: 'include' });
+                              const { csrfToken } = await csrfResp.json();
+                              
                               const response = await fetch('/api/snaptrade/register', {
                                 method: 'POST',
-                                credentials: 'include'
+                                credentials: 'include',
+                                headers: {
+                                  'Content-Type': 'application/json',
+                                  'x-csrf-token': csrfToken
+                                }
                               });
                               const data = await response.json();
                               

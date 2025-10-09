@@ -1978,7 +1978,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           callbackUrl
         });
         
-        return res.json({ url: (portal as any).redirectURI });
+        return res.json({ redirectUrl: (portal as any).redirectURI });
         
       } catch (err: any) {
         console.error('SnapTrade Registration Error:', err);
@@ -2000,7 +2000,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
               connectionType: "trade"
             });
             
-            return res.json({ url: (portal as any).redirectURI });
+            return res.json({ redirectUrl: (portal as any).redirectURI });
           } catch (deleteError) {
             console.error('[SnapTrade] Failed to delete and recreate user:', deleteError);
             // Fall through to general error handling
