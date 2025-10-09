@@ -19,9 +19,13 @@ async function getFlintUserByAuth(authUser: any) {
 
 // Helper function to get SnapTrade credentials
 async function getSnaptradeCredentials(flintUserId: string) {
-  const credentials = await storage.getSnapTradeUser(flintUserId);
-  if (!credentials) throw new Error('User not registered with SnapTrade');
-  return credentials;
+  const { getSnapUser } = await import('../store/snapUsers');
+  const snapUser = await getSnapUser(flintUserId);
+  if (!snapUser || !snapUser.userSecret) throw new Error('User not registered with SnapTrade');
+  return {
+    snaptradeUserId: snapUser.userId,
+    userSecret: snapUser.userSecret
+  };
 }
 
 /**
