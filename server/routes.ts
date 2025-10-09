@@ -2103,8 +2103,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         console.log(`[Account Details] SnapTrade account detected: ${accountId}`);
         
         try {
-          const { getSnapUserByEmail } = await import('./store/snapUserStore');
-          const snapUser = await getSnapUserByEmail(userId);
+          const snapUser = await getSnapUser(userId);
           
           console.log(`[Account Details] Looking up SnapTrade user for: ${userId}`);
           console.log(`[Account Details] Found SnapTrade user:`, snapUser);
