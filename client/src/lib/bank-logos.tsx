@@ -11,10 +11,12 @@ export function getInstitutionLogo(accountName: string) {
   const institutionName = getInstitutionName(accountName).toLowerCase();
   const displayName = getInstitutionName(accountName);
 
+  const BRANDFETCH_CLIENT_ID = '1idS50sRJ-OzQR6Z0cX';
+  
   if (institutionName.includes('robinhood')) {
     return {
       logo: <img 
-        src="https://logo.uplead.com/robinhood.com" 
+        src={`https://cdn.brandfetch.io/robinhood.com?c=${BRANDFETCH_CLIENT_ID}`}
         alt={displayName}
         className="h-5 w-5 object-contain"
       />,
@@ -26,7 +28,7 @@ export function getInstitutionLogo(accountName: string) {
   if (institutionName.includes('chase') || institutionName.includes('jpmorgan')) {
     return {
       logo: <img 
-        src="https://logo.uplead.com/chase.com" 
+        src={`https://cdn.brandfetch.io/chase.com?c=${BRANDFETCH_CLIENT_ID}`}
         alt={displayName}
         className="h-5 w-5 object-contain"
       />,
@@ -38,7 +40,7 @@ export function getInstitutionLogo(accountName: string) {
   if (institutionName.includes('bank of america')) {
     return {
       logo: <img 
-        src="https://logo.uplead.com/bankofamerica.com" 
+        src={`https://cdn.brandfetch.io/bankofamerica.com?c=${BRANDFETCH_CLIENT_ID}`}
         alt={displayName}
         className="h-5 w-5 object-contain"
       />,
@@ -50,7 +52,7 @@ export function getInstitutionLogo(accountName: string) {
   if (institutionName.includes('citi')) {
     return {
       logo: <img 
-        src="https://logo.uplead.com/citi.com" 
+        src={`https://cdn.brandfetch.io/citi.com?c=${BRANDFETCH_CLIENT_ID}`}
         alt={displayName}
         className="h-5 w-5 object-contain"
       />,
@@ -62,7 +64,7 @@ export function getInstitutionLogo(accountName: string) {
   if (institutionName.includes('morgan stanley')) {
     return {
       logo: <img 
-        src="https://logo.uplead.com/morganstanley.com" 
+        src={`https://cdn.brandfetch.io/morganstanley.com?c=${BRANDFETCH_CLIENT_ID}`}
         alt={displayName}
         className="h-5 w-5 object-contain"
       />,
@@ -74,7 +76,7 @@ export function getInstitutionLogo(accountName: string) {
   if (institutionName.includes('capital') || institutionName.includes('capitalone')) {
     return {
       logo: <img 
-        src="https://logo.uplead.com/capitalone.com" 
+        src={`https://cdn.brandfetch.io/capitalone.com?c=${BRANDFETCH_CLIENT_ID}`}
         alt={displayName}
         className="h-5 w-5 object-contain"
       />,
@@ -86,7 +88,7 @@ export function getInstitutionLogo(accountName: string) {
   if (institutionName.includes('wells fargo')) {
     return {
       logo: <img 
-        src="https://logo.uplead.com/wellsfargo.com" 
+        src={`https://cdn.brandfetch.io/wellsfargo.com?c=${BRANDFETCH_CLIENT_ID}`}
         alt={displayName}
         className="h-5 w-5 object-contain"
       />,
@@ -98,7 +100,7 @@ export function getInstitutionLogo(accountName: string) {
   if (institutionName.includes('american express') || institutionName.includes('amex')) {
     return {
       logo: <img 
-        src="https://logo.uplead.com/americanexpress.com" 
+        src={`https://cdn.brandfetch.io/americanexpress.com?c=${BRANDFETCH_CLIENT_ID}`}
         alt={displayName}
         className="h-5 w-5 object-contain"
       />,
@@ -110,7 +112,7 @@ export function getInstitutionLogo(accountName: string) {
   if (institutionName.includes('td bank') || institutionName.includes('td')) {
     return {
       logo: <img 
-        src="https://logo.uplead.com/td.com" 
+        src={`https://cdn.brandfetch.io/td.com?c=${BRANDFETCH_CLIENT_ID}`}
         alt={displayName}
         className="h-5 w-5 object-contain"
       />,
@@ -122,7 +124,7 @@ export function getInstitutionLogo(accountName: string) {
   if (institutionName.includes('us bank')) {
     return {
       logo: <img 
-        src="https://logo.uplead.com/usbank.com" 
+        src={`https://cdn.brandfetch.io/usbank.com?c=${BRANDFETCH_CLIENT_ID}`}
         alt={displayName}
         className="h-5 w-5 object-contain"
       />,
