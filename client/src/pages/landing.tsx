@@ -142,6 +142,7 @@ function Landing() {
               src={flintLogo} 
               alt="Flint Logo" 
               className="h-10 w-auto"
+              style={{ mixBlendMode: 'screen' }}
             />
           </div>
           <div className="flex items-center space-x-4">
