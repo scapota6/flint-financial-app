@@ -430,3 +430,99 @@ export const insertActivityLogSchema = createInsertSchema(activityLog).omit({
   id: true,
   createdAt: true,
 });
+
+// Account applications table (for landing page form submissions)
+export const accountApplications = pgTable("account_applications", {
+  id: serial("id").primaryKey(),
+  firstName: varchar("first_name").notNull(),
+  email: varchar("email").notNull(),
+  accountCount: varchar("account_count").notNull(),
+  connectType: varchar("connect_type").notNull(), // banks, brokerages, both
+  status: varchar("status").default("pending"), // pending, approved, rejected
+  submittedAt: timestamp("submitted_at").defaultNow(),
+  reviewedBy: varchar("reviewed_by"), // admin email who reviewed
+  reviewedAt: timestamp("reviewed_at"),
+  reviewNotes: text("review_notes"),
+});
+
+// Audit logs table (admin actions tracking)
+export const auditLogs = pgTable("audit_logs", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id"), // User who was affected
+  adminEmail: varchar("admin_email").notNull(), // Admin who performed the action
+  action: varchar("action").notNull(), // approve_application, delete_user, reset_password, etc.
+  targetUserId: varchar("target_user_id"), // Optional target user
+  details: jsonb("details"), // Additional details about the action
+  timestamp: timestamp("timestamp").defaultNow(),
+});
+
+// Email logs table (track all emails sent)
+export const emailLogs = pgTable("email_logs", {
+  id: serial("id").primaryKey(),
+  recipient: varchar("recipient").notNull(),
+  subject: varchar("subject").notNull(),
+  template: varchar("template").notNull(), // approval, rejection, password_reset
+  status: varchar("status").notNull(), // sent, failed
+  sentAt: timestamp("sent_at").defaultNow(),
+  error: text("error"),
+});
+
+// Feature flags table (toggle features on/off)
+export const featureFlags = pgTable("feature_flags", {
+  key: varchar("key").primaryKey(),
+  enabled: boolean("enabled").default(false),
+  description: text("description"),
+  updatedBy: varchar("updated_by"), // Admin email who updated
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Password reset tokens table (for secure password setup links)
+export const passwordResetTokens = pgTable("password_reset_tokens", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id").references(() => users.id).notNull(),
+  token: varchar("token").notNull().unique(),
+  expiresAt: timestamp("expires_at").notNull(),
+  used: boolean("used").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Insert schemas for new tables
+export const insertAccountApplicationSchema = createInsertSchema(accountApplications).omit({
+  id: true,
+  submittedAt: true,
+});
+
+export const insertAuditLogSchema = createInsertSchema(auditLogs).omit({
+  id: true,
+  timestamp: true,
+});
+
+export const insertEmailLogSchema = createInsertSchema(emailLogs).omit({
+  id: true,
+  sentAt: true,
+});
+
+export const insertFeatureFlagSchema = createInsertSchema(featureFlags).omit({
+  updatedAt: true,
+});
+
+export const insertPasswordResetTokenSchema = createInsertSchema(passwordResetTokens).omit({
+  id: true,
+  createdAt: true,
+});
+
+// Types for new tables
+export type AccountApplication = typeof accountApplications.$inferSelect;
+export type InsertAccountApplication = z.infer<typeof insertAccountApplicationSchema>;
+
+export type AuditLog = typeof auditLogs.$inferSelect;
+export type InsertAuditLog = z.infer<typeof insertAuditLogSchema>;
+
+export type EmailLog = typeof emailLogs.$inferSelect;
+export type InsertEmailLog = z.infer<typeof insertEmailLogSchema>;
+
+export type FeatureFlag = typeof featureFlags.$inferSelect;
+export type InsertFeatureFlag = z.infer<typeof insertFeatureFlagSchema>;
+
+export type PasswordResetToken = typeof passwordResetTokens.$inferSelect;
+export type InsertPasswordResetToken = z.infer<typeof insertPasswordResetTokenSchema>;
