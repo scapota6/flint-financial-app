@@ -297,8 +297,9 @@ router.get('/accounts', snaptradeRateLimit, async (req: any, res: any) => {
 /**
  * GET /api/snaptrade/accounts/:accountId/details
  * Account details
+ * DISABLED: Conflicts with server/routes/snaptrade-accounts.ts - uses wrong auth and database instead of file storage
  */
-router.get('/accounts/:accountId/details', snaptradeRateLimit, async (req: any, res: any) => {
+/* router.get('/accounts/:accountId/details', snaptradeRateLimit, async (req: any, res: any) => {
   const requestId = req.headers['x-request-id'] || nanoid();
   const { accountId } = req.params;
 
@@ -345,13 +346,14 @@ router.get('/accounts/:accountId/details', snaptradeRateLimit, async (req: any, 
   } catch (error: any) {
     return handleSnapTradeError(error, 'account-details', res);
   }
-});
+}); */
 
 /**
  * GET /api/snaptrade/accounts/:accountId/balances
  * Account balances
+ * DISABLED: Conflicts with server/routes/snaptrade-accounts.ts
  */
-router.get('/accounts/:accountId/balances', snaptradeRateLimit, async (req: any, res: any) => {
+/* router.get('/accounts/:accountId/balances', snaptradeRateLimit, async (req: any, res: any) => {
   const requestId = req.headers['x-request-id'] || nanoid();
   const { accountId } = req.params;
 
@@ -398,13 +400,14 @@ router.get('/accounts/:accountId/balances', snaptradeRateLimit, async (req: any,
   } catch (error: any) {
     return handleSnapTradeError(error, 'account-balances', res);
   }
-});
+}); */
 
 /**
  * GET /api/snaptrade/accounts/:accountId/positions
  * Account positions/holdings
+ * DISABLED: Conflicts with server/routes/snaptrade-accounts.ts
  */
-router.get('/accounts/:accountId/positions', snaptradeRateLimit, async (req: any, res: any) => {
+/* router.get('/accounts/:accountId/positions', snaptradeRateLimit, async (req: any, res: any) => {
   const requestId = req.headers['x-request-id'] || nanoid();
   const { accountId } = req.params;
 
@@ -453,13 +456,14 @@ router.get('/accounts/:accountId/positions', snaptradeRateLimit, async (req: any
   } catch (error: any) {
     return handleSnapTradeError(error, 'account-positions', res);
   }
-});
+}); */
 
 /**
  * GET /api/snaptrade/accounts/:accountId/orders
  * Recent orders with optional date paging
+ * DISABLED: Conflicts with server/routes/snaptrade-accounts.ts
  */
-router.get('/accounts/:accountId/orders', snaptradeRateLimit, async (req: any, res: any) => {
+/* router.get('/accounts/:accountId/orders', snaptradeRateLimit, async (req: any, res: any) => {
   const requestId = req.headers['x-request-id'] || nanoid();
   const { accountId } = req.params;
   const { startDate, endDate, page = '1', pageSize = '50' } = req.query;
@@ -519,13 +523,14 @@ router.get('/accounts/:accountId/orders', snaptradeRateLimit, async (req: any, r
   } catch (error: any) {
     return handleSnapTradeError(error, 'account-orders', res);
   }
-});
+}); */
 
 /**
  * GET /api/snaptrade/accounts/:accountId/activities
  * Activities with date filters
+ * DISABLED: Conflicts with server/routes/snaptrade-accounts.ts
  */
-router.get('/accounts/:accountId/activities', snaptradeRateLimit, async (req: any, res: any) => {
+/* router.get('/accounts/:accountId/activities', snaptradeRateLimit, async (req: any, res: any) => {
   const requestId = req.headers['x-request-id'] || nanoid();
   const { accountId } = req.params;
   const { startDate, endDate, page = '1', pageSize = '50' } = req.query;
@@ -585,7 +590,7 @@ router.get('/accounts/:accountId/activities', snaptradeRateLimit, async (req: an
   } catch (error: any) {
     return handleSnapTradeError(error, 'account-activities', res);
   }
-});
+}); */
 
 /**
  * GET /api/snaptrade/symbols/search
