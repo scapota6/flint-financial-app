@@ -65,21 +65,23 @@ router.get("/summary", async (req: any, res) => {
             
             // Try to get positions for more detailed breakdown and performance
             try {
-              const { positionsApi } = await import('../lib/snaptrade');
-              const positions = await positionsApi.getPositions({
-                userId: snapUser.userId,
-                userSecret: snapUser.userSecret,
-                accountId: account.id
-              });
+              const { getPositions } = await import('../lib/snaptrade');
+              const positionsData = await getPositions(
+                snapUser.userId,
+                snapUser.userSecret,
+                account.id
+              );
+              const positions = positionsData?.[0]?.positions || [];
               
-              if (positions.data) {
-                for (const position of positions.data) {
+              if (positions && positions.length > 0) {
+                for (const position of positions) {
                   const value = (position.units || 0) * (position.price || 0);
-                  const symbol = position.symbol?.symbol;
+                  const symbol = position.symbol?.symbol?.symbol || position.symbol?.symbol;
                   const openPnl = parseFloat(position.open_pnl || '0') || 0;
                   
                   // Add unrealized P&L to day change (approximation)
                   totalDayChange += openPnl;
+                  console.log(`[Portfolio] Position ${symbol}: P&L = $${openPnl.toFixed(2)}`);
                   
                   // Determine if it's crypto
                   if (symbol && ['BTC', 'ETH', 'DOGE', 'ADA', 'SOL', 'USDC', 'USDT'].includes(symbol)) {
@@ -87,9 +89,11 @@ router.get("/summary", async (req: any, res) => {
                     totalStocks -= value; // Remove from stocks and add to crypto
                   }
                 }
+                console.log(`[Portfolio] Total day change from positions: $${totalDayChange.toFixed(2)}`);
               }
             } catch (posError) {
               console.log('Could not fetch positions for account:', account.id);
+              console.error('[Portfolio] Position fetch error details:', posError);
             }
           }
         }
