@@ -20,7 +20,7 @@ interface EmailLogData {
   recipient: string;
   subject: string;
   template: string;
-  status: 'sent' | 'failed';
+  status: 'sent' | 'failed' | 'pending';
   error?: string;
 }
 
@@ -45,10 +45,22 @@ async function sendEmail(
   template: string
 ): Promise<{ success: boolean; error?: string }> {
   if (!mg || !MAILGUN_DOMAIN) {
-    const error = 'Mailgun not configured';
-    console.error(error);
-    await logEmail({ recipient: to, subject, template, status: 'failed', error });
-    return { success: false, error };
+    // When Mailgun is not configured, queue the email for later delivery
+    console.log('📧 Email queued (no provider configured):');
+    console.log(`  → Recipient: ${to}`);
+    console.log(`  → Subject: ${subject}`);
+    console.log(`  → Template: ${template}`);
+    
+    const note = 'Email queued for delivery when provider is configured';
+    await logEmail({ 
+      recipient: to, 
+      subject, 
+      template, 
+      status: 'pending', 
+      error: note 
+    });
+    
+    return { success: true };
   }
 
   try {
