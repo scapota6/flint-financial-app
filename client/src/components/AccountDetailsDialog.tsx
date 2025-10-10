@@ -1395,48 +1395,6 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
               </>
             )}
 
-            {/* Payment Button for Credit Cards - Capability-based */}
-            {data.provider === 'teller' && data.creditCardInfo && (
-              <section>
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center">
-                  <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center text-white font-bold text-sm mr-3">💳</div>
-                  Card Payments
-                </h3>
-                
-                {/* Check if payments are supported - capability-based */}
-                {data.paymentCapabilities?.canPay ? (
-                  <div className="p-4 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-lg border border-green-200 dark:border-green-800">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <h4 className="font-semibold text-green-800 dark:text-green-200">Payments Available</h4>
-                        <p className="text-sm text-green-600 dark:text-green-300 mt-1">You can make payments using Zelle through this account.</p>
-                      </div>
-                      <button
-                        onClick={() => setShowPaymentDialog(true)}
-                        className="px-6 py-2 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-colors"
-                      >
-                        Pay Card
-                      </button>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="p-4 bg-gradient-to-r from-gray-50 to-slate-50 dark:from-gray-800/20 dark:to-slate-800/20 rounded-lg border border-gray-200 dark:border-gray-700">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
-                        <span className="text-gray-500 dark:text-gray-400 text-sm">ℹ️</span>
-                      </div>
-                      <div>
-                        <h4 className="font-semibold text-gray-700 dark:text-gray-300">Payments Not Available</h4>
-                        <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                          This institution doesn't support Teller payments in sandbox mode. In production, check if your bank supports Zelle payments.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </section>
-            )}
-            
             {/* NO TRADING SECTIONS FOR TELLER ACCOUNTS - Only for brokerage accounts */}
 
                 {/* c) APR & Fees */}
