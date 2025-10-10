@@ -16,7 +16,6 @@ import Transfers from "@/pages/transfers";
 import WatchlistPage from "@/pages/Watchlist";
 import Activity from "@/pages/activity";
 import Subscribe from "@/pages/subscribe";
-import Admin from "@/pages/Admin";
 import Profile from "@/pages/profile";
 import News from "@/pages/news";
 import StockDetail from "@/pages/stock-detail";
@@ -30,17 +29,6 @@ import Settings from "@/pages/Settings";
 import Security from "@/pages/Security";
 import Monitoring from "@/pages/Monitoring";
 import TellerCallback from "@/pages/TellerCallback";
-
-// Protected route wrapper for admin-only access
-function AdminRoute({ component: Component }: { component: React.ComponentType }) {
-  const { user } = useAuth();
-  
-  if (!user?.isAdmin) {
-    return <NotFound />;
-  }
-  
-  return <Component />;
-}
 
 // Public route wrapper that redirects authenticated users
 function PublicRoute({ component: Component }: { component: React.ComponentType }) {
@@ -81,9 +69,6 @@ function Router() {
                 <Route path="/dashboard">
                   {() => { window.location.href = '/api/login'; return null; }}
                 </Route>
-                <Route path="/admin">
-                  {() => { window.location.href = '/api/login'; return null; }}
-                </Route>
                 <Route path="/accounts">
                   {() => { window.location.href = '/api/login'; return null; }}
                 </Route>
@@ -118,9 +103,6 @@ function Router() {
                 <Route path="/watchlist" component={WatchlistPage} />
                 <Route path="/activity" component={Activity} />
                 <Route path="/subscribe" component={Subscribe} />
-                <Route path="/admin">
-                  {() => <AdminRoute component={Admin} />}
-                </Route>
                 <Route path="/profile" component={Profile} />
                 <Route path="/news" component={News} />
                 <Route path="/stock/:symbol" component={StockDetail} />

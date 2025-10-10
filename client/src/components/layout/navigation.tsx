@@ -1,5 +1,4 @@
 import { useAuth } from "@/hooks/useAuth";
-import { useAdmin } from "@/hooks/useAdmin";
 import { useLocation } from "wouter";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
@@ -9,7 +8,6 @@ import SearchBar from "@/components/ui/search-bar";
 
 export default function Navigation() {
   const { user } = useAuth();
-  const { isAdmin } = useAdmin();
   const [location] = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -24,7 +22,6 @@ export default function Navigation() {
     { path: "/watchlist", label: "Watchlist", active: location === "/watchlist" },
     { path: "/news", label: "News", active: location === "/news" },
     { path: "/activity", label: "Activity", active: location === "/activity" },
-    ...(isAdmin ? [{ path: "/admin", label: "Admin", active: location === "/admin" }] : []),
   ];
 
   return (

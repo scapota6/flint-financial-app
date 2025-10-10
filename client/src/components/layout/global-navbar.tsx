@@ -89,17 +89,6 @@ export default function GlobalNavbar() {
                 </Link>
               )
             ))}
-            {user?.isAdmin && (
-              <Link href="/admin">
-                <span className={`text-sm font-medium transition-all duration-200 cursor-pointer relative
-                  ${isActiveLink('/admin')
-                    ? 'text-white after:absolute after:bottom-[-4px] after:left-0 after:right-0 after:h-0.5 after:bg-[#8e44ad] after:rounded-full'
-                    : 'text-gray-300 hover:text-white hover:drop-shadow-[0_0_8px_rgba(142,68,173,0.6)]'
-                  }`}>
-                  Admin
-                </span>
-              </Link>
-            )}
           </div>
 
 
@@ -192,19 +181,6 @@ export default function GlobalNavbar() {
                 </Link>
               )
             ))}
-            {user?.isAdmin && (
-              <Link href="/admin">
-                <span
-                  className={`block px-3 py-2 text-base font-medium transition-colors duration-200 cursor-pointer
-                    ${isActiveLink('/admin')
-                      ? 'text-white bg-[#8e44ad]/20 border-l-4 border-[#8e44ad]'
-                      : 'text-gray-300 hover:text-white hover:bg-gray-800'
-                    }`}
-                >
-                  Admin
-                </span>
-              </Link>
-            )}
             <div className="border-t border-gray-700 pt-4 pb-3">
               <div className="flex items-center px-5">
                 <div className="flex-shrink-0">
