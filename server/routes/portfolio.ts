@@ -63,7 +63,7 @@ router.get("/summary", async (req: any, res) => {
             totalCash += cash;
             totalStocks += holdings; // Holdings represent invested value
             
-            // Try to get positions for more detailed breakdown
+            // Try to get positions for more detailed breakdown and performance
             try {
               const { positionsApi } = await import('../lib/snaptrade');
               const positions = await positionsApi.getPositions({
@@ -76,6 +76,10 @@ router.get("/summary", async (req: any, res) => {
                 for (const position of positions.data) {
                   const value = (position.units || 0) * (position.price || 0);
                   const symbol = position.symbol?.symbol;
+                  const openPnl = parseFloat(position.open_pnl || '0') || 0;
+                  
+                  // Add unrealized P&L to day change (approximation)
+                  totalDayChange += openPnl;
                   
                   // Determine if it's crypto
                   if (symbol && ['BTC', 'ETH', 'DOGE', 'ADA', 'SOL', 'USDC', 'USDT'].includes(symbol)) {
