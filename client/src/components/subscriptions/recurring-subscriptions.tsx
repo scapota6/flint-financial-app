@@ -220,14 +220,7 @@ export default function RecurringSubscriptions() {
             <div className="text-center py-8 text-gray-400">
               <DollarSign className="h-12 w-12 mx-auto mb-4 opacity-50" />
               <p className="text-lg mb-2">No recurring subscriptions found</p>
-              <p className="text-sm">We analyze your transactions to detect recurring payments</p>
-              <Button 
-                variant="outline" 
-                className="mt-4"
-                onClick={() => window.location.href = '/connections'}
-              >
-                Connect Bank Account
-              </Button>
+              <p className="text-sm">Connect your bank accounts to automatically detect recurring payments</p>
             </div>
           )}
         </div>
