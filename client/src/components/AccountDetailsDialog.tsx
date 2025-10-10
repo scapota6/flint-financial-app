@@ -1231,9 +1231,9 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
                     
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-4">
                       <div className="p-4 bg-white dark:bg-gray-800 rounded-lg border border-red-200 dark:border-red-700">
-                        <div className="text-xs font-medium text-red-600 dark:text-red-400 uppercase tracking-wide">Minimum Due</div>
+                        <div className="text-xs font-medium text-red-600 dark:text-red-400 uppercase tracking-wide">Credit Limit</div>
                         <div className="text-2xl font-bold text-red-700 dark:text-red-300 mt-1">
-                          {data.creditCardInfo?.minimumDue ? fmtMoney(data.creditCardInfo?.minimumDue) : (
+                          {data.creditCardInfo?.creditLimit ? fmtMoney(data.creditCardInfo?.creditLimit) : (
                             <span className="text-gray-500 dark:text-gray-400" title="Not provided by issuer">N/A</span>
                           )}
                         </div>

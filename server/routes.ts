@@ -329,7 +329,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
                   availableBalance: parseFloat(tellerBalances.available || '0') || 0,
                   ledgerBalance: parseFloat(tellerBalances.ledger || '0') || 0,
                   currentBalance: parseFloat(tellerBalances.current || '0') || 0,
-                  creditLimit: parseFloat(tellerBalances.credit_limit || '0') || null,
+                  creditLimit: mapped.creditLimit || null,
                   // Credit-specific fields
                   availableCredit: availableCredit,
                   amountSpent: amountSpent

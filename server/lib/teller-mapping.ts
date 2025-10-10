@@ -36,6 +36,7 @@ export interface MappedTellerAccount {
   displayBalance: number;
   available?: number;
   ledger?: number;
+  creditLimit?: number;
   currency?: string;
   status?: string;
   last_four?: string;
@@ -66,6 +67,7 @@ export function mapTellerToFlint(
     // - owed: positive amount owed (same as ledger)
     // - displayBalance: NEGATIVE to reduce net worth
     // - availableCredit: remaining credit
+    // - creditLimit: total credit limit (owed + available)
     
     return {
       id: account.id,
@@ -74,6 +76,7 @@ export function mapTellerToFlint(
       accountSubtype: account.subtype || 'credit_card',
       owed: ledgerValue, // Positive amount owed on the card (from Teller)
       availableCredit: availableValue, // Remaining credit available
+      creditLimit: ledgerValue + availableValue, // Total credit limit
       displayBalance: -ledgerValue, // Negative balance (debt reduces net worth)
       ledger: ledgerValue,
       available: availableValue,
