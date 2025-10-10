@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import AccountDetailsDialog from '../AccountDetailsDialog';
+import { getInstitutionLogo } from '@/lib/bank-logos';
 
 interface AccountBalance {
   id: string;
@@ -324,7 +325,7 @@ export default function UnifiedDashboard() {
                       account.type === 'investment' ? 'bg-purple-600/20 text-purple-400' :
                       'bg-orange-600/20 text-orange-400'
                     }`}>
-                      {getProviderIcon(account.type)}
+                      {getInstitutionLogo(account.accountName)}
                     </div>
                     <div>
                       <div className="text-white font-medium">
