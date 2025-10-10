@@ -289,8 +289,9 @@ router.get('/accounts/:accountId/balances', isAuthenticated, async (req: any, re
       accountId
     });
     
-    const balances = balanceResponse.data;
-    if (!balances) {
+    // Balance endpoint returns an array of currency balances
+    const balancesArray = balanceResponse.data;
+    if (!balancesArray || !Array.isArray(balancesArray)) {
       const errorResponse: ErrorResponse = {
         error: {
           code: 'ACCOUNT_BALANCES_NOT_FOUND',
@@ -301,24 +302,29 @@ router.get('/accounts/:accountId/balances', isAuthenticated, async (req: any, re
       return res.status(404).json(errorResponse);
     }
     
+    // Find the primary balance (usually USD or first in array)
+    const primaryBalance = balancesArray.find(b => b.currency?.code === 'USD') || balancesArray[0];
+    
+    // Calculate total from cash + positions value (cash is the total liquid value)
+    const totalAmount = primaryBalance?.cash || 0;
+    const cashAmount = primaryBalance?.cash || 0;
+    const buyingPowerAmount = primaryBalance?.buying_power || null;
+    
     // Transform to normalized DTO
     const accountBalances: AccountBalances = {
-      total: (balances as any).total ? {
-        amount: parseFloat((balances as any).total.amount) || 0,
-        currency: (balances as any).total.currency || 'USD'
+      total: {
+        amount: parseFloat(String(totalAmount)) || 0,
+        currency: primaryBalance?.currency?.code || 'USD'
+      },
+      cash: {
+        amount: parseFloat(String(cashAmount)) || 0,
+        currency: primaryBalance?.currency?.code || 'USD'
+      },
+      buyingPower: buyingPowerAmount !== null ? {
+        amount: parseFloat(String(buyingPowerAmount)) || 0,
+        currency: primaryBalance?.currency?.code || 'USD'
       } : null,
-      cash: (balances as any).cash ? {
-        amount: parseFloat((balances as any).cash.amount) || 0,
-        currency: (balances as any).cash.currency || 'USD'
-      } : null,
-      buyingPower: (balances as any).buying_power ? {
-        amount: parseFloat((balances as any).buying_power.amount) || 0,
-        currency: (balances as any).buying_power.currency || 'USD'
-      } : null,
-      maintenanceExcess: (balances as any).maintenance_excess ? {
-        amount: parseFloat((balances as any).maintenance_excess.amount) || 0,
-        currency: (balances as any).maintenance_excess.currency || 'USD'
-      } : null
+      maintenanceExcess: null
     };
     
     const response: AccountBalancesResponse = {
@@ -501,22 +507,32 @@ router.get('/accounts/:accountId/orders', isAuthenticated, async (req: any, res)
         timeInForce = 'day';
       }
       
+      // Extract symbol info from universal_symbol or option_symbol
+      const universalSymbol = order.universal_symbol;
+      const optionSymbol = order.option_symbol;
+      const symbol = universalSymbol?.symbol || universalSymbol?.raw_symbol || 
+                     optionSymbol?.ticker || 'Unknown';
+      const description = universalSymbol?.description || null;
+      const currency = universalSymbol?.currency?.code || 
+                      optionSymbol?.underlying_symbol?.currency?.code || 'USD';
+      
       return {
-        id: order.id,
+        id: order.brokerage_order_id || order.id,
         placedAt: order.created_at || null,
         status,
         side,
         type,
         timeInForce,
-        symbol: order.symbol?.symbol?.symbol || order.symbol?.raw_symbol || 'Unknown',
+        symbol,
+        description,
         quantity: order.quantity || 0,
         limitPrice: order.price ? {
           amount: order.price,
-          currency: order.currency || 'USD'
+          currency
         } : null,
         averageFillPrice: order.fill_price || order.average_fill_price ? {
           amount: order.fill_price || order.average_fill_price,
-          currency: order.currency || 'USD'
+          currency
         } : null
       };
     });

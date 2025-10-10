@@ -147,6 +147,7 @@ export interface Order {
   type: OrderType;
   timeInForce: TimeInForce | null;
   symbol: string | null;
+  description?: string | null; // Security description (e.g., "Apple Inc.")
   symbolId?: string | null;
   quantity: number;
   price?: number | null;
