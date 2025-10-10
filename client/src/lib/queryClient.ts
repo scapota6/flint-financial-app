@@ -19,6 +19,11 @@ export async function apiRequest(path: string, options: RequestInit = {}) {
     ...(options.headers || {}),
   };
 
+  // Add Content-Type header when sending JSON body
+  if (options.body && typeof options.body === 'string') {
+    headers['Content-Type'] = 'application/json';
+  }
+
   // Add CSRF token for state-changing requests
   if (['POST', 'PUT', 'DELETE', 'PATCH'].includes(options.method || '')) {
     const csrfToken = await getCsrfToken();
