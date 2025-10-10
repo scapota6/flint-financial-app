@@ -14,12 +14,12 @@ import { useQuery } from '@tanstack/react-query';
 import ThemeToggle from './theme-toggle';
 
 const navLinks = [
-  { href: '/', label: 'Dashboard' },
-  { href: '/portfolio', label: 'Portfolio' },
-  { href: '/accounts', label: 'Accounts' },
-  { href: '/transfers', label: 'Transfers' },
-  { href: '/watchlist', label: 'Watchlist' },
-  { href: '/activity', label: 'Activity' },
+  { href: '/', label: 'Dashboard', comingSoon: false },
+  { href: '/portfolio', label: 'Portfolio', comingSoon: false },
+  { href: '/accounts', label: 'Accounts', comingSoon: false },
+  { href: '/transfers', label: 'Transfers (Coming Soon)', comingSoon: true },
+  { href: '/watchlist', label: 'Watchlist', comingSoon: false },
+  { href: '/activity', label: 'Activity', comingSoon: false },
 ];
 
 export default function GlobalNavbar() {
@@ -72,15 +72,24 @@ export default function GlobalNavbar() {
           {/* Navigation Links */}
           <div className="hidden md:flex space-x-8 flex-1 justify-center">
             {navLinks.map((link) => (
-              <Link key={link.href} href={link.href}>
-                <span className={`text-sm font-medium transition-all duration-200 cursor-pointer relative
-                  ${isActiveLink(link.href)
-                    ? 'text-white after:absolute after:bottom-[-4px] after:left-0 after:right-0 after:h-0.5 after:bg-[#8e44ad] after:rounded-full'
-                    : 'text-gray-300 hover:text-white hover:drop-shadow-[0_0_8px_rgba(142,68,173,0.6)]'
-                  }`}>
+              link.comingSoon ? (
+                <span 
+                  key={link.href}
+                  className="text-sm font-medium text-gray-500 dark:text-gray-600 cursor-not-allowed relative"
+                >
                   {link.label}
                 </span>
-              </Link>
+              ) : (
+                <Link key={link.href} href={link.href}>
+                  <span className={`text-sm font-medium transition-all duration-200 cursor-pointer relative
+                    ${isActiveLink(link.href)
+                      ? 'text-white after:absolute after:bottom-[-4px] after:left-0 after:right-0 after:h-0.5 after:bg-[#8e44ad] after:rounded-full'
+                      : 'text-gray-300 hover:text-white hover:drop-shadow-[0_0_8px_rgba(142,68,173,0.6)]'
+                    }`}>
+                    {link.label}
+                  </span>
+                </Link>
+              )
             ))}
             {user?.isAdmin && (
               <Link href="/admin">
@@ -164,17 +173,26 @@ export default function GlobalNavbar() {
         <div className="md:hidden">
           <div className="px-2 pt-2 pb-3 space-y-1 bg-[#1e1e1e] border-t border-gray-800">
             {navLinks.map((link) => (
-              <Link key={link.href} href={link.href}>
+              link.comingSoon ? (
                 <span
-                  className={`block px-3 py-2 text-base font-medium transition-colors duration-200 cursor-pointer
-                    ${isActiveLink(link.href)
-                      ? 'text-white bg-[#8e44ad]/20 border-l-4 border-[#8e44ad]'
-                      : 'text-gray-300 hover:text-white hover:bg-gray-800'
-                    }`}
+                  key={link.href}
+                  className="block px-3 py-2 text-base font-medium text-gray-500 dark:text-gray-600 cursor-not-allowed"
                 >
                   {link.label}
                 </span>
-              </Link>
+              ) : (
+                <Link key={link.href} href={link.href}>
+                  <span
+                    className={`block px-3 py-2 text-base font-medium transition-colors duration-200 cursor-pointer
+                      ${isActiveLink(link.href)
+                        ? 'text-white bg-[#8e44ad]/20 border-l-4 border-[#8e44ad]'
+                        : 'text-gray-300 hover:text-white hover:bg-gray-800'
+                      }`}
+                  >
+                    {link.label}
+                  </span>
+                </Link>
+              )
             ))}
             {user?.isAdmin && (
               <Link href="/admin">
