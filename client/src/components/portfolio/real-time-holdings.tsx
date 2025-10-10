@@ -318,11 +318,6 @@ export default function RealTimeHoldings({
             </div>
           )}
         </div>
-
-        {/* Data source info */}
-        <div className="text-xs text-gray-500 text-center pt-2 border-t border-gray-800">
-          Live prices from Polygon.io & CoinGecko • Updates every 15s
-        </div>
       </CardContent>
     </Card>
   );
