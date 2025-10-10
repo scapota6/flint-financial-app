@@ -1,5 +1,4 @@
-import { SiRobinhood } from 'react-icons/si';
-import { Building2, Landmark, CreditCard, BadgeDollarSign, TrendingUp, Wallet, Coins, DollarSign, Building, HelpCircle } from 'lucide-react';
+import { Building2 } from 'lucide-react';
 
 export function getInstitutionName(accountName: string): string {
   if (!accountName) return '';
@@ -10,15 +9,15 @@ export function getInstitutionName(accountName: string): string {
 
 export function getInstitutionLogo(accountName: string) {
   const institutionName = getInstitutionName(accountName).toLowerCase();
-  
-  const iconProps = {
-    className: 'h-5 w-5',
-    'aria-label': getInstitutionName(accountName),
-  };
+  const displayName = getInstitutionName(accountName);
 
   if (institutionName.includes('robinhood')) {
     return {
-      icon: <SiRobinhood {...iconProps} />,
+      logo: <img 
+        src="https://logo.brandfetch.io/robinhood.com" 
+        alt={displayName}
+        className="h-5 w-5 object-contain"
+      />,
       bgClass: 'bg-green-500/20',
       textClass: 'text-green-500'
     };
@@ -26,7 +25,11 @@ export function getInstitutionLogo(accountName: string) {
   
   if (institutionName.includes('chase') || institutionName.includes('jpmorgan')) {
     return {
-      icon: <Building2 {...iconProps} />,
+      logo: <img 
+        src="https://logo.brandfetch.io/chase.com" 
+        alt={displayName}
+        className="h-5 w-5 object-contain"
+      />,
       bgClass: 'bg-blue-600/20',
       textClass: 'text-blue-600'
     };
@@ -34,7 +37,11 @@ export function getInstitutionLogo(accountName: string) {
   
   if (institutionName.includes('bank of america')) {
     return {
-      icon: <Landmark {...iconProps} />,
+      logo: <img 
+        src="https://logo.brandfetch.io/bankofamerica.com" 
+        alt={displayName}
+        className="h-5 w-5 object-contain"
+      />,
       bgClass: 'bg-red-600/20',
       textClass: 'text-red-600'
     };
@@ -42,7 +49,11 @@ export function getInstitutionLogo(accountName: string) {
   
   if (institutionName.includes('citi')) {
     return {
-      icon: <CreditCard {...iconProps} />,
+      logo: <img 
+        src="https://logo.brandfetch.io/citigroup.com" 
+        alt={displayName}
+        className="h-5 w-5 object-contain"
+      />,
       bgClass: 'bg-blue-500/20',
       textClass: 'text-blue-500'
     };
@@ -50,7 +61,11 @@ export function getInstitutionLogo(accountName: string) {
   
   if (institutionName.includes('morgan stanley')) {
     return {
-      icon: <TrendingUp {...iconProps} />,
+      logo: <img 
+        src="https://logo.brandfetch.io/morganstanley.com" 
+        alt={displayName}
+        className="h-5 w-5 object-contain"
+      />,
       bgClass: 'bg-indigo-600/20',
       textClass: 'text-indigo-600'
     };
@@ -58,7 +73,11 @@ export function getInstitutionLogo(accountName: string) {
   
   if (institutionName.includes('capital') || institutionName.includes('capitalone')) {
     return {
-      icon: <Wallet {...iconProps} />,
+      logo: <img 
+        src="https://logo.brandfetch.io/capitalone.com" 
+        alt={displayName}
+        className="h-5 w-5 object-contain"
+      />,
       bgClass: 'bg-purple-600/20',
       textClass: 'text-purple-600'
     };
@@ -66,7 +85,11 @@ export function getInstitutionLogo(accountName: string) {
   
   if (institutionName.includes('wells fargo')) {
     return {
-      icon: <Coins {...iconProps} />,
+      logo: <img 
+        src="https://logo.brandfetch.io/wellsfargo.com" 
+        alt={displayName}
+        className="h-5 w-5 object-contain"
+      />,
       bgClass: 'bg-amber-600/20',
       textClass: 'text-amber-600'
     };
@@ -74,7 +97,11 @@ export function getInstitutionLogo(accountName: string) {
   
   if (institutionName.includes('american express') || institutionName.includes('amex')) {
     return {
-      icon: <BadgeDollarSign {...iconProps} />,
+      logo: <img 
+        src="https://logo.brandfetch.io/americanexpress.com" 
+        alt={displayName}
+        className="h-5 w-5 object-contain"
+      />,
       bgClass: 'bg-cyan-600/20',
       textClass: 'text-cyan-600'
     };
@@ -82,7 +109,11 @@ export function getInstitutionLogo(accountName: string) {
   
   if (institutionName.includes('td bank') || institutionName.includes('td')) {
     return {
-      icon: <DollarSign {...iconProps} />,
+      logo: <img 
+        src="https://logo.brandfetch.io/td.com" 
+        alt={displayName}
+        className="h-5 w-5 object-contain"
+      />,
       bgClass: 'bg-emerald-600/20',
       textClass: 'text-emerald-600'
     };
@@ -90,14 +121,19 @@ export function getInstitutionLogo(accountName: string) {
   
   if (institutionName.includes('us bank')) {
     return {
-      icon: <Building {...iconProps} />,
+      logo: <img 
+        src="https://logo.brandfetch.io/usbank.com" 
+        alt={displayName}
+        className="h-5 w-5 object-contain"
+      />,
       bgClass: 'bg-slate-600/20',
       textClass: 'text-slate-600'
     };
   }
   
+  // Fallback for unknown institutions
   return {
-    icon: <HelpCircle {...iconProps} />,
+    logo: <Building2 className="h-5 w-5" aria-label={displayName} />,
     bgClass: 'bg-gray-500/20',
     textClass: 'text-gray-500'
   };

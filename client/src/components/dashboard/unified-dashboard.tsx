@@ -316,14 +316,14 @@ export default function UnifiedDashboard() {
       {selectedView === 'accounts' && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {connectedAccounts.map((account: any) => {
-            const { icon, bgClass, textClass } = getInstitutionLogo(account.accountName);
+            const { logo, bgClass, textClass } = getInstitutionLogo(account.accountName);
             return (
             <Card key={account.id} className="flint-card">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center space-x-2">
                     <div className={`p-2 rounded-lg ${bgClass} ${textClass}`}>
-                      {icon}
+                      {logo}
                     </div>
                     <div>
                       <div className="text-white font-medium">

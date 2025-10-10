@@ -166,7 +166,7 @@ export default function Accounts() {
               ) : (
                 <div className="space-y-4">
                   {brokerageAccounts.map((account) => {
-                    const { icon, bgClass, textClass } = getInstitutionLogo(account.name);
+                    const { logo, bgClass, textClass } = getInstitutionLogo(account.name);
                     
                     return (
                       <Card key={account.id} className="bg-slate-800/50 border-slate-700 backdrop-blur-sm hover:bg-slate-800/70 transition-colors">
@@ -174,7 +174,7 @@ export default function Accounts() {
                           <div className="flex justify-between items-center">
                             <div className="flex items-center gap-3">
                               <div className={`w-12 h-12 ${bgClass} rounded-lg flex items-center justify-center ${textClass}`}>
-                                {icon}
+                                {logo}
                               </div>
                               <div>
                                 <CardTitle className="text-lg text-white">
@@ -237,7 +237,7 @@ export default function Accounts() {
               ) : (
                 <div className="space-y-4">
                   {bankAccounts.map((account) => {
-                    const { icon, bgClass, textClass } = getInstitutionLogo(account.name);
+                    const { logo, bgClass, textClass } = getInstitutionLogo(account.name);
                     
                     return (
                       <Card key={account.id} className="bg-slate-800/50 border-slate-700 backdrop-blur-sm hover:bg-slate-800/70 transition-colors">
@@ -245,7 +245,7 @@ export default function Accounts() {
                           <div className="flex justify-between items-center">
                             <div className="flex items-center gap-3">
                               <div className={`w-12 h-12 ${bgClass} rounded-lg flex items-center justify-center ${textClass}`}>
-                                {icon}
+                                {logo}
                               </div>
                               <div>
                                 <CardTitle className="text-lg text-white">{account.name}</CardTitle>
