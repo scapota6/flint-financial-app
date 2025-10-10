@@ -38,9 +38,9 @@ export default function RealTimeHoldings({
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const queryClient = useQueryClient();
 
-  // Check SnapTrade connection status
+  // Check SnapTrade connection status - use same queryKey as dashboard page
   const { data: dashboardData } = useQuery({
-    queryKey: ['/api/dashboard'],
+    queryKey: ['dashboard'],
     queryFn: async () => {
       const resp = await apiRequest("/api/dashboard");
       if (!resp.ok) throw new Error("Failed to load dashboard");
@@ -49,14 +49,16 @@ export default function RealTimeHoldings({
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
-  const isSnapTradeConnected = dashboardData?.snapTradeStatus?.connected === true;
+  // Check if user has any SnapTrade investment accounts
+  const hasSnapTradeAccounts = dashboardData?.accounts?.some((acc: any) => acc.provider === 'snaptrade') || false;
+  const isSnapTradeConnected = hasSnapTradeAccounts && dashboardData?.investmentBalance > 0;
 
   // Clear holdings cache when SnapTrade disconnects
   useEffect(() => {
-    if (dashboardData?.snapTradeStatus?.connected === false) {
+    if (dashboardData && !isSnapTradeConnected) {
       queryClient.removeQueries({ queryKey: ['/api/portfolio-holdings'] });
     }
-  }, [dashboardData?.snapTradeStatus?.connected, queryClient]);
+  }, [isSnapTradeConnected, dashboardData, queryClient]);
 
   // Fetch user's holdings with real-time data - only when SnapTrade is connected
   const { data: holdingsData = [], isLoading, error } = useQuery<Holding[]>({
