@@ -37,7 +37,7 @@ Preferred communication style: Simple, everyday language.
 - **Modular Architecture**: Clean separation of concerns with dedicated service layers for encryption, wallet management, and trading aggregation.
 - **Compliance Framework**: Legal disclaimers system (not a financial advisor, custodian, or broker-dealer) with user acknowledgment tracking, RBAC groundwork, and security dashboard.
 - **Settings Management**: Profile management, notification preferences, connected accounts management, data export (CSV), and account deletion.
-- **Teller Balance Mapping System**: Dedicated utility (`server/lib/teller-mapping.ts`) that properly maps Teller.io account balances to Flint's internal format. For credit cards: ledger (amount owed) is mapped to positive `owed` field and negative `displayBalance` to reduce net worth. For depository accounts: available/ledger is mapped to positive `displayBalance`. Ensures accurate net worth calculations by treating credit card debt as negative balances.
+- **Teller Balance Mapping System**: Dedicated utility (`server/lib/teller-mapping.ts`) that properly maps Teller.io account balances to Flint's internal format. For credit cards: ledger (amount owed) is mapped to positive `owed` field and negative `displayBalance` to reduce net worth; credit limit is calculated as ledger + available (total borrowing capacity). For depository accounts: available/ledger is mapped to positive `displayBalance`. Ensures accurate net worth calculations by treating credit card debt as negative balances.
 
 ## External Dependencies
 
