@@ -1241,7 +1241,8 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
                       <div className="p-4 bg-white dark:bg-gray-800 rounded-lg border border-red-200 dark:border-red-700">
                         <div className="text-xs font-medium text-red-600 dark:text-red-400 uppercase tracking-wide">Spent</div>
                         <div className="text-2xl font-bold text-red-700 dark:text-red-300 mt-1">
-                          {data.creditCardInfo?.amountSpent ? fmtMoney(data.creditCardInfo?.amountSpent) : (
+                          {data.creditCardInfo?.amountSpent ? fmtMoney(data.creditCardInfo?.amountSpent) : 
+                           data.balances?.ledger ? fmtMoney(data.balances?.ledger) : (
                             <span className="text-gray-500 dark:text-gray-400" title="Not provided by issuer">N/A</span>
                           )}
                         </div>
