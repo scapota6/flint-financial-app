@@ -17,6 +17,7 @@ import { Switch } from "@/components/ui/switch";
 import { ArrowRight, Shield, TrendingUp, Zap, CheckCircle, Star, Users, DollarSign, Lock, Building, CreditCard } from "lucide-react";
 import { Link } from "wouter";
 import { useToast } from "@/hooks/use-toast";
+import flintLogo from "@assets/flint-logo.png";
 
 // Analytics tracking
 const trackEvent = (eventName: string, properties: Record<string, any> = {}) => {
@@ -136,11 +137,12 @@ function Landing() {
       {/* Sticky Header */}
       <header className="sticky top-0 z-50 px-4 lg:px-8 py-4 bg-black/80 backdrop-blur-md border-b border-gray-800">
         <nav className="mx-auto flex max-w-7xl items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-purple-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-lg">F</span>
-            </div>
-            <span className="text-white font-bold text-xl">Flint</span>
+          <div className="flex items-center space-x-3">
+            <img 
+              src={flintLogo} 
+              alt="Flint Logo" 
+              className="h-10 w-auto"
+            />
           </div>
           <div className="flex items-center space-x-4">
             <div className="flex flex-col items-end space-y-1 bg-gray-800/50 border border-purple-600/30 rounded-lg px-4 py-3">
