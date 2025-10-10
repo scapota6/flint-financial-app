@@ -139,11 +139,9 @@ export class FinancialAPI {
 
   static async logLogin() {
     try {
-      await fetch('/api/log-login', {
+      await apiRequest('/api/log-login', {
         method: 'POST',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ts: Date.now() }),
+        body: JSON.stringify({ ts: Date.now() })
       });
     } catch (e) {
       // dev-only noise: do not bubble to UI
