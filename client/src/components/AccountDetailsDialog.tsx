@@ -1234,17 +1234,12 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
                         <div className="text-xs font-medium text-red-600 dark:text-red-400 uppercase tracking-wide">Credit Limit</div>
                         <div className="text-2xl font-bold text-red-700 dark:text-red-300 mt-1">
                           {(() => {
-                            // Try to use provided credit limit first
-                            if (data.creditCardInfo?.creditLimit) {
-                              return fmtMoney(data.creditCardInfo.creditLimit);
-                            }
+                            // Calculate from the same values shown in Spent and Available Credit boxes
+                            const spent = data.creditCardInfo?.amountSpent || data.balances?.ledger || 0;
+                            const available = data.creditCardInfo?.availableCredit || data.balances?.available || 0;
+                            const creditLimit = spent + available;
                             
-                            // Otherwise calculate: ledger + available = credit limit
-                            const ledger = data.balances?.ledger || 0;
-                            const available = data.balances?.available || 0;
-                            const calculatedLimit = ledger + available;
-                            
-                            return calculatedLimit > 0 ? fmtMoney(calculatedLimit) : (
+                            return creditLimit > 0 ? fmtMoney(creditLimit) : (
                               <span className="text-gray-500 dark:text-gray-400" title="Not provided by issuer">N/A</span>
                             );
                           })()}
