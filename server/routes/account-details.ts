@@ -162,7 +162,8 @@ router.get("/accounts/:accountId/details", async (req: any, res) => {
             currentBalance,
             availableCredit,
             creditLimit,
-            creditUtilization: creditUtilization ? `${creditUtilization.toFixed(2)}%` : null
+            creditUtilization: creditUtilization ? `${creditUtilization.toFixed(2)}%` : null,
+            creditUtilizationRaw: creditUtilization
           });
           
           creditCardInfo = {

@@ -1210,6 +1210,12 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
             {/* CREDIT CARD LAYOUT - Teller credit cards get special treatment */}
             {data.provider === 'teller' && data.creditCardInfo ? (
               <>
+                {/* Debug logging */}
+                {console.log('[CREDIT CARD DATA]', { 
+                  creditCardInfo: data.creditCardInfo,
+                  creditUtilization: data.creditCardInfo?.creditUtilization
+                })}
+                
                 {/* 1. Credit Card Overview (FIRST for credit cards) */}
                 <section>
                   <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center">
