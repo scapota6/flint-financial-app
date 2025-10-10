@@ -147,25 +147,32 @@ router.get("/accounts/:accountId/details", async (req: any, res) => {
           }, null, 2));
           
           // Use fetched balances first, fallback to account balances
-          const currentBalance = (balances as any)?.current ?? (account as any).balance?.current ?? null;
+          // For credit cards: ledger = balance owed, available = remaining credit
+          const ledgerBalance = balances?.ledger ?? (account as any).balance?.ledger ?? null;
           const availableBalance = balances?.available ?? (account as any).balance?.available ?? null;
           const statementBalance = (balances as any)?.statement ?? (account as any).balance?.statement ?? null;
-          const creditLimit = (balances as any)?.credit_limit ?? (account as any).balance?.limit ?? null;
+          
+          // Calculate credit limit: balance owed + available credit
+          const currentBalance = ledgerBalance ? parseFloat(ledgerBalance) : null;
+          const availableCredit = availableBalance ? parseFloat(availableBalance) : null;
+          const creditLimit = (currentBalance !== null && availableCredit !== null) 
+            ? currentBalance + availableCredit 
+            : ((balances as any)?.credit_limit ?? (account as any).balance?.limit ?? null);
           
           creditCardInfo = {
             // Payment & Due Date Information (all nullable - UI shows "—")
             paymentDueDate: (account as any).details?.payment_due_date ?? (account as any).details?.due_date ?? null,
             minimumDue: (account as any).details?.minimum_payment_due ?? (account as any).details?.minimum_due ?? null,
-            statementBalance: statementBalance ?? (currentBalance ? Math.abs(currentBalance) : null),
+            statementBalance: statementBalance ?? currentBalance,
             lastPayment: {
               date: (account as any).details?.last_payment_date ?? null,
               amount: (account as any).details?.last_payment_amount ?? null
             },
             
             // Credit Availability
-            availableCredit: availableBalance ?? (account as any).details?.available_credit ?? null,
-            creditLimit: creditLimit ?? (account as any).details?.credit_limit ?? null,
-            currentBalance: currentBalance ? Math.abs(currentBalance) : null,
+            availableCredit: availableCredit,
+            creditLimit: creditLimit,
+            currentBalance: currentBalance,
             
             // APR & Fees (all nullable)
             apr: (account as any).details?.apr ?? (account as any).details?.interest_rate ?? null,

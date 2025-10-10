@@ -402,6 +402,14 @@ function fmtTime(v: any) {
   } 
 }
 
+function fmtSubtype(subtype: string | undefined | null) {
+  if (!subtype) return '—';
+  return subtype
+    .split('_')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+}
+
 export default function AccountDetailsDialog({ accountId, open, onClose, currentUserId }: Props) {
   const [orderDialogOpen, setOrderDialogOpen] = useState(false);
   const [orderStatusDialogOpen, setOrderStatusDialogOpen] = useState(false);
@@ -1307,7 +1315,7 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
                   <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
                     <Info label="Account ID" value={data.accountOverview?.id || data.account?.id || '—'} />
                     <Info label="Institution" value={data.accountOverview?.institution?.name || data.account?.institution?.name || '—'} />
-                    <Info label="Card Type" value={data.accountOverview?.subtype || data.account?.subtype || 'Credit Card'} />
+                    <Info label="Card Type" value={fmtSubtype(data.accountOverview?.subtype || data.account?.subtype) || 'Credit Card'} />
                     <Info label="Last 4" value={data.accountOverview?.last_four || data.account?.last4 || '—'} />
                   </div>
                 </section>
@@ -1379,7 +1387,7 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <Info label="Institution" value={data.accountOverview?.institution?.name || data.account?.institution?.name || '—'} />
-                    <Info label="Account Subtype" value={data.accountOverview?.subtype || data.account?.subtype || '—'} />
+                    <Info label="Account Subtype" value={fmtSubtype(data.accountOverview?.subtype || data.account?.subtype)} />
                   </div>
                 </section>
               </>
