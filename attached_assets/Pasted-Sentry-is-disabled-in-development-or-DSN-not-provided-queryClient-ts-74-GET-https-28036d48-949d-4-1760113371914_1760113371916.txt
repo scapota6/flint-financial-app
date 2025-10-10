@@ -1,0 +1,47 @@
+Sentry is disabled in development or DSN not provided
+queryClient.ts:74  GET https://28036d48-949d-4fd5-9e63-54ed8b7fd662-00-1i1qwnyczdy9x.kirk.replit.dev/api/snaptrade/accounts 401 (Unauthorized)
+(anonymous) @ queryClient.ts:74
+fetchFn @ @tanstack_react-query.js?v=2f3e4443:879
+run @ @tanstack_react-query.js?v=2f3e4443:507
+start @ @tanstack_react-query.js?v=2f3e4443:550
+fetch @ @tanstack_react-query.js?v=2f3e4443:918
+executeFetch_fn @ @tanstack_react-query.js?v=2f3e4443:2275
+onSubscribe @ @tanstack_react-query.js?v=2f3e4443:1978
+subscribe @ @tanstack_react-query.js?v=2f3e4443:24
+(anonymous) @ @tanstack_react-query.js?v=2f3e4443:3142
+subscribeToStore @ chunk-RPCDYKBN.js?v=2f3e4443:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=2f3e4443:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=2f3e4443:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=2f3e4443:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=2f3e4443:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=2f3e4443:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=2f3e4443:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=2f3e4443:19447
+commitRootImpl @ chunk-RPCDYKBN.js?v=2f3e4443:19416
+commitRoot @ chunk-RPCDYKBN.js?v=2f3e4443:19277
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=2f3e4443:18895
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=2f3e4443:9119
+(anonymous) @ chunk-RPCDYKBN.js?v=2f3e4443:18627Understand this error
+queryClient.ts:74  GET https://28036d48-949d-4fd5-9e63-54ed8b7fd662-00-1i1qwnyczdy9x.kirk.replit.dev/api/banks 500 (Internal Server Error)
+(anonymous) @ queryClient.ts:74
+fetchFn @ @tanstack_react-query.js?v=2f3e4443:879
+run @ @tanstack_react-query.js?v=2f3e4443:507
+start @ @tanstack_react-query.js?v=2f3e4443:550
+fetch @ @tanstack_react-query.js?v=2f3e4443:918
+executeFetch_fn @ @tanstack_react-query.js?v=2f3e4443:2275
+onSubscribe @ @tanstack_react-query.js?v=2f3e4443:1978
+subscribe @ @tanstack_react-query.js?v=2f3e4443:24
+(anonymous) @ @tanstack_react-query.js?v=2f3e4443:3142
+subscribeToStore @ chunk-RPCDYKBN.js?v=2f3e4443:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=2f3e4443:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=2f3e4443:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=2f3e4443:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=2f3e4443:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=2f3e4443:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=2f3e4443:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=2f3e4443:19447
+commitRootImpl @ chunk-RPCDYKBN.js?v=2f3e4443:19416
+commitRoot @ chunk-RPCDYKBN.js?v=2f3e4443:19277
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=2f3e4443:18895
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=2f3e4443:9119
+(anonymous) @ chunk-RPCDYKBN.js?v=2f3e4443:18627Understand this error
