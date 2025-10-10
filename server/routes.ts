@@ -285,70 +285,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
                   balances: tellerBalances
                 });
                 
-                // Determine account type based on Teller's type and subtype
-                const tellerType = tellerAccount.type?.toLowerCase() || '';
-                const tellerSubtype = tellerAccount.subtype?.toLowerCase() || '';
+                // Use Teller mapper to properly handle credit card debt vs regular balances
+                const { mapTellerToFlint, logMappingDetails } = await import('./lib/teller-mapping.js');
+                const mapped = mapTellerToFlint(tellerAccount, tellerBalances);
+                logMappingDetails(tellerAccount, tellerBalances, mapped);
                 
-                let accountType: 'bank' | 'credit';
-                let displayBalance: number;
-                let availableCredit: number | null = null;
-                let amountSpent: number | null = null;
+                // Extract values from mapped account
+                const accountType: 'bank' | 'credit' = mapped.accountType === 'credit' ? 'credit' : 'bank';
+                const displayBalance = mapped.displayBalance;
+                const availableCredit = mapped.availableCredit || null;
+                const amountSpent = mapped.owed || null;
                 
-                // Asset accounts (green): checking, savings, money_market, cash_management
-                if (['checking', 'savings', 'money_market', 'cash_management'].includes(tellerSubtype) || 
-                    tellerType === 'depository') {
-                  accountType = 'bank';
-                  // For assets: show available_balance
-                  displayBalance = parseFloat(tellerBalances.available || tellerBalances.current || '0') || 0;
+                // Update running totals
+                // Credit cards have NEGATIVE displayBalance (debt), so adding them reduces net worth
+                totalBalance += displayBalance;
+                
+                if (accountType === 'bank') {
                   bankBalance += displayBalance;
-                  totalBalance += displayBalance;
-                }
-                // Liability/credit accounts (red): credit_card, line_of_credit
-                else if (['credit_card', 'line_of_credit'].includes(tellerSubtype) || 
-                         tellerType === 'credit') {
-                  accountType = 'credit';
-                  
-                  // For credit cards: show amount spent this cycle
-                  // Primary method: use current_balance if available
-                  if (tellerBalances.current) {
-                    amountSpent = Math.abs(parseFloat(tellerBalances.current));
-                    displayBalance = amountSpent;
-                  }
-                  // Fallback: credit_limit - available_credit
-                  else if (tellerBalances.credit_limit && tellerBalances.available) {
-                    const creditLimit = parseFloat(tellerBalances.credit_limit) || 0;
-                    const availableCreditAmount = parseFloat(tellerBalances.available) || 0;
-                    amountSpent = creditLimit - availableCreditAmount;
-                    displayBalance = Math.max(0, amountSpent);
-                    availableCredit = availableCreditAmount;
-                  }
-                  // Last resort: use available as credit available and assume some spending
-                  else {
-                    displayBalance = 0;
-                    availableCredit = parseFloat(tellerBalances.available || '0') || 0;
-                  }
-                  
-                  // Set available credit for display
-                  if (!availableCredit && tellerBalances.available) {
-                    availableCredit = parseFloat(tellerBalances.available) || 0;
-                  }
-                }
-                else {
-                  // Default fallback based on stored account type
-                  accountType = account.accountType === 'card' ? 'credit' : 'bank';
-                  displayBalance = parseFloat(tellerBalances.available || tellerBalances.current || '0') || 0;
-                  if (accountType === 'bank') {
-                    bankBalance += displayBalance;
-                    totalBalance += displayBalance;
-                  }
                 }
                 
                 console.log('[Dashboard] Account classification:', {
                   accountId: account.id,
-                  tellerType,
-                  tellerSubtype,
                   accountType,
-                  displayBalance
+                  displayBalance,
+                  owed: mapped.owed,
+                  availableCredit: mapped.availableCredit,
+                  runningTotal: totalBalance
                 });
                 
                 // Update stored balance in database
@@ -358,7 +320,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
                   id: account.id,
                   provider: 'teller',
                   accountName: account.accountName || (accountType === 'credit' ? 'Credit Card' : 'Bank Account'),
-                  balance: displayBalance,
+                  // For credit cards: show positive debt in UI, but totalBalance already uses negative displayBalance
+                  balance: accountType === 'credit' ? (amountSpent || 0) : displayBalance,
                   type: accountType,
                   institution: account.institutionName || (accountType === 'credit' ? 'Credit Card' : 'Bank'),
                   lastUpdated: new Date().toISOString(),
