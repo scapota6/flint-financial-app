@@ -143,10 +143,10 @@ function Landing() {
             <span className="text-white font-bold text-xl">Flint</span>
           </div>
           <div className="flex items-center space-x-4">
-            <div className="flex flex-col items-end space-y-1">
+            <div className="flex flex-col items-end space-y-1 bg-gray-800/50 border border-purple-600/30 rounded-lg px-4 py-3">
               <Button 
                 variant="ghost" 
-                className="text-white hover:text-purple-300"
+                className="text-white hover:text-purple-300 hover:bg-purple-600/20"
                 onClick={() => window.location.href = '/api/login'}
               >
                 Log in
