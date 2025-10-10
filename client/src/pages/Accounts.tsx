@@ -173,7 +173,7 @@ export default function Accounts() {
                         <CardHeader className="pb-3">
                           <div className="flex justify-between items-center">
                             <div className="flex items-center gap-3">
-                              <div className={`w-12 h-12 ${bgClass} rounded-lg flex items-center justify-center ${textClass}`}>
+                              <div className="w-12 h-12 flex items-center justify-center">
                                 {logo}
                               </div>
                               <div>
@@ -244,7 +244,7 @@ export default function Accounts() {
                         <CardHeader className="pb-3">
                           <div className="flex justify-between items-center">
                             <div className="flex items-center gap-3">
-                              <div className={`w-12 h-12 ${bgClass} rounded-lg flex items-center justify-center ${textClass}`}>
+                              <div className="w-12 h-12 flex items-center justify-center">
                                 {logo}
                               </div>
                               <div>
