@@ -77,11 +77,9 @@ router.get("/summary", async (req: any, res) => {
                 for (const position of positions) {
                   const value = (position.units || 0) * (position.price || 0);
                   const symbol = position.symbol?.symbol?.symbol || position.symbol?.symbol;
-                  const openPnl = parseFloat(position.open_pnl || '0') || 0;
                   
-                  // Add unrealized P&L to day change (approximation)
-                  totalDayChange += openPnl;
-                  console.log(`[Portfolio] Position ${symbol}: P&L = $${openPnl.toFixed(2)}`);
+                  // Note: open_pnl is total unrealized P&L since purchase, not daily change
+                  // We would need historical data to calculate true daily performance
                   
                   // Determine if it's crypto
                   if (symbol && ['BTC', 'ETH', 'DOGE', 'ADA', 'SOL', 'USDC', 'USDT'].includes(symbol)) {
@@ -89,7 +87,6 @@ router.get("/summary", async (req: any, res) => {
                     totalStocks -= value; // Remove from stocks and add to crypto
                   }
                 }
-                console.log(`[Portfolio] Total day change from positions: $${totalDayChange.toFixed(2)}`);
               }
             } catch (posError) {
               console.log('Could not fetch positions for account:', account.id);
@@ -160,13 +157,9 @@ router.get("/summary", async (req: any, res) => {
     const investable = totalStocks + totalCrypto;
     const netWorth = investable + totalCash - totalDebt;
     
-    // Calculate performance percentages
-    if (investable > 0) {
-      totalDayChangePercent = (totalDayChange / investable) * 100;
-      // YTD calculation would require historical data - using placeholder
-      totalYtdChangePercent = totalDayChangePercent * 10; // Rough estimate
-      totalYtdChange = investable * (totalYtdChangePercent / 100);
-    }
+    // Note: True day/YTD performance calculations require historical portfolio snapshots
+    // Setting to 0 until historical tracking is implemented
+    // totalDayChange, totalDayChangePercent, totalYtdChange, totalYtdChangePercent remain at 0
     
     // Prepare breakdown for visualization
     const breakdown = [
