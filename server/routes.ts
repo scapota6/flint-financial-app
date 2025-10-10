@@ -2129,6 +2129,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
           // Process credit card specific information if this is a credit card
           let creditCardInfo = null;
           if (tellerAccount.subtype === 'credit_card' && balances) {
+            // Calculate credit utilization percentage
+            const creditUtilization = (mapped.owed && mapped.creditLimit && mapped.creditLimit > 0)
+              ? (Math.abs(mapped.owed) / mapped.creditLimit) * 100
+              : null;
+            
             creditCardInfo = {
               statementBalance: balances.statement || null,
               minimumDue: balances.minimum_payment || null,
@@ -2137,6 +2142,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
               availableCredit: mapped.availableCredit || null, // Use mapped available credit
               currentBalance: balances.current || null,
               amountSpent: mapped.owed || null, // Add amount spent (owed)
+              creditUtilization: creditUtilization, // Percentage of credit limit used
               // Add payment capabilities
               paymentCapabilities: paymentCapabilities
             };
