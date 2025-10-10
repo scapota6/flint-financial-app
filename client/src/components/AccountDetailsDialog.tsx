@@ -585,7 +585,7 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
   // Legacy single query for Teller and other accounts
   const { data: legacyData, isLoading: legacyIsLoading, isError: legacyIsError, error: legacyError, refetch } = useQuery({
     queryKey: ['account-details', accountId],
-    enabled: open && !isSnapTradeAccount && isAuthenticated && !authLoading && !!accountId,
+    enabled: open && !isSnapTradeAccount && isAuthenticated && !authLoading && !!accountId && !!currentUserId,
     queryFn: async () => {
       const resp = await fetch(`/api/accounts/${accountId}/details`, {
         headers: { 'x-user-id': currentUserId },
