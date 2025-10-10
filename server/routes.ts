@@ -2238,6 +2238,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
           
           const statements = statementsResponse.ok ? await statementsResponse.json() : [];
           
+          // Use Teller mapper to calculate credit limit and other values
+          const { mapTellerToFlint } = await import('./lib/teller-mapping.js');
+          const mapped = mapTellerToFlint(tellerAccount, balances || { ledger: '0', available: '0' });
+          
           // Check payment capabilities for credit cards
           let paymentCapabilities = null;
           if (tellerAccount.subtype === 'credit_card') {
@@ -2273,9 +2277,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
               statementBalance: balances.statement || null,
               minimumDue: balances.minimum_payment || null,
               paymentDueDate: balances.due_date || null,
-              creditLimit: balances.credit_limit || null,
-              availableCredit: balances.available || null,
+              creditLimit: mapped.creditLimit || null, // Use calculated credit limit from mapper
+              availableCredit: mapped.availableCredit || null, // Use mapped available credit
               currentBalance: balances.current || null,
+              amountSpent: mapped.owed || null, // Add amount spent (owed)
               // Add payment capabilities
               paymentCapabilities: paymentCapabilities
             };
