@@ -90,11 +90,13 @@ router.get("/accounts/:accountId/details", async (req: any, res) => {
     
     // Fetch details based on provider
     if (provider === 'teller') {
+      console.log('[TELLER ROUTE] Entering Teller provider block for account:', externalId);
       try {
         const teller = await tellerForUser(userId);
         
         // Step 1: Get account metadata
         const account = await teller.accounts.get(externalId);
+        console.log('[TELLER ROUTE] Fetched account from Teller API. Type:', account.type, 'Subtype:', account.subtype);
         
         // Step 2-4: Get balances, transactions, and details in parallel
         const [balances, transactions, accountDetails] = await Promise.all([
@@ -142,6 +144,8 @@ router.get("/accounts/:accountId/details", async (req: any, res) => {
         
         // For credit cards, extract comprehensive payment and credit information
         let creditCardInfo = null;
+        console.log('[DEBUG PRE-CHECK] Account type:', account.type, 'Subtype:', account.subtype);
+        console.log('[DEBUG PRE-CHECK] Type check:', account.type === 'credit', 'Subtype check:', account.subtype === 'credit_card');
         if (account.type === 'credit' || account.subtype === 'credit_card') {
           console.log('[Credit Card Debug] Condition matched - Account type:', account.type, 'Subtype:', account.subtype);
           console.log('[Credit Card Debug] Raw balances object:', balances);
