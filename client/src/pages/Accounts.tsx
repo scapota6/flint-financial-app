@@ -13,6 +13,7 @@ import {
   AlertCircle,
   Unlink
 } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
 
 interface BrokerageAccount {
   id: string;
@@ -37,11 +38,13 @@ interface BankAccount {
 }
 
 export default function Accounts() {
+  const { isAuthenticated } = useAuth();
   const [disconnecting, setDisconnecting] = useState<string | null>(null);
 
-  // Fetch brokerage accounts
+  // Fetch brokerage accounts - only when authenticated
   const { data: brokerageData, isLoading: brokeragesLoading } = useQuery({
     queryKey: ['/api/snaptrade/accounts'],
+    enabled: isAuthenticated,
     select: (data: any) => {
       return data?.accounts?.map((account: any) => ({
         id: account.id,
@@ -61,9 +64,10 @@ export default function Accounts() {
     retry: false
   });
 
-  // Fetch bank accounts
+  // Fetch bank accounts - only when authenticated
   const { data: bankData, isLoading: banksLoading } = useQuery<{ accounts: BankAccount[] }>({
     queryKey: ['/api/banks'],
+    enabled: isAuthenticated,
     retry: false
   });
 

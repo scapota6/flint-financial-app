@@ -445,7 +445,7 @@ router.get("/banks", isAuthenticated, async (req: any, res) => {
     
     // Fetch fresh data from Teller for all bank accounts
     if (process.env.TELLER_APPLICATION_ID) {
-      const { mapTellerToFlint } = await import('./lib/teller-mapping.js');
+      const { mapTellerToFlint } = await import('../lib/teller-mapping.js');
       
       for (const account of bankAccounts) {
         if (account.provider === 'teller' && account.accessToken) {
