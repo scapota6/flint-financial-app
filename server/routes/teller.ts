@@ -9,6 +9,7 @@ import { logger } from "@shared/logger";
 import { storage } from "../storage";
 import { v4 as uuidv4 } from 'uuid';
 import tellerPaymentsRouter from './teller.payments';
+import { getAccountLimit } from '../routes';
 
 const router = Router();
 
@@ -104,8 +105,54 @@ router.post("/save-account", isAuthenticated, async (req: any, res) => {
     const accounts = await tellerResponse.json();
     logger.info(`Teller accounts fetched: ${accounts.length} accounts`);
     
+    // Get user and calculate limits
+    const user = await storage.getUser(userId);
+    const existingAccounts = await storage.getConnectedAccounts(userId);
+    const accountLimit = getAccountLimit(user?.subscriptionTier || 'free');
+    const availableSlots = Math.max(0, accountLimit - existingAccounts.length);
+    
+    // Get set of already-connected Teller account IDs
+    const existingTellerIds = new Set(
+      existingAccounts
+        .filter((acc: any) => acc.provider === 'teller')
+        .map((acc: any) => acc.externalAccountId)
+    );
+    
+    // Filter out already-connected accounts
+    const newAccounts = accounts.filter((acc: any) => !existingTellerIds.has(acc.id));
+    const duplicateCount = accounts.length - newAccounts.length;
+    
+    logger.info("Teller account limit check", {
+      userId,
+      tier: user?.subscriptionTier || 'free',
+      limit: accountLimit,
+      existingCount: existingAccounts.length,
+      availableSlots,
+      totalFromTeller: accounts.length,
+      newAccounts: newAccounts.length,
+      duplicates: duplicateCount
+    });
+    
+    // If no slots available, reject all new accounts
+    if (availableSlots === 0 && newAccounts.length > 0) {
+      logger.warn("No available slots for new accounts", { userId });
+      return res.status(403).json({
+        success: false,
+        accountsSaved: 0,
+        accountsRejected: newAccounts.length,
+        duplicates: duplicateCount,
+        limit: accountLimit,
+        current: existingAccounts.length,
+        message: `Account limit reached (${accountLimit}). Upgrade your plan to connect more accounts.`
+      });
+    }
+    
+    // Save up to availableSlots new accounts
+    const accountsToSave = newAccounts.slice(0, availableSlots);
+    const rejectedCount = newAccounts.length - accountsToSave.length;
+    
     // Store each account in database with better naming
-    for (const account of accounts) {
+    for (const account of accountsToSave) {
       const institutionName = institution || account.institution?.name || 'Unknown Bank';
       const lastFour = account.last_four || account.mask || '';
       const accountType = account.type === 'credit' ? 'card' : 'bank';
@@ -135,13 +182,24 @@ router.post("/save-account", isAuthenticated, async (req: any, res) => {
     }
     
     logger.info("Teller accounts saved successfully", { 
-      userId
+      userId,
+      accountsSaved: accountsToSave.length,
+      accountsRejected: rejectedCount,
+      duplicates: duplicateCount
     });
     
-    res.json({ 
+    res.json({
       success: true,
-      accounts: accounts.length,
-      message: "Bank accounts connected successfully"
+      accountsSaved: accountsToSave.length,
+      accountsRejected: rejectedCount,
+      duplicates: duplicateCount,
+      limit: accountLimit,
+      current: existingAccounts.length + accountsToSave.length,
+      message: rejectedCount > 0
+        ? `Connected ${accountsToSave.length} of ${newAccounts.length} new accounts. ${rejectedCount} rejected due to tier limit. Upgrade to connect more.`
+        : accountsToSave.length === 0 && duplicateCount > 0
+        ? `All ${duplicateCount} accounts were already connected.`
+        : `All ${accountsToSave.length} accounts connected successfully.`
     });
     
   } catch (error: any) {
@@ -200,8 +258,54 @@ router.post("/exchange-token", isAuthenticated, async (req: any, res) => {
     const accounts = await tellerResponse.json();
     logger.info(`Teller accounts fetched: ${accounts.length} accounts`);
     
+    // Get user and calculate limits
+    const user = await storage.getUser(userId);
+    const existingAccounts = await storage.getConnectedAccounts(userId);
+    const accountLimit = getAccountLimit(user?.subscriptionTier || 'free');
+    const availableSlots = Math.max(0, accountLimit - existingAccounts.length);
+    
+    // Get set of already-connected Teller account IDs
+    const existingTellerIds = new Set(
+      existingAccounts
+        .filter((acc: any) => acc.provider === 'teller')
+        .map((acc: any) => acc.externalAccountId)
+    );
+    
+    // Filter out already-connected accounts
+    const newAccounts = accounts.filter((acc: any) => !existingTellerIds.has(acc.id));
+    const duplicateCount = accounts.length - newAccounts.length;
+    
+    logger.info("Teller account limit check", {
+      userId,
+      tier: user?.subscriptionTier || 'free',
+      limit: accountLimit,
+      existingCount: existingAccounts.length,
+      availableSlots,
+      totalFromTeller: accounts.length,
+      newAccounts: newAccounts.length,
+      duplicates: duplicateCount
+    });
+    
+    // If no slots available, reject all new accounts
+    if (availableSlots === 0 && newAccounts.length > 0) {
+      logger.warn("No available slots for new accounts", { userId });
+      return res.status(403).json({
+        success: false,
+        accountsSaved: 0,
+        accountsRejected: newAccounts.length,
+        duplicates: duplicateCount,
+        limit: accountLimit,
+        current: existingAccounts.length,
+        message: `Account limit reached (${accountLimit}). Upgrade your plan to connect more accounts.`
+      });
+    }
+    
+    // Save up to availableSlots new accounts
+    const accountsToSave = newAccounts.slice(0, availableSlots);
+    const rejectedCount = newAccounts.length - accountsToSave.length;
+    
     // Store each account in database
-    for (const account of accounts) {
+    for (const account of accountsToSave) {
       await storage.createConnectedAccount({
         userId,
         provider: 'teller',
@@ -221,13 +325,24 @@ router.post("/exchange-token", isAuthenticated, async (req: any, res) => {
     }
     
     logger.info("Teller accounts connected", { 
-      userId
+      userId,
+      accountsSaved: accountsToSave.length,
+      accountsRejected: rejectedCount,
+      duplicates: duplicateCount
     });
     
-    res.json({ 
+    res.json({
       success: true,
-      accounts: accounts.length,
-      message: "Bank accounts connected successfully"
+      accountsSaved: accountsToSave.length,
+      accountsRejected: rejectedCount,
+      duplicates: duplicateCount,
+      limit: accountLimit,
+      current: existingAccounts.length + accountsToSave.length,
+      message: rejectedCount > 0
+        ? `Connected ${accountsToSave.length} of ${newAccounts.length} new accounts. ${rejectedCount} rejected due to tier limit. Upgrade to connect more.`
+        : accountsToSave.length === 0 && duplicateCount > 0
+        ? `All ${duplicateCount} accounts were already connected.`
+        : `All ${accountsToSave.length} accounts connected successfully.`
     });
     
   } catch (error: any) {

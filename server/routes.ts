@@ -3600,13 +3600,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
 }
 
 // Helper function for account limits
-function getAccountLimit(tier: string): number {
+export function getAccountLimit(tier: string): number {
   switch (tier) {
-    case 'free': return 1;
+    case 'free': return 2;  // Match frontend limit
     case 'basic': return 3;
     case 'pro': return 10;
     case 'premium': return 25;
-    default: return 1;
+    default: return 2;
   }
 }
 
