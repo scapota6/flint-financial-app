@@ -130,28 +130,14 @@ router.get("/accounts/:accountId/details", async (req: any, res) => {
           flintAccountId: dbId,
           tellerAccountId: externalId,
           provider: 'teller',
-          hasAccount: !!account,
-          hasBalances: !!balances,
-          transactionCount: transactions?.length || 0,
-          hasDetails: !!accountDetails,
           accountType: account.type,
           accountSubtype: account.subtype,
           httpStatus: 200
         });
         
-        console.log('[DEBUG] Full account object:', JSON.stringify(account, null, 2));
-        console.log('[DEBUG] Full balances object:', JSON.stringify(balances, null, 2));
-        
         // For credit cards, extract comprehensive payment and credit information
         let creditCardInfo = null;
-        console.log('[DEBUG PRE-CHECK] Account type:', account.type, 'Subtype:', account.subtype);
-        console.log('[DEBUG PRE-CHECK] Type check:', account.type === 'credit', 'Subtype check:', account.subtype === 'credit_card');
         if (account.type === 'credit' || account.subtype === 'credit_card') {
-          console.log('[Credit Card Debug] Condition matched - Account type:', account.type, 'Subtype:', account.subtype);
-          console.log('[Credit Card Debug] Raw balances object:', balances);
-          console.log('[Credit Card Debug] Balance ledger:', balances?.ledger, 'type:', typeof balances?.ledger);
-          console.log('[Credit Card Debug] Balance available:', balances?.available, 'type:', typeof balances?.available);
-          
           // Use fetched balances first, fallback to account balances
           // For credit cards: ledger = balance owed, available = remaining credit
           const ledgerBalance = balances?.ledger ?? (account as any).balance?.ledger ?? null;
@@ -198,15 +184,6 @@ router.get("/accounts/:accountId/details", async (req: any, res) => {
               supportedInProduction: true // Would need to check actual institution capabilities in production
             }
           };
-          
-          console.log('[Credit Card Info] Computed values:', {
-            ledgerBalance,
-            availableBalance,
-            currentBalance,
-            availableCredit,
-            creditLimit,
-            creditCardInfo
-          });
         }
 
         res.json({
