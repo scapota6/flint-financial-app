@@ -165,48 +165,52 @@ export default function Accounts() {
                 </Card>
               ) : (
                 <div className="space-y-4">
-                  {brokerageAccounts.map((account) => (
-                    <Card key={account.id} className="bg-slate-800/50 border-slate-700 backdrop-blur-sm hover:bg-slate-800/70 transition-colors">
-                      <CardHeader className="pb-3">
-                        <div className="flex justify-between items-center">
-                          <div className="flex items-center gap-3">
-                            <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg flex items-center justify-center text-white">
-                              {getInstitutionLogo(account.name)}
-                            </div>
-                            <div>
-                              <CardTitle className="text-lg text-white">
-                                {account.institutionName}
-                              </CardTitle>
-                              <p className="text-sm text-slate-400">
-                                {account.accountNumber} • {account.type}
-                              </p>
-                              <div className="flex items-center gap-2 mt-1">
-                                <Badge variant={account.status === 'open' ? 'default' : 'secondary'} className="text-xs">
-                                  {account.status || 'open'}
-                                </Badge>
-                                {account.syncStatus.holdingsCompleted && (
-                                  <Badge variant="outline" className="text-xs text-green-400 border-green-400">
-                                    ✓ Synced
+                  {brokerageAccounts.map((account) => {
+                    const { icon, bgClass, textClass } = getInstitutionLogo(account.name);
+                    
+                    return (
+                      <Card key={account.id} className="bg-slate-800/50 border-slate-700 backdrop-blur-sm hover:bg-slate-800/70 transition-colors">
+                        <CardHeader className="pb-3">
+                          <div className="flex justify-between items-center">
+                            <div className="flex items-center gap-3">
+                              <div className={`w-12 h-12 ${bgClass} rounded-lg flex items-center justify-center ${textClass}`}>
+                                {icon}
+                              </div>
+                              <div>
+                                <CardTitle className="text-lg text-white">
+                                  {account.institutionName}
+                                </CardTitle>
+                                <p className="text-sm text-slate-400">
+                                  {account.accountNumber} • {account.type}
+                                </p>
+                                <div className="flex items-center gap-2 mt-1">
+                                  <Badge variant={account.status === 'open' ? 'default' : 'secondary'} className="text-xs">
+                                    {account.status || 'open'}
                                   </Badge>
-                                )}
+                                  {account.syncStatus.holdingsCompleted && (
+                                    <Badge variant="outline" className="text-xs text-green-400 border-green-400">
+                                      ✓ Synced
+                                    </Badge>
+                                  )}
+                                </div>
                               </div>
                             </div>
+                            <Button 
+                              size="sm" 
+                              variant="outline"
+                              onClick={() => handleDisconnectAccount(account.id, 'brokerage')}
+                              disabled={disconnecting === account.id}
+                              className="text-red-400 border-red-500/50 hover:bg-red-500/20"
+                              data-testid={`button-disconnect-${account.id}`}
+                            >
+                              <Unlink className="h-4 w-4 mr-2" />
+                              Disconnect
+                            </Button>
                           </div>
-                          <Button 
-                            size="sm" 
-                            variant="outline"
-                            onClick={() => handleDisconnectAccount(account.id, 'brokerage')}
-                            disabled={disconnecting === account.id}
-                            className="text-red-400 border-red-500/50 hover:bg-red-500/20"
-                            data-testid={`button-disconnect-${account.id}`}
-                          >
-                            <Unlink className="h-4 w-4 mr-2" />
-                            Disconnect
-                          </Button>
-                        </div>
-                      </CardHeader>
-                    </Card>
-                  ))}
+                        </CardHeader>
+                      </Card>
+                    );
+                  })}
                 </div>
               )}
             </TabsContent>
@@ -232,36 +236,40 @@ export default function Accounts() {
                 </Card>
               ) : (
                 <div className="space-y-4">
-                  {bankAccounts.map((account) => (
-                    <Card key={account.id} className="bg-slate-800/50 border-slate-700 backdrop-blur-sm hover:bg-slate-800/70 transition-colors">
-                      <CardHeader className="pb-3">
-                        <div className="flex justify-between items-center">
-                          <div className="flex items-center gap-3">
-                            <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center text-white">
-                              {getInstitutionLogo(account.name)}
+                  {bankAccounts.map((account) => {
+                    const { icon, bgClass, textClass } = getInstitutionLogo(account.name);
+                    
+                    return (
+                      <Card key={account.id} className="bg-slate-800/50 border-slate-700 backdrop-blur-sm hover:bg-slate-800/70 transition-colors">
+                        <CardHeader className="pb-3">
+                          <div className="flex justify-between items-center">
+                            <div className="flex items-center gap-3">
+                              <div className={`w-12 h-12 ${bgClass} rounded-lg flex items-center justify-center ${textClass}`}>
+                                {icon}
+                              </div>
+                              <div>
+                                <CardTitle className="text-lg text-white">{account.name}</CardTitle>
+                                <Badge variant="secondary" className="mt-1 text-xs">
+                                  {account.type.charAt(0).toUpperCase() + account.type.slice(1)}
+                                </Badge>
+                              </div>
                             </div>
-                            <div>
-                              <CardTitle className="text-lg text-white">{account.name}</CardTitle>
-                              <Badge variant="secondary" className="mt-1 text-xs">
-                                {account.type.charAt(0).toUpperCase() + account.type.slice(1)}
-                              </Badge>
-                            </div>
+                            <Button 
+                              size="sm" 
+                              variant="outline"
+                              onClick={() => handleDisconnectAccount(account.id.toString(), 'bank')}
+                              disabled={disconnecting === account.id.toString()}
+                              className="text-red-400 border-red-500/50 hover:bg-red-500/20"
+                              data-testid={`button-disconnect-${account.id}`}
+                            >
+                              <Unlink className="h-4 w-4 mr-2" />
+                              Disconnect
+                            </Button>
                           </div>
-                          <Button 
-                            size="sm" 
-                            variant="outline"
-                            onClick={() => handleDisconnectAccount(account.id.toString(), 'bank')}
-                            disabled={disconnecting === account.id.toString()}
-                            className="text-red-400 border-red-500/50 hover:bg-red-500/20"
-                            data-testid={`button-disconnect-${account.id}`}
-                          >
-                            <Unlink className="h-4 w-4 mr-2" />
-                            Disconnect
-                          </Button>
-                        </div>
-                      </CardHeader>
-                    </Card>
-                  ))}
+                        </CardHeader>
+                      </Card>
+                    );
+                  })}
                 </div>
               )}
             </TabsContent>

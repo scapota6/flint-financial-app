@@ -315,17 +315,15 @@ export default function UnifiedDashboard() {
       {/* Accounts View */}
       {selectedView === 'accounts' && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {connectedAccounts.map((account: any) => (
+          {connectedAccounts.map((account: any) => {
+            const { icon, bgClass, textClass } = getInstitutionLogo(account.accountName);
+            return (
             <Card key={account.id} className="flint-card">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center space-x-2">
-                    <div className={`p-2 rounded-lg ${
-                      account.type === 'bank' ? 'bg-green-600/20 text-green-400' :
-                      account.type === 'investment' ? 'bg-purple-600/20 text-purple-400' :
-                      'bg-orange-600/20 text-orange-400'
-                    }`}>
-                      {getInstitutionLogo(account.accountName)}
+                    <div className={`p-2 rounded-lg ${bgClass} ${textClass}`}>
+                      {icon}
                     </div>
                     <div>
                       <div className="text-white font-medium">
@@ -361,7 +359,8 @@ export default function UnifiedDashboard() {
                 </div>
               </CardContent>
             </Card>
-          ))}
+          );
+          })}
           
           {connectedAccounts.length === 0 && (
             <Card className="flint-card col-span-full">

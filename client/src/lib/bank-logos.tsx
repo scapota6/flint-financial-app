@@ -1,5 +1,5 @@
 import { SiRobinhood } from 'react-icons/si';
-import { Building2, Landmark, CreditCard, TrendingUp, Wallet } from 'lucide-react';
+import { Building2, Landmark, CreditCard, BadgeDollarSign, TrendingUp, Wallet, Coins, DollarSign, Building, HelpCircle } from 'lucide-react';
 
 export function getInstitutionName(accountName: string): string {
   if (!accountName) return '';
@@ -16,48 +16,89 @@ export function getInstitutionLogo(accountName: string) {
     'aria-label': getInstitutionName(accountName),
   };
 
-  // Robinhood has an official Simple Icon
   if (institutionName.includes('robinhood')) {
-    return <SiRobinhood {...iconProps} />;
+    return {
+      icon: <SiRobinhood {...iconProps} />,
+      bgClass: 'bg-green-500/20',
+      textClass: 'text-green-500'
+    };
   }
   
-  // For other institutions, use distinctive Lucide icons based on institution type
   if (institutionName.includes('chase') || institutionName.includes('jpmorgan')) {
-    return <Landmark {...iconProps} />;
+    return {
+      icon: <Building2 {...iconProps} />,
+      bgClass: 'bg-blue-600/20',
+      textClass: 'text-blue-600'
+    };
   }
   
   if (institutionName.includes('bank of america')) {
-    return <Landmark {...iconProps} />;
+    return {
+      icon: <Landmark {...iconProps} />,
+      bgClass: 'bg-red-600/20',
+      textClass: 'text-red-600'
+    };
   }
   
   if (institutionName.includes('citi')) {
-    return <CreditCard {...iconProps} />;
+    return {
+      icon: <CreditCard {...iconProps} />,
+      bgClass: 'bg-blue-500/20',
+      textClass: 'text-blue-500'
+    };
   }
   
   if (institutionName.includes('morgan stanley')) {
-    return <TrendingUp {...iconProps} />;
+    return {
+      icon: <TrendingUp {...iconProps} />,
+      bgClass: 'bg-indigo-600/20',
+      textClass: 'text-indigo-600'
+    };
   }
   
   if (institutionName.includes('capital') || institutionName.includes('capitalone')) {
-    return <CreditCard {...iconProps} />;
+    return {
+      icon: <Wallet {...iconProps} />,
+      bgClass: 'bg-purple-600/20',
+      textClass: 'text-purple-600'
+    };
   }
   
   if (institutionName.includes('wells fargo')) {
-    return <Landmark {...iconProps} />;
+    return {
+      icon: <Coins {...iconProps} />,
+      bgClass: 'bg-amber-600/20',
+      textClass: 'text-amber-600'
+    };
   }
   
   if (institutionName.includes('american express') || institutionName.includes('amex')) {
-    return <CreditCard {...iconProps} />;
+    return {
+      icon: <BadgeDollarSign {...iconProps} />,
+      bgClass: 'bg-cyan-600/20',
+      textClass: 'text-cyan-600'
+    };
   }
   
   if (institutionName.includes('td bank') || institutionName.includes('td')) {
-    return <Landmark {...iconProps} />;
+    return {
+      icon: <DollarSign {...iconProps} />,
+      bgClass: 'bg-emerald-600/20',
+      textClass: 'text-emerald-600'
+    };
   }
   
   if (institutionName.includes('us bank')) {
-    return <Landmark {...iconProps} />;
+    return {
+      icon: <Building {...iconProps} />,
+      bgClass: 'bg-slate-600/20',
+      textClass: 'text-slate-600'
+    };
   }
   
-  // Default fallback
-  return <Building2 {...iconProps} />;
+  return {
+    icon: <HelpCircle {...iconProps} />,
+    bgClass: 'bg-gray-500/20',
+    textClass: 'text-gray-500'
+  };
 }
