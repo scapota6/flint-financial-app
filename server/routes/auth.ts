@@ -183,9 +183,10 @@ router.post('/request-reset', async (req, res) => {
     });
 
     // Build reset link
-    const baseUrl = process.env.REPL_SLUG && process.env.REPLIT_DOMAINS
-      ? `https://${process.env.REPL_SLUG}.${process.env.REPLIT_DOMAINS.split(',')[0]}`
-      : 'http://localhost:5000';
+    const baseUrl = process.env.BASE_URL 
+      || (process.env.REPL_SLUG && process.env.REPLIT_DOMAINS
+        ? `https://${process.env.REPL_SLUG}.${process.env.REPLIT_DOMAINS.split(',')[0]}`
+        : req.protocol + '://' + req.get('host'));
     const resetLink = `${baseUrl}/setup-password?token=${plainToken}`;
 
     // Send password reset email

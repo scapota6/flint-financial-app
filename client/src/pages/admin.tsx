@@ -472,11 +472,18 @@ function UsersTab() {
     },
   });
 
+  const [resetLink, setResetLink] = useState<string | null>(null);
+
   const resetPasswordMutation = useMutation({
     mutationFn: (userId: string) => apiRequest(`/api/admin-panel/users/${userId}/reset-password`, { method: 'POST' }),
-    onSuccess: () => {
-      toast({ title: 'Password reset email sent' });
-      setActionDialog(null);
+    onSuccess: (data: any) => {
+      if (data.resetLink) {
+        setResetLink(data.resetLink);
+        toast({ title: 'Password reset link generated' });
+      } else {
+        toast({ title: 'Password reset email sent' });
+        setActionDialog(null);
+      }
     },
   });
 
@@ -658,25 +665,69 @@ function UsersTab() {
         </DialogContent>
       </Dialog>
 
-      <Dialog open={actionDialog === 'reset'} onOpenChange={() => setActionDialog(null)}>
+      <Dialog open={actionDialog === 'reset'} onOpenChange={() => {
+        setActionDialog(null);
+        setResetLink(null);
+      }}>
         <DialogContent className="bg-gray-900 border-gray-800">
           <DialogHeader>
             <DialogTitle>Reset Password</DialogTitle>
             <DialogDescription>
-              Send a password reset email to {selectedUser?.email}?
+              {resetLink ? (
+                <>Password reset link for {selectedUser?.email}</>
+              ) : (
+                <>Send a password reset email to {selectedUser?.email}?</>
+              )}
             </DialogDescription>
           </DialogHeader>
+          
+          {resetLink && (
+            <div className="space-y-3 py-4">
+              <p className="text-sm text-gray-400">
+                Email provider not configured. Share this link with the user:
+              </p>
+              <div className="flex items-center space-x-2">
+                <Input
+                  value={resetLink}
+                  readOnly
+                  className="bg-gray-800 border-gray-700 font-mono text-xs"
+                  data-testid="input-reset-link"
+                />
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => {
+                    navigator.clipboard.writeText(resetLink);
+                    toast({ title: 'Link copied to clipboard' });
+                  }}
+                  data-testid="button-copy-link"
+                >
+                  Copy
+                </Button>
+              </div>
+            </div>
+          )}
+          
           <DialogFooter>
-            <Button variant="outline" onClick={() => setActionDialog(null)} data-testid="button-cancel-reset">
-              Cancel
-            </Button>
-            <Button
-              onClick={() => selectedUser && resetPasswordMutation.mutate(selectedUser.id)}
-              disabled={resetPasswordMutation.isPending}
-              data-testid="button-confirm-reset"
+            <Button 
+              variant="outline" 
+              onClick={() => {
+                setActionDialog(null);
+                setResetLink(null);
+              }} 
+              data-testid="button-cancel-reset"
             >
-              Send Reset Email
+              {resetLink ? 'Close' : 'Cancel'}
             </Button>
+            {!resetLink && (
+              <Button
+                onClick={() => selectedUser && resetPasswordMutation.mutate(selectedUser.id)}
+                disabled={resetPasswordMutation.isPending}
+                data-testid="button-confirm-reset"
+              >
+                Send Reset Email
+              </Button>
+            )}
           </DialogFooter>
         </DialogContent>
       </Dialog>

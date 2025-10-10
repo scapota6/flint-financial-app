@@ -457,7 +457,10 @@ router.post('/users/:userId/reset-password', isAuthenticated, requireAdmin(), as
 
     // Send password reset email
     // IMPORTANT: Send the UNHASHED token to the user
-    const resetLink = `${process.env.BASE_URL || req.protocol + '://' + req.get('host')}/reset-password?token=${resetToken}`;
+    const baseUrl = process.env.REPL_SLUG && process.env.REPLIT_DOMAINS
+      ? `https://${process.env.REPL_SLUG}.${process.env.REPLIT_DOMAINS.split(',')[0]}`
+      : req.protocol + '://' + req.get('host');
+    const resetLink = `${baseUrl}/setup-password?token=${resetToken}`;
     
     const emailResult = await sendPasswordResetEmail(
       user.email!,
@@ -472,9 +475,15 @@ router.post('/users/:userId/reset-password', isAuthenticated, requireAdmin(), as
       userId
     );
 
+    // If email provider is not configured, return the reset link for manual delivery
+    const hasEmailProvider = !!process.env.RESEND_API_KEY;
+
     res.json({
-      message: 'Password reset email sent successfully',
+      message: hasEmailProvider 
+        ? 'Password reset email sent successfully' 
+        : 'Password reset link generated (email provider not configured)',
       emailSent: emailResult.success,
+      resetLink: !hasEmailProvider ? resetLink : undefined,
     });
   } catch (error) {
     console.error('Error sending password reset:', error);

@@ -1,0 +1,203 @@
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { useToast } from "@/hooks/use-toast";
+import { Loader2, ArrowLeft, Mail, CheckCircle2 } from "lucide-react";
+
+const resetPasswordSchema = z.object({
+  email: z.string().email("Please enter a valid email address"),
+});
+
+type ResetPasswordFormValues = z.infer<typeof resetPasswordSchema>;
+
+export default function ResetPassword() {
+  const { toast } = useToast();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
+
+  const form = useForm<ResetPasswordFormValues>({
+    resolver: zodResolver(resetPasswordSchema),
+    defaultValues: {
+      email: "",
+    },
+  });
+
+  const onSubmit = async (data: ResetPasswordFormValues) => {
+    setIsSubmitting(true);
+
+    try {
+      const response = await fetch("/api/auth/request-reset", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: data.email.toLowerCase(),
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || "Failed to send reset link");
+      }
+
+      setShowSuccess(true);
+      toast({
+        title: "Reset Link Sent",
+        description: "If an account exists with this email, a password reset link will be sent.",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to send reset link. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-4">
+      <Card className="w-full max-w-md bg-gray-800 border-gray-700">
+        <CardHeader className="space-y-1">
+          <div className="flex items-center justify-center mb-4">
+            <div className="text-3xl font-bold text-purple-500">Flint</div>
+          </div>
+          <CardTitle className="text-2xl text-center text-white">
+            Reset Your Password
+          </CardTitle>
+          <CardDescription className="text-center text-gray-400">
+            Enter your email address and we'll send you a password reset link
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {showSuccess ? (
+            <div className="space-y-6">
+              <div className="flex flex-col items-center justify-center py-6 space-y-4">
+                <div className="rounded-full bg-green-500/10 p-3">
+                  <CheckCircle2 className="h-8 w-8 text-green-500" />
+                </div>
+                <div className="text-center space-y-2">
+                  <h3 className="text-lg font-semibold text-white" data-testid="text-success-title">
+                    Check Your Email
+                  </h3>
+                  <p className="text-sm text-gray-400" data-testid="text-success-message">
+                    If an account exists with this email, a password reset link will be sent.
+                  </p>
+                </div>
+              </div>
+              
+              <div className="flex flex-col gap-3">
+                <Button
+                  onClick={() => setShowSuccess(false)}
+                  variant="outline"
+                  className="w-full border-gray-600 text-gray-300 hover:bg-gray-700"
+                  data-testid="button-send-another"
+                >
+                  <Mail className="mr-2 h-4 w-4" />
+                  Send Another Link
+                </Button>
+                
+                <a
+                  href="/api/login"
+                  className="flex items-center justify-center w-full h-10 px-4 rounded-md text-sm font-medium bg-purple-600 text-white hover:bg-purple-700 transition-colors"
+                  data-testid="link-login"
+                >
+                  <ArrowLeft className="mr-2 h-4 w-4" />
+                  Back to Login
+                </a>
+              </div>
+            </div>
+          ) : (
+            <>
+              <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                  <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-gray-200">Email Address</FormLabel>
+                        <FormControl>
+                          <div className="relative">
+                            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                            <Input
+                              {...field}
+                              type="email"
+                              placeholder="your.email@example.com"
+                              className="bg-gray-900 border-gray-600 text-white pl-10"
+                              data-testid="input-email"
+                              autoFocus
+                            />
+                          </div>
+                        </FormControl>
+                        <FormMessage className="text-red-400" />
+                      </FormItem>
+                    )}
+                  />
+
+                  <Button
+                    type="submit"
+                    className="w-full bg-purple-600 hover:bg-purple-700"
+                    disabled={isSubmitting}
+                    data-testid="button-submit"
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Sending Reset Link...
+                      </>
+                    ) : (
+                      "Send Reset Link"
+                    )}
+                  </Button>
+                </form>
+              </Form>
+
+              <div className="mt-6 space-y-4">
+                <div className="relative">
+                  <div className="absolute inset-0 flex items-center">
+                    <span className="w-full border-t border-gray-600" />
+                  </div>
+                  <div className="relative flex justify-center text-xs uppercase">
+                    <span className="bg-gray-800 px-2 text-gray-400">Or</span>
+                  </div>
+                </div>
+
+                <div className="flex flex-col gap-2 text-center text-sm">
+                  <p className="text-gray-400">
+                    Remember your password?{" "}
+                    <a 
+                      href="/api/login" 
+                      className="text-purple-400 hover:text-purple-300 font-medium"
+                      data-testid="link-login-alt"
+                    >
+                      Log in
+                    </a>
+                  </p>
+                  <p className="text-gray-400">
+                    Don't have an account?{" "}
+                    <a 
+                      href="/" 
+                      className="text-purple-400 hover:text-purple-300 font-medium"
+                      data-testid="link-home"
+                    >
+                      Go to home
+                    </a>
+                  </p>
+                </div>
+              </div>
+            </>
+          )}
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
