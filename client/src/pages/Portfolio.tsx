@@ -567,11 +567,6 @@ export default function Portfolio() {
           </CardContent>
         </Card>
       </div>
-
-      {/* Footer disclaimer */}
-        <div className="mt-6 text-center text-xs text-slate-400">
-          All values displayed in USD. Market data may be delayed by up to 15 minutes.
-        </div>
       </div>
     </div>
   );
