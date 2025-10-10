@@ -15,7 +15,6 @@ import RealTimeHoldings from '@/components/portfolio/real-time-holdings';
 import RecurringSubscriptions from '@/components/subscriptions/recurring-subscriptions';
 
 // import TransactionHistory from '@/components/activity/transaction-history';
-import AssetSearch from '@/components/search/asset-search';
 
 type DashboardResponse = {
   totalBalance?: number;
@@ -143,14 +142,11 @@ export default function Dashboard() {
     <div className="min-h-screen bg-black text-white">
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pb-20 md:pb-6">
         {/* Dashboard Header */}
-        <div className="mb-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-          <div>
-            <h2 className="text-2xl sm:text-3xl font-semibold mb-2">
-              Financial Dashboard
-            </h2>
-            <p className="text-gray-400 text-sm">Unified view of your total net worth across all accounts</p>
-          </div>
-          <AssetSearch />
+        <div className="mb-8">
+          <h2 className="text-2xl sm:text-3xl font-semibold mb-2">
+            Financial Dashboard
+          </h2>
+          <p className="text-gray-400 text-sm">Unified view of your total net worth across all accounts</p>
         </div>
 
         {/* Unified Dashboard - Real API Data Only */}
