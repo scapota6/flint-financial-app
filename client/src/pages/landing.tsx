@@ -147,13 +147,15 @@ function Landing() {
           </div>
           <div className="flex items-center space-x-4">
             <div className="flex flex-col items-end space-y-1 bg-gray-800/50 border border-purple-600/30 rounded-lg px-4 py-3">
-              <Button 
-                variant="ghost" 
-                className="text-white hover:text-purple-300 hover:bg-purple-600/20"
-                onClick={() => window.location.href = '/api/login'}
-              >
-                Log in
-              </Button>
+              <Link href="/login">
+                <Button 
+                  variant="ghost" 
+                  className="text-white hover:text-purple-300 hover:bg-purple-600/20"
+                  data-testid="button-login"
+                >
+                  Log in
+                </Button>
+              </Link>
               <Link 
                 href="/reset-password"
                 className="text-xs text-gray-400 hover:text-purple-400 transition-colors"
