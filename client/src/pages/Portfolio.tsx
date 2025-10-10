@@ -409,9 +409,9 @@ export default function Portfolio() {
                       {chartData.map((entry: any, index: number) => (
                         <Cell 
                           key={`cell-${index}`} 
-                          fill={entry.bucket === 'Stocks' ? 'url(#stocksGrad3D)' :
-                                entry.bucket === 'Crypto' ? 'url(#cryptoGrad3D)' :
-                                entry.bucket === 'Cash' ? 'url(#cashGrad3D)' :
+                          fill={entry.name === 'Stocks' ? 'url(#stocksGrad3D)' :
+                                entry.name === 'Crypto' ? 'url(#cryptoGrad3D)' :
+                                entry.name === 'Cash' ? 'url(#cashGrad3D)' :
                                 'url(#debtGrad3D)'}
                           stroke="rgba(255,255,255,0.2)"
                           strokeWidth={3}
