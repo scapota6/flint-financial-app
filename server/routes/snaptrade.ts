@@ -12,6 +12,7 @@ import { eq, desc } from 'drizzle-orm';
 import { normalizeSnapTradeError } from '../lib/normalize-snaptrade-error';
 import { rateLimitMiddleware, fetchWithRateLimit } from '../lib/rate-limiting';
 import { handleBrokenConnection, snaptradeApiCall } from '../lib/broken-connections';
+import { getSnapUser } from '../store/snapUsers';
 import {
   registerUser,
   listAccounts,
@@ -261,12 +262,8 @@ router.get('/accounts', snaptradeRateLimit, async (req: any, res: any) => {
       });
     }
 
-    // Get user credentials
-    const [snaptradeUser] = await db
-      .select()
-      .from(snaptradeUsers)
-      .where(eq(snaptradeUsers.flintUserId, flintUserId))
-      .limit(1);
+    // Get user credentials from file storage
+    const snaptradeUser = await getSnapUser(flintUserId);
 
     if (!snaptradeUser) {
       return res.status(428).json({
@@ -280,7 +277,7 @@ router.get('/accounts', snaptradeRateLimit, async (req: any, res: any) => {
 
     // Get accounts from SnapTrade
     const accounts = await snaptradeApiCall(
-      () => listAccounts(flintUserId, snaptradeUser.userSecret),
+      () => listAccounts(snaptradeUser.userId, snaptradeUser.userSecret),
       'list-accounts',
       'list-accounts'
     );
