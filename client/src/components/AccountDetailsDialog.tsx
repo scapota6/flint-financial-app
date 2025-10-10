@@ -1254,20 +1254,7 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
                   </div>
                 </section>
 
-                {/* 2. Credit Availability */}
-                <section>
-                  <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center">
-                    <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-500 flex items-center justify-center text-white font-bold text-sm mr-3">📊</div>
-                    Credit Availability
-                  </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                    <Info label="Available Credit" value={fmtMoney(data.creditCardInfo?.availableCredit)} />
-                    <Info label="Credit Limit" value={fmtMoney(data.creditCardInfo?.creditLimit)} />
-                    <Info label="Current Balance" value={fmtMoney(data.creditCardInfo?.currentBalance)} />
-                  </div>
-                </section>
-
-                {/* 3. APR & Fees */}
+                {/* 2. APR & Fees */}
                 {(data.creditCardInfo?.apr || data.creditCardInfo?.annualFee || data.creditCardInfo?.lateFee) && (
                   <section>
                     <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center">
@@ -1291,7 +1278,7 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
                   </section>
                 )}
 
-                {/* 4. Account Information */}
+                {/* 3. Account Information */}
                 <section>
                   <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center">
                     <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center text-white font-bold text-sm mr-3">ℹ️</div>
