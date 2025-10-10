@@ -2,8 +2,6 @@ import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useStripe, useElements, PaymentElement, Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
-import Navigation from "@/components/layout/navigation";
-import MobileNav from "@/components/layout/mobile-nav";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -72,7 +70,7 @@ export default function Subscribe() {
   const [isProcessing, setIsProcessing] = useState(false);
 
   // Fetch user data to check current subscription
-  const { data: userData, error } = useQuery({
+  const { data: userData, error } = useQuery<{ subscriptionTier?: string; subscriptionStatus?: string }>({
     queryKey: ["/api/auth/user"],
     retry: false,
   });
@@ -151,8 +149,6 @@ export default function Subscribe() {
 
   return (
     <div className="min-h-screen bg-black text-white">
-      <Navigation />
-      
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pb-20 md:pb-6">
         <div className="mb-8 text-center">
           <h2 className="text-3xl sm:text-4xl font-bold mb-4">Choose Your Plan</h2>
@@ -356,8 +352,6 @@ export default function Subscribe() {
           </Card>
         </div>
       </main>
-
-      <MobileNav />
     </div>
   );
 }
