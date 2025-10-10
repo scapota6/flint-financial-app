@@ -143,13 +143,22 @@ function Landing() {
             <span className="text-white font-bold text-xl">Flint</span>
           </div>
           <div className="flex items-center space-x-4">
-            <Button 
-              variant="ghost" 
-              className="text-white hover:text-purple-300"
-              onClick={() => window.location.href = '/api/login'}
-            >
-              Log in
-            </Button>
+            <div className="flex flex-col items-end space-y-1">
+              <Button 
+                variant="ghost" 
+                className="text-white hover:text-purple-300"
+                onClick={() => window.location.href = '/api/login'}
+              >
+                Log in
+              </Button>
+              <Link 
+                href="/reset-password"
+                className="text-xs text-gray-400 hover:text-purple-400 transition-colors"
+                data-testid="link-forgot-password"
+              >
+                Forgot password?
+              </Link>
+            </div>
             <Button 
               className="bg-purple-600 hover:bg-purple-700 text-white"
               onClick={() => window.location.href = '/app'}
