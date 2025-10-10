@@ -165,6 +165,7 @@ router.get("/accounts/:accountId/details", async (req: any, res) => {
             availableCredit: availableCredit,
             creditLimit: creditLimit,
             currentBalance: currentBalance,
+            amountSpent: currentBalance, // Ledger balance = amount spent on the card
             
             // APR & Fees (all nullable)
             apr: (account as any).details?.apr ?? (account as any).details?.interest_rate ?? null,
