@@ -17,6 +17,7 @@ import {
 import { eq, desc, and, sql, count, gte, lte } from 'drizzle-orm';
 import { sendApprovalEmail, sendRejectionEmail, sendPasswordResetEmail } from '../services/email';
 import { hashToken, generateSecureToken } from '../lib/token-utils';
+import { getAllSnapUsers } from '../store/snapUsers';
 
 const router = Router();
 
@@ -681,12 +682,13 @@ router.get('/analytics/overview', isAuthenticated, requireAdmin(), async (req: a
     const [{ tellerConnections }] = await db
       .select({ tellerConnections: count() })
       .from(connectedAccounts)
-      .where(eq(connectedAccounts.provider, 'teller'));
+      .where(and(
+        eq(connectedAccounts.provider, 'teller'),
+        eq(connectedAccounts.status, 'connected')
+      ));
 
-    const [{ snaptradeConnectionsCount }] = await db
-      .select({ snaptradeConnectionsCount: count() })
-      .from(snaptradeConnections)
-      .where(eq(snaptradeConnections.disabled, false));
+    const snapUsers = await getAllSnapUsers();
+    const snaptradeConnectionsCount = Object.keys(snapUsers).length;
 
     // Revenue estimate (based on subscription tiers)
     const tierPrices = {

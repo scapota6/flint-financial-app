@@ -29,3 +29,7 @@ export async function deleteSnapUser(flintUserId: string){
   delete db[flintUserId]; 
   write(db); 
 }
+
+export async function getAllSnapUsers() {
+  return read();
+}
