@@ -64,7 +64,6 @@ function Landing() {
     connectType: ''
   });
   const [formSubmitted, setFormSubmitted] = useState(false);
-  const [isEligible, setIsEligible] = useState(false);
   const { toast } = useToast();
 
   // Track section views
@@ -87,38 +86,46 @@ function Landing() {
   // Handle form submission
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    const eligible = formData.accountCount === '4+';
-    setIsEligible(eligible);
-    setFormSubmitted(true);
 
     trackEvent('submit_application', {
       account_count: formData.accountCount,
       connect_type: formData.connectType,
-      eligible
     });
 
-    // Simulate API call
     try {
-      // In production: submit to CRM/ESP
-      console.log('Form submission:', formData);
-      
-      if (eligible) {
-        toast({
-          title: "🎉 You're in!",
-          description: "Check your email to activate Flint Free.",
+      const response = await fetch('/api/applications/submit', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        setFormSubmitted(true);
+        setFormData({
+          firstName: '',
+          email: '',
+          accountCount: '',
+          connectType: ''
         });
-        // Trigger onboarding email
+        toast({
+          title: "Success!",
+          description: data.message || "Application submitted! We'll review and email you within 24 hours.",
+        });
       } else {
         toast({
-          title: "We're opening spots gradually",
-          description: "You've been added to our waitlist.",
+          title: "Error",
+          description: data.message || "Something went wrong. Please try again.",
+          variant: "destructive"
         });
       }
     } catch (error) {
       toast({
         title: "Error",
-        description: "Something went wrong. Please try again.",
+        description: "Failed to submit application. Please try again.",
         variant: "destructive"
       });
     }
@@ -521,6 +528,7 @@ function Landing() {
                         onChange={(e) => setFormData({...formData, firstName: e.target.value})}
                         className="bg-gray-700 border-gray-600 text-white"
                         placeholder="Enter your first name"
+                        data-testid="input-first-name"
                       />
                     </div>
                     
@@ -534,6 +542,7 @@ function Landing() {
                         onChange={(e) => setFormData({...formData, email: e.target.value})}
                         className="bg-gray-700 border-gray-600 text-white"
                         placeholder="Enter your email"
+                        data-testid="input-email"
                       />
                     </div>
                     
@@ -582,6 +591,7 @@ function Landing() {
                       type="submit" 
                       className="w-full bg-purple-600 hover:bg-purple-700 text-white py-3"
                       disabled={!formData.firstName || !formData.email || !formData.accountCount || !formData.connectType}
+                      data-testid="button-submit-application"
                     >
                       Submit Application
                     </Button>
@@ -595,34 +605,16 @@ function Landing() {
             ) : (
               <Card className="bg-gray-800 border-gray-700">
                 <CardContent className="p-8 text-center space-y-6">
-                  {isEligible ? (
-                    <>
-                      <div className="text-6xl">🎉</div>
-                      <h3 className="text-2xl font-bold text-green-400">You're in!</h3>
-                      <p className="text-gray-300">Check your email to activate Flint Free.</p>
-                    </>
-                  ) : (
-                    <>
-                      <h3 className="text-2xl font-bold text-yellow-400">We're opening spots gradually</h3>
-                      <p className="text-gray-300 mb-6">You've been added to our waitlist.</p>
-                      
-                      <Card className="bg-yellow-900/20 border-yellow-600">
-                        <CardContent className="p-6 space-y-4">
-                          <h4 className="text-lg font-semibold text-yellow-400">Skip the wait</h4>
-                          <p className="text-sm text-gray-300">
-                            Get instant access with Fast-Track for $79.99 (credited later)
-                          </p>
-                          <Button 
-                            className="w-full bg-yellow-600 hover:bg-yellow-700 text-black font-semibold"
-                            data-cta="fast-track-upsell"
-                            onClick={() => handleCTAClick('fast-track-upsell', '$79.99')}
-                          >
-                            Unlock Now - $79.99
-                          </Button>
-                        </CardContent>
-                      </Card>
-                    </>
-                  )}
+                  <div className="text-6xl">✅</div>
+                  <h3 className="text-2xl font-bold text-green-400">Application Submitted!</h3>
+                  <p className="text-gray-300">We'll review your application and email you within 24 hours.</p>
+                  <Button 
+                    variant="outline"
+                    className="mt-4"
+                    onClick={() => setFormSubmitted(false)}
+                  >
+                    Submit Another Application
+                  </Button>
                 </CardContent>
               </Card>
             )}

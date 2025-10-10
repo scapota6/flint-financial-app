@@ -8,6 +8,7 @@ import {
   transfers,
   activityLog,
   marketData,
+  accountApplications,
   type User,
   type UpsertUser,
   type ConnectedAccount,
@@ -24,6 +25,8 @@ import {
   type InsertActivityLog,
   type MarketData,
   type InsertMarketData,
+  type AccountApplication,
+  type InsertAccountApplication,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, desc, asc, isNotNull } from "drizzle-orm";
@@ -115,6 +118,9 @@ export interface IStorage {
   
   // User updates
   updateUser(userId: string, updates: Partial<User>): Promise<User>;
+  
+  // Account applications
+  createAccountApplication(application: InsertAccountApplication): Promise<AccountApplication>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -694,6 +700,17 @@ export class DatabaseStorage implements IStorage {
     // TODO: Implement real Teller.io API call  
     // For now, return empty array until Teller.io credentials are provided
     return [];
+  }
+
+  async createAccountApplication(application: InsertAccountApplication): Promise<AccountApplication> {
+    const [newApplication] = await db
+      .insert(accountApplications)
+      .values({
+        ...application,
+        status: 'pending',
+      })
+      .returning();
+    return newApplication;
   }
 }
 

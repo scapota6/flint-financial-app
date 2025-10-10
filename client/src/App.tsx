@@ -29,6 +29,7 @@ import Settings from "@/pages/Settings";
 import Security from "@/pages/Security";
 import Monitoring from "@/pages/Monitoring";
 import TellerCallback from "@/pages/TellerCallback";
+import AdminDashboard from "@/pages/admin";
 
 // Public route wrapper that redirects authenticated users
 function PublicRoute({ component: Component }: { component: React.ComponentType }) {
@@ -116,6 +117,7 @@ function Router() {
                 <Route path="/security" component={Security} />
                 <Route path="/monitoring" component={Monitoring} />
                 <Route path="/teller/callback" component={TellerCallback} />
+                <Route path="/admin" component={AdminDashboard} />
                 {/* Redirect authenticated users away from landing page */}
                 <Route path="/landing">
                   {() => { window.location.href = '/dashboard'; return null; }}

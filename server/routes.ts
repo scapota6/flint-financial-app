@@ -23,6 +23,7 @@ import {
   insertTradeSchema,
   insertTransferSchema,
   insertActivityLogSchema,
+  insertAccountApplicationSchema,
   users,
 } from "@shared/schema";
 import { eq } from "drizzle-orm";
@@ -55,6 +56,61 @@ export async function registerRoutes(app: Express): Promise<Server> {
     const flags = getServerFeatureFlags();
     logger.info('Feature flags requested', { metadata: { flags } });
     res.json(flags);
+  });
+
+  // Account application submission (public endpoint, no auth required)
+  app.post('/api/applications/submit', async (req, res) => {
+    try {
+      // Validate request body
+      const validationResult = insertAccountApplicationSchema.safeParse(req.body);
+      
+      if (!validationResult.success) {
+        logger.warn('Invalid application submission', { 
+          error: validationResult.error 
+        });
+        return res.status(400).json({ 
+          message: "Invalid form data. Please check all fields and try again.",
+          errors: validationResult.error.errors 
+        });
+      }
+
+      const { firstName, email, accountCount, connectType } = validationResult.data;
+
+      // Additional email validation
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        return res.status(400).json({ 
+          message: "Please enter a valid email address." 
+        });
+      }
+
+      // Create application in database
+      const application = await storage.createAccountApplication({
+        firstName,
+        email,
+        accountCount,
+        connectType,
+      });
+
+      logger.info('Application submitted successfully', { 
+        metadata: {
+          applicationId: application.id,
+          email: application.email 
+        }
+      });
+
+      res.json({ 
+        success: true,
+        message: "Application submitted! We'll review and email you within 24 hours.",
+        applicationId: application.id
+      });
+    } catch (error: any) {
+      logger.error('Error submitting application', { error: error.message });
+      res.status(500).json({ 
+        success: false,
+        message: "Failed to submit application. Please try again later." 
+      });
+    }
   });
 
   // SnapTrade callback handler for OAuth redirect
