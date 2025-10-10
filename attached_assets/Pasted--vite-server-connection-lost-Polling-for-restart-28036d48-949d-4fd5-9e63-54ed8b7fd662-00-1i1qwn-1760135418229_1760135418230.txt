@@ -1,0 +1,62 @@
+[vite] server connection lost. Polling for restart...
+28036d48-949d-4fd5-9e63-54ed8b7fd662-00-1i1qwnyczdy9x.kirk.replit.dev/:1  Failed to load resource: the server responded with a status of 502 (Bad Gateway)Understand this error
+logo.brandfetch.io/morganstanley.com:1  GET https://logo.brandfetch.io/morganstanley.com net::ERR_NAME_NOT_RESOLVED
+Image
+commitMount @ chunk-RPCDYKBN.js?v=33bc90bf:8412
+commitLayoutEffectOnFiber @ chunk-RPCDYKBN.js?v=33bc90bf:17102
+commitLayoutMountEffects_complete @ chunk-RPCDYKBN.js?v=33bc90bf:17980
+commitLayoutEffects_begin @ chunk-RPCDYKBN.js?v=33bc90bf:17969
+commitLayoutEffects @ chunk-RPCDYKBN.js?v=33bc90bf:17920
+commitRootImpl @ chunk-RPCDYKBN.js?v=33bc90bf:19353
+commitRoot @ chunk-RPCDYKBN.js?v=33bc90bf:19277
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=33bc90bf:18895
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=33bc90bf:9119
+(anonymous) @ chunk-RPCDYKBN.js?v=33bc90bf:18627Understand this error
+logo.brandfetch.io/citigroup.com:1  GET https://logo.brandfetch.io/citigroup.com net::ERR_NAME_NOT_RESOLVED
+Image
+commitMount @ chunk-RPCDYKBN.js?v=33bc90bf:8412
+commitLayoutEffectOnFiber @ chunk-RPCDYKBN.js?v=33bc90bf:17102
+commitLayoutMountEffects_complete @ chunk-RPCDYKBN.js?v=33bc90bf:17980
+commitLayoutEffects_begin @ chunk-RPCDYKBN.js?v=33bc90bf:17969
+commitLayoutEffects @ chunk-RPCDYKBN.js?v=33bc90bf:17920
+commitRootImpl @ chunk-RPCDYKBN.js?v=33bc90bf:19353
+commitRoot @ chunk-RPCDYKBN.js?v=33bc90bf:19277
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=33bc90bf:18895
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=33bc90bf:9119
+(anonymous) @ chunk-RPCDYKBN.js?v=33bc90bf:18627Understand this error
+logo.brandfetch.io/bankofamerica.com:1  GET https://logo.brandfetch.io/bankofamerica.com net::ERR_NAME_NOT_RESOLVED
+Image
+commitMount @ chunk-RPCDYKBN.js?v=33bc90bf:8412
+commitLayoutEffectOnFiber @ chunk-RPCDYKBN.js?v=33bc90bf:17102
+commitLayoutMountEffects_complete @ chunk-RPCDYKBN.js?v=33bc90bf:17980
+commitLayoutEffects_begin @ chunk-RPCDYKBN.js?v=33bc90bf:17969
+commitLayoutEffects @ chunk-RPCDYKBN.js?v=33bc90bf:17920
+commitRootImpl @ chunk-RPCDYKBN.js?v=33bc90bf:19353
+commitRoot @ chunk-RPCDYKBN.js?v=33bc90bf:19277
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=33bc90bf:18895
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=33bc90bf:9119
+(anonymous) @ chunk-RPCDYKBN.js?v=33bc90bf:18627Understand this error
+logo.brandfetch.io/capitalone.com:1  GET https://logo.brandfetch.io/capitalone.com net::ERR_NAME_NOT_RESOLVED
+Image
+commitMount @ chunk-RPCDYKBN.js?v=33bc90bf:8412
+commitLayoutEffectOnFiber @ chunk-RPCDYKBN.js?v=33bc90bf:17102
+commitLayoutMountEffects_complete @ chunk-RPCDYKBN.js?v=33bc90bf:17980
+commitLayoutEffects_begin @ chunk-RPCDYKBN.js?v=33bc90bf:17969
+commitLayoutEffects @ chunk-RPCDYKBN.js?v=33bc90bf:17920
+commitRootImpl @ chunk-RPCDYKBN.js?v=33bc90bf:19353
+commitRoot @ chunk-RPCDYKBN.js?v=33bc90bf:19277
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=33bc90bf:18895
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=33bc90bf:9119
+(anonymous) @ chunk-RPCDYKBN.js?v=33bc90bf:18627Understand this error
+logo.brandfetch.io/robinhood.com:1  GET https://logo.brandfetch.io/robinhood.com net::ERR_NAME_NOT_RESOLVED
+Image
+commitMount @ chunk-RPCDYKBN.js?v=33bc90bf:8412
+commitLayoutEffectOnFiber @ chunk-RPCDYKBN.js?v=33bc90bf:17102
+commitLayoutMountEffects_complete @ chunk-RPCDYKBN.js?v=33bc90bf:17980
+commitLayoutEffects_begin @ chunk-RPCDYKBN.js?v=33bc90bf:17969
+commitLayoutEffects @ chunk-RPCDYKBN.js?v=33bc90bf:17920
+commitRootImpl @ chunk-RPCDYKBN.js?v=33bc90bf:19353
+commitRoot @ chunk-RPCDYKBN.js?v=33bc90bf:19277
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=33bc90bf:18895
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=33bc90bf:9119
+(anonymous) @ chunk-RPCDYKBN.js?v=33bc90bf:18627Understand this error
