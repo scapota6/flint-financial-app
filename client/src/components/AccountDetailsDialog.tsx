@@ -1054,9 +1054,6 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
                     <span className="font-medium">Updated: {fmtTime(data.metadata?.fetched_at || new Date().toISOString())}</span>
                   </div>
                 </div>
-                <div className="text-xs text-gray-500 dark:text-gray-400 italic">
-                  Real-time data via SnapTrade
-                </div>
               </div>
             </div>
           </div>
@@ -1819,9 +1816,6 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
                     <Calendar className="h-4 w-4 text-blue-500" />
                     <span className="font-medium">Created: {fmtTime(data.metadata?.account_created || 'N/A')}</span>
                   </div>
-                </div>
-                <div className="text-xs text-gray-500 dark:text-gray-400 italic">
-                  Real-time data via SnapTrade
                 </div>
               </div>
             </div>
