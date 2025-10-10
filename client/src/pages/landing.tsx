@@ -652,7 +652,6 @@ function Landing() {
               <div className="flex flex-wrap gap-6 text-sm">
                 <a href="/terms" className="text-gray-400 hover:text-white">Terms of Service</a>
                 <a href="/privacy" className="text-gray-400 hover:text-white">Privacy Policy</a>
-                <a href="/refunds" className="text-gray-400 hover:text-white">Refunds</a>
                 <a href="/contact" className="text-gray-400 hover:text-white">Contact</a>
               </div>
             </div>
