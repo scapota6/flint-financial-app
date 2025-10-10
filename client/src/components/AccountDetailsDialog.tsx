@@ -1233,9 +1233,15 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
                       <div className="p-4 bg-white dark:bg-gray-800 rounded-lg border border-red-200 dark:border-red-700">
                         <div className="text-xs font-medium text-red-600 dark:text-red-400 uppercase tracking-wide">Credit Limit</div>
                         <div className="text-2xl font-bold text-red-700 dark:text-red-300 mt-1">
-                          {data.creditCardInfo?.creditLimit ? fmtMoney(data.creditCardInfo?.creditLimit) : (
-                            <span className="text-gray-500 dark:text-gray-400" title="Not provided by issuer">N/A</span>
-                          )}
+                          {(() => {
+                            const spent = data.creditCardInfo?.amountSpent || data.balances?.ledger || 0;
+                            const available = data.creditCardInfo?.availableCredit || data.balances?.available || 0;
+                            const creditLimit = data.creditCardInfo?.creditLimit || (spent + available);
+                            
+                            return creditLimit > 0 ? fmtMoney(creditLimit) : (
+                              <span className="text-gray-500 dark:text-gray-400" title="Not provided by issuer">N/A</span>
+                            );
+                          })()}
                         </div>
                       </div>
                       <div className="p-4 bg-white dark:bg-gray-800 rounded-lg border border-red-200 dark:border-red-700">
