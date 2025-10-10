@@ -65,7 +65,7 @@ const app = express();
           'https://sentry.io',
           // add your exact Replit base (scheme+host+port) if you ever call absolute URLs
         ],
-        imgSrc: [SELF, 'data:', 'https://logo.brandfetch.io'],
+        imgSrc: [SELF, 'data:', 'https://logo.uplead.com'],
         baseUri: [SELF],
         frameAncestors: [SELF], // adjust if you embed your app elsewhere
         // If you use Stripe web workers or wasm, add workerSrc/childSrc as needed.

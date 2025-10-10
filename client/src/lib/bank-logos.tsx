@@ -14,7 +14,7 @@ export function getInstitutionLogo(accountName: string) {
   if (institutionName.includes('robinhood')) {
     return {
       logo: <img 
-        src="https://logo.brandfetch.io/robinhood.com" 
+        src="https://logo.uplead.com/robinhood.com" 
         alt={displayName}
         className="h-5 w-5 object-contain"
       />,
@@ -26,7 +26,7 @@ export function getInstitutionLogo(accountName: string) {
   if (institutionName.includes('chase') || institutionName.includes('jpmorgan')) {
     return {
       logo: <img 
-        src="https://logo.brandfetch.io/chase.com" 
+        src="https://logo.uplead.com/chase.com" 
         alt={displayName}
         className="h-5 w-5 object-contain"
       />,
@@ -38,7 +38,7 @@ export function getInstitutionLogo(accountName: string) {
   if (institutionName.includes('bank of america')) {
     return {
       logo: <img 
-        src="https://logo.brandfetch.io/bankofamerica.com" 
+        src="https://logo.uplead.com/bankofamerica.com" 
         alt={displayName}
         className="h-5 w-5 object-contain"
       />,
@@ -50,7 +50,7 @@ export function getInstitutionLogo(accountName: string) {
   if (institutionName.includes('citi')) {
     return {
       logo: <img 
-        src="https://logo.brandfetch.io/citigroup.com" 
+        src="https://logo.uplead.com/citi.com" 
         alt={displayName}
         className="h-5 w-5 object-contain"
       />,
@@ -62,7 +62,7 @@ export function getInstitutionLogo(accountName: string) {
   if (institutionName.includes('morgan stanley')) {
     return {
       logo: <img 
-        src="https://logo.brandfetch.io/morganstanley.com" 
+        src="https://logo.uplead.com/morganstanley.com" 
         alt={displayName}
         className="h-5 w-5 object-contain"
       />,
@@ -74,7 +74,7 @@ export function getInstitutionLogo(accountName: string) {
   if (institutionName.includes('capital') || institutionName.includes('capitalone')) {
     return {
       logo: <img 
-        src="https://logo.brandfetch.io/capitalone.com" 
+        src="https://logo.uplead.com/capitalone.com" 
         alt={displayName}
         className="h-5 w-5 object-contain"
       />,
@@ -86,7 +86,7 @@ export function getInstitutionLogo(accountName: string) {
   if (institutionName.includes('wells fargo')) {
     return {
       logo: <img 
-        src="https://logo.brandfetch.io/wellsfargo.com" 
+        src="https://logo.uplead.com/wellsfargo.com" 
         alt={displayName}
         className="h-5 w-5 object-contain"
       />,
@@ -98,7 +98,7 @@ export function getInstitutionLogo(accountName: string) {
   if (institutionName.includes('american express') || institutionName.includes('amex')) {
     return {
       logo: <img 
-        src="https://logo.brandfetch.io/americanexpress.com" 
+        src="https://logo.uplead.com/americanexpress.com" 
         alt={displayName}
         className="h-5 w-5 object-contain"
       />,
@@ -110,7 +110,7 @@ export function getInstitutionLogo(accountName: string) {
   if (institutionName.includes('td bank') || institutionName.includes('td')) {
     return {
       logo: <img 
-        src="https://logo.brandfetch.io/td.com" 
+        src="https://logo.uplead.com/td.com" 
         alt={displayName}
         className="h-5 w-5 object-contain"
       />,
@@ -122,7 +122,7 @@ export function getInstitutionLogo(accountName: string) {
   if (institutionName.includes('us bank')) {
     return {
       logo: <img 
-        src="https://logo.brandfetch.io/usbank.com" 
+        src="https://logo.uplead.com/usbank.com" 
         alt={displayName}
         className="h-5 w-5 object-contain"
       />,
