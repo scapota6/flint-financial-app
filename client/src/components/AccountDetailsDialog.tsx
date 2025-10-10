@@ -1210,66 +1210,45 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
             {/* CREDIT CARD LAYOUT - Teller credit cards get special treatment */}
             {data.provider === 'teller' && data.creditCardInfo ? (
               <>
-                {/* 1. Payments & Due Dates (FIRST for credit cards) */}
+                {/* 1. Credit Card Overview (FIRST for credit cards) */}
                 <section>
                   <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center">
-                    <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-red-500 to-pink-500 flex items-center justify-center text-white font-bold text-sm mr-3">💳</div>
-                    Payments & Due Dates
+                    <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-indigo-500 flex items-center justify-center text-white font-bold text-sm mr-3">💳</div>
+                    Credit Card Overview
                   </h3>
                   
-                  {/* Payment Due Date - Most Prominent */}
-                  <div className="mb-6 p-6 bg-gradient-to-r from-red-50 to-pink-50 dark:from-red-900/20 dark:to-pink-900/20 rounded-lg border border-red-200 dark:border-red-800">
-                    <div className="text-center">
-                      <div className="text-xs font-medium text-red-600 dark:text-red-400 uppercase tracking-wide mb-2">Payment Due Date</div>
-                      <div className="text-4xl font-bold text-red-700 dark:text-red-300 mb-4">
-                        {data.creditCardInfo?.paymentDueDate || '—'}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+                      <div className="text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wide">Credit Limit</div>
+                      <div className="text-2xl font-bold text-gray-900 dark:text-gray-100 mt-1">
+                        {(() => {
+                          // Calculate from the same values shown in Spent and Available Credit boxes
+                          const spent = data.creditCardInfo?.amountSpent || data.balances?.ledger || 0;
+                          const available = data.creditCardInfo?.availableCredit || data.balances?.available || 0;
+                          const creditLimit = spent + available;
+                          
+                          return creditLimit > 0 ? fmtMoney(creditLimit) : (
+                            <span className="text-gray-500 dark:text-gray-400" title="Not provided by issuer">N/A</span>
+                          );
+                        })()}
                       </div>
                     </div>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-4">
-                      <div className="p-4 bg-white dark:bg-gray-800 rounded-lg border border-red-200 dark:border-red-700">
-                        <div className="text-xs font-medium text-red-600 dark:text-red-400 uppercase tracking-wide">Credit Limit</div>
-                        <div className="text-2xl font-bold text-red-700 dark:text-red-300 mt-1">
-                          {(() => {
-                            // Calculate from the same values shown in Spent and Available Credit boxes
-                            const spent = data.creditCardInfo?.amountSpent || data.balances?.ledger || 0;
-                            const available = data.creditCardInfo?.availableCredit || data.balances?.available || 0;
-                            const creditLimit = spent + available;
-                            
-                            return creditLimit > 0 ? fmtMoney(creditLimit) : (
-                              <span className="text-gray-500 dark:text-gray-400" title="Not provided by issuer">N/A</span>
-                            );
-                          })()}
-                        </div>
+                    <div className="p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+                      <div className="text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wide">Spent</div>
+                      <div className="text-2xl font-bold text-gray-900 dark:text-gray-100 mt-1">
+                        {data.creditCardInfo?.amountSpent ? fmtMoney(data.creditCardInfo?.amountSpent) : 
+                         data.balances?.ledger ? fmtMoney(data.balances?.ledger) : (
+                          <span className="text-gray-500 dark:text-gray-400" title="Not provided by issuer">N/A</span>
+                        )}
                       </div>
-                      <div className="p-4 bg-white dark:bg-gray-800 rounded-lg border border-red-200 dark:border-red-700">
-                        <div className="text-xs font-medium text-red-600 dark:text-red-400 uppercase tracking-wide">Spent</div>
-                        <div className="text-2xl font-bold text-red-700 dark:text-red-300 mt-1">
-                          {data.creditCardInfo?.amountSpent ? fmtMoney(data.creditCardInfo?.amountSpent) : 
-                           data.balances?.ledger ? fmtMoney(data.balances?.ledger) : (
-                            <span className="text-gray-500 dark:text-gray-400" title="Not provided by issuer">N/A</span>
-                          )}
-                        </div>
-                      </div>
-                      <div className="p-4 bg-white dark:bg-gray-800 rounded-lg border border-red-200 dark:border-red-700">
-                        <div className="text-xs font-medium text-red-600 dark:text-red-400 uppercase tracking-wide">Available Credit</div>
-                        <div className="text-2xl font-bold text-red-700 dark:text-red-300 mt-1">
-                          {data.creditCardInfo?.availableCredit ? fmtMoney(data.creditCardInfo?.availableCredit) : 
-                           data.balances?.available ? fmtMoney(data.balances?.available) : (
-                            <span className="text-gray-500 dark:text-gray-400" title="Not provided by issuer">N/A</span>
-                          )}
-                        </div>
-                      </div>
-                      <div className="p-4 bg-white dark:bg-gray-800 rounded-lg border border-red-200 dark:border-red-700">
-                        <div className="text-xs font-medium text-red-600 dark:text-red-400 uppercase tracking-wide">Last Payment</div>
-                        <div className="text-lg font-bold text-red-700 dark:text-red-300 mt-1">
-                          {data.creditCardInfo?.lastPayment?.amount ? fmtMoney(data.creditCardInfo?.lastPayment?.amount) : (
-                            <span className="text-gray-500 dark:text-gray-400" title="Not provided by issuer">N/A</span>
-                          )}
-                        </div>
-                        <div className="text-xs text-red-600 dark:text-red-400 mt-1">
-                          {data.creditCardInfo?.lastPayment?.date || 'N/A'}
-                        </div>
+                    </div>
+                    <div className="p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+                      <div className="text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wide">Available Credit</div>
+                      <div className="text-2xl font-bold text-gray-900 dark:text-gray-100 mt-1">
+                        {data.creditCardInfo?.availableCredit ? fmtMoney(data.creditCardInfo?.availableCredit) : 
+                         data.balances?.available ? fmtMoney(data.balances?.available) : (
+                          <span className="text-gray-500 dark:text-gray-400" title="Not provided by issuer">N/A</span>
+                        )}
                       </div>
                     </div>
                   </div>
