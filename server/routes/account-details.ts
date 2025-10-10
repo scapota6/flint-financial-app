@@ -151,12 +151,18 @@ router.get("/accounts/:accountId/details", async (req: any, res) => {
             ? currentBalance + availableCredit 
             : ((balances as any)?.credit_limit ?? (account as any).balance?.limit ?? null);
           
+          // Calculate credit utilization percentage (use absolute value since Teller returns negative for debt)
+          const creditUtilization = (currentBalance !== null && creditLimit !== null && creditLimit > 0)
+            ? (Math.abs(currentBalance) / creditLimit) * 100
+            : null;
+          
           console.log('[Credit Card Info]', {
             accountId: externalId,
             ledgerBalance,
             currentBalance,
             availableCredit,
-            creditLimit
+            creditLimit,
+            creditUtilization: creditUtilization ? `${creditUtilization.toFixed(2)}%` : null
           });
           
           creditCardInfo = {
@@ -169,17 +175,12 @@ router.get("/accounts/:accountId/details", async (req: any, res) => {
               amount: (account as any).details?.last_payment_amount ?? null
             },
             
-            // Credit Availability
+            // Credit Availability & Utilization
             availableCredit: availableCredit,
             creditLimit: creditLimit,
             currentBalance: currentBalance,
             amountSpent: currentBalance, // Ledger balance = amount spent on the card
-            
-            // APR & Fees (all nullable)
-            apr: (account as any).details?.apr ?? (account as any).details?.interest_rate ?? null,
-            cashAdvanceApr: (account as any).details?.cash_advance_apr ?? null,
-            annualFee: (account as any).details?.annual_fee ?? null,
-            lateFee: (account as any).details?.late_fee ?? null,
+            creditUtilization: creditUtilization, // Percentage of credit limit used
             
             // Account identifiers
             lastFour: account.last_four ?? null,
@@ -291,6 +292,10 @@ router.get("/accounts/:accountId/details", async (req: any, res) => {
             
             let creditCardInfo = null;
             if (isCredit) {
+              const testCreditLimit = 15000;
+              const testAvailableCredit = testCreditLimit - balance;
+              const testCreditUtilization = (Math.abs(balance) / testCreditLimit) * 100;
+              
               creditCardInfo = {
                 paymentDueDate: '2025-09-15',
                 minimumDue: 25.00,
@@ -299,14 +304,10 @@ router.get("/accounts/:accountId/details", async (req: any, res) => {
                   date: '2025-08-15',
                   amount: 150.00
                 },
-                availableCredit: 15000 - balance,
-                creditLimit: 15000,
+                availableCredit: testAvailableCredit,
+                creditLimit: testCreditLimit,
                 currentBalance: balance,
-                
-                apr: 24.99,
-                cashAdvanceApr: 29.99,
-                annualFee: 695,
-                lateFee: 39,
+                creditUtilization: testCreditUtilization,
                 lastFour: dbAccount.accountNumber?.slice(-4) || '8731',
                 
                 // Payment capabilities for test data

@@ -1217,7 +1217,7 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
                     Credit Card Overview
                   </h3>
                   
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                     <div className="p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
                       <div className="text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wide">Credit Limit</div>
                       <div className="text-2xl font-bold text-gray-900 dark:text-gray-100 mt-1">
@@ -1251,34 +1251,28 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
                         )}
                       </div>
                     </div>
+                    <div className="p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+                      <div className="text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wide">Utilization</div>
+                      <div className="text-2xl font-bold mt-1">
+                        {data.creditCardInfo?.creditUtilization !== null && data.creditCardInfo?.creditUtilization !== undefined ? (
+                          <span className={
+                            data.creditCardInfo.creditUtilization < 30 
+                              ? 'text-green-600 dark:text-green-400'
+                              : data.creditCardInfo.creditUtilization < 70
+                              ? 'text-yellow-600 dark:text-yellow-400'
+                              : 'text-red-600 dark:text-red-400'
+                          }>
+                            {data.creditCardInfo.creditUtilization.toFixed(1)}%
+                          </span>
+                        ) : (
+                          <span className="text-gray-500 dark:text-gray-400" title="Not provided by issuer">N/A</span>
+                        )}
+                      </div>
+                    </div>
                   </div>
                 </section>
 
-                {/* 2. APR & Fees */}
-                {(data.creditCardInfo?.apr || data.creditCardInfo?.annualFee || data.creditCardInfo?.lateFee) && (
-                  <section>
-                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center">
-                      <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-yellow-500 to-orange-500 flex items-center justify-center text-white font-bold text-sm mr-3">%</div>
-                      APR & Fees
-                    </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                      {data.creditCardInfo?.apr && (
-                        <Info label="APR" value={`${data.creditCardInfo?.apr}%`} />
-                      )}
-                      {data.creditCardInfo?.cashAdvanceApr && (
-                        <Info label="Cash Advance APR" value={`${data.creditCardInfo?.cashAdvanceApr}%`} />
-                      )}
-                      {data.creditCardInfo?.annualFee && (
-                        <Info label="Annual Fee" value={fmtMoney(data.creditCardInfo?.annualFee)} />
-                      )}
-                      {data.creditCardInfo?.lateFee && (
-                        <Info label="Late Fee" value={fmtMoney(data.creditCardInfo?.lateFee)} />
-                      )}
-                    </div>
-                  </section>
-                )}
-
-                {/* 3. Account Information */}
+                {/* 2. Account Information */}
                 <section>
                   <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center">
                     <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center text-white font-bold text-sm mr-3">ℹ️</div>
@@ -1397,31 +1391,7 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
 
             {/* NO TRADING SECTIONS FOR TELLER ACCOUNTS - Only for brokerage accounts */}
 
-                {/* c) APR & Fees */}
-                {(data.creditCardInfo?.apr || data.creditCardInfo?.annualFee || data.creditCardInfo?.lateFee) && (
-                  <section>
-                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center">
-                      <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-yellow-500 to-orange-500 flex items-center justify-center text-white font-bold text-sm mr-3">%</div>
-                      APR & Fees
-                    </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                      {data.creditCardInfo?.apr && (
-                        <Info label="APR" value={`${data.creditCardInfo?.apr}%`} />
-                      )}
-                      {data.creditCardInfo?.cashAdvanceApr && (
-                        <Info label="Cash Advance APR" value={`${data.creditCardInfo?.cashAdvanceApr}%`} />
-                      )}
-                      {data.creditCardInfo?.annualFee && (
-                        <Info label="Annual Fee" value={fmtMoney(data.creditCardInfo?.annualFee)} />
-                      )}
-                      {data.creditCardInfo?.lateFee && (
-                        <Info label="Late Fee" value={fmtMoney(data.creditCardInfo?.lateFee)} />
-                      )}
-                    </div>
-                  </section>
-                )}
-
-                {/* d) Recent Transactions */}
+                {/* Recent Transactions */}
                 {data.transactions && data.transactions.length > 0 && (
                   <section>
                     <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center">
@@ -1446,7 +1416,11 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
                               </td>
                               <td className="p-3 text-gray-900 dark:text-white">
                                 <div className="font-medium">{txn.description || txn.merchant || 'Unknown'}</div>
-                                <div className="text-xs text-gray-500 dark:text-gray-400">{txn.category || ''}</div>
+                                {txn.category && (
+                                  <span className="inline-block mt-1 px-2 py-0.5 bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300 text-xs font-medium rounded-full">
+                                    {txn.category}
+                                  </span>
+                                )}
                               </td>
                               <td className="p-3 text-right">
                                 <span className={`font-bold ${
