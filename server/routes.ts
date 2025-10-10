@@ -2460,7 +2460,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
               description: activity.description || `${activity.type} ${activity.symbol}`
             })) || [],
             metadata: {
-              fetched_at: new Date().toISOString(),
+              fetched_at: snapAccount.sync_status?.holdings?.last_successful_sync || new Date().toISOString(),
               last_sync: snapAccount.sync_status,
               cash_restrictions: snapAccount.cash_restrictions || [],
               account_created: snapAccount.created_date
