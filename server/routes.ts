@@ -2134,6 +2134,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
               ? (Math.abs(mapped.owed) / mapped.creditLimit) * 100
               : null;
             
+            console.log('[Credit Card Utilization Calculation]', {
+              mappedOwed: mapped.owed,
+              mappedCreditLimit: mapped.creditLimit,
+              creditUtilization,
+              tellerAccountSubtype: tellerAccount.subtype,
+              hasBalances: !!balances
+            });
+            
             creditCardInfo = {
               statementBalance: balances.statement || null,
               minimumDue: balances.minimum_payment || null,
@@ -2146,6 +2154,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
               // Add payment capabilities
               paymentCapabilities: paymentCapabilities
             };
+            
+            console.log('[Credit Card Info Created]', creditCardInfo);
           }
           
           // Return comprehensive Teller Account data
