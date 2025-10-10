@@ -137,6 +137,14 @@ router.get("/accounts/:accountId/details", async (req: any, res) => {
         
         // For credit cards, extract comprehensive payment and credit information
         let creditCardInfo = null;
+        console.log('[Credit Card Detection]', {
+          accountType: account.type,
+          accountSubtype: account.subtype,
+          isCredit: account.type === 'credit',
+          isCreditCard: account.subtype === 'credit_card',
+          willProcessCreditCard: account.type === 'credit' || account.subtype === 'credit_card'
+        });
+        
         if (account.type === 'credit' || account.subtype === 'credit_card') {
           // Use fetched balances first, fallback to account balances
           // For credit cards: ledger = balance owed, available = remaining credit
