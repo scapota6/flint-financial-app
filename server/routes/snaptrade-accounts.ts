@@ -34,6 +34,12 @@ async function getSnaptradeCredentials(flintUserId: string) {
  * Used for Accounts page & dashboard counts
  */
 router.get('/accounts', isAuthenticated, async (req: any, res) => {
+  console.log('[SnapTrade Accounts Route] Request received:', {
+    authenticated: req.isAuthenticated(),
+    hasUser: !!req.user,
+    userId: req.user?.claims?.sub
+  });
+  
   try {
     const flintUser = await getFlintUserByAuth(req.user);
     const credentials = await getSnaptradeCredentials(flintUser.id);
