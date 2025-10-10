@@ -201,15 +201,20 @@ router.get('/accounts/:accountId/details', isAuthenticated, async (req: any, res
       status = account.meta.status.toLowerCase() === 'active' ? 'open' : 'unknown';
     }
     
+    const brokerage = account.institution_name;
+    const accountType = account.meta?.brokerage_account_type || account.meta?.type || account.raw_type || null;
+    
     const accountDetailsDto: AccountDetails = {
       id: account.id as UUID,
       brokerageAuthId: account.brokerage_authorization as UUID,
-      institutionName: account.institution_name,
+      institutionName: brokerage,
+      brokerage: brokerage,  // Add for frontend compatibility
       name: account.name === 'Default' 
-        ? `${account.institution_name} ${account.meta?.type || account.raw_type || 'Account'}`.trim()
+        ? `${brokerage} ${account.meta?.type || account.raw_type || 'Account'}`.trim()
         : account.name,
       numberMasked,
-      accountType: account.meta?.brokerage_account_type || account.meta?.type || account.raw_type || null,
+      accountType: accountType,
+      type: accountType,  // Add for frontend compatibility
       status,
       currency: account.balance?.total?.currency || 'USD',
       balance: account.balance?.total ? {
@@ -671,7 +676,15 @@ router.get('/accounts/:accountId/activities', isAuthenticated, async (req: any, 
       accountId
     });
     
-    const activities = activitiesResponse.data || [];
+    // Handle different response formats - data could be array or object with array inside
+    let activities = [];
+    if (Array.isArray(activitiesResponse.data)) {
+      activities = activitiesResponse.data;
+    } else if (activitiesResponse.data && Array.isArray(activitiesResponse.data.activities)) {
+      activities = activitiesResponse.data.activities;
+    } else if (Array.isArray(activitiesResponse)) {
+      activities = activitiesResponse;
+    }
     
     console.log('[SnapTrade Accounts] Fetched', activities.length, 'activities for account:', accountId);
     
