@@ -29,7 +29,7 @@ Preferred communication style: Simple, everyday language.
 - **Database Schema**: Tables for Users, Connected Accounts, Holdings, Watchlist, Trades, Transfers, Activity Log, Market Data, Price Alerts, Alert History, Notification Preferences, Account Applications, Audit Logs, Email Logs, Feature Flags, and Password Reset Tokens.
 - **Application Approval System**: Landing page form for free account applications, admin dashboard for review/approval, automated user account creation with secure password setup links (SHA-256 hashed tokens with timing-safe verification).
 - **Admin Dashboard**: Comprehensive admin panel at `/admin` (restricted to scapota@flint-investing.com) with triple-layer security (authentication + email check + isAdmin flag). Features 9 management categories: Applications Queue, User Management, Connected Accounts, Subscription Tiers, Analytics, Error Logs, Feature Flags, Email Queue, and Audit Trail.
-- **Email Service**: Modular, provider-agnostic email system with templates for approval, rejection, and password setup. Logs all emails to database with 'pending' status until provider is configured (ready for SendGrid/AWS SES/Resend/etc).
+- **Email Service**: Resend-based email system with templates for approval, rejection, and password reset. Logs all emails to database. Admin panel displays manual password reset links when email provider not configured.
 - **Alert Monitoring System**: Background service for price alerts with debouncing, quiet hours, and email/push notifications.
 - **Financial Data Management**: Multi-account connections, real-time balance tracking, portfolio management, trade execution simulation, transfer management, and watchlist.
 - **Subscription System**: Three-tier model (Basic, Pro, Premium) with Stripe integration for payment processing and feature gating.
@@ -40,6 +40,7 @@ Preferred communication style: Simple, everyday language.
 - **Modular Architecture**: Clean separation of concerns with dedicated service layers for encryption, wallet management, trading aggregation, and email delivery.
 - **Compliance Framework**: Legal disclaimers system (not a financial advisor, custodian, or broker-dealer) with user acknowledgment tracking, RBAC groundwork, and security dashboard.
 - **Settings Management**: Profile management, notification preferences, connected accounts management, data export (CSV), and account deletion.
+- **Password Reset System**: Public password reset flow at `/reset-password` where approved users can request password reset by email. System generates secure SHA-256 hashed tokens with 24-hour expiration, sends reset emails via Resend, and includes email enumeration prevention for security.
 - **Teller Balance Mapping System**: Dedicated utility (`server/lib/teller-mapping.ts`) that properly maps Teller.io account balances to Flint's internal format. For credit cards: ledger (amount owed) is mapped to positive `owed` field and negative `displayBalance` to reduce net worth; credit limit is calculated as ledger + available (total borrowing capacity). For depository accounts: available/ledger is mapped to positive `displayBalance`. Ensures accurate net worth calculations by treating credit card debt as negative balances.
 
 ## External Dependencies
