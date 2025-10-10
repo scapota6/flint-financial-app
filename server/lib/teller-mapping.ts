@@ -119,5 +119,6 @@ export function logMappingDetails(
     mappedDisplayBalance: mapped.displayBalance,
     mappedOwed: mapped.owed,
     mappedCashBalance: mapped.cashBalance,
+    mappedCreditLimit: mapped.creditLimit,
   });
 }
