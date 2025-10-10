@@ -243,7 +243,7 @@ export default function RecurringSubscriptions() {
 
         {/* Data source info */}
         <div className="text-xs text-gray-500 text-center pt-4 mt-4 border-t border-gray-800">
-          Analyzed from your bank & credit card transactions • Updates every 30 minutes
+          Analyzed from your bank & credit card transactions
         </div>
       </CardContent>
     </Card>
