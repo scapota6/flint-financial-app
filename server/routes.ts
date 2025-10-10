@@ -32,6 +32,7 @@ import { snaptradeConnectionsRouter } from './routes/snaptrade-connections';
 import { snaptradeTradingRouter } from './routes/snaptrade-trading';
 import { snaptradeWebhooksRouter } from './routes/snaptrade-webhooks';
 import adminRouter from './routes/admin';
+import adminPanelRouter from './routes/admin-panel';
 import userPasswordRouter from './routes/user-password';
 
 // Initialize Stripe (only if API key is provided)
@@ -1884,6 +1885,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Mount password management routes
   app.use('/api/admin', adminRouter);
+  app.use('/api/admin', adminPanelRouter);
   app.use('/api/user', userPasswordRouter);
 
   
