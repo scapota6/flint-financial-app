@@ -7,13 +7,12 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { 
   Building2, 
-  CreditCard, 
-  DollarSign, 
-  TrendingUp,
+  CreditCard,
   AlertCircle,
   Unlink
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import { getInstitutionLogo } from "@/lib/bank-logos";
 
 interface BrokerageAccount {
   id: string;
@@ -101,20 +100,6 @@ export default function Accounts() {
     }
   };
 
-  const getAccountTypeIcon = (type: string) => {
-    switch (type) {
-      case 'checking':
-        return <DollarSign className="h-5 w-5" />;
-      case 'savings':
-        return <TrendingUp className="h-5 w-5" />;
-      case 'card':
-      case 'credit':
-        return <CreditCard className="h-5 w-5" />;
-      default:
-        return <Building2 className="h-5 w-5" />;
-    }
-  };
-
   const isLoading = brokeragesLoading || banksLoading;
   const brokerageAccounts: BrokerageAccount[] = brokerageData || [];
   const bankAccounts: BankAccount[] = bankData?.accounts || [];
@@ -185,8 +170,8 @@ export default function Accounts() {
                       <CardHeader className="pb-3">
                         <div className="flex justify-between items-center">
                           <div className="flex items-center gap-3">
-                            <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg flex items-center justify-center">
-                              <Building2 className="h-6 w-6 text-white" />
+                            <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg flex items-center justify-center text-white">
+                              {getInstitutionLogo(account.name)}
                             </div>
                             <div>
                               <CardTitle className="text-lg text-white">
@@ -252,8 +237,8 @@ export default function Accounts() {
                       <CardHeader className="pb-3">
                         <div className="flex justify-between items-center">
                           <div className="flex items-center gap-3">
-                            <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
-                              {getAccountTypeIcon(account.type)}
+                            <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center text-white">
+                              {getInstitutionLogo(account.name)}
                             </div>
                             <div>
                               <CardTitle className="text-lg text-white">{account.name}</CardTitle>
