@@ -297,9 +297,11 @@ export interface AccountSummary {
   id: UUID;
   brokerageAuthId: UUID;             // brokerage_authorization
   institutionName: string;           // e.g., "Robinhood"
+  brokerage?: string;                // Alias for institutionName (for frontend compatibility)
   name: string;                      // e.g., "Robinhood Individual"
   numberMasked?: string | null;      // e.g., "***2900"
   accountType?: string | null;       // e.g., "margin", "cash"
+  type?: string | null;              // Alias for accountType (for frontend compatibility)
   status?: string | null;            // e.g., "ACTIVE"
   currency: string;                  // default "USD"
   balance?: Money | null;
