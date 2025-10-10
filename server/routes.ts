@@ -1942,7 +1942,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Mount password management routes
   app.use('/api/admin', adminRouter);
-  app.use('/api/admin', adminPanelRouter);
+  app.use('/api/admin-panel', adminPanelRouter);
   app.use('/api/user', userPasswordRouter);
   app.use('/api/auth', authRouter);
 
