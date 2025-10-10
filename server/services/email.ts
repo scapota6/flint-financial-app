@@ -1,20 +1,14 @@
-import formData from 'form-data';
-import Mailgun from 'mailgun.js';
+import { Resend } from 'resend';
 import { db } from '../db';
 import { emailLogs } from '@shared/schema';
 
-const mailgun = new Mailgun(formData);
+const RESEND_API_KEY = process.env.RESEND_API_KEY;
 
-const MAILGUN_API_KEY = process.env.MAILGUN_API_KEY;
-const MAILGUN_DOMAIN = process.env.MAILGUN_DOMAIN;
-
-if (!MAILGUN_API_KEY || !MAILGUN_DOMAIN) {
-  console.warn('MAILGUN_API_KEY or MAILGUN_DOMAIN not set. Email service will not work.');
+if (!RESEND_API_KEY) {
+  console.warn('RESEND_API_KEY not set. Email service will not work.');
 }
 
-const mg = MAILGUN_API_KEY && MAILGUN_DOMAIN 
-  ? mailgun.client({ username: 'api', key: MAILGUN_API_KEY })
-  : null;
+const resend = RESEND_API_KEY ? new Resend(RESEND_API_KEY) : null;
 
 interface EmailLogData {
   recipient: string;
@@ -44,8 +38,8 @@ async function sendEmail(
   html: string,
   template: string
 ): Promise<{ success: boolean; error?: string }> {
-  if (!mg || !MAILGUN_DOMAIN) {
-    // When Mailgun is not configured, queue the email for later delivery
+  if (!resend) {
+    // When Resend is not configured, queue the email for later delivery
     console.log('📧 Email queued (no provider configured):');
     console.log(`  → Recipient: ${to}`);
     console.log(`  → Subject: ${subject}`);
@@ -64,8 +58,8 @@ async function sendEmail(
   }
 
   try {
-    const result = await mg.messages.create(MAILGUN_DOMAIN, {
-      from: `Flint <noreply@${MAILGUN_DOMAIN}>`,
+    const result = await resend.emails.send({
+      from: 'Flint <onboarding@resend.dev>',
       to: [to],
       subject,
       html,

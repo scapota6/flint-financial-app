@@ -20,7 +20,8 @@ export function installCsrf(app: Express) {
     '/api/teller/webhook',
     '/api/snaptrade/webhooks',
     '/api/applications/submit',
-    '/api/auth/setup-password'
+    '/api/auth/setup-password',
+    '/api/auth/request-reset'
   ];
   
   // Apply CSRF middleware with conditional logic
