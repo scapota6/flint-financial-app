@@ -14,34 +14,39 @@ export function installCsrf(app: Express) {
   });
 
   const isProd = process.env.NODE_ENV === 'production';
-  app.use(csrf({
-    cookie: {
-      key: 'flint_csrf',
-      path: '/',
-      sameSite: isProd ? 'none' : 'lax',
-      secure: isProd,
-      httpOnly: false, // client must read to echo in header
-    },
-    ignoreMethods: ['GET', 'HEAD', 'OPTIONS'], // Exclude GET routes from CSRF protection
-    value: function (req: any) {
-      // Skip CSRF protection for public endpoints and webhooks
-      const publicPaths = [
-        '/api/teller/webhook',
-        '/api/snaptrade/webhooks',
-        '/api/applications/submit',
-        '/api/auth/setup-password'
-      ];
-      
-      const isPublicPath = publicPaths.some(path => req.path === path) || req.url.includes('/webhooks');
-      
-      if (isPublicPath) {
-        return null;
-      }
-      
-      // For all other endpoints, extract CSRF token from x-csrf-token header
-      return req.headers['x-csrf-token'] || req.body?._csrf || req.query?._csrf;
+  
+  // List of public paths that don't require CSRF protection
+  const publicPaths = [
+    '/api/teller/webhook',
+    '/api/snaptrade/webhooks',
+    '/api/applications/submit',
+    '/api/auth/setup-password'
+  ];
+  
+  // Apply CSRF middleware with conditional logic
+  app.use((req, res, next) => {
+    const isPublicPath = publicPaths.some(path => req.path === path) || req.url.includes('/webhooks');
+    
+    if (isPublicPath) {
+      console.log('[CSRF] Skipping CSRF for public path:', req.path);
+      return next();
     }
-  }));
+    
+    // Apply CSRF for all other routes
+    csrf({
+      cookie: {
+        key: 'flint_csrf',
+        path: '/',
+        sameSite: isProd ? 'none' : 'lax',
+        secure: isProd,
+        httpOnly: false,
+      },
+      ignoreMethods: ['GET', 'HEAD', 'OPTIONS'],
+      value: function (req: any) {
+        return req.headers['x-csrf-token'] || req.body?._csrf || req.query?._csrf;
+      }
+    })(req, res, next);
+  });
 
   app.get('/api/csrf-token', (req: Request, res: Response) => {
     res.json({ csrfToken: req.csrfToken() });
