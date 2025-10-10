@@ -257,3 +257,38 @@ export interface AuthenticatedRequest extends Request {
   userRole?: UserRole;
   permissions?: Permission[];
 }
+
+// Middleware to check if user is an admin
+export function isAdmin() {
+  return async (req: any, res: Response, next: NextFunction) => {
+    try {
+      if (!req.user) {
+        return res.status(401).json({ message: 'Unauthorized' });
+      }
+
+      const userId = req.user.claims.sub;
+      
+      // Get user from database
+      const [user] = await db
+        .select()
+        .from(users)
+        .where(eq(users.id, userId));
+
+      if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+
+      // Check if user is admin
+      if (!user.isAdmin) {
+        return res.status(403).json({ 
+          message: 'Forbidden: Admin access required'
+        });
+      }
+
+      next();
+    } catch (error) {
+      console.error('isAdmin middleware error:', error);
+      res.status(500).json({ message: 'Authorization check failed' });
+    }
+  };
+}
