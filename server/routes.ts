@@ -102,7 +102,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       res.json({ 
         success: true,
-        message: "Application submitted! We'll review and email you within 24 hours.",
+        message: "Application submitted! You'll receive an email when your application is approved.",
         applicationId: application.id
       });
     } catch (error: any) {
