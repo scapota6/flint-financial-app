@@ -63,6 +63,7 @@ export interface IStorage {
     status?: string;
     accountType?: string;
     balance?: string;
+    accessToken?: string;
   }): Promise<ConnectedAccount>;
   updateAccountBalance(accountId: number, balance: string): Promise<void>;
   getConnectedAccount(accountId: number): Promise<ConnectedAccount | undefined>;
@@ -259,6 +260,7 @@ export class DatabaseStorage implements IStorage {
     status?: string;
     accountType?: string;
     balance?: string;
+    accessToken?: string;
   }): Promise<ConnectedAccount> {
     const status = account.status ?? 'connected';
     const currency = account.currency ?? 'USD';
@@ -278,6 +280,7 @@ export class DatabaseStorage implements IStorage {
         balance,
         currency,
         status,
+        accessToken: account.accessToken || null,
         isActive: true,
         lastSynced: new Date(),
         lastCheckedAt: new Date(),
@@ -292,6 +295,7 @@ export class DatabaseStorage implements IStorage {
           accountNumber: account.mask || null,
           currency,
           status,
+          accessToken: account.accessToken || null,
           lastCheckedAt: new Date(),
           updatedAt: new Date()
         }

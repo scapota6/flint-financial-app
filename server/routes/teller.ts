@@ -130,6 +130,7 @@ router.post("/save-account", isAuthenticated, async (req: any, res) => {
         status: 'connected',
         accountType,
         balance: String(account.balance?.available || 0),
+        accessToken: accessToken, // CRITICAL: Store access token for API calls
       });
     }
     
