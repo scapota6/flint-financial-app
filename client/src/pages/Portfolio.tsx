@@ -568,48 +568,7 @@ export default function Portfolio() {
         </Card>
       </div>
 
-      {/* Performance Summary */}
-      <Card className="mt-6 bg-slate-800/50 border-slate-700 backdrop-blur-sm">
-        <CardHeader>
-          <CardTitle className="text-white">Performance Summary</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div>
-              <p className="text-sm text-muted-foreground">Today's Change</p>
-              <p className={`text-lg font-semibold ${isPositive ? 'text-green-600' : 'text-red-600'}`}>
-                {formatCurrency(summary?.performance?.dayValue || 0)}
-                <span className="text-sm ml-2">
-                  ({formatPercent(summary?.performance?.dayPct || 0)})
-                </span>
-              </p>
-            </div>
-            <div>
-              <p className="text-sm text-muted-foreground">YTD Change</p>
-              <p className={`text-lg font-semibold ${(summary?.performance?.ytdValue || 0) >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                {formatCurrency(summary?.performance?.ytdValue || 0)}
-                <span className="text-sm ml-2">
-                  ({formatPercent(summary?.performance?.ytdPct || 0)})
-                </span>
-              </p>
-            </div>
-            <div>
-              <p className="text-sm text-muted-foreground">Total Accounts</p>
-              <p className="text-lg font-semibold">
-                {summary?.metadata?.accountCount || 0}
-              </p>
-            </div>
-            <div>
-              <p className="text-sm text-muted-foreground">Currency</p>
-              <p className="text-lg font-semibold">
-                {summary?.metadata?.currency || 'USD'}
-              </p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-        {/* Footer disclaimer */}
+      {/* Footer disclaimer */}
         <div className="mt-6 text-center text-xs text-slate-400">
           All values displayed in USD. Market data may be delayed by up to 15 minutes.
         </div>
