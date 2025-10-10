@@ -14,11 +14,9 @@ import {
   TrendingUp,
   Eye,
   AlertCircle,
-  Unlink,
-  Info
+  Unlink
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
-import { AccountDetailsModal } from "@/components/AccountDetailsModal";
 import { BrokerageAccountModal } from "@/components/BrokerageAccountModal";
 import SnapTradeErrorHandler from "@/components/SnapTradeErrorHandler";
 
@@ -44,22 +42,17 @@ interface BrokerageAccount {
 interface BankAccount {
   id: number;
   name: string;
-  type: 'checking' | 'savings' | 'card';
+  type: 'checking' | 'savings' | 'card' | 'credit';
   currency: string;
   balance: number;
   lastSync: string;
-  externalAccountId: string;
+  externalId: string;
+  institutionName?: string;
 }
 
 export default function Accounts() {
   const [refreshing, setRefreshing] = useState(false);
   const [disconnecting, setDisconnecting] = useState<string | null>(null);
-  const [selectedAccountDetails, setSelectedAccountDetails] = useState<{
-    accountId: string;
-    accountName: string;
-    accountType: 'bank' | 'card';
-  } | null>(null);
-  
   const [selectedBrokerageAccount, setSelectedBrokerageAccount] = useState<{
     accountId: string;
     accountName: string;
@@ -93,7 +86,7 @@ export default function Accounts() {
   });
 
   // Fetch bank accounts
-  const { data: bankData, isLoading: banksLoading, refetch: refetchBanks } = useQuery({
+  const { data: bankData, isLoading: banksLoading, refetch: refetchBanks } = useQuery<{ accounts: BankAccount[] }>({
     queryKey: ['/api/banks'],
     retry: false
   });
@@ -379,24 +372,6 @@ export default function Accounts() {
                           <Button 
                             size="sm" 
                             variant="outline"
-                            onClick={() => setSelectedAccountDetails({
-                              accountId: account.externalAccountId,
-                              accountName: account.name,
-                              accountType: account.type as 'bank' | 'card'
-                            })}
-                          >
-                            <Info className="h-4 w-4 mr-2" />
-                            Details
-                          </Button>
-                          <Link href={`/accounts/bank/${account.id}`}>
-                            <Button size="sm" variant="outline">
-                              <Eye className="h-4 w-4 mr-2" />
-                              View
-                            </Button>
-                          </Link>
-                          <Button 
-                            size="sm" 
-                            variant="outline"
                             onClick={() => handleDisconnectAccount(account.id.toString(), 'bank')}
                             disabled={disconnecting === account.id.toString()}
                           >
@@ -428,17 +403,6 @@ export default function Accounts() {
         )}
       </div>
 
-      {/* Account Details Modal */}
-      {selectedAccountDetails && (
-        <AccountDetailsModal
-          isOpen={!!selectedAccountDetails}
-          onClose={() => setSelectedAccountDetails(null)}
-          accountId={selectedAccountDetails.accountId}
-          accountName={selectedAccountDetails.accountName}
-          accountType={selectedAccountDetails.accountType}
-        />
-      )}
-      
       {/* Brokerage Account Details Modal */}
       {selectedBrokerageAccount && (
         <BrokerageAccountModal

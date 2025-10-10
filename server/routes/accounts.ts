@@ -443,34 +443,38 @@ router.get("/banks", isAuthenticated, async (req: any, res) => {
       acc.accountType === 'bank' || acc.accountType === 'card'
     );
     
-    // If Teller is configured, fetch fresh data
+    // Fetch fresh data from Teller for all bank accounts
     if (process.env.TELLER_APPLICATION_ID) {
+      const { mapTellerToFlint } = await import('./lib/teller-mapping.js');
+      
       for (const account of bankAccounts) {
         if (account.provider === 'teller' && account.accessToken) {
           try {
-            // Fetch account details from Teller
-            const response = await fetch(`https://api.teller.io/accounts/${account.externalAccountId}`, {
-              headers: {
-                'Authorization': `Basic ${Buffer.from(account.accessToken + ":").toString("base64")}`,
-              },
+            const authHeader = `Basic ${Buffer.from(account.accessToken + ":").toString("base64")}`;
+            
+            // Fetch account info to get type
+            const accountResponse = await fetch(`https://api.teller.io/accounts/${account.externalAccountId}`, {
+              headers: { 'Authorization': authHeader },
             });
             
-            if (response.ok) {
-              const tellerAccount = await response.json();
+            if (!accountResponse.ok) continue;
+            const tellerAccount = await accountResponse.json();
+            
+            // Fetch live balances from Teller Balances endpoint
+            const balancesResponse = await fetch(`https://api.teller.io/accounts/${account.externalAccountId}/balances`, {
+              headers: { 'Authorization': authHeader },
+            });
+            
+            if (balancesResponse.ok) {
+              const balances = await balancesResponse.json();
               
-              // Update balance in database - handle credit cards differently
-              let balanceToStore;
-              if (tellerAccount.type === 'credit') {
-                // For credit cards, show the debt (positive amount owed)
-                balanceToStore = tellerAccount.balance?.current ? Math.abs(tellerAccount.balance.current) : 0;
-              } else {
-                // For bank accounts, show available balance
-                balanceToStore = tellerAccount.balance?.available || 0;
-              }
+              // Use mapper to calculate proper display balance
+              const mapped = mapTellerToFlint(tellerAccount, balances);
               
+              // Update balance in database
               await storage.updateAccountBalance(
                 account.id,
-                String(balanceToStore)
+                String(mapped.displayBalance)
               );
             }
           } catch (error: any) {
