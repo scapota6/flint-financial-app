@@ -30,6 +30,7 @@ import Security from "@/pages/Security";
 import Monitoring from "@/pages/Monitoring";
 import TellerCallback from "@/pages/TellerCallback";
 import AdminDashboard from "@/pages/admin";
+import PasswordSetup from "@/pages/password-setup";
 
 // Public route wrapper that redirects authenticated users
 function PublicRoute({ component: Component }: { component: React.ComponentType }) {
@@ -66,6 +67,7 @@ function Router() {
                 <Route path="/landing" component={Landing} />
                 <Route path="/success" component={SuccessPage} />
                 <Route path="/landing/success" component={SuccessPage} />
+                <Route path="/setup-password" component={PasswordSetup} />
                 {/* Redirect any protected routes to login */}
                 <Route path="/dashboard">
                   {() => { window.location.href = '/api/login'; return null; }}

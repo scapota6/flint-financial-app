@@ -16,6 +16,7 @@ import {
 } from '@shared/schema';
 import { eq, desc, and, sql, count, gte, lte } from 'drizzle-orm';
 import { sendApprovalEmail, sendRejectionEmail, sendPasswordResetEmail } from '../services/email';
+import { hashToken, generateSecureToken } from '../lib/token-utils';
 
 const router = Router();
 
@@ -100,28 +101,56 @@ router.post('/applications/:id/approve', isAuthenticated, requireAdmin(), async 
       return res.status(400).json({ message: 'Application has already been reviewed' });
     }
 
+    // Check if user with this email already exists
+    const [existingUser] = await db
+      .select()
+      .from(users)
+      .where(eq(users.email, application.email));
+
+    if (existingUser) {
+      return res.status(400).json({ 
+        message: 'User with this email already exists',
+        conflict: true 
+      });
+    }
+
     // Create user account
     const userId = crypto.randomUUID();
-    const [newUser] = await db
-      .insert(users)
-      .values({
-        id: userId,
-        email: application.email,
-        firstName: application.firstName,
-        subscriptionTier: 'free',
-        subscriptionStatus: 'active',
-        isAdmin: false,
-        isBanned: false,
-      })
-      .returning();
+    let newUser;
+    
+    try {
+      [newUser] = await db
+        .insert(users)
+        .values({
+          id: userId,
+          email: application.email,
+          firstName: application.firstName,
+          subscriptionTier: 'free',
+          subscriptionStatus: 'active',
+          isAdmin: false,
+          isBanned: false,
+        })
+        .returning();
+    } catch (dbError: any) {
+      // Handle unique constraint error gracefully
+      if (dbError.code === '23505' || dbError.constraint?.includes('email')) {
+        return res.status(400).json({ 
+          message: 'User with this email already exists',
+          conflict: true 
+        });
+      }
+      throw dbError;
+    }
 
-    // Generate password setup token
-    const resetToken = crypto.randomBytes(32).toString('hex');
+    // Generate password setup token (plaintext)
+    const resetToken = generateSecureToken(32);
+    const tokenHash = hashToken(resetToken);
     const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
 
+    // Store only the HASH in database for security
     await db.insert(passwordResetTokens).values({
       userId: newUser.id,
-      token: resetToken,
+      token: tokenHash,
       expiresAt,
       used: false,
     });
@@ -137,7 +166,8 @@ router.post('/applications/:id/approve', isAuthenticated, requireAdmin(), async 
       .where(eq(accountApplications.id, applicationId));
 
     // Send approval email with password setup link
-    const passwordSetupLink = `${process.env.BASE_URL || req.protocol + '://' + req.get('host')}/reset-password?token=${resetToken}`;
+    // IMPORTANT: Send the UNHASHED token to the user
+    const passwordSetupLink = `${process.env.BASE_URL || req.protocol + '://' + req.get('host')}/setup-password?token=${resetToken}`;
     
     const emailResult = await sendApprovalEmail(
       application.email,
@@ -412,18 +442,21 @@ router.post('/users/:userId/reset-password', isAuthenticated, requireAdmin(), as
       return res.status(404).json({ message: 'User not found' });
     }
 
-    // Generate password reset token
-    const resetToken = crypto.randomBytes(32).toString('hex');
+    // Generate password reset token (plaintext)
+    const resetToken = generateSecureToken(32);
+    const tokenHash = hashToken(resetToken);
     const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
 
+    // Store only the HASH in database for security
     await db.insert(passwordResetTokens).values({
       userId: user.id,
-      token: resetToken,
+      token: tokenHash,
       expiresAt,
       used: false,
     });
 
     // Send password reset email
+    // IMPORTANT: Send the UNHASHED token to the user
     const resetLink = `${process.env.BASE_URL || req.protocol + '://' + req.get('host')}/reset-password?token=${resetToken}`;
     
     const emailResult = await sendPasswordResetEmail(
