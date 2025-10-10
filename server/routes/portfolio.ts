@@ -96,18 +96,56 @@ router.get("/summary", async (req: any, res) => {
       console.error('Error fetching SnapTrade accounts for portfolio:', error);
     }
 
-    // Fetch bank accounts
+    // Fetch bank accounts and credit cards from Teller
     try {
-      console.log('Fetching bank accounts for portfolio user:', userEmail);
-      const bankAccounts = await storage.getBankAccounts(userId);
+      console.log('Fetching Teller accounts for portfolio user:', userEmail);
+      const connectedAccounts = await storage.getConnectedAccounts(userId);
+      const tellerAccounts = connectedAccounts.filter(acc => acc.provider === 'teller');
       
-      for (const account of bankAccounts) {
-        const balance = parseFloat(account.balance) || 0;
-        totalCash += balance;
-        accountCount++;
+      for (const account of tellerAccounts) {
+        if (account.accessToken) {
+          try {
+            // Fetch account info and balances from Teller
+            const [accountResponse, balancesResponse] = await Promise.all([
+              fetch(`https://api.teller.io/accounts/${account.externalAccountId}`, {
+                headers: {
+                  'Authorization': `Basic ${Buffer.from(account.accessToken + ":").toString("base64")}`,
+                  'Accept': 'application/json'
+                },
+              }),
+              fetch(`https://api.teller.io/accounts/${account.externalAccountId}/balances`, {
+                headers: {
+                  'Authorization': `Basic ${Buffer.from(account.accessToken + ":").toString("base64")}`,
+                  'Accept': 'application/json'
+                },
+              })
+            ]);
+            
+            if (accountResponse.ok && balancesResponse.ok) {
+              const tellerAccount = await accountResponse.json();
+              const tellerBalances = await balancesResponse.json();
+              
+              // Check if this is a credit card
+              if (tellerAccount.subtype === 'credit_card') {
+                // For credit cards, ledger is the amount owed (debt)
+                const ledger = parseFloat(tellerBalances.ledger) || 0;
+                totalDebt += Math.abs(ledger); // Add absolute value to debt
+                console.log(`[Portfolio] Credit card debt from ${tellerAccount.name}: $${Math.abs(ledger)}`);
+              } else if (tellerAccount.type === 'depository') {
+                // For depository accounts, add to cash
+                const available = parseFloat(tellerBalances.available) || 0;
+                totalCash += available;
+              }
+              
+              accountCount++;
+            }
+          } catch (fetchError) {
+            console.error('Error fetching Teller account:', account.externalAccountId, fetchError);
+          }
+        }
       }
     } catch (error) {
-      console.error('Error fetching bank accounts for portfolio:', error);
+      console.error('Error fetching Teller accounts for portfolio:', error);
     }
     
     // Calculate totals
