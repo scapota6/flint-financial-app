@@ -491,6 +491,61 @@ router.post('/users/:userId/reset-password', isAuthenticated, requireAdmin(), as
   }
 });
 
+// POST /api/admin/users/:userId/set-password - Directly set user password (admin only)
+const setPasswordSchema = z.object({
+  password: z.string().min(8, 'Password must be at least 8 characters'),
+});
+
+router.post('/users/:userId/set-password', isAuthenticated, requireAdmin(), async (req: any, res) => {
+  try {
+    const { userId } = req.params;
+    const parseResult = setPasswordSchema.safeParse(req.body);
+
+    if (!parseResult.success) {
+      return res.status(400).json({
+        message: 'Invalid password',
+        errors: parseResult.error.errors,
+      });
+    }
+
+    const { password } = parseResult.data;
+
+    const [user] = await db
+      .select()
+      .from(users)
+      .where(eq(users.id, userId));
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Hash the password using bcrypt
+    const bcrypt = await import('bcrypt');
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Update user's password
+    await db
+      .update(users)
+      .set({ 
+        passwordHash: hashedPassword,
+        updatedAt: new Date(),
+      })
+      .where(eq(users.id, userId));
+
+    await logAdminAction(
+      req.adminEmail,
+      'set_user_password',
+      { userId, email: user.email },
+      userId
+    );
+
+    res.json({ message: 'Password set successfully' });
+  } catch (error) {
+    console.error('Error setting password:', error);
+    res.status(500).json({ message: 'Failed to set password' });
+  }
+});
+
 // PATCH /api/admin/users/:userId/tier - Update user subscription tier
 const updateTierSchema = z.object({
   tier: z.enum(['free', 'basic', 'pro', 'premium']),

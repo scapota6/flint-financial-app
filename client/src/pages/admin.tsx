@@ -455,8 +455,9 @@ function UsersTab() {
   const [search, setSearch] = useState('');
   const [tierFilter, setTierFilter] = useState('all');
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
-  const [actionDialog, setActionDialog] = useState<'delete' | 'reset' | 'tier' | 'ban' | null>(null);
+  const [actionDialog, setActionDialog] = useState<'delete' | 'reset' | 'tier' | 'ban' | 'setPassword' | null>(null);
   const [newTier, setNewTier] = useState('');
+  const [newPassword, setNewPassword] = useState('');
   const { toast } = useToast();
 
   const { data, isLoading } = useQuery<{ users: User[]; pagination: Pagination }>({
@@ -510,6 +511,19 @@ function UsersTab() {
       queryClient.invalidateQueries({ queryKey: ['/api/admin-panel/users'] });
       toast({ title: 'User ban status updated' });
       setActionDialog(null);
+    },
+  });
+
+  const setPasswordMutation = useMutation({
+    mutationFn: ({ userId, password }: { userId: string; password: string }) =>
+      apiRequest(`/api/admin-panel/users/${userId}/set-password`, {
+        method: 'POST',
+        body: JSON.stringify({ password }),
+      }),
+    onSuccess: () => {
+      toast({ title: 'Password set successfully' });
+      setActionDialog(null);
+      setNewPassword('');
     },
   });
 
@@ -581,7 +595,20 @@ function UsersTab() {
                     {user.lastLogin ? new Date(user.lastLogin).toLocaleDateString() : 'Never'}
                   </TableCell>
                   <TableCell>
-                    <div className="flex space-x-2">
+                    <div className="flex flex-wrap gap-2">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="border-gray-700"
+                        onClick={() => {
+                          setSelectedUser(user);
+                          setActionDialog('setPassword');
+                        }}
+                        data-testid={`button-set-password-${user.id}`}
+                      >
+                        <Key className="h-4 w-4 mr-1" />
+                        Set PW
+                      </Button>
                       <Button
                         size="sm"
                         variant="outline"
@@ -592,7 +619,7 @@ function UsersTab() {
                         }}
                         data-testid={`button-reset-${user.id}`}
                       >
-                        <Key className="h-4 w-4" />
+                        Reset
                       </Button>
                       <Button
                         size="sm"
@@ -765,6 +792,49 @@ function UsersTab() {
               data-testid="button-confirm-tier"
             >
               Update Tier
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={actionDialog === 'setPassword'} onOpenChange={() => {
+        setActionDialog(null);
+        setNewPassword('');
+      }}>
+        <DialogContent className="bg-gray-900 border-gray-800">
+          <DialogHeader>
+            <DialogTitle>Set Password</DialogTitle>
+            <DialogDescription>
+              Set a new password for {selectedUser?.email}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            <Label htmlFor="new-password" className="text-sm text-gray-400 mb-2 block">New Password (min 8 characters)</Label>
+            <Input
+              id="new-password"
+              type="text"
+              placeholder="Enter new password"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              className="bg-gray-800 border-gray-700"
+              data-testid="input-new-password"
+            />
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => {
+              setActionDialog(null);
+              setNewPassword('');
+            }} data-testid="button-cancel-set-password">
+              Cancel
+            </Button>
+            <Button
+              onClick={() =>
+                selectedUser && setPasswordMutation.mutate({ userId: selectedUser.id, password: newPassword })
+              }
+              disabled={setPasswordMutation.isPending || newPassword.length < 8}
+              data-testid="button-confirm-set-password"
+            >
+              Set Password
             </Button>
           </DialogFooter>
         </DialogContent>
