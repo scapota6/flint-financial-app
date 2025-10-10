@@ -151,6 +151,14 @@ router.get("/accounts/:accountId/details", async (req: any, res) => {
             ? currentBalance + availableCredit 
             : ((balances as any)?.credit_limit ?? (account as any).balance?.limit ?? null);
           
+          console.log('[Credit Card Info]', {
+            accountId: externalId,
+            ledgerBalance,
+            currentBalance,
+            availableCredit,
+            creditLimit
+          });
+          
           creditCardInfo = {
             // Payment & Due Date Information (all nullable - UI shows "—")
             paymentDueDate: (account as any).details?.payment_due_date ?? (account as any).details?.due_date ?? null,
