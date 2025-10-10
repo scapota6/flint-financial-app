@@ -1234,11 +1234,17 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
                         <div className="text-xs font-medium text-red-600 dark:text-red-400 uppercase tracking-wide">Credit Limit</div>
                         <div className="text-2xl font-bold text-red-700 dark:text-red-300 mt-1">
                           {(() => {
-                            const spent = data.creditCardInfo?.amountSpent || data.balances?.ledger || 0;
-                            const available = data.creditCardInfo?.availableCredit || data.balances?.available || 0;
-                            const creditLimit = data.creditCardInfo?.creditLimit || (spent + available);
+                            // Try to use provided credit limit first
+                            if (data.creditCardInfo?.creditLimit) {
+                              return fmtMoney(data.creditCardInfo.creditLimit);
+                            }
                             
-                            return creditLimit > 0 ? fmtMoney(creditLimit) : (
+                            // Otherwise calculate: ledger + available = credit limit
+                            const ledger = data.balances?.ledger || 0;
+                            const available = data.balances?.available || 0;
+                            const calculatedLimit = ledger + available;
+                            
+                            return calculatedLimit > 0 ? fmtMoney(calculatedLimit) : (
                               <span className="text-gray-500 dark:text-gray-400" title="Not provided by issuer">N/A</span>
                             );
                           })()}
@@ -1256,7 +1262,8 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
                       <div className="p-4 bg-white dark:bg-gray-800 rounded-lg border border-red-200 dark:border-red-700">
                         <div className="text-xs font-medium text-red-600 dark:text-red-400 uppercase tracking-wide">Available Credit</div>
                         <div className="text-2xl font-bold text-red-700 dark:text-red-300 mt-1">
-                          {data.creditCardInfo?.availableCredit ? fmtMoney(data.creditCardInfo?.availableCredit) : (
+                          {data.creditCardInfo?.availableCredit ? fmtMoney(data.creditCardInfo?.availableCredit) : 
+                           data.balances?.available ? fmtMoney(data.balances?.available) : (
                             <span className="text-gray-500 dark:text-gray-400" title="Not provided by issuer">N/A</span>
                           )}
                         </div>
