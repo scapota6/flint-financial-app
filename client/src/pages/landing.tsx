@@ -159,12 +159,6 @@ function Landing() {
                 Forgot password?
               </Link>
             </div>
-            <Button 
-              className="bg-purple-600 hover:bg-purple-700 text-white"
-              onClick={() => window.location.href = '/app'}
-            >
-              Go to app
-            </Button>
           </div>
         </nav>
       </header>
