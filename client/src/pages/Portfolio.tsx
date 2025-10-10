@@ -196,16 +196,6 @@ export default function Portfolio() {
             <p className="text-slate-400 mb-8 max-w-md mx-auto">
               Connect your investment accounts to see your portfolio performance and holdings.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button 
-                className="bg-purple-600 hover:bg-purple-700 text-white"
-                onClick={() => window.location.href = '/connections'}
-                data-testid="button-connect-accounts"
-              >
-                <PlusCircle className="h-4 w-4 mr-2" />
-                Connect accounts
-              </Button>
-            </div>
             {hasDisconnectedAccounts && (
               <div className="mt-8 p-4 bg-orange-900/20 border border-orange-700 rounded-lg max-w-md mx-auto">
                 <AlertCircle className="h-5 w-5 text-orange-400 mx-auto mb-2" />
