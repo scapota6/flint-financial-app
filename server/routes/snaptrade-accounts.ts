@@ -685,49 +685,73 @@ router.get('/accounts/:accountId/activities', isAuthenticated, async (req: any, 
       accountId
     });
     
-    // Get account activities
+    // Get account activities - returns paginated response with data array
     const activitiesResponse = await accountsApi.getAccountActivities({
       userId: credentials.snaptradeUserId!,
       userSecret: credentials.userSecret,
       accountId
     });
     
-    // Handle different response formats - data could be array or object with array inside
+    // Response structure: { data: [...activities] }
     let activities = [];
-    if (Array.isArray(activitiesResponse.data)) {
+    if (activitiesResponse.data && Array.isArray(activitiesResponse.data.data)) {
+      // Paginated response format
+      activities = activitiesResponse.data.data;
+    } else if (Array.isArray(activitiesResponse.data)) {
+      // Direct array format
       activities = activitiesResponse.data;
-    } else if (activitiesResponse.data && Array.isArray(activitiesResponse.data.activities)) {
-      activities = activitiesResponse.data.activities;
     } else if (Array.isArray(activitiesResponse)) {
+      // Response is the array itself
       activities = activitiesResponse;
     }
     
     console.log('[SnapTrade Accounts] Fetched', activities.length, 'activities for account:', accountId);
     
-    // Transform activities to normalized DTO
-    const transformedActivities: Activity[] = activities.map((activity: any) => ({
-      id: activity.id as UUID,
-      accountId: accountId as UUID,
-      type: (activity.type || activity.activity_type || '').toUpperCase().includes('TRADE') ? 'TRADE' :
-            (activity.type || activity.activity_type || '').toUpperCase().includes('DEPOSIT') ? 'DEPOSIT' :
-            (activity.type || activity.activity_type || '').toUpperCase().includes('WITHDRAWAL') ? 'WITHDRAWAL' :
-            (activity.type || activity.activity_type || '').toUpperCase().includes('DIVIDEND') ? 'DIVIDEND' :
-            (activity.type || activity.activity_type || '').toUpperCase().includes('FEE') ? 'FEE' : 'OTHER',
-      symbol: activity.symbol?.symbol?.symbol || activity.symbol?.raw_symbol || activity.symbol || null,
-      quantity: activity.quantity || activity.units || null,
-      price: activity.price || null,
-      amount: activity.net_amount || activity.amount ? {
-        amount: parseFloat(activity.net_amount || activity.amount) || 0,
-        currency: activity.currency?.code || 'USD'
-      } : null,
-      fees: activity.fee ? {
-        amount: parseFloat(activity.fee) || 0,
-        currency: activity.currency?.code || 'USD'
-      } : null,
-      description: activity.description || '',
-      date: activity.trade_date || activity.settlement_date || activity.created_date as ISODate,
-      settleDate: activity.settlement_date || null
-    }));
+    // Transform activities to normalized DTO per official API spec
+    const transformedActivities: Activity[] = activities.map((activity: any) => {
+      // Map transaction type from SnapTrade's standard types
+      const activityType = (activity.type || '').toUpperCase();
+      let mappedType: ActivityType = 'other';
+      
+      if (['BUY', 'SELL'].includes(activityType)) {
+        mappedType = 'trade';
+      } else if (['CONTRIBUTION', 'DEPOSIT'].includes(activityType)) {
+        mappedType = 'deposit';
+      } else if (['WITHDRAWAL'].includes(activityType)) {
+        mappedType = 'withdrawal';
+      } else if (['DIVIDEND', 'STOCK_DIVIDEND', 'REI'].includes(activityType)) {
+        mappedType = 'dividend';
+      } else if (['FEE', 'INTEREST'].includes(activityType)) {
+        mappedType = 'fee';
+      } else if (['TRANSFER'].includes(activityType)) {
+        mappedType = 'transfer';
+      }
+      
+      // Extract symbol from either symbol or option_symbol
+      const symbol = activity.symbol?.symbol || activity.symbol?.raw_symbol || 
+                     activity.option_symbol?.ticker || null;
+      const description = activity.symbol?.description || activity.description || '';
+      
+      return {
+        id: activity.id as UUID,
+        accountId: accountId as UUID,
+        type: mappedType,
+        symbol,
+        quantity: activity.units || null,
+        price: activity.price || null,
+        amount: activity.amount !== null && activity.amount !== undefined ? {
+          amount: parseFloat(String(activity.amount)) || 0,
+          currency: activity.currency?.code || 'USD'
+        } : null,
+        fees: activity.fee ? {
+          amount: parseFloat(String(activity.fee)) || 0,
+          currency: activity.currency?.code || 'USD'
+        } : null,
+        description,
+        date: activity.trade_date as ISODate,
+        settleDate: activity.settlement_date || null
+      };
+    });
     
     const accountActivities: AccountActivities = {
       accountId: accountId as UUID,

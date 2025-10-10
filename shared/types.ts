@@ -164,7 +164,7 @@ export interface OrdersResponse {
   orders: Order[];
 }
 
-export type ActivityType = "trade" | "dividend" | "interest" | "fee" | "transfer";
+export type ActivityType = "trade" | "dividend" | "interest" | "fee" | "transfer" | "deposit" | "withdrawal" | "other";
 
 export interface Activity {
   id: string;
