@@ -18,7 +18,7 @@ export function getInstitutionLogo(accountName: string) {
       logo: <img 
         src={`https://cdn.brandfetch.io/robinhood.com?c=${BRANDFETCH_CLIENT_ID}`}
         alt={displayName}
-        className="h-5 w-5 object-contain"
+        className="h-10 w-10 object-contain p-1"
       />,
       bgClass: 'bg-green-500/20',
       textClass: 'text-green-500'
@@ -30,7 +30,7 @@ export function getInstitutionLogo(accountName: string) {
       logo: <img 
         src={`https://cdn.brandfetch.io/chase.com?c=${BRANDFETCH_CLIENT_ID}`}
         alt={displayName}
-        className="h-5 w-5 object-contain"
+        className="h-10 w-10 object-contain p-1"
       />,
       bgClass: 'bg-blue-600/20',
       textClass: 'text-blue-600'
@@ -42,7 +42,7 @@ export function getInstitutionLogo(accountName: string) {
       logo: <img 
         src={`https://cdn.brandfetch.io/bankofamerica.com?c=${BRANDFETCH_CLIENT_ID}`}
         alt={displayName}
-        className="h-5 w-5 object-contain"
+        className="h-10 w-10 object-contain p-1"
       />,
       bgClass: 'bg-red-600/20',
       textClass: 'text-red-600'
@@ -54,7 +54,7 @@ export function getInstitutionLogo(accountName: string) {
       logo: <img 
         src={`https://cdn.brandfetch.io/citi.com?c=${BRANDFETCH_CLIENT_ID}`}
         alt={displayName}
-        className="h-5 w-5 object-contain"
+        className="h-10 w-10 object-contain p-1"
       />,
       bgClass: 'bg-blue-500/20',
       textClass: 'text-blue-500'
@@ -66,7 +66,7 @@ export function getInstitutionLogo(accountName: string) {
       logo: <img 
         src={`https://cdn.brandfetch.io/morganstanley.com?c=${BRANDFETCH_CLIENT_ID}`}
         alt={displayName}
-        className="h-5 w-5 object-contain"
+        className="h-10 w-10 object-contain p-1"
       />,
       bgClass: 'bg-indigo-600/20',
       textClass: 'text-indigo-600'
@@ -78,7 +78,7 @@ export function getInstitutionLogo(accountName: string) {
       logo: <img 
         src={`https://cdn.brandfetch.io/capitalone.com?c=${BRANDFETCH_CLIENT_ID}`}
         alt={displayName}
-        className="h-5 w-5 object-contain"
+        className="h-10 w-10 object-contain p-1"
       />,
       bgClass: 'bg-purple-600/20',
       textClass: 'text-purple-600'
@@ -90,7 +90,7 @@ export function getInstitutionLogo(accountName: string) {
       logo: <img 
         src={`https://cdn.brandfetch.io/wellsfargo.com?c=${BRANDFETCH_CLIENT_ID}`}
         alt={displayName}
-        className="h-5 w-5 object-contain"
+        className="h-10 w-10 object-contain p-1"
       />,
       bgClass: 'bg-amber-600/20',
       textClass: 'text-amber-600'
@@ -102,7 +102,7 @@ export function getInstitutionLogo(accountName: string) {
       logo: <img 
         src={`https://cdn.brandfetch.io/americanexpress.com?c=${BRANDFETCH_CLIENT_ID}`}
         alt={displayName}
-        className="h-5 w-5 object-contain"
+        className="h-10 w-10 object-contain p-1"
       />,
       bgClass: 'bg-cyan-600/20',
       textClass: 'text-cyan-600'
@@ -114,7 +114,7 @@ export function getInstitutionLogo(accountName: string) {
       logo: <img 
         src={`https://cdn.brandfetch.io/td.com?c=${BRANDFETCH_CLIENT_ID}`}
         alt={displayName}
-        className="h-5 w-5 object-contain"
+        className="h-10 w-10 object-contain p-1"
       />,
       bgClass: 'bg-emerald-600/20',
       textClass: 'text-emerald-600'
@@ -126,7 +126,7 @@ export function getInstitutionLogo(accountName: string) {
       logo: <img 
         src={`https://cdn.brandfetch.io/usbank.com?c=${BRANDFETCH_CLIENT_ID}`}
         alt={displayName}
-        className="h-5 w-5 object-contain"
+        className="h-10 w-10 object-contain p-1"
       />,
       bgClass: 'bg-slate-600/20',
       textClass: 'text-slate-600'
@@ -135,7 +135,7 @@ export function getInstitutionLogo(accountName: string) {
   
   // Fallback for unknown institutions
   return {
-    logo: <Building2 className="h-5 w-5" aria-label={displayName} />,
+    logo: <Building2 className="h-10 w-10 p-1" aria-label={displayName} />,
     bgClass: 'bg-gray-500/20',
     textClass: 'text-gray-500'
   };
