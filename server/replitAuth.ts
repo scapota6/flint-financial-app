@@ -1,5 +1,6 @@
 import * as client from "openid-client";
 import { Strategy, type VerifyFunction } from "openid-client/passport";
+import { Strategy as LocalStrategy } from "passport-local";
 
 import passport from "passport";
 import session from "express-session";
@@ -7,6 +8,7 @@ import type { Express, RequestHandler } from "express";
 import memoize from "memoizee";
 import connectPg from "connect-pg-simple";
 import { storage } from "./storage";
+import { verifyPassword } from "./lib/password-utils";
 
 if (!process.env.REPLIT_DOMAINS) {
   throw new Error("Environment variable REPLIT_DOMAINS not provided");
@@ -112,6 +114,50 @@ export async function setupAuth(app: Express) {
     passport.use(strategy);
   }
 
+  // Local authentication strategy
+  passport.use(new LocalStrategy(
+    {
+      usernameField: 'email',
+      passwordField: 'password'
+    },
+    async (email, password, done) => {
+      try {
+        // Find user by email
+        const { db } = await import('./db');
+        const { users } = await import('@shared/schema');
+        const { eq } = await import('drizzle-orm');
+        
+        const [user] = await db.select().from(users).where(eq(users.email, email));
+        
+        if (!user) {
+          return done(null, false, { message: 'Invalid email or password' });
+        }
+
+        if (!user.passwordHash) {
+          return done(null, false, { message: 'Password login not enabled for this account' });
+        }
+
+        // Verify password
+        const isValidPassword = await verifyPassword(password, user.passwordHash);
+        
+        if (!isValidPassword) {
+          return done(null, false, { message: 'Invalid email or password' });
+        }
+
+        // Return user object for session (local auth type)
+        return done(null, {
+          authType: 'local',
+          id: user.id,
+          email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName,
+        });
+      } catch (error) {
+        return done(error);
+      }
+    }
+  ));
+
   passport.serializeUser((user: Express.User, cb) => cb(null, user));
   passport.deserializeUser((user: Express.User, cb) => cb(null, user));
 
@@ -130,6 +176,9 @@ export async function setupAuth(app: Express) {
   });
 
   app.get("/api/logout", (req, res) => {
+    const user = req.user as any;
+    const isOAuthUser = user?.authType !== 'local';
+    
     // Properly revoke session
     req.logout((err) => {
       if (err) {
@@ -150,15 +199,67 @@ export async function setupAuth(app: Express) {
           path: '/'
         });
         
-        // Redirect to Replit logout endpoint
-        res.redirect(
-          client.buildEndSessionUrl(config, {
-            client_id: process.env.REPL_ID!,
-            post_logout_redirect_uri: `${req.protocol}://${req.hostname}`,
-          }).href
-        );
+        // For OAuth users, redirect to Replit logout
+        // For local users, just redirect to home
+        if (isOAuthUser) {
+          res.redirect(
+            client.buildEndSessionUrl(config, {
+              client_id: process.env.REPL_ID!,
+              post_logout_redirect_uri: `${req.protocol}://${req.hostname}`,
+            }).href
+          );
+        } else {
+          res.redirect('/');
+        }
       });
     });
+  });
+
+  // Local login route
+  app.post("/api/auth/local-login", (req, res, next) => {
+    passport.authenticate('local', (err: any, user: any, info: any) => {
+      if (err) {
+        return res.status(500).json({ 
+          success: false, 
+          message: 'Authentication error',
+          error: err.message 
+        });
+      }
+      
+      if (!user) {
+        return res.status(401).json({ 
+          success: false, 
+          message: info?.message || 'Invalid email or password' 
+        });
+      }
+      
+      // Create session
+      req.login(user, (loginErr) => {
+        if (loginErr) {
+          return res.status(500).json({ 
+            success: false, 
+            message: 'Failed to create session',
+            error: loginErr.message 
+          });
+        }
+        
+        // Update last login time
+        storage.updateLastLogin(user.id).catch(err => {
+          console.error('Failed to update last login:', err);
+        });
+        
+        return res.json({ 
+          success: true, 
+          message: 'Login successful',
+          user: {
+            id: user.id,
+            email: user.email,
+            firstName: user.firstName,
+            lastName: user.lastName,
+          }
+        });
+      });
+    })(req, res, next);
   });
 }
 
@@ -168,7 +269,31 @@ export const isAuthenticated: RequestHandler = async (req, res, next) => {
   // Add debugging breadcrumb header
   res.setHeader('X-Debug-Reason', 'AUTH_CHECKING');
 
-  if (!req.isAuthenticated() || !user?.expires_at) {
+  if (!req.isAuthenticated()) {
+    res.setHeader('X-Debug-Reason', 'AUTH_REQUIRED');
+    return res.status(401).json({ 
+      code: 'AUTH_REQUIRED',
+      message: "Authentication required" 
+    });
+  }
+
+  // For local auth users, just check if authenticated
+  if (user?.authType === 'local') {
+    res.setHeader('X-Debug-Reason', 'OK');
+    // Create claims-like structure for compatibility
+    if (!user.claims) {
+      user.claims = {
+        sub: user.id,
+        email: user.email,
+        first_name: user.firstName,
+        last_name: user.lastName,
+      };
+    }
+    return next();
+  }
+
+  // For OAuth users, check token expiration
+  if (!user?.expires_at) {
     res.setHeader('X-Debug-Reason', 'AUTH_REQUIRED');
     return res.status(401).json({ 
       code: 'AUTH_REQUIRED',

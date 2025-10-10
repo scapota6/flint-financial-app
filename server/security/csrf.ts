@@ -21,7 +21,8 @@ export function installCsrf(app: Express) {
     '/api/snaptrade/webhooks',
     '/api/applications/submit',
     '/api/auth/setup-password',
-    '/api/auth/request-reset'
+    '/api/auth/request-reset',
+    '/api/auth/local-login'  // Local password login doesn't require CSRF
   ];
   
   // Apply CSRF middleware with conditional logic
