@@ -18,6 +18,7 @@ const navLinks = [
   { href: '/portfolio', label: 'Portfolio', comingSoon: false },
   { href: '/accounts', label: 'Accounts', comingSoon: false },
   { href: '/transfers', label: 'Transfers (Coming Soon)', comingSoon: true },
+  { href: '/trading', label: 'Trading (Coming Soon)', comingSoon: true },
 ];
 
 export default function GlobalNavbar() {
