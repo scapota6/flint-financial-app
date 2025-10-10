@@ -137,6 +137,9 @@ router.get("/accounts/:accountId/details", async (req: any, res) => {
           httpStatus: 200
         });
         
+        console.log('[DEBUG] Full account object:', JSON.stringify(account, null, 2));
+        console.log('[DEBUG] Full balances object:', JSON.stringify(balances, null, 2));
+        
         // For credit cards, extract comprehensive payment and credit information
         let creditCardInfo = null;
         if (account.type === 'credit' || account.subtype === 'credit_card') {
