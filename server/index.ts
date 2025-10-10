@@ -141,19 +141,19 @@ const app = express();
   // 4) CSRF setup (must come BEFORE protected routes)
   installCsrf(app);
 
-  // Mount SnapTrade API router BEFORE auth setup (no auth required)
-  app.use("/api/snaptrade", snaptradeRouter);
-  
-  // Mount versioned SnapTrade routes with proper error handling
-  const versionedSnaptradeRouter = (await import('./routes/snaptrade')).default;
-  app.use("/api/snaptrade", versionedSnaptradeRouter);
-  
   // Start background services
   const { snaptradeBackgroundService } = await import('./services/snaptrade-background');
   await snaptradeBackgroundService.start();
 
   // Initialize authentication and base routes
   const server = await registerRoutes(app);
+  
+  // Mount SnapTrade API routers AFTER auth setup (require authentication)
+  app.use("/api/snaptrade", snaptradeRouter);
+  
+  // Mount versioned SnapTrade routes with proper error handling
+  const versionedSnaptradeRouter = (await import('./routes/snaptrade')).default;
+  app.use("/api/snaptrade", versionedSnaptradeRouter);
   
   // Mount new SnapTrade management routes (require authentication)
   const { snaptradeUsersRouter } = await import('./routes/snaptrade-users');

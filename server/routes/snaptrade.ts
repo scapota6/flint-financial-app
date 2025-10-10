@@ -66,7 +66,7 @@ function validate<T>(data: any, schema: z.ZodSchema<T>): T {
  * Rate limiting middleware for SnapTrade routes
  */
 const snaptradeRateLimit = rateLimitMiddleware((req) => {
-  return `snaptrade:${req.user?.id || 'anonymous'}`;
+  return `snaptrade:${req.user?.claims?.sub || 'anonymous'}`;
 });
 
 /**
@@ -117,7 +117,7 @@ router.post('/register', snaptradeRateLimit, async (req: any, res: any) => {
   const requestId = req.headers['x-request-id'] || nanoid();
 
   try {
-    const flintUserId = req.user?.id;
+    const flintUserId = req.user?.claims?.sub;
     if (!flintUserId) {
       return res.status(401).json({
         error: {
@@ -195,7 +195,7 @@ router.get('/connections', snaptradeRateLimit, async (req: any, res: any) => {
   const requestId = req.headers['x-request-id'] || nanoid();
 
   try {
-    const flintUserId = req.user?.id;
+    const flintUserId = req.user?.claims?.sub;
     if (!flintUserId) {
       return res.status(401).json({
         error: {
@@ -250,7 +250,7 @@ router.get('/accounts', snaptradeRateLimit, async (req: any, res: any) => {
   const requestId = req.headers['x-request-id'] || nanoid();
 
   try {
-    const flintUserId = req.user?.id;
+    const flintUserId = req.user?.claims?.sub;
     if (!flintUserId) {
       return res.status(401).json({
         error: {
@@ -304,7 +304,7 @@ router.get('/accounts', snaptradeRateLimit, async (req: any, res: any) => {
   const { accountId } = req.params;
 
   try {
-    const flintUserId = req.user?.id;
+    const flintUserId = req.user?.claims?.sub;
     if (!flintUserId) {
       return res.status(401).json({
         error: {
@@ -358,7 +358,7 @@ router.get('/accounts', snaptradeRateLimit, async (req: any, res: any) => {
   const { accountId } = req.params;
 
   try {
-    const flintUserId = req.user?.id;
+    const flintUserId = req.user?.claims?.sub;
     if (!flintUserId) {
       return res.status(401).json({
         error: {
@@ -412,7 +412,7 @@ router.get('/accounts', snaptradeRateLimit, async (req: any, res: any) => {
   const { accountId } = req.params;
 
   try {
-    const flintUserId = req.user?.id;
+    const flintUserId = req.user?.claims?.sub;
     if (!flintUserId) {
       return res.status(401).json({
         error: {
@@ -469,7 +469,7 @@ router.get('/accounts', snaptradeRateLimit, async (req: any, res: any) => {
   const { startDate, endDate, page = '1', pageSize = '50' } = req.query;
 
   try {
-    const flintUserId = req.user?.id;
+    const flintUserId = req.user?.claims?.sub;
     if (!flintUserId) {
       return res.status(401).json({
         error: {
@@ -536,7 +536,7 @@ router.get('/accounts', snaptradeRateLimit, async (req: any, res: any) => {
   const { startDate, endDate, page = '1', pageSize = '50' } = req.query;
 
   try {
-    const flintUserId = req.user?.id;
+    const flintUserId = req.user?.claims?.sub;
     if (!flintUserId) {
       return res.status(401).json({
         error: {
@@ -601,7 +601,7 @@ router.get('/symbols/search', snaptradeRateLimit, async (req: any, res: any) => 
   const { q: query } = req.query;
 
   try {
-    const flintUserId = req.user?.id;
+    const flintUserId = req.user?.claims?.sub;
     if (!flintUserId) {
       return res.status(401).json({
         error: {
@@ -663,7 +663,7 @@ router.post('/trades/impact', snaptradeRateLimit, async (req: any, res: any) => 
   const requestId = req.headers['x-request-id'] || nanoid();
 
   try {
-    const flintUserId = req.user?.id;
+    const flintUserId = req.user?.claims?.sub;
     if (!flintUserId) {
       return res.status(401).json({
         error: {
@@ -741,7 +741,7 @@ router.post('/trades/place', snaptradeRateLimit, async (req: any, res: any) => {
   const requestId = req.headers['x-request-id'] || nanoid();
 
   try {
-    const flintUserId = req.user?.id;
+    const flintUserId = req.user?.claims?.sub;
     if (!flintUserId) {
       return res.status(401).json({
         error: {
