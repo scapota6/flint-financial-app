@@ -40,6 +40,17 @@ export default function Accounts() {
   const { isAuthenticated } = useAuth();
   const [disconnecting, setDisconnecting] = useState<string | null>(null);
 
+  // Fetch user data to check subscription tier
+  const { data: userData } = useQuery<{ subscriptionTier?: string }>({
+    queryKey: ['/api/auth/user'],
+    enabled: isAuthenticated,
+    retry: false
+  });
+
+  // Check if user has premium tier (can disconnect accounts)
+  // Free, basic, and pro tiers cannot disconnect to prevent account rotation
+  const canDisconnect = userData?.subscriptionTier === 'premium';
+
   // Fetch brokerage accounts - only when authenticated
   const { data: brokerageData, isLoading: brokeragesLoading } = useQuery({
     queryKey: ['/api/snaptrade/accounts'],
@@ -195,17 +206,19 @@ export default function Accounts() {
                                 </div>
                               </div>
                             </div>
-                            <Button 
-                              size="sm" 
-                              variant="outline"
-                              onClick={() => handleDisconnectAccount(account.id, 'brokerage')}
-                              disabled={disconnecting === account.id}
-                              className="text-red-400 border-red-500/50 hover:bg-red-500/20"
-                              data-testid={`button-disconnect-${account.id}`}
-                            >
-                              <Unlink className="h-4 w-4 mr-2" />
-                              Disconnect
-                            </Button>
+                            {canDisconnect && (
+                              <Button 
+                                size="sm" 
+                                variant="outline"
+                                onClick={() => handleDisconnectAccount(account.id, 'brokerage')}
+                                disabled={disconnecting === account.id}
+                                className="text-red-400 border-red-500/50 hover:bg-red-500/20"
+                                data-testid={`button-disconnect-${account.id}`}
+                              >
+                                <Unlink className="h-4 w-4 mr-2" />
+                                Disconnect
+                              </Button>
+                            )}
                           </div>
                         </CardHeader>
                       </Card>
@@ -254,17 +267,19 @@ export default function Accounts() {
                                 </Badge>
                               </div>
                             </div>
-                            <Button 
-                              size="sm" 
-                              variant="outline"
-                              onClick={() => handleDisconnectAccount(account.id.toString(), 'bank')}
-                              disabled={disconnecting === account.id.toString()}
-                              className="text-red-400 border-red-500/50 hover:bg-red-500/20"
-                              data-testid={`button-disconnect-${account.id}`}
-                            >
-                              <Unlink className="h-4 w-4 mr-2" />
-                              Disconnect
-                            </Button>
+                            {canDisconnect && (
+                              <Button 
+                                size="sm" 
+                                variant="outline"
+                                onClick={() => handleDisconnectAccount(account.id.toString(), 'bank')}
+                                disabled={disconnecting === account.id.toString()}
+                                className="text-red-400 border-red-500/50 hover:bg-red-500/20"
+                                data-testid={`button-disconnect-${account.id}`}
+                              >
+                                <Unlink className="h-4 w-4 mr-2" />
+                                Disconnect
+                              </Button>
+                            )}
                           </div>
                         </CardHeader>
                       </Card>

@@ -1,0 +1,37 @@
+POST https://28036d48-949d-4fd5-9e63-54ed8b7fd662-00-1i1qwnyczdy9x.kirk.replit.dev/api/accounts/disconnect 403 (Forbidden)
+handleDisconnectAccount @ Accounts.tsx:81
+onClick @ Accounts.tsx:201
+callCallback2 @ chunk-RPCDYKBN.js?v=33bc90bf:3674
+invokeGuardedCallbackDev @ chunk-RPCDYKBN.js?v=33bc90bf:3699
+invokeGuardedCallback @ chunk-RPCDYKBN.js?v=33bc90bf:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-RPCDYKBN.js?v=33bc90bf:3736
+executeDispatch @ chunk-RPCDYKBN.js?v=33bc90bf:7014
+processDispatchQueueItemsInOrder @ chunk-RPCDYKBN.js?v=33bc90bf:7034
+processDispatchQueue @ chunk-RPCDYKBN.js?v=33bc90bf:7043
+dispatchEventsForPlugins @ chunk-RPCDYKBN.js?v=33bc90bf:7051
+(anonymous) @ chunk-RPCDYKBN.js?v=33bc90bf:7174
+batchedUpdates$1 @ chunk-RPCDYKBN.js?v=33bc90bf:18913
+batchedUpdates @ chunk-RPCDYKBN.js?v=33bc90bf:3579
+dispatchEventForPluginEventSystem @ chunk-RPCDYKBN.js?v=33bc90bf:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-RPCDYKBN.js?v=33bc90bf:5478
+dispatchEvent @ chunk-RPCDYKBN.js?v=33bc90bf:5472
+dispatchDiscreteEvent @ chunk-RPCDYKBN.js?v=33bc90bf:5449Understand this error
+Accounts.tsx:81  POST https://28036d48-949d-4fd5-9e63-54ed8b7fd662-00-1i1qwnyczdy9x.kirk.replit.dev/api/banks/disconnect 403 (Forbidden)
+handleDisconnectAccount @ Accounts.tsx:81
+onClick @ Accounts.tsx:260
+callCallback2 @ chunk-RPCDYKBN.js?v=33bc90bf:3674
+invokeGuardedCallbackDev @ chunk-RPCDYKBN.js?v=33bc90bf:3699
+invokeGuardedCallback @ chunk-RPCDYKBN.js?v=33bc90bf:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-RPCDYKBN.js?v=33bc90bf:3736
+executeDispatch @ chunk-RPCDYKBN.js?v=33bc90bf:7014
+processDispatchQueueItemsInOrder @ chunk-RPCDYKBN.js?v=33bc90bf:7034
+processDispatchQueue @ chunk-RPCDYKBN.js?v=33bc90bf:7043
+dispatchEventsForPlugins @ chunk-RPCDYKBN.js?v=33bc90bf:7051
+(anonymous) @ chunk-RPCDYKBN.js?v=33bc90bf:7174
+batchedUpdates$1 @ chunk-RPCDYKBN.js?v=33bc90bf:18913
+batchedUpdates @ chunk-RPCDYKBN.js?v=33bc90bf:3579
+dispatchEventForPluginEventSystem @ chunk-RPCDYKBN.js?v=33bc90bf:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-RPCDYKBN.js?v=33bc90bf:5478
+dispatchEvent @ chunk-RPCDYKBN.js?v=33bc90bf:5472
+dispatchDiscreteEvent @ chunk-RPCDYKBN.js?v=33bc90bf:5449Understand this error
+Accounts.tsx:81  POST https://28036d48-949d-4fd5-9e63-54ed8b7fd662-00-1i1qwnyczdy9x.kirk.replit.dev/api/banks/disconnect 403 (Forbidden)
