@@ -220,8 +220,8 @@ export default function Portfolio() {
     );
   }
 
-  // Use totals from connected accounts only
-  const netWorth = totals.totalBalance;
+  // Use totals from portfolio summary for consistency
+  const netWorth = summary?.totals?.netWorth || totals.totalBalance;
   const dayValue = summary?.performance?.dayValue || 0;
   const dayPct = summary?.performance?.dayPct || 0;
   const isPositive = dayValue >= 0;
