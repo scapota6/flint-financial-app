@@ -144,3 +144,7 @@
     "bufferutil": "^4.0.8"
   }
 }
+"overrides": {
+    "axios": "^1.12.0"
+  }
+}
