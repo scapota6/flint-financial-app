@@ -145,6 +145,14 @@ const app = express();
   const { snaptradeBackgroundService } = await import('./services/snaptrade-background');
   await snaptradeBackgroundService.start();
 
+  // Validate SnapTrade credentials on startup
+  const { validateSnapTradeCredentials } = await import('./lib/snaptrade');
+  validateSnapTradeCredentials().then(isValid => {
+    if (!isValid) {
+      console.warn('[Server] ⚠️  Starting with invalid SnapTrade credentials - SnapTrade features will not work');
+    }
+  });
+
   // Initialize authentication and base routes
   const server = await registerRoutes(app);
   

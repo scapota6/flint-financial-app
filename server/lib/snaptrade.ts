@@ -32,6 +32,37 @@ console.log('[SnapTrade] SDK init', {
   redirectUri: process.env.SNAPTRADE_REDIRECT_URI,
 });
 
+/**
+ * Validate SnapTrade credentials on startup
+ */
+export async function validateSnapTradeCredentials() {
+  try {
+    console.log('[SnapTrade] Validating API credentials...');
+    
+    const status = await snaptrade.apiStatus.check();
+    
+    console.log('[SnapTrade] ✅ API credentials valid:', {
+      status: status.data?.online ? 'online' : 'offline',
+      timestamp: status.data?.timestamp
+    });
+    
+    return true;
+  } catch (error: any) {
+    console.error('[SnapTrade] ❌ API credentials INVALID:', {
+      error: error?.message,
+      statusCode: error?.status,
+      responseBody: error?.responseBody
+    });
+    
+    console.error('\n⚠️  SNAPTRADE CREDENTIALS ERROR ⚠️');
+    console.error('Your SnapTrade API credentials appear to be invalid or expired.');
+    console.error('Please update SNAPTRADE_CLIENT_ID and SNAPTRADE_CONSUMER_KEY in your secrets.');
+    console.error('Get new credentials from: https://docs.snaptrade.com\n');
+    
+    return false;
+  }
+}
+
 // Version-safe wrapper functions
 export async function registerUser(userId: string, flintUserId?: string) {
   return await monitoredSnapTradeCall(

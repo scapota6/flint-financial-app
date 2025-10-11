@@ -282,11 +282,23 @@ export default function SimpleConnectButtons({ accounts, userTier, isAdmin }: Si
     },
     onError: (error: any) => {
       console.error('📈 SnapTrade Connect Error:', error);
-      toast({
-        title: "Connection Failed",
-        description: error.message || "Unable to connect brokerage account.",
-        variant: "destructive",
-      });
+      
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      
+      // Check for credential errors
+      if (errorMessage.includes('credentials') || errorMessage.includes('503')) {
+        toast({
+          title: "Service Temporarily Unavailable",
+          description: "The brokerage connection service is experiencing issues. Please try again later or contact support.",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Connection Failed",
+          description: errorMessage,
+          variant: "destructive",
+        });
+      }
     },
   });
 

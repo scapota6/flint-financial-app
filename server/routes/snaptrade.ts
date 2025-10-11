@@ -268,6 +268,23 @@ router.post('/register', snaptradeRateLimit, async (req: any, res: any) => {
       }
     }
     
+    // Check if it's a 401 authentication error
+    if (error?.status === 401 || error?.responseBody?.status_code === 401) {
+      console.error('[SnapTrade Register] Authentication failed - invalid credentials:', {
+        clientId: process.env.SNAPTRADE_CLIENT_ID?.slice(-6),
+        error: error?.responseBody?.detail || error?.message
+      });
+      
+      return res.status(503).json({
+        error: {
+          code: 'SNAPTRADE_CREDENTIALS_INVALID',
+          message: 'SnapTrade API credentials are invalid. Please contact support.',
+          details: 'The SnapTrade integration is not properly configured.',
+          requestId
+        }
+      });
+    }
+    
     return handleSnapTradeError(error, 'register', res);
   }
 });
