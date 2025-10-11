@@ -38,6 +38,11 @@ router.get('/checkout/:ctaId', async (req, res) => {
       });
     }
 
+    // Generate base URL for success redirect
+    const baseUrl = process.env.REPLIT_DEPLOYMENT 
+      ? `https://${process.env.REPLIT_DEPLOYMENT}` 
+      : 'http://localhost:5000';
+
     // Create checkout via Lemon Squeezy API
     const checkoutData: any = {
       data: {
@@ -65,9 +70,10 @@ router.get('/checkout/:ctaId', async (req, res) => {
       },
     };
 
-    // Add email if provided
+    // Add email and success URL if provided
     if (email) {
       checkoutData.data.attributes.checkout_data.email = email;
+      checkoutData.data.attributes.checkout_options.success_url = `${baseUrl}/payment-success?email=${encodeURIComponent(email as string)}`;
     }
 
     // Make API request to create checkout
