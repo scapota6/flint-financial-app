@@ -6,9 +6,10 @@
 import { Router } from 'express';
 import { z } from 'zod';
 import { nanoid } from 'nanoid';
+import crypto from 'crypto';
 import { db } from '../db';
 import { snaptradeUsers, snaptradeConnections } from '@shared/schema';
-import { eq, desc } from 'drizzle-orm';
+import { eq, desc, sql } from 'drizzle-orm';
 import { normalizeSnapTradeError } from '../lib/normalize-snaptrade-error';
 import { rateLimitMiddleware, fetchWithRateLimit } from '../lib/rate-limiting';
 import { handleBrokenConnection, snaptradeApiCall } from '../lib/broken-connections';
@@ -113,6 +114,8 @@ function handleSnapTradeError(error: any, context: string, res: any) {
 /**
  * POST /api/snaptrade/register
  * Registers user if missing; persists userSecret
+ * Uses PostgreSQL advisory locks to prevent race conditions and double charges
+ * Advisory locks work BEFORE any row exists, eliminating the race condition window
  */
 router.post('/register', snaptradeRateLimit, async (req: any, res: any) => {
   const requestId = req.headers['x-request-id'] || nanoid();
@@ -131,7 +134,7 @@ router.post('/register', snaptradeRateLimit, async (req: any, res: any) => {
 
     console.log('[SnapTrade Register] Starting registration:', { flintUserId, requestId });
 
-    // Check if user is already registered
+    // 1. First check outside transaction (fast path for existing users)
     const [existingUser] = await db
       .select()
       .from(snaptradeUsers)
@@ -139,7 +142,7 @@ router.post('/register', snaptradeRateLimit, async (req: any, res: any) => {
       .limit(1);
 
     if (existingUser) {
-      console.log('[SnapTrade Register] User already registered:', { 
+      console.log('[SnapTrade Register] User already registered (fast path):', { 
         flintUserId, 
         hasSecret: !!existingUser.userSecret,
         requestId 
@@ -153,37 +156,118 @@ router.post('/register', snaptradeRateLimit, async (req: any, res: any) => {
       }));
     }
 
-    // Register new user with SnapTrade
-    const registration = await snaptradeApiCall(
-      () => registerUser(flintUserId),
-      'register',
-      'user-registration'
-    );
+    // 2. Use PostgreSQL advisory lock to prevent race conditions BEFORE any row exists
+    // Hash the flintUserId to get a numeric lockId for pg_advisory_xact_lock
+    const lockId = parseInt(
+      crypto.createHash('md5').update(flintUserId).digest('hex').substring(0, 15),
+      16
+    ) % 2147483647; // Keep within PostgreSQL bigint range
 
-    console.log('[SnapTrade Register] Registration successful:', { 
-      flintUserId, 
-      userId: registration.data.userId,
-      requestId 
+    const result = await db.transaction(async (tx) => {
+      // Acquire advisory lock - this BLOCKS other transactions with same lockId
+      // This works even when no row exists yet!
+      await tx.execute(sql`SELECT pg_advisory_xact_lock(${lockId})`);
+      
+      console.log('[SnapTrade Register] Advisory lock acquired:', { flintUserId, lockId, requestId });
+      
+      // Double-check after acquiring lock (someone else might have created it while we waited)
+      const [lockedUser] = await tx
+        .select()
+        .from(snaptradeUsers)
+        .where(eq(snaptradeUsers.flintUserId, flintUserId))
+        .limit(1);
+      
+      if (lockedUser) {
+        // Another request already created it while we waited for lock
+        console.log('[SnapTrade Register] User created by concurrent request (found after lock):', { 
+          flintUserId, 
+          requestId 
+        });
+        
+        return {
+          userId: flintUserId,
+          userSecret: lockedUser.userSecret,
+          createdAt: lockedUser.createdAt,
+          rotatedAt: lockedUser.rotatedAt,
+          isExisting: true
+        };
+      }
+      
+      // NOW safe to call SnapTrade - we have the lock, others are blocked
+      console.log('[SnapTrade Register] Creating new SnapTrade user (acquired lock):', { flintUserId, requestId });
+      
+      const registration = await snaptradeApiCall(
+        () => registerUser(flintUserId),
+        'register',
+        'user-registration'
+      );
+
+      console.log('[SnapTrade Register] Registration successful:', { 
+        flintUserId, 
+        userId: registration.data.userId,
+        requestId 
+      });
+      
+      // Save to database within same transaction
+      const [savedUser] = await tx
+        .insert(snaptradeUsers)
+        .values({
+          flintUserId: flintUserId,
+          userSecret: registration.data.userSecret!
+        })
+        .returning();
+      
+      return {
+        userId: registration.data.userId,
+        userSecret: registration.data.userSecret,
+        createdAt: savedUser.createdAt,
+        rotatedAt: savedUser.rotatedAt,
+        isExisting: false
+      };
+      
+      // Advisory lock automatically released at end of transaction
     });
-
-    // Persist userSecret in database
-    const [savedUser] = await db
-      .insert(snaptradeUsers)
-      .values({
-        flintUserId: flintUserId,
-        userSecret: registration.data.userSecret!
-      })
-      .returning();
-
-    const response = adaptSnapTradeUserRegistration({
-      userId: registration.data.userId,
-      userSecret: registration.data.userSecret,
-      createdAt: savedUser.createdAt
-    });
-
-    res.json(response);
+    
+    // Return appropriate response based on whether user was existing or new
+    if (result.isExisting) {
+      return res.json(adaptSnapTradeUserStatus({
+        userId: result.userId,
+        userSecret: result.userSecret,
+        createdAt: result.createdAt,
+        rotatedAt: result.rotatedAt
+      }));
+    } else {
+      return res.json(adaptSnapTradeUserRegistration({
+        userId: result.userId,
+        userSecret: result.userSecret,
+        createdAt: result.createdAt
+      }));
+    }
 
   } catch (error: any) {
+    // If we still somehow get duplicate error (23505), fetch and return existing
+    if (error.code === '23505') {
+      console.error('[SnapTrade Register] Duplicate constraint violation, fetching existing:', { 
+        flintUserId: req.user?.claims?.sub, 
+        requestId 
+      });
+      
+      const [existing] = await db
+        .select()
+        .from(snaptradeUsers)
+        .where(eq(snaptradeUsers.flintUserId, req.user?.claims?.sub))
+        .limit(1);
+        
+      if (existing) {
+        return res.json(adaptSnapTradeUserStatus({
+          userId: req.user?.claims?.sub,
+          userSecret: existing.userSecret,
+          createdAt: existing.createdAt,
+          rotatedAt: existing.rotatedAt
+        }));
+      }
+    }
+    
     return handleSnapTradeError(error, 'register', res);
   }
 });

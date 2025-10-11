@@ -1,35 +1,116 @@
-import fs from 'fs';
-import path from 'path';
+/**
+ * SnapTrade User Store - Database-backed
+ * 
+ * Migrated from file storage to database for better reliability and duplicate prevention.
+ * The snaptradeUsers table has a PRIMARY KEY on flintUserId, which prevents duplicate registrations.
+ */
+
+import { db } from '../db';
+import { snaptradeUsers } from '@shared/schema';
+import { eq } from 'drizzle-orm';
+
 type Rec = { userId: string; userSecret: string };
-type DB = Record<string, Rec>;
-const DIR = path.join(process.cwd(), 'data');
-const FILE = path.join(DIR, 'snaptrade-users.json');
 
-function ensure(){ if(!fs.existsSync(DIR)) fs.mkdirSync(DIR,{recursive:true}); if(!fs.existsSync(FILE)) fs.writeFileSync(FILE,'{}','utf8'); }
-function read(): DB { ensure(); try { return JSON.parse(fs.readFileSync(FILE,'utf8')) as DB; } catch { return {}; } }
-function write(db: DB){ fs.writeFileSync(FILE, JSON.stringify(db,null,2), 'utf8'); }
+/**
+ * Get SnapTrade user by Flint user ID
+ * Returns user registration data (userId, userSecret) or null if not found
+ */
+export async function getSnapUser(flintUserId: string): Promise<Rec | null> {
+  try {
+    const [user] = await db
+      .select()
+      .from(snaptradeUsers)
+      .where(eq(snaptradeUsers.flintUserId, flintUserId))
+      .limit(1);
 
-export async function getSnapUser(flintUserId: string){ 
-  const db = read();
-  // Look for entry by Flint user ID (the key) 
-  // Try multiple formats for backwards compatibility
-  return db[flintUserId] || db[`flint_${flintUserId}`] || null; 
+    if (!user) {
+      return null;
+    }
+
+    // Return in the format expected by existing code
+    return {
+      userId: flintUserId, // SnapTrade userId equals flintUserId in our system
+      userSecret: user.userSecret
+    };
+  } catch (error) {
+    console.error('[SnapUser Store] Error getting user:', error);
+    return null;
+  }
 }
 
-export async function saveSnapUser(rec: Rec & { flintUserId?: string }){ 
-  const db = read(); 
-  // Use flintUserId as key if provided, otherwise use userId
-  const key = rec.flintUserId || rec.userId;
-  db[key] = rec; 
-  write(db); 
+/**
+ * Save SnapTrade user credentials
+ * Primary key constraint on flintUserId prevents duplicates
+ */
+export async function saveSnapUser(rec: Rec & { flintUserId?: string }): Promise<void> {
+  try {
+    const flintUserId = rec.flintUserId || rec.userId;
+
+    // Check if user already exists
+    const existing = await getSnapUser(flintUserId);
+    
+    if (existing) {
+      // Update existing user
+      await db
+        .update(snaptradeUsers)
+        .set({
+          userSecret: rec.userSecret,
+          rotatedAt: new Date()
+        })
+        .where(eq(snaptradeUsers.flintUserId, flintUserId));
+    } else {
+      // Insert new user
+      await db.insert(snaptradeUsers).values({
+        flintUserId: flintUserId,
+        userSecret: rec.userSecret,
+        createdAt: new Date(),
+        rotatedAt: null
+      });
+    }
+  } catch (error: any) {
+    // Check for unique constraint violation
+    if (error.code === '23505') {
+      console.error('[SnapUser Store] Duplicate user - prevented by database constraint');
+      throw new Error('SnapTrade user already exists');
+    }
+    console.error('[SnapUser Store] Error saving user:', error);
+    throw error;
+  }
 }
 
-export async function deleteSnapUser(flintUserId: string){ 
-  const db = read(); 
-  delete db[flintUserId]; 
-  write(db); 
+/**
+ * Delete SnapTrade user credentials
+ */
+export async function deleteSnapUser(flintUserId: string): Promise<void> {
+  try {
+    await db
+      .delete(snaptradeUsers)
+      .where(eq(snaptradeUsers.flintUserId, flintUserId));
+  } catch (error) {
+    console.error('[SnapUser Store] Error deleting user:', error);
+    throw error;
+  }
 }
 
-export async function getAllSnapUsers() {
-  return read();
+/**
+ * Get all SnapTrade users
+ * Returns a map of flintUserId → user data for backwards compatibility
+ */
+export async function getAllSnapUsers(): Promise<Record<string, Rec>> {
+  try {
+    const users = await db.select().from(snaptradeUsers);
+
+    const result: Record<string, Rec> = {};
+    for (const user of users) {
+      result[user.flintUserId] = {
+        userId: user.flintUserId, // SnapTrade userId equals flintUserId
+        userSecret: user.userSecret
+      };
+    }
+
+    return result;
+  } catch (error) {
+    console.error('[SnapUser Store] Error getting all users:', error);
+    return {};
+  }
 }
