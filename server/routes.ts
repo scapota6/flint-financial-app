@@ -33,6 +33,7 @@ import { snaptradeConnectionsRouter } from './routes/snaptrade-connections';
 import { snaptradeTradingRouter } from './routes/snaptrade-trading';
 import { snaptradeWebhooksRouter } from './routes/snaptrade-webhooks';
 import snaptradeRouter from './routes/snaptrade';
+import snaptradeDiagnosticsRouter from './routes/snaptrade-diagnostics';
 import adminRouter from './routes/admin';
 import adminPanelRouter from './routes/admin-panel';
 import userPasswordRouter from './routes/user-password';
@@ -1939,6 +1940,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Mount the connections SnapTrade routes
   const connectionsSnaptradeRouter = await import('./routes/connections.snaptrade');
   app.use('/api', connectionsSnaptradeRouter.default);
+  
+  // Mount SnapTrade diagnostics router FIRST (more specific path)
+  app.use('/api/snaptrade/diagnostics', snaptradeDiagnosticsRouter);
   
   // Mount SnapTrade accounts router
   const { snaptradeAccountsRouter } = await import('./routes/snaptrade-accounts');
