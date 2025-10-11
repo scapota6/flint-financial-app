@@ -28,7 +28,12 @@ export function installCsrf(app: Express) {
   
   // Apply CSRF middleware with conditional logic
   app.use((req, res, next) => {
-    const isPublicPath = publicPaths.some(path => req.path === path) || req.url.includes('/webhooks');
+    const isPublicPath = publicPaths.some(path => req.path === path) || req.url.includes('/webhook');
+    
+    // Debug logging for webhook paths
+    if (req.path.includes('webhook') || req.url.includes('webhook')) {
+      console.log('[CSRF] Webhook request - path:', req.path, 'url:', req.url, 'isPublic:', isPublicPath);
+    }
     
     if (isPublicPath) {
       console.log('[CSRF] Skipping CSRF for public path:', req.path);
