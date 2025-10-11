@@ -247,6 +247,7 @@ function Landing() {
                 size="lg" 
                 className="w-full lg:w-auto bg-purple-600 hover:bg-purple-700 text-white px-8 py-4 text-lg"
                 data-cta="annual-unlimited"
+                data-testid="button-cta-annual-unlimited"
                 onClick={() => handleCTAClick('annual-unlimited', '$499.99')}
               >
                 Start with Unlimited Annual – $499.99
@@ -512,6 +513,7 @@ function Landing() {
                   <Button 
                     className="w-full bg-purple-600 hover:bg-purple-700 text-white"
                     data-cta={isYearly ? 'unlimited-yearly' : 'unlimited-monthly'}
+                    data-testid={isYearly ? 'button-cta-unlimited-yearly' : 'button-cta-unlimited-monthly'}
                     onClick={() => handleCTAClick(
                       isYearly ? 'unlimited-yearly' : 'unlimited-monthly', 
                       isYearly ? '$499.99' : '$49.99'
