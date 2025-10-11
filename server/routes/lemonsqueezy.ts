@@ -11,7 +11,7 @@ import { generateSecureToken, hashToken } from '../lib/token-utils';
 
 const router = Router();
 
-// Get checkout URL for a specific CTA/variant
+// Get checkout URL for a specific CTA/variant using Lemon Squeezy API
 router.get('/checkout/:ctaId', async (req, res) => {
   try {
     const { ctaId } = req.params;
@@ -27,16 +27,86 @@ router.get('/checkout/:ctaId', async (req, res) => {
       });
     }
 
-    // Generate checkout URL
-    const checkoutUrl = getLemonSqueezyCheckoutUrl(
-      variant.variantId,
-      email as string | undefined
-    );
+    // Get Lemon Squeezy credentials
+    const apiKey = process.env.LEMONSQUEEZY_API_KEY;
+    const storeId = process.env.LEMONSQUEEZY_STORE_ID;
 
-    logger.info('Checkout URL generated', { 
+    if (!apiKey || !storeId) {
+      logger.error('Lemon Squeezy credentials not configured');
+      return res.status(500).json({ 
+        error: 'Payment system not configured' 
+      });
+    }
+
+    // Create checkout via Lemon Squeezy API
+    const checkoutData: any = {
+      data: {
+        type: 'checkouts',
+        attributes: {
+          checkout_options: {
+            embed: true, // Enable overlay mode
+          },
+          checkout_data: {},
+        },
+        relationships: {
+          store: {
+            data: {
+              type: 'stores',
+              id: storeId,
+            },
+          },
+          variant: {
+            data: {
+              type: 'variants',
+              id: variant.variantId,
+            },
+          },
+        },
+      },
+    };
+
+    // Add email if provided
+    if (email) {
+      checkoutData.data.attributes.checkout_data.email = email;
+    }
+
+    // Make API request to create checkout
+    const response = await fetch('https://api.lemonsqueezy.com/v1/checkouts', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/vnd.api+json',
+        'Content-Type': 'application/vnd.api+json',
+        'Authorization': `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify(checkoutData),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      logger.error('Lemon Squeezy API error', { 
+        status: response.status,
+        error: errorData 
+      });
+      return res.status(500).json({ 
+        error: 'Unable to create checkout session' 
+      });
+    }
+
+    const checkoutResponse = await response.json();
+    const checkoutUrl = checkoutResponse.data?.attributes?.url;
+
+    if (!checkoutUrl) {
+      logger.error('No checkout URL in API response', { response: checkoutResponse });
+      return res.status(500).json({ 
+        error: 'Invalid checkout response' 
+      });
+    }
+
+    logger.info('Checkout created via API', { 
       metadata: {
         ctaId, 
         variantId: variant.variantId,
+        checkoutId: checkoutResponse.data?.id,
         email: email || 'none'
       }
     });
@@ -50,9 +120,9 @@ router.get('/checkout/:ctaId', async (req, res) => {
       }
     });
   } catch (error: any) {
-    logger.error('Checkout URL generation failed', { error: error.message });
+    logger.error('Checkout creation failed', { error: error.message });
     res.status(500).json({ 
-      error: 'Unable to generate checkout URL' 
+      error: 'Unable to create checkout' 
     });
   }
 });
