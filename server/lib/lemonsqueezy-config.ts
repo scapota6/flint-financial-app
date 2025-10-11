@@ -85,8 +85,8 @@ export const LEMONSQUEEZY_VARIANTS: Record<string, VariantConfig> = {
   },
   
   // Unlimited Yearly
-  '658476': {
-    variantId: '658476',
+  '1034010': {
+    variantId: '1034010',
     name: 'Flint Unlimited Yearly',
     tier: 'premium',
     interval: 'yearly',
@@ -105,8 +105,8 @@ export const CTA_TO_VARIANT: Record<string, string> = {
   'pro-yearly': '1034022',
   'unlimited-monthly': '1033916',
   'unlimited-6mo': '1034012',
-  'unlimited-yearly': '658476',
-  'annual-unlimited': '658476', // Alias for unlimited-yearly
+  'unlimited-yearly': '1034010',
+  'annual-unlimited': '1034010', // Alias for unlimited-yearly
 };
 
 // Helper function to get variant config by CTA ID
