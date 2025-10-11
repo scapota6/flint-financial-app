@@ -49,7 +49,6 @@ router.get('/checkout/:ctaId', async (req, res) => {
         type: 'checkouts',
         attributes: {
           checkout_options: {
-            embed: true, // Enable overlay mode
             success_url: email 
               ? `${baseUrl}/payment-success?email=${encodeURIComponent(email as string)}`
               : `${baseUrl}/payment-success`
