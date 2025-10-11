@@ -37,20 +37,23 @@ const app = express();
           'https://cdn.teller.io',
           'https://js.stripe.com',
           'https://js.sentry-cdn.com',
-          'https://replit.com'
+          'https://replit.com',
+          'https://app.lemonsqueezy.com'
         ],
         // Styles (separate style-src-elem is respected by newer browsers)
         styleSrc: [SELF, UNSAFE_INLINE, 'https://fonts.googleapis.com'],
         styleSrcElem: [SELF, UNSAFE_INLINE, 'https://fonts.googleapis.com'],
         // Fonts
         fontSrc: [SELF, 'https://fonts.gstatic.com', 'data:'],
-        // Frames (Stripe elements, Teller Connect iframed)
+        // Frames (Stripe elements, Teller Connect iframed, Lemon Squeezy checkout)
         frameSrc: [
           SELF,
           'https://teller.io',
           'https://cdn.teller.io',
           'https://js.stripe.com',
-          'https://hooks.stripe.com'
+          'https://hooks.stripe.com',
+          'https://flint-investing.lemonsqueezy.com',
+          'https://app.lemonsqueezy.com'
         ],
         // XHR/WebSocket endpoints
         connectSrc: [
@@ -74,6 +77,11 @@ const app = express();
     },
     crossOriginEmbedderPolicy: false, // keep false if third-party scripts require it
   }));
+  
+  // Raw body middleware for Lemon Squeezy webhook (MUST be before express.json())
+  app.use('/api/lemonsqueezy/webhook', express.raw({ type: 'application/json' }));
+  
+  // Standard JSON parsing for all other routes
   app.use(express.json());
   app.use(express.urlencoded({ extended: false }));
   app.use(cookieParser());
@@ -120,7 +128,7 @@ const app = express();
     next();
   });
   
-  // Add webhook route before CSRF to allow external calls
+  // Add webhook routes before CSRF to allow external calls
   app.post('/api/snaptrade/webhooks', async (req: Request, res: Response) => {
     try {
       // Import webhook handler dynamically

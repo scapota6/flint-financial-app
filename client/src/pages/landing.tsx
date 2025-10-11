@@ -19,6 +19,21 @@ import { Link } from "wouter";
 import { useToast } from "@/hooks/use-toast";
 import flintLogo from "@assets/flint-logo.png";
 
+// Declare Lemon Squeezy types
+declare global {
+  interface Window {
+    createLemonSqueezy: () => void;
+    LemonSqueezy: {
+      Url: {
+        Open: (url: string) => void;
+      };
+      Setup: (config: {
+        eventHandler: (event: { event: string; data: any }) => void;
+      }) => void;
+    };
+  }
+}
+
 // Analytics tracking
 const trackEvent = (eventName: string, properties: Record<string, any> = {}) => {
   // In production, integrate with GA4/Segment
@@ -67,6 +82,25 @@ function Landing() {
   const [formSubmitted, setFormSubmitted] = useState(false);
   const { toast } = useToast();
 
+  // Initialize Lemon Squeezy
+  useEffect(() => {
+    // Load Lemon.js script
+    const script = document.createElement('script');
+    script.src = 'https://app.lemonsqueezy.com/js/lemon.js';
+    script.defer = true;
+    script.onload = () => {
+      if (window.createLemonSqueezy) {
+        window.createLemonSqueezy();
+      }
+    };
+    document.head.appendChild(script);
+
+    return () => {
+      // Cleanup script on unmount
+      document.head.removeChild(script);
+    };
+  }, []);
+
   // Track section views
   useIntersectionObserver((entries) => {
     entries.forEach(entry => {
@@ -77,11 +111,30 @@ function Landing() {
     });
   });
 
-  // Handle CTA clicks
-  const handleCTAClick = (ctaId: string, price: string) => {
+  // Handle CTA clicks - now opens Lemon Squeezy checkout
+  const handleCTAClick = async (ctaId: string, price: string) => {
     trackEvent('click_cta', { cta_id: ctaId, price });
-    // Route to Stripe checkout
-    window.location.href = `/api/checkout/${ctaId}${formData.email ? `?email=${encodeURIComponent(formData.email)}` : ''}`;
+    
+    try {
+      // Get checkout URL from backend
+      const response = await fetch(`/api/lemonsqueezy/checkout/${ctaId}${formData.email ? `?email=${encodeURIComponent(formData.email)}` : ''}`);
+      const data = await response.json();
+      
+      if (data.checkoutUrl && window.LemonSqueezy) {
+        // Open Lemon Squeezy overlay
+        window.LemonSqueezy.Url.Open(data.checkoutUrl);
+      } else {
+        // Fallback to direct URL
+        window.location.href = data.checkoutUrl || `/api/lemonsqueezy/checkout/${ctaId}`;
+      }
+    } catch (error) {
+      console.error('Checkout error:', error);
+      toast({
+        title: "Error",
+        description: "Unable to open checkout. Please try again.",
+        variant: "destructive"
+      });
+    }
   };
 
   // Handle form submission

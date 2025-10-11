@@ -37,6 +37,7 @@ import adminRouter from './routes/admin';
 import adminPanelRouter from './routes/admin-panel';
 import userPasswordRouter from './routes/user-password';
 import authRouter from './routes/auth';
+import lemonSqueezyRouter from './routes/lemonsqueezy';
 
 // Initialize Stripe (only if API key is provided)
 let stripe: Stripe | null = null;
@@ -1955,6 +1956,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.use('/api/admin-panel', adminPanelRouter);
   app.use('/api/user', userPasswordRouter);
   app.use('/api/auth', authRouter);
+  app.use('/api/lemonsqueezy', lemonSqueezyRouter);
 
   
   // Disconnect account endpoint

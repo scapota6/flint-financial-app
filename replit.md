@@ -32,7 +32,7 @@ Preferred communication style: Simple, everyday language.
 - **Email Service**: Resend-based email system with templates for approval, rejection, and password reset. Logs all emails to database. Admin panel displays manual password reset links when email provider not configured.
 - **Alert Monitoring System**: Background service for price alerts with debouncing, quiet hours, and email/push notifications.
 - **Financial Data Management**: Multi-account connections, real-time balance tracking, portfolio management, trade execution simulation, transfer management, and watchlist.
-- **Subscription System**: Three-tier model (Basic, Pro, Premium) with Stripe integration for payment processing and feature gating. Premium tier exclusively grants account disconnection privileges to prevent free/basic/pro users from rotating connected accounts.
+- **Subscription System**: Multi-tier model (Free, Basic, Pro, Premium) with Lemon Squeezy integration for payment processing and feature gating. Premium tier exclusively grants account disconnection privileges to prevent free/basic/pro users from rotating connected accounts. Lemon Squeezy integration uses checkout overlay for seamless payment experience with automatic account creation and password setup email delivery via webhooks.
 - **Security Framework**: AES-256-GCM encryption for sensitive credentials, multi-tier rate limiting, activity logging with sensitive data hashing, secure PostgreSQL-backed sessions, double-submit-cookie CSRF protection with csurf (x-csrf-token header validation, public endpoints exempted), SHA-256 hashed password reset tokens with timing-safe comparison, session revocation on logout, RBAC middleware, encrypted token storage, automatic secret rotation, SOC 2 compliant infrastructure.
 - **Wallet Service Architecture**: Internal fund management with pre-authorization and hold/release, integrated ACH transfers via Teller.
 - **Teller Payments Integration**: Credit card payment system using Zelle-based transfers with tellerForUser client wrapper for per-user authentication, MFA handling with 409 status codes, and real-time payment status tracking.
@@ -49,7 +49,7 @@ Preferred communication style: Simple, everyday language.
 ### Core Integrations
 - **Teller.io**: Bank account connections, ACH transfers, and Zelle-based credit card payments.
 - **SnapTrade**: Brokerage account connections, real-time quotes, and trading functionalities (buy/sell orders, account activities, positions).
-- **Stripe**: Subscription management and payment processing.
+- **Lemon Squeezy**: Subscription management and payment processing (test mode).
 - **Finnhub**: General financial data.
 - **Polygon.io**: Real-time market data and live pricing.
 - **Alpha Vantage**: Fallback for real-time market data.
