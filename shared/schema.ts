@@ -41,6 +41,10 @@ export const users = pgTable("users", {
   isAdmin: boolean("is_admin").default(false),
   isBanned: boolean("is_banned").default(false),
   lastLogin: timestamp("last_login").defaultNow(),
+  // Lemon Squeezy payment tracking
+  lemonSqueezyOrderId: varchar("lemonsqueezy_order_id"),
+  lemonSqueezyCustomerId: varchar("lemonsqueezy_customer_id"),
+  lemonSqueezyVariantId: varchar("lemonsqueezy_variant_id"),
   // SnapTrade credentials moved to separate table
   // snaptradeUserId: varchar("snaptrade_user_id"), // SnapTrade user ID
   // snaptradeUserSecret: varchar("snaptrade_user_secret"), // SnapTrade user secret
