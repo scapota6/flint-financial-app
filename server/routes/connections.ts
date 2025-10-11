@@ -54,127 +54,83 @@ router.get("/", isAuthenticated, async (req: any, res) => {
 /**
  * POST /api/connections/snaptrade/register
  * Registers a user with SnapTrade and returns the redirect URL
+ * This is the ONLY registration endpoint - all others are disabled
  */
 router.post("/snaptrade/register", isAuthenticated, async (req: any, res) => {
   try {
-    // SnapTrade always available via centralized config
-
     const userId = req.user.claims.sub;
-    const userEmail = req.user.claims.email || `user${userId}@flint.app`;
     
-    // Check if user already has SnapTrade credentials  
-    const { getSnapUser, saveSnapUser } = await import('../store/snapUsers');
-    let snaptradeUser = await getSnapUser(userId);
+    logger.info("SnapTrade registration started", { userId });
     
-    if (!snaptradeUser) {
-      // First, check if this email is already registered with SnapTrade
-      try {
-        const { data: existingUsers } = await snaptradeClient.authApi.listSnapTradeUsers();
-        const existingUser = existingUsers.find((user: any) => user.metadata?.email === userEmail);
-        
-        if (existingUser) {
-          // Reuse existing SnapTrade user
-          logger.info("Reusing existing SnapTrade user", { 
-            userId, 
-            metadata: { snaptradeUserId: existingUser.userId }
-          });
-          snaptradeUser = { 
-            userId: existingUser.userId, 
-            userSecret: existingUser.userSecret 
-          };
-          // Store locally for faster lookup
-          await saveSnapUser({ 
-            userId: existingUser.userId, // SnapTrade UUID
-            userSecret: existingUser.userSecret,
-            flintUserId: userId // Flint user ID as key
-          });
-        } else {
-          // Generate a unique SnapTrade user ID (must be UUID format)
-          const snaptradeUserId = uuidv4();
-          
-          try {
-            // Register new user with SnapTrade with metadata for tracking
-            const { data: registerData } = await snaptradeClient.authApi.registerSnapTradeUser({
-              userId: snaptradeUserId,
-              metadata: {
-                email: userEmail,
-                flintUserId: userId,
-                createdAt: new Date().toISOString()
-              }
-            });
-            
-            // Store credentials in file-based storage (using Flint user ID as key)
-            await saveSnapUser({ 
-              userId: registerData.userId!, // SnapTrade UUID
-              userSecret: registerData.userSecret!,
-              flintUserId: userId // Flint user ID as key for lookup
-            });
-            
-            snaptradeUser = { userId: registerData.userId!, userSecret: registerData.userSecret! };
-            
-            logger.info("SnapTrade user registered", { 
-              userId, 
-              metadata: { snaptradeUserId: registerData.userId }
-            });
-          } catch (error: any) {
-            // If user already exists, try to find and reuse
-            if (error.response?.status === 409) {
-              logger.info("SnapTrade user conflict, will retry connection", { userId });
-              throw new Error('User registration conflict - please try connecting again');
-            } else {
-              throw error;
-            }
-          }
-        }
-      } catch (listError: any) {
-        // If we can't list users, proceed with normal registration
-        logger.warn("Could not list existing SnapTrade users, proceeding with registration", {
-          userId,
-          error: listError.message
+    // Step 1: Check if user exists in snaptrade_users table
+    const { db } = await import('../db');
+    const { snaptradeUsers } = await import('@shared/schema');
+    const { eq } = await import('drizzle-orm');
+    
+    const [existingUser] = await db
+      .select()
+      .from(snaptradeUsers)
+      .where(eq(snaptradeUsers.flintUserId, userId))
+      .limit(1);
+    
+    let userSecret: string;
+    
+    if (!existingUser) {
+      // Step 2: Register new user with SnapTrade using Flint user ID
+      logger.info("Registering new SnapTrade user", { userId });
+      
+      const { data: registerData } = await authApi.registerSnapTradeUser({
+        userId: userId,
+      });
+      
+      userSecret = registerData.userSecret!;
+      
+      // Step 3: Save userSecret to snaptrade_users table
+      await db
+        .insert(snaptradeUsers)
+        .values({
+          flintUserId: userId,
+          userSecret: userSecret,
         });
-        
-        const snaptradeUserId = uuidv4();
-        const { data: registerData } = await snaptradeClient.authApi.registerSnapTradeUser({
-          userId: snaptradeUserId,
-          metadata: { email: userEmail, flintUserId: userId }
-        });
-        
-        await saveSnapUser({ 
-          userId: registerData.userId!,
-          userSecret: registerData.userSecret!,
-          flintUserId: userId
-        });
-        
-        snaptradeUser = { userId: registerData.userId!, userSecret: registerData.userSecret! };
-      }
+      
+      logger.info("SnapTrade user registered and saved to database", { userId });
+    } else {
+      userSecret = existingUser.userSecret;
+      logger.info("Using existing SnapTrade user", { userId });
     }
     
-    // Generate redirect URL for connection portal
-    const { data: redirectData } = await snaptradeClient.authApi.loginSnapTradeUser({
-      userId: snaptradeUser.userId!,
-      userSecret: snaptradeUser.userSecret,
-      broker: req.body.broker,
+    // Step 4: Call loginSnapTradeUser with dynamic redirect URL
+    const redirectUrl = `${req.protocol}://${req.get('host')}/snaptrade/callback`;
+    
+    logger.info("Generating SnapTrade portal URL", { userId, redirectUrl });
+    
+    const { data: loginData } = await authApi.loginSnapTradeUser({
+      userId: userId,
+      userSecret: userSecret,
       immediateRedirect: true,
-      customRedirect: `${req.protocol}://${req.hostname}/api/connections/snaptrade/callback`,
-      reconnect: req.body.reconnect,
-      connectionType: req.body.connectionType || "read",
-      connectionPortalVersion: "v4"
+      customRedirect: redirectUrl,
+      connectionType: "trade",
     });
     
+    // Step 5: Return the portal URL
+    const portalUrl = loginData.redirectURI || loginData.redirectUrl;
+    
+    logger.info("SnapTrade portal URL generated", { userId, hasPortalUrl: !!portalUrl });
+    
     res.json({ 
-      redirectUrl: redirectData.redirectUrl || redirectData.redirectURI,
+      redirectUrl: portalUrl,
       message: "Redirect user to SnapTrade connection portal"
     });
     
   } catch (error: any) {
     logger.error("SnapTrade registration error", { 
       error: error.response?.data || error.message,
-      userId: req.user.claims.sub
+      userId: req.user?.claims?.sub
     });
     
     res.status(500).json({ 
       message: "Failed to register with SnapTrade",
-      error: error.response?.data || error.message
+      error: error.response?.data?.detail || error.message
     });
   }
 });

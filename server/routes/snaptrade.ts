@@ -113,12 +113,15 @@ function handleSnapTradeError(error: any, context: string, res: any) {
 }
 
 /**
+ * DISABLED: Use /api/connections/snaptrade/register instead
+ * This endpoint is disabled to prevent conflicts with the main registration flow
+ * 
  * POST /api/snaptrade/register
  * Registers user if missing; persists userSecret
  * Uses PostgreSQL advisory locks to prevent race conditions and double charges
  * Advisory locks work BEFORE any row exists, eliminating the race condition window
  */
-router.post('/register', snaptradeRateLimit, async (req: any, res: any) => {
+router.post('/register-DISABLED', snaptradeRateLimit, async (req: any, res: any) => {
   const requestId = req.headers['x-request-id'] || nanoid();
 
   try {
@@ -897,6 +900,7 @@ router.post('/trades/place', snaptradeRateLimit, async (req: any, res: any) => {
 /**
  * POST /api/snaptrade/sync
  * Sync connected brokerage accounts from SnapTrade to database
+ * This endpoint is called after OAuth callback to save connections
  */
 router.post('/sync', isAuthenticated, async (req: any, res) => {
   try {
@@ -904,7 +908,7 @@ router.post('/sync', isAuthenticated, async (req: any, res) => {
     
     console.log('[SnapTrade Sync] Starting sync for user:', flintUserId);
     
-    // Get user's SnapTrade credentials
+    // Get user's SnapTrade credentials from database
     const [snapUser] = await db
       .select()
       .from(snaptradeUsers)
@@ -912,26 +916,60 @@ router.post('/sync', isAuthenticated, async (req: any, res) => {
       .limit(1);
     
     if (!snapUser) {
+      console.log('[SnapTrade Sync] No SnapTrade user found in database for:', flintUserId);
       return res.status(404).json({ 
-        error: 'SnapTrade user not found. Please connect your brokerage account first.' 
+        error: 'SnapTrade user not found. Please register first.' 
       });
     }
     
-    // Fetch connected accounts from SnapTrade
+    console.log('[SnapTrade Sync] Found SnapTrade user, fetching accounts...');
+    
+    // Fetch connected accounts from SnapTrade using flintUserId as the SnapTrade userId
     const accounts = await listAccounts(
       flintUserId,
       snapUser.userSecret,
       flintUserId
     );
     
-    console.log('[SnapTrade Sync] Found accounts:', accounts?.length || 0);
+    console.log('[SnapTrade Sync] Received accounts:', {
+      count: accounts?.length || 0,
+      sample: accounts?.[0] ? {
+        id: accounts[0].id,
+        name: accounts[0].name,
+        institution: accounts[0].institution_name,
+        hasAuth: !!accounts[0].brokerage_authorization
+      } : null
+    });
     
     // Save or update each account in database
     const syncedAccounts = [];
     
     for (const account of (accounts as any[]) || []) {
-      const brokerageAuthId = account.brokerage_authorization?.id || account.id;
-      const brokerageName = account.brokerage_authorization?.name || account.name || 'Unknown';
+      // Extract brokerage authorization ID (try multiple possible field names)
+      const brokerageAuthId = 
+        account.brokerage_authorization?.id || 
+        account.brokerageAuthorization?.id ||
+        account.authorization_id ||
+        account.id;
+        
+      // Extract brokerage name
+      const brokerageName = 
+        account.brokerage_authorization?.name || 
+        account.brokerageAuthorization?.name ||
+        account.institution_name ||
+        account.name || 
+        'Unknown';
+      
+      console.log('[SnapTrade Sync] Processing account:', {
+        brokerageAuthId,
+        brokerageName,
+        accountId: account.id
+      });
+      
+      if (!brokerageAuthId) {
+        console.warn('[SnapTrade Sync] Skipping account with no authorization ID:', account);
+        continue;
+      }
       
       // Check if connection already exists
       const [existing] = await db
@@ -972,11 +1010,15 @@ router.post('/sync', isAuthenticated, async (req: any, res) => {
           .returning();
         
         syncedAccounts.push(created);
-        console.log('[SnapTrade Sync] Created connection:', brokerageAuthId);
+        console.log('[SnapTrade Sync] Created new connection:', brokerageAuthId);
       }
     }
     
-    console.log('[SnapTrade Sync] Sync complete:', syncedAccounts.length, 'accounts');
+    console.log('[SnapTrade Sync] Sync complete:', {
+      userId: flintUserId,
+      accountsFound: accounts?.length || 0,
+      connectionsSynced: syncedAccounts.length
+    });
     
     res.json({
       success: true,
@@ -985,9 +1027,15 @@ router.post('/sync', isAuthenticated, async (req: any, res) => {
     });
     
   } catch (error: any) {
-    console.error('[SnapTrade Sync] Error:', error);
+    console.error('[SnapTrade Sync] Error:', {
+      message: error.message,
+      status: error.status,
+      responseBody: error.responseBody
+    });
+    
     res.status(500).json({ 
-      error: error.message || 'Failed to sync SnapTrade accounts' 
+      error: error.message || 'Failed to sync SnapTrade accounts',
+      details: error.responseBody?.detail || error.responseBody
     });
   }
 });

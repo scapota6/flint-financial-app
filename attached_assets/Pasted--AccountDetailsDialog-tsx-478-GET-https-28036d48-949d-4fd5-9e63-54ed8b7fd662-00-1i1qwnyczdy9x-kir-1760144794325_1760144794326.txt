@@ -1,0 +1,106 @@
+
+AccountDetailsDialog.tsx:478  GET https://28036d48-949d-4fd5-9e63-54ed8b7fd662-00-1i1qwnyczdy9x.kirk.replit.dev/api/snaptrade/accounts/snaptrade-disconnected-45137738/details 404 (Not Found)
+queryFn @ AccountDetailsDialog.tsx:478
+fetchFn @ @tanstack_react-query.js?v=70268c74:879
+run @ @tanstack_react-query.js?v=70268c74:507
+start @ @tanstack_react-query.js?v=70268c74:550
+fetch @ @tanstack_react-query.js?v=70268c74:918
+executeFetch_fn @ @tanstack_react-query.js?v=70268c74:2275
+setOptions @ @tanstack_react-query.js?v=70268c74:2035
+(anonymous) @ @tanstack_react-query.js?v=70268c74:3152
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=70268c74:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=70268c74:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=70268c74:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=70268c74:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=70268c74:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=70268c74:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=70268c74:19447
+commitRootImpl @ chunk-RPCDYKBN.js?v=70268c74:19416
+commitRoot @ chunk-RPCDYKBN.js?v=70268c74:19277
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=70268c74:18895
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=70268c74:9119
+(anonymous) @ chunk-RPCDYKBN.js?v=70268c74:18627Understand this error
+AccountDetailsDialog.tsx:566  GET https://28036d48-949d-4fd5-9e63-54ed8b7fd662-00-1i1qwnyczdy9x.kirk.replit.dev/api/snaptrade/accounts/snaptrade-disconnected-45137738/activities 404 (Not Found)
+queryFn @ AccountDetailsDialog.tsx:566
+fetchFn @ @tanstack_react-query.js?v=70268c74:879
+run @ @tanstack_react-query.js?v=70268c74:507
+start @ @tanstack_react-query.js?v=70268c74:550
+fetch @ @tanstack_react-query.js?v=70268c74:918
+executeFetch_fn @ @tanstack_react-query.js?v=70268c74:2275
+setOptions @ @tanstack_react-query.js?v=70268c74:2035
+(anonymous) @ @tanstack_react-query.js?v=70268c74:3152
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=70268c74:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=70268c74:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=70268c74:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=70268c74:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=70268c74:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=70268c74:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=70268c74:19447
+commitRootImpl @ chunk-RPCDYKBN.js?v=70268c74:19416
+commitRoot @ chunk-RPCDYKBN.js?v=70268c74:19277
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=70268c74:18895
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=70268c74:9119
+(anonymous) @ chunk-RPCDYKBN.js?v=70268c74:18627Understand this error
+AccountDetailsDialog.tsx:500  GET https://28036d48-949d-4fd5-9e63-54ed8b7fd662-00-1i1qwnyczdy9x.kirk.replit.dev/api/snaptrade/accounts/snaptrade-disconnected-45137738/balances 404 (Not Found)
+queryFn @ AccountDetailsDialog.tsx:500
+fetchFn @ @tanstack_react-query.js?v=70268c74:879
+run @ @tanstack_react-query.js?v=70268c74:507
+start @ @tanstack_react-query.js?v=70268c74:550
+fetch @ @tanstack_react-query.js?v=70268c74:918
+executeFetch_fn @ @tanstack_react-query.js?v=70268c74:2275
+setOptions @ @tanstack_react-query.js?v=70268c74:2035
+(anonymous) @ @tanstack_react-query.js?v=70268c74:3152
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=70268c74:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=70268c74:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=70268c74:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=70268c74:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=70268c74:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=70268c74:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=70268c74:19447
+commitRootImpl @ chunk-RPCDYKBN.js?v=70268c74:19416
+commitRoot @ chunk-RPCDYKBN.js?v=70268c74:19277
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=70268c74:18895
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=70268c74:9119
+(anonymous) @ chunk-RPCDYKBN.js?v=70268c74:18627Understand this error
+AccountDetailsDialog.tsx:522  GET https://28036d48-949d-4fd5-9e63-54ed8b7fd662-00-1i1qwnyczdy9x.kirk.replit.dev/api/snaptrade/accounts/snaptrade-disconnected-45137738/positions 404 (Not Found)
+queryFn @ AccountDetailsDialog.tsx:522
+fetchFn @ @tanstack_react-query.js?v=70268c74:879
+run @ @tanstack_react-query.js?v=70268c74:507
+start @ @tanstack_react-query.js?v=70268c74:550
+fetch @ @tanstack_react-query.js?v=70268c74:918
+executeFetch_fn @ @tanstack_react-query.js?v=70268c74:2275
+setOptions @ @tanstack_react-query.js?v=70268c74:2035
+(anonymous) @ @tanstack_react-query.js?v=70268c74:3152
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=70268c74:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=70268c74:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=70268c74:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=70268c74:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=70268c74:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=70268c74:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=70268c74:19447
+commitRootImpl @ chunk-RPCDYKBN.js?v=70268c74:19416
+commitRoot @ chunk-RPCDYKBN.js?v=70268c74:19277
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=70268c74:18895
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=70268c74:9119
+(anonymous) @ chunk-RPCDYKBN.js?v=70268c74:18627Understand this error
+AccountDetailsDialog.tsx:544  GET https://28036d48-949d-4fd5-9e63-54ed8b7fd662-00-1i1qwnyczdy9x.kirk.replit.dev/api/snaptrade/accounts/snaptrade-disconnected-45137738/orders 404 (Not Found)
+queryFn @ AccountDetailsDialog.tsx:544
+fetchFn @ @tanstack_react-query.js?v=70268c74:879
+run @ @tanstack_react-query.js?v=70268c74:507
+start @ @tanstack_react-query.js?v=70268c74:550
+fetch @ @tanstack_react-query.js?v=70268c74:918
+executeFetch_fn @ @tanstack_react-query.js?v=70268c74:2275
+setOptions @ @tanstack_react-query.js?v=70268c74:2035
+(anonymous) @ @tanstack_react-query.js?v=70268c74:3152
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=70268c74:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=70268c74:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=70268c74:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=70268c74:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=70268c74:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=70268c74:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=70268c74:19447
+commitRootImpl @ chunk-RPCDYKBN.js?v=70268c74:19416
+commitRoot @ chunk-RPCDYKBN.js?v=70268c74:19277
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=70268c74:18895
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=70268c74:9119
+(anonymous) @ chunk-RPCDYKBN.js?v=70268c74:18627Understand this error

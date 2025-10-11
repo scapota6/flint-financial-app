@@ -1,0 +1,55 @@
+📈 SnapTrade Connect: Starting brokerage connection
+http.ts:7  POST https://28036d48-949d-4fd5-9e63-54ed8b7fd662-00-1i1qwnyczdy9x.kirk.replit.dev/api/connections/snaptrade/register 500 (Internal Server Error)
+requestJSON @ http.ts:7
+apiRequest @ queryClient.ts:52
+await in apiRequest
+mutationFn @ simple-connect-buttons.tsx:261
+await in mutationFn
+fn @ @tanstack_react-query.js?v=70268c74:1231
+run @ @tanstack_react-query.js?v=70268c74:507
+start @ @tanstack_react-query.js?v=70268c74:550
+execute @ @tanstack_react-query.js?v=70268c74:1267
+await in execute
+mutate @ @tanstack_react-query.js?v=70268c74:2687
+(anonymous) @ @tanstack_react-query.js?v=70268c74:3410
+onClick @ simple-connect-buttons.tsx:393
+callCallback2 @ chunk-RPCDYKBN.js?v=70268c74:3674
+invokeGuardedCallbackDev @ chunk-RPCDYKBN.js?v=70268c74:3699
+invokeGuardedCallback @ chunk-RPCDYKBN.js?v=70268c74:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-RPCDYKBN.js?v=70268c74:3736
+executeDispatch @ chunk-RPCDYKBN.js?v=70268c74:7014
+processDispatchQueueItemsInOrder @ chunk-RPCDYKBN.js?v=70268c74:7034
+processDispatchQueue @ chunk-RPCDYKBN.js?v=70268c74:7043
+dispatchEventsForPlugins @ chunk-RPCDYKBN.js?v=70268c74:7051
+(anonymous) @ chunk-RPCDYKBN.js?v=70268c74:7174
+batchedUpdates$1 @ chunk-RPCDYKBN.js?v=70268c74:18913
+batchedUpdates @ chunk-RPCDYKBN.js?v=70268c74:3579
+dispatchEventForPluginEventSystem @ chunk-RPCDYKBN.js?v=70268c74:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-RPCDYKBN.js?v=70268c74:5478
+dispatchEvent @ chunk-RPCDYKBN.js?v=70268c74:5472
+dispatchDiscreteEvent @ chunk-RPCDYKBN.js?v=70268c74:5449Understand this error
+simple-connect-buttons.tsx:284 📈 SnapTrade Connect Error: Error: Failed to register with SnapTrade
+    at requestJSON (http.ts:25:11)
+    at async apiRequest (queryClient.ts:52:12)
+    at async Object.mutationFn (simple-connect-buttons.tsx:261:20)
+onError @ simple-connect-buttons.tsx:284
+execute @ @tanstack_react-query.js?v=70268c74:1296
+await in execute
+mutate @ @tanstack_react-query.js?v=70268c74:2687
+(anonymous) @ @tanstack_react-query.js?v=70268c74:3410
+onClick @ simple-connect-buttons.tsx:393
+callCallback2 @ chunk-RPCDYKBN.js?v=70268c74:3674
+invokeGuardedCallbackDev @ chunk-RPCDYKBN.js?v=70268c74:3699
+invokeGuardedCallback @ chunk-RPCDYKBN.js?v=70268c74:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-RPCDYKBN.js?v=70268c74:3736
+executeDispatch @ chunk-RPCDYKBN.js?v=70268c74:7014
+processDispatchQueueItemsInOrder @ chunk-RPCDYKBN.js?v=70268c74:7034
+processDispatchQueue @ chunk-RPCDYKBN.js?v=70268c74:7043
+dispatchEventsForPlugins @ chunk-RPCDYKBN.js?v=70268c74:7051
+(anonymous) @ chunk-RPCDYKBN.js?v=70268c74:7174
+batchedUpdates$1 @ chunk-RPCDYKBN.js?v=70268c74:18913
+batchedUpdates @ chunk-RPCDYKBN.js?v=70268c74:3579
+dispatchEventForPluginEventSystem @ chunk-RPCDYKBN.js?v=70268c74:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-RPCDYKBN.js?v=70268c74:5478
+dispatchEvent @ chunk-RPCDYKBN.js?v=70268c74:5472
+dispatchDiscreteEvent @ chunk-RPCDYKBN.js?v=70268c74:5449Understand this error
