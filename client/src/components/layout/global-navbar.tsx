@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'wouter';
-import { Menu, X, User, LogOut, Settings } from 'lucide-react';
+import { Menu, X, User, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -11,7 +11,6 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { useQuery } from '@tanstack/react-query';
-import ThemeToggle from './theme-toggle';
 
 const navLinks = [
   { href: '/', label: 'Dashboard', comingSoon: false },
@@ -96,8 +95,7 @@ export default function GlobalNavbar() {
 
           {/* User Menu */}
           <div className="hidden md:block">
-            <div className="ml-4 flex items-center md:ml-6 space-x-2">
-              <ThemeToggle />
+            <div className="ml-4 flex items-center md:ml-6">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" className="relative h-8 w-8 rounded-full">
@@ -120,12 +118,6 @@ export default function GlobalNavbar() {
                     <DropdownMenuItem className="text-gray-300 hover:text-white hover:bg-gray-800 cursor-pointer">
                       <User className="mr-2 h-4 w-4" />
                       Profile
-                    </DropdownMenuItem>
-                  </Link>
-                  <Link href="/settings">
-                    <DropdownMenuItem className="text-gray-300 hover:text-white hover:bg-gray-800 cursor-pointer">
-                      <Settings className="mr-2 h-4 w-4" />
-                      Settings
                     </DropdownMenuItem>
                   </Link>
                   <DropdownMenuSeparator className="bg-gray-700" />
@@ -197,12 +189,11 @@ export default function GlobalNavbar() {
                 </div>
               </div>
               <div className="mt-3 space-y-1">
-                <button className="block px-4 py-2 text-base font-medium text-gray-400 hover:text-white hover:bg-gray-800 w-full text-left">
-                  Profile
-                </button>
-                <button className="block px-4 py-2 text-base font-medium text-gray-400 hover:text-white hover:bg-gray-800 w-full text-left">
-                  Settings
-                </button>
+                <Link href="/profile">
+                  <button className="block px-4 py-2 text-base font-medium text-gray-400 hover:text-white hover:bg-gray-800 w-full text-left">
+                    Profile
+                  </button>
+                </Link>
                 <button 
                   onClick={handleLogout}
                   className="block px-4 py-2 text-base font-medium text-gray-400 hover:text-white hover:bg-gray-800 w-full text-left"

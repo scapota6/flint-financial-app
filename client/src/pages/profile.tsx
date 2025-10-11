@@ -4,9 +4,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Switch } from '@/components/ui/switch';
 import { Separator } from '@/components/ui/separator';
-import { User, Settings, Shield, Bell } from 'lucide-react';
+import { User, Settings, Shield, Lock } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest } from '@/lib/queryClient';
 
@@ -19,14 +18,6 @@ interface UserProfile {
   subscriptionTier: string;
   subscriptionStatus: string;
   createdAt: string;
-}
-
-interface NotificationSettings {
-  emailNotifications: boolean;
-  pushNotifications: boolean;
-  tradingAlerts: boolean;
-  newsAlerts: boolean;
-  accountUpdates: boolean;
 }
 
 export default function Profile() {
@@ -44,17 +35,18 @@ export default function Profile() {
     email: user?.email || '',
   });
 
-  const [notifications, setNotifications] = useState<NotificationSettings>({
-    emailNotifications: true,
-    pushNotifications: true,
-    tradingAlerts: true,
-    newsAlerts: false,
-    accountUpdates: true,
+  const [passwordData, setPasswordData] = useState({
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: '',
   });
 
   const updateProfileMutation = useMutation({
     mutationFn: (data: Partial<UserProfile>) => 
-      apiRequest('/api/users/profile', 'PATCH', data),
+      apiRequest('/api/users/profile', {
+        method: 'PATCH',
+        body: JSON.stringify(data)
+      }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/auth/user'] });
       setIsEditing(false);
@@ -72,13 +64,24 @@ export default function Profile() {
     },
   });
 
-  const updateNotificationsMutation = useMutation({
-    mutationFn: (data: NotificationSettings) => 
-      apiRequest('/api/users/notifications', 'PATCH', data),
+  const changePasswordMutation = useMutation({
+    mutationFn: (data: { currentPassword: string; newPassword: string }) => 
+      apiRequest('/api/user/change-password', {
+        method: 'POST',
+        body: JSON.stringify(data)
+      }),
     onSuccess: () => {
+      setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' });
       toast({
-        title: "Notifications updated",
-        description: "Your notification preferences have been saved.",
+        title: "Password changed",
+        description: "Your password has been successfully updated.",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to change password. Please try again.",
+        variant: "destructive",
       });
     },
   });
@@ -87,10 +90,29 @@ export default function Profile() {
     updateProfileMutation.mutate(profileData);
   };
 
-  const handleNotificationChange = (key: keyof NotificationSettings, value: boolean) => {
-    const newSettings = { ...notifications, [key]: value };
-    setNotifications(newSettings);
-    updateNotificationsMutation.mutate(newSettings);
+  const handlePasswordChange = () => {
+    if (passwordData.newPassword !== passwordData.confirmPassword) {
+      toast({
+        title: "Error",
+        description: "New passwords do not match.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    if (passwordData.newPassword.length < 8) {
+      toast({
+        title: "Error",
+        description: "Password must be at least 8 characters long.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    changePasswordMutation.mutate({
+      currentPassword: passwordData.currentPassword,
+      newPassword: passwordData.newPassword,
+    });
   };
 
   if (isLoading) {
@@ -225,97 +247,59 @@ export default function Profile() {
           </CardContent>
         </Card>
 
-        {/* Notification Settings */}
-        <Card className="bg-gray-900 border-gray-800">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-white">
-              <Bell className="h-5 w-5" />
-              Notification Preferences
-            </CardTitle>
-            <CardDescription className="text-gray-400">
-              Choose how you want to be notified about account activity.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <Label className="text-white">Email Notifications</Label>
-                  <p className="text-sm text-gray-400">Receive notifications via email</p>
-                </div>
-                <Switch
-                  checked={notifications.emailNotifications}
-                  onCheckedChange={(checked) => handleNotificationChange('emailNotifications', checked)}
-                />
-              </div>
-              <Separator className="bg-gray-800" />
-              <div className="flex items-center justify-between">
-                <div>
-                  <Label className="text-white">Push Notifications</Label>
-                  <p className="text-sm text-gray-400">Browser push notifications</p>
-                </div>
-                <Switch
-                  checked={notifications.pushNotifications}
-                  onCheckedChange={(checked) => handleNotificationChange('pushNotifications', checked)}
-                />
-              </div>
-              <Separator className="bg-gray-800" />
-              <div className="flex items-center justify-between">
-                <div>
-                  <Label className="text-white">Trading Alerts</Label>
-                  <p className="text-sm text-gray-400">Get notified about trade executions</p>
-                </div>
-                <Switch
-                  checked={notifications.tradingAlerts}
-                  onCheckedChange={(checked) => handleNotificationChange('tradingAlerts', checked)}
-                />
-              </div>
-              <Separator className="bg-gray-800" />
-              <div className="flex items-center justify-between">
-                <div>
-                  <Label className="text-white">News Alerts</Label>
-                  <p className="text-sm text-gray-400">Market news and watchlist updates</p>
-                </div>
-                <Switch
-                  checked={notifications.newsAlerts}
-                  onCheckedChange={(checked) => handleNotificationChange('newsAlerts', checked)}
-                />
-              </div>
-              <Separator className="bg-gray-800" />
-              <div className="flex items-center justify-between">
-                <div>
-                  <Label className="text-white">Account Updates</Label>
-                  <p className="text-sm text-gray-400">Important account and security updates</p>
-                </div>
-                <Switch
-                  checked={notifications.accountUpdates}
-                  onCheckedChange={(checked) => handleNotificationChange('accountUpdates', checked)}
-                />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
         {/* Security Settings */}
         <Card className="bg-gray-900 border-gray-800">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-white">
-              <Shield className="h-5 w-5" />
-              Security
+              <Lock className="h-5 w-5" />
+              Change Password
             </CardTitle>
             <CardDescription className="text-gray-400">
-              Manage your account security settings.
+              Update your password. You'll need to enter your current password first.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <Button variant="outline" className="border-gray-700 text-white hover:bg-gray-800">
-              Change Password
-            </Button>
-            <Button variant="outline" className="border-gray-700 text-white hover:bg-gray-800">
-              Enable Two-Factor Authentication
-            </Button>
-            <Button variant="destructive" className="bg-red-600 hover:bg-red-700">
-              Delete Account
+            <div className="space-y-2">
+              <Label htmlFor="currentPassword" className="text-white">Current Password</Label>
+              <Input
+                id="currentPassword"
+                type="password"
+                value={passwordData.currentPassword}
+                onChange={(e) => setPasswordData(prev => ({ ...prev, currentPassword: e.target.value }))}
+                className="bg-gray-800 border-gray-700 text-white"
+                data-testid="input-current-password"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="newPassword" className="text-white">New Password</Label>
+              <Input
+                id="newPassword"
+                type="password"
+                value={passwordData.newPassword}
+                onChange={(e) => setPasswordData(prev => ({ ...prev, newPassword: e.target.value }))}
+                className="bg-gray-800 border-gray-700 text-white"
+                data-testid="input-new-password"
+              />
+              <p className="text-sm text-gray-500">Must be at least 8 characters long</p>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="confirmPassword" className="text-white">Confirm New Password</Label>
+              <Input
+                id="confirmPassword"
+                type="password"
+                value={passwordData.confirmPassword}
+                onChange={(e) => setPasswordData(prev => ({ ...prev, confirmPassword: e.target.value }))}
+                className="bg-gray-800 border-gray-700 text-white"
+                data-testid="input-confirm-password"
+              />
+            </div>
+            <Button 
+              onClick={handlePasswordChange}
+              disabled={changePasswordMutation.isPending || !passwordData.currentPassword || !passwordData.newPassword || !passwordData.confirmPassword}
+              className="bg-blue-600 hover:bg-blue-700"
+              data-testid="button-change-password"
+            >
+              {changePasswordMutation.isPending ? 'Changing...' : 'Change Password'}
             </Button>
           </CardContent>
         </Card>
