@@ -9,8 +9,9 @@ import { nanoid } from 'nanoid';
 import crypto from 'crypto';
 import { db } from '../db';
 import { snaptradeUsers, snaptradeConnections } from '@shared/schema';
-import { eq, desc, sql } from 'drizzle-orm';
+import { eq, desc, sql, and } from 'drizzle-orm';
 import { normalizeSnapTradeError } from '../lib/normalize-snaptrade-error';
+import { isAuthenticated } from '../replitAuth';
 import { rateLimitMiddleware, fetchWithRateLimit } from '../lib/rate-limiting';
 import { handleBrokenConnection, snaptradeApiCall } from '../lib/broken-connections';
 import { getSnapUser } from '../store/snapUsers';
@@ -890,6 +891,104 @@ router.post('/trades/place', snaptradeRateLimit, async (req: any, res: any) => {
 
   } catch (error: any) {
     return handleSnapTradeError(error, 'place-order', res);
+  }
+});
+
+/**
+ * POST /api/snaptrade/sync
+ * Sync connected brokerage accounts from SnapTrade to database
+ */
+router.post('/sync', isAuthenticated, async (req: any, res) => {
+  try {
+    const flintUserId = req.user.claims.sub;
+    
+    console.log('[SnapTrade Sync] Starting sync for user:', flintUserId);
+    
+    // Get user's SnapTrade credentials
+    const [snapUser] = await db
+      .select()
+      .from(snaptradeUsers)
+      .where(eq(snaptradeUsers.flintUserId, flintUserId))
+      .limit(1);
+    
+    if (!snapUser) {
+      return res.status(404).json({ 
+        error: 'SnapTrade user not found. Please connect your brokerage account first.' 
+      });
+    }
+    
+    // Fetch connected accounts from SnapTrade
+    const accounts = await listAccounts(
+      flintUserId,
+      snapUser.userSecret,
+      flintUserId
+    );
+    
+    console.log('[SnapTrade Sync] Found accounts:', accounts?.length || 0);
+    
+    // Save or update each account in database
+    const syncedAccounts = [];
+    
+    for (const account of (accounts as any[]) || []) {
+      const brokerageAuthId = account.brokerage_authorization?.id || account.id;
+      const brokerageName = account.brokerage_authorization?.name || account.name || 'Unknown';
+      
+      // Check if connection already exists
+      const [existing] = await db
+        .select()
+        .from(snaptradeConnections)
+        .where(and(
+          eq(snaptradeConnections.flintUserId, flintUserId),
+          eq(snaptradeConnections.brokerageAuthorizationId, brokerageAuthId)
+        ))
+        .limit(1);
+      
+      if (existing) {
+        // Update existing connection
+        const [updated] = await db
+          .update(snaptradeConnections)
+          .set({
+            brokerageName,
+            disabled: false,
+            updatedAt: new Date(),
+            lastSyncAt: new Date()
+          })
+          .where(eq(snaptradeConnections.id, existing.id))
+          .returning();
+        
+        syncedAccounts.push(updated);
+        console.log('[SnapTrade Sync] Updated connection:', brokerageAuthId);
+      } else {
+        // Create new connection
+        const [created] = await db
+          .insert(snaptradeConnections)
+          .values({
+            flintUserId,
+            brokerageAuthorizationId: brokerageAuthId,
+            brokerageName,
+            disabled: false,
+            lastSyncAt: new Date()
+          })
+          .returning();
+        
+        syncedAccounts.push(created);
+        console.log('[SnapTrade Sync] Created connection:', brokerageAuthId);
+      }
+    }
+    
+    console.log('[SnapTrade Sync] Sync complete:', syncedAccounts.length, 'accounts');
+    
+    res.json({
+      success: true,
+      message: `Synced ${syncedAccounts.length} account(s)`,
+      accounts: syncedAccounts
+    });
+    
+  } catch (error: any) {
+    console.error('[SnapTrade Sync] Error:', error);
+    res.status(500).json({ 
+      error: error.message || 'Failed to sync SnapTrade accounts' 
+    });
   }
 });
 

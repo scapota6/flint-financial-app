@@ -32,6 +32,7 @@ import { snaptradeUsersRouter } from './routes/snaptrade-users';
 import { snaptradeConnectionsRouter } from './routes/snaptrade-connections';
 import { snaptradeTradingRouter } from './routes/snaptrade-trading';
 import { snaptradeWebhooksRouter } from './routes/snaptrade-webhooks';
+import snaptradeRouter from './routes/snaptrade';
 import adminRouter from './routes/admin';
 import adminPanelRouter from './routes/admin-panel';
 import userPasswordRouter from './routes/user-password';
@@ -1939,6 +1940,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Mount SnapTrade trading and webhook routes
   app.use('/api/snaptrade', snaptradeTradingRouter);
   app.use('/api/snaptrade', snaptradeWebhooksRouter);
+  
+  // Mount main SnapTrade routes (includes /sync endpoint)
+  app.use('/api/snaptrade', snaptradeRouter);
 
   // Mount password management routes
   app.use('/api/admin', adminRouter);
