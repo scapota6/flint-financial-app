@@ -48,13 +48,7 @@ router.get('/checkout/:ctaId', async (req, res) => {
       data: {
         type: 'checkouts',
         attributes: {
-          checkout_options: {
-            embed: true,
-            success_url: email 
-              ? `${baseUrl}/payment-success?email=${encodeURIComponent(email as string)}`
-              : `${baseUrl}/payment-success`
-          },
-          checkout_data: {},
+          checkout_data: email ? { email: email as string } : undefined,
         },
         relationships: {
           store: {
@@ -72,11 +66,6 @@ router.get('/checkout/:ctaId', async (req, res) => {
         },
       },
     };
-
-    // Add email to checkout if provided
-    if (email) {
-      checkoutData.data.attributes.checkout_data.email = email;
-    }
 
     // Make API request to create checkout
     const response = await fetch('https://api.lemonsqueezy.com/v1/checkouts', {

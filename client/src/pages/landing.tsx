@@ -84,7 +84,13 @@ function Landing() {
 
   // Initialize Lemon Squeezy (load once, keep for session)
   useEffect(() => {
+    let setupComplete = false;
+    
     const setupEventHandler = () => {
+      // Prevent duplicate setup
+      if (setupComplete) return;
+      setupComplete = true;
+      
       if (window.createLemonSqueezy) {
         window.createLemonSqueezy();
       }
@@ -100,7 +106,10 @@ function Landing() {
                 ? `/payment-success?email=${encodeURIComponent(email)}`
                 : '/payment-success';
               
-              window.location.href = successUrl;
+              // Allow overlay to close gracefully before redirecting
+              setTimeout(() => {
+                window.location.href = successUrl;
+              }, 500);
             }
           }
         });
@@ -108,14 +117,18 @@ function Landing() {
     };
 
     // Check if script already loaded
-    const existingScript = document.querySelector('script[src="https://app.lemonsqueezy.com/js/lemon.js"]');
+    const existingScript = document.querySelector('script[src="https://app.lemonsqueezy.com/js/lemon.js"]') as HTMLScriptElement;
     if (existingScript) {
       // Script exists - set up handler (either immediately or when loaded)
       if (window.LemonSqueezy) {
         setupEventHandler();
       } else {
         // Wait for script to load
-        existingScript.addEventListener('load', setupEventHandler);
+        const loadHandler = () => {
+          setupEventHandler();
+          existingScript.removeEventListener('load', loadHandler);
+        };
+        existingScript.addEventListener('load', loadHandler);
       }
       return;
     }
