@@ -11,7 +11,7 @@ export function getInstitutionLogo(accountName: string) {
   const institutionName = getInstitutionName(accountName).toLowerCase();
   const displayName = getInstitutionName(accountName);
 
-  const BRANDFETCH_CLIENT_ID = '1idS50sRJ-OzQR6Z0cX';
+  const BRANDFETCH_CLIENT_ID = import.meta.env.VITE_BRANDFETCH_CLIENT_ID || '';
   
   if (institutionName.includes('robinhood')) {
     return {
