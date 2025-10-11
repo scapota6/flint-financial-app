@@ -6,7 +6,7 @@ import { users, passwordResetTokens } from '@shared/schema';
 import { eq, and } from 'drizzle-orm';
 import { hashPassword, validatePasswordStrength } from '../lib/password-utils';
 import { hashToken, verifyToken, generateSecureToken } from '../lib/token-utils';
-import { sendPasswordResetEmail } from '../services/email';
+import { sendPasswordResetEmail, sendApprovalEmail } from '../services/email';
 
 const router = Router();
 
@@ -207,6 +207,88 @@ router.post('/request-reset', async (req, res) => {
     console.error('Error requesting password reset:', error);
     return res.status(500).json({
       message: 'Failed to process password reset request',
+    });
+  }
+});
+
+// POST /api/auth/resend-setup-email - Resend password setup email
+router.post('/resend-setup-email', async (req, res) => {
+  try {
+    const parseResult = requestResetSchema.safeParse(req.body);
+    
+    if (!parseResult.success) {
+      return res.status(400).json({
+        message: 'Valid email is required',
+      });
+    }
+
+    const { email } = parseResult.data;
+
+    // Find user by email
+    const [user] = await db
+      .select()
+      .from(users)
+      .where(eq(users.email, email.toLowerCase()));
+
+    if (!user) {
+      return res.status(404).json({
+        message: 'No account found with this email address.',
+      });
+    }
+
+    // Check if user already has a password set
+    if (user.passwordHash) {
+      return res.status(400).json({
+        message: 'Your account is already set up. Please use the login page or request a password reset.',
+      });
+    }
+
+    // Delete any existing unused tokens for this user
+    await db
+      .delete(passwordResetTokens)
+      .where(and(
+        eq(passwordResetTokens.userId, user.id),
+        eq(passwordResetTokens.used, false)
+      ));
+
+    // Generate new password setup token
+    const plainToken = generateSecureToken();
+    const tokenHash = hashToken(plainToken);
+    const expiresAt = new Date();
+    expiresAt.setHours(expiresAt.getHours() + 24); // 24 hour expiry
+
+    // Save token to database
+    await db.insert(passwordResetTokens).values({
+      userId: user.id,
+      token: tokenHash,
+      expiresAt,
+      used: false,
+    });
+
+    // Generate password setup link
+    const baseUrl = process.env.REPLIT_DEPLOYMENT 
+      ? `https://${process.env.REPLIT_DEPLOYMENT}` 
+      : process.env.BASE_URL 
+      || (process.env.REPL_SLUG && process.env.REPLIT_DOMAINS
+        ? `https://${process.env.REPL_SLUG}.${process.env.REPLIT_DOMAINS.split(',')[0]}`
+        : req.protocol + '://' + req.get('host'));
+    const passwordSetupLink = `${baseUrl}/setup-password?token=${plainToken}`;
+
+    // Send approval email with password setup link
+    await sendApprovalEmail(
+      user.email || '',
+      user.firstName || 'User',
+      passwordSetupLink
+    );
+
+    return res.status(200).json({
+      success: true,
+      message: 'Setup email has been resent. Please check your inbox.',
+    });
+  } catch (error) {
+    console.error('Error resending setup email:', error);
+    return res.status(500).json({
+      message: 'Failed to resend setup email. Please try again.',
     });
   }
 });

@@ -9,6 +9,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Button } from "@/components/ui/button";
 import { CheckCircle2, Mail, ArrowRight } from "lucide-react";
 import { useLocation } from "wouter";
+import { useMutation } from '@tanstack/react-query';
+import { apiRequest } from '@/lib/queryClient';
+import { useToast } from '@/hooks/use-toast';
 
 // Analytics tracking
 const trackEvent = (eventName: string, properties: Record<string, any> = {}) => {
@@ -23,6 +26,7 @@ export default function PaymentSuccessPage() {
   const [open, setOpen] = useState(true);
   const urlParams = new URLSearchParams(location.split('?')[1] || '');
   const email = urlParams.get('email') || '';
+  const { toast } = useToast();
 
   useEffect(() => {
     trackEvent('payment_success_viewed', { email });
@@ -39,6 +43,53 @@ export default function PaymentSuccessPage() {
     trackEvent('payment_success_continue_clicked', { email });
     // Redirect to setup password or dashboard using wouter navigation
     setLocation('/setup-password' + (email ? `?email=${encodeURIComponent(email)}` : ''));
+  };
+
+  // Mutation for resending setup email
+  const resendEmailMutation = useMutation({
+    mutationFn: async () => {
+      const response = await apiRequest('/api/auth/resend-setup-email', {
+        method: 'POST',
+        body: JSON.stringify({ email }),
+      });
+      return response;
+    },
+    onSuccess: () => {
+      trackEvent('resend_email_success', { email });
+      toast({
+        title: 'Email sent!',
+        description: 'Setup email has been resent. Please check your inbox.',
+        variant: 'default',
+      });
+    },
+    onError: (error: any) => {
+      trackEvent('resend_email_error', { email, error: error.message });
+      const errorMessage = error?.message?.includes('404') 
+        ? 'No account found with this email address.'
+        : error?.message?.includes('400')
+        ? 'Your account is already set up. Please login or reset your password.'
+        : 'Failed to resend email. Please try again.';
+      
+      toast({
+        title: 'Error',
+        description: errorMessage,
+        variant: 'destructive',
+      });
+    },
+  });
+
+  const handleResendEmail = () => {
+    if (!email) {
+      toast({
+        title: 'Error',
+        description: 'No email address found. Please try again.',
+        variant: 'destructive',
+      });
+      return;
+    }
+    
+    trackEvent('resend_email_clicked', { email });
+    resendEmailMutation.mutate();
   };
 
   return (
@@ -113,11 +164,12 @@ export default function PaymentSuccessPage() {
             <p className="text-xs text-gray-500 text-center">
               Didn't receive the email?{' '}
               <button 
-                className="text-purple-400 hover:text-purple-300 underline"
-                onClick={() => trackEvent('resend_email_clicked', { email })}
+                className="text-purple-400 hover:text-purple-300 underline disabled:opacity-50 disabled:cursor-not-allowed"
+                onClick={handleResendEmail}
+                disabled={resendEmailMutation.isPending || !email}
                 data-testid="button-resend-email"
               >
-                Resend
+                {resendEmailMutation.isPending ? 'Sending...' : 'Resend'}
               </button>
             </p>
           </div>
