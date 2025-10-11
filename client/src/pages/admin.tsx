@@ -14,6 +14,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { 
   Users, 
   Activity, 
@@ -30,7 +31,9 @@ import {
   Ban,
   Key,
   Trash2,
-  Flag
+  Flag,
+  ChevronDown,
+  ChevronRight
 } from 'lucide-react';
 
 // Type definitions for API responses
@@ -74,11 +77,18 @@ interface User {
 
 interface Connection {
   id: number;
-  userEmail: string;
+  userId: string;
+  email: string;
+  tier: string;
   provider: string;
+  accountId: string;
+  accountType: string;
+  accountName: string;
   institutionName: string;
   status: string;
+  balance: number;
   lastSynced: string;
+  createdAt: string;
 }
 
 interface Pagination {
@@ -875,74 +885,88 @@ function ConnectionsTab() {
     queryKey: ['/api/admin-panel/connections'],
   });
 
-  const resyncMutation = useMutation({
-    mutationFn: (id: number) => apiRequest(`/api/admin-panel/connections/${id}/resync`, { method: 'POST' }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/admin-panel/connections'] });
-    },
-  });
-
   if (isLoading) {
     return <div className="text-center py-8" data-testid="loading-connections">Loading connections...</div>;
   }
+
+  // Group connections by user
+  const groupedConnections = data?.connections?.reduce((acc, conn) => {
+    if (!acc[conn.userId]) {
+      acc[conn.userId] = {
+        userId: conn.userId,
+        email: conn.email || 'Unknown',
+        tier: conn.tier || 'free',
+        connections: []
+      };
+    }
+    acc[conn.userId].connections.push(conn);
+    return acc;
+  }, {} as Record<string, { userId: string; email: string; tier: string; connections: Connection[] }>);
+
+  const userGroups = Object.values(groupedConnections || {});
 
   return (
     <div className="space-y-4" data-testid="section-connections">
       <Card className="bg-gray-900 border-gray-800">
         <CardHeader>
-          <CardTitle>All Connections</CardTitle>
-          <CardDescription>Manage user connections to banks and brokerages</CardDescription>
+          <CardTitle>User Connections</CardTitle>
+          <CardDescription>View connections grouped by user. Click to expand.</CardDescription>
         </CardHeader>
-        <CardContent className="p-0">
-          <Table>
-            <TableHeader>
-              <TableRow className="border-gray-800">
-                <TableHead>User</TableHead>
-                <TableHead>Provider</TableHead>
-                <TableHead>Institution</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Last Synced</TableHead>
-                <TableHead>Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {data?.connections?.map((conn: any) => (
-                <TableRow key={conn.id} className="border-gray-800" data-testid={`row-connection-${conn.id}`}>
-                  <TableCell data-testid={`text-user-${conn.id}`}>{conn.userEmail}</TableCell>
-                  <TableCell>
-                    <Badge data-testid={`badge-provider-${conn.id}`} className="bg-blue-600">
-                      {conn.provider}
-                    </Badge>
-                  </TableCell>
-                  <TableCell data-testid={`text-institution-${conn.id}`}>{conn.institutionName}</TableCell>
-                  <TableCell>
-                    <Badge
-                      data-testid={`badge-status-${conn.id}`}
-                      className={conn.status === 'connected' ? 'bg-green-600' : 'bg-yellow-600'}
-                    >
-                      {conn.status}
-                    </Badge>
-                  </TableCell>
-                  <TableCell data-testid={`text-synced-${conn.id}`}>
-                    {conn.lastSynced ? new Date(conn.lastSynced).toLocaleString() : 'Never'}
-                  </TableCell>
-                  <TableCell>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className="border-gray-700"
-                      onClick={() => resyncMutation.mutate(conn.id)}
-                      disabled={resyncMutation.isPending}
-                      data-testid={`button-resync-${conn.id}`}
-                    >
-                      <RefreshCw className="h-4 w-4 mr-1" />
-                      Resync
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+        <CardContent className="space-y-2">
+          {userGroups.length === 0 ? (
+            <div className="text-center py-8 text-gray-500" data-testid="text-no-connections">
+              No connected accounts found
+            </div>
+          ) : (
+            userGroups.map((group) => (
+              <Collapsible key={group.userId} className="border border-gray-800 rounded-lg" data-testid={`collapsible-user-${group.userId}`}>
+                <CollapsibleTrigger className="w-full p-4 flex items-center justify-between hover:bg-gray-800/50 transition-colors group" data-testid={`trigger-user-${group.userId}`}>
+                  <div className="flex items-center gap-4">
+                    <ChevronRight className="h-4 w-4 transition-transform group-data-[state=open]:rotate-90 text-gray-400" />
+                    <div className="text-left">
+                      <p className="font-medium text-white" data-testid={`text-email-${group.userId}`}>{group.email}</p>
+                      <p className="text-sm text-gray-400" data-testid={`text-summary-${group.userId}`}>
+                        {group.connections.length} connection{group.connections.length !== 1 ? 's' : ''} · {group.tier} tier
+                      </p>
+                    </div>
+                  </div>
+                </CollapsibleTrigger>
+                
+                <CollapsibleContent className="px-4 pb-4" data-testid={`content-user-${group.userId}`}>
+                  <Table>
+                    <TableHeader>
+                      <TableRow className="border-gray-800">
+                        <TableHead>Institution</TableHead>
+                        <TableHead>Account Type</TableHead>
+                        <TableHead>Account Name</TableHead>
+                        <TableHead>Provider</TableHead>
+                        <TableHead>Balance</TableHead>
+                        <TableHead>Connected</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {group.connections.map((conn) => (
+                        <TableRow key={conn.id} className="border-gray-800" data-testid={`row-connection-${conn.id}`}>
+                          <TableCell data-testid={`text-institution-${conn.id}`}>{conn.institutionName}</TableCell>
+                          <TableCell className="capitalize" data-testid={`text-type-${conn.id}`}>{conn.accountType}</TableCell>
+                          <TableCell data-testid={`text-name-${conn.id}`}>{conn.accountName}</TableCell>
+                          <TableCell className="uppercase" data-testid={`badge-provider-${conn.id}`}>
+                            <Badge className="bg-blue-600">{conn.provider}</Badge>
+                          </TableCell>
+                          <TableCell data-testid={`text-balance-${conn.id}`}>
+                            {conn.balance ? `$${conn.balance.toLocaleString()}` : '-'}
+                          </TableCell>
+                          <TableCell data-testid={`text-date-${conn.id}`}>
+                            {new Date(conn.createdAt).toLocaleDateString()}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </CollapsibleContent>
+              </Collapsible>
+            ))
+          )}
         </CardContent>
       </Card>
     </div>

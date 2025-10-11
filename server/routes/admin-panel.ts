@@ -841,7 +841,7 @@ router.get('/analytics/errors', isAuthenticated, requireAdmin(), async (req: any
 // CONNECTIONS MANAGEMENT
 // ============================================================================
 
-// GET /api/admin/connections - Get all connections
+// GET /api/admin/connections - Get all connections with user info
 router.get('/connections', isAuthenticated, requireAdmin(), async (req: any, res) => {
   try {
     const { page = '1', limit = '20', provider, status } = req.query;
@@ -849,54 +849,71 @@ router.get('/connections', isAuthenticated, requireAdmin(), async (req: any, res
     const limitNum = parseInt(limit as string);
     const offset = (pageNum - 1) * limitNum;
 
-    // Get Teller connections
-    let tellerConditions = [eq(connectedAccounts.provider, 'teller')];
+    // Get Teller connections with user info
+    let tellerConditions = [eq(connectedAccounts.provider, 'teller'), eq(connectedAccounts.status, 'connected')];
     if (status) {
-      tellerConditions.push(eq(connectedAccounts.status, status as string));
+      tellerConditions = [eq(connectedAccounts.provider, 'teller'), eq(connectedAccounts.status, status as string)];
     }
 
     const tellerConnections = provider === 'snaptrade' ? [] : await db
       .select({
         id: connectedAccounts.id,
         userId: connectedAccounts.userId,
+        email: users.email,
+        tier: users.subscriptionTier,
         provider: connectedAccounts.provider,
-        institutionName: connectedAccounts.institutionName,
+        accountId: connectedAccounts.accountId,
+        accountType: connectedAccounts.accountType,
         accountName: connectedAccounts.accountName,
+        institutionName: connectedAccounts.institutionName,
         status: connectedAccounts.status,
         balance: connectedAccounts.balance,
         lastSynced: connectedAccounts.lastSynced,
         createdAt: connectedAccounts.createdAt,
       })
       .from(connectedAccounts)
+      .leftJoin(users, eq(connectedAccounts.userId, users.id))
       .where(and(...tellerConditions));
 
-    // Get SnapTrade connections
-    let snapQuery = db
+    // Get SnapTrade connections with user info
+    let snapConditions = [eq(snaptradeConnections.disabled, false)];
+    if (status === 'disabled') {
+      snapConditions = [eq(snaptradeConnections.disabled, true)];
+    } else if (status === 'connected') {
+      snapConditions = [eq(snaptradeConnections.disabled, false)];
+    }
+
+    const snapConnections = provider === 'teller' ? [] : await db
       .select({
         id: snaptradeConnections.id,
         userId: snaptradeConnections.flintUserId,
+        email: users.email,
+        tier: users.subscriptionTier,
         provider: sql<string>`'snaptrade'`,
+        accountId: sql<string>`NULL`,
+        accountType: sql<string>`'brokerage'`,
+        accountName: snaptradeConnections.brokerageName,
         institutionName: snaptradeConnections.brokerageName,
         status: sql<string>`CASE WHEN ${snaptradeConnections.disabled} = true THEN 'disabled' ELSE 'connected' END`,
+        balance: sql<number>`NULL`,
         lastSynced: snaptradeConnections.lastSyncAt,
         createdAt: snaptradeConnections.createdAt,
       })
-      .from(snaptradeConnections);
+      .from(snaptradeConnections)
+      .leftJoin(users, eq(snaptradeConnections.flintUserId, users.id))
+      .where(and(...snapConditions));
 
-    if (status === 'disabled') {
-      snapQuery = snapQuery.where(eq(snaptradeConnections.disabled, true)) as any;
-    } else if (status === 'connected') {
-      snapQuery = snapQuery.where(eq(snaptradeConnections.disabled, false)) as any;
-    }
-
-    const snapConnections = provider === 'teller' ? [] : await snapQuery;
-
-    // Combine and paginate
+    // Combine and sort by userId and createdAt
     const allConnections = [...tellerConnections, ...snapConnections]
-      .sort((a, b) => new Date(b.createdAt!).getTime() - new Date(a.createdAt!).getTime())
-      .slice(offset, offset + limitNum);
+      .sort((a, b) => {
+        if (a.userId !== b.userId) {
+          return (a.userId || '').localeCompare(b.userId || '');
+        }
+        return new Date(a.createdAt!).getTime() - new Date(b.createdAt!).getTime();
+      });
 
-    const total = tellerConnections.length + snapConnections.length;
+    const total = allConnections.length;
+    const paginatedConnections = allConnections.slice(offset, offset + limitNum);
 
     await logAdminAction(req.adminEmail, 'view_connections', {
       provider,
@@ -905,7 +922,7 @@ router.get('/connections', isAuthenticated, requireAdmin(), async (req: any, res
     });
 
     res.json({
-      connections: allConnections,
+      connections: paginatedConnections,
       pagination: {
         page: pageNum,
         limit: limitNum,
