@@ -1080,6 +1080,107 @@ router.post('/connections/:id/resync', isAuthenticated, requireAdmin(), async (r
   }
 });
 
+// DELETE /api/admin/connections/:connectionId - Admin disconnect connection
+router.delete('/connections/:connectionId', isAuthenticated, requireAdmin(), async (req: any, res) => {
+  try {
+    const { connectionId } = req.params;
+    const { provider } = req.query;
+    
+    if (!provider || (provider !== 'teller' && provider !== 'snaptrade')) {
+      return res.status(400).json({ message: 'Invalid or missing provider parameter' });
+    }
+    
+    if (provider === 'teller') {
+      // Disconnect Teller account
+      const [connection] = await db
+        .select()
+        .from(connectedAccounts)
+        .where(eq(connectedAccounts.id, parseInt(connectionId)));
+      
+      if (!connection) {
+        return res.status(404).json({ message: 'Teller connection not found' });
+      }
+      
+      await db
+        .update(connectedAccounts)
+        .set({ 
+          status: 'disconnected',
+          updatedAt: new Date()
+        })
+        .where(eq(connectedAccounts.id, parseInt(connectionId)));
+      
+      console.log('Admin disconnected Teller account', {
+        adminEmail: req.adminEmail,
+        connectionId,
+        userId: connection.userId,
+        provider: 'teller',
+        institutionName: connection.institutionName
+      });
+
+      await logAdminAction(
+        req.adminEmail,
+        'disconnect_account',
+        { 
+          connectionId, 
+          provider: 'teller',
+          institutionName: connection.institutionName
+        },
+        connection.userId
+      );
+      
+      return res.json({ success: true, message: 'Account disconnected successfully' });
+    } 
+    
+    if (provider === 'snaptrade') {
+      // Disconnect SnapTrade account
+      const [connection] = await db
+        .select()
+        .from(snaptradeConnections)
+        .where(eq(snaptradeConnections.id, parseInt(connectionId)));
+      
+      if (!connection) {
+        return res.status(404).json({ message: 'SnapTrade connection not found' });
+      }
+      
+      await db
+        .update(snaptradeConnections)
+        .set({ 
+          disabled: true,
+          updatedAt: new Date()
+        })
+        .where(eq(snaptradeConnections.id, parseInt(connectionId)));
+      
+      console.log('Admin disconnected SnapTrade account', {
+        adminEmail: req.adminEmail,
+        connectionId,
+        userId: connection.flintUserId,
+        provider: 'snaptrade',
+        brokerageName: connection.brokerageName
+      });
+
+      await logAdminAction(
+        req.adminEmail,
+        'disconnect_account',
+        { 
+          connectionId, 
+          provider: 'snaptrade',
+          brokerageName: connection.brokerageName
+        },
+        connection.flintUserId
+      );
+      
+      return res.json({ success: true, message: 'Account disconnected successfully' });
+    }
+    
+    // Connection not found in either table
+    return res.status(404).json({ message: 'Connection not found' });
+    
+  } catch (error) {
+    console.error('Admin disconnect failed', { error });
+    res.status(500).json({ message: 'Failed to disconnect account' });
+  }
+});
+
 // ============================================================================
 // FEATURE FLAGS
 // ============================================================================

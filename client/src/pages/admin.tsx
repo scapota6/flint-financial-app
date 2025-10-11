@@ -881,8 +881,32 @@ function UsersTab() {
 
 // Connections Tab
 function ConnectionsTab() {
+  const { toast } = useToast();
+  
   const { data, isLoading } = useQuery<{ connections: Connection[] }>({
     queryKey: ['/api/admin-panel/connections'],
+  });
+
+  const disconnectMutation = useMutation({
+    mutationFn: async ({ connectionId, provider }: { connectionId: number; provider: string }) => {
+      return apiRequest(`/api/admin-panel/connections/${connectionId}?provider=${provider}`, {
+        method: 'DELETE'
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/admin-panel/connections'] });
+      toast({
+        title: "Success",
+        description: "Account disconnected successfully"
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to disconnect account",
+        variant: "destructive"
+      });
+    }
   });
 
   if (isLoading) {
@@ -942,6 +966,7 @@ function ConnectionsTab() {
                         <TableHead>Provider</TableHead>
                         <TableHead>Balance</TableHead>
                         <TableHead>Connected</TableHead>
+                        <TableHead>Actions</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -958,6 +983,24 @@ function ConnectionsTab() {
                           </TableCell>
                           <TableCell data-testid={`text-date-${conn.id}`}>
                             {new Date(conn.createdAt).toLocaleDateString()}
+                          </TableCell>
+                          <TableCell>
+                            <Button
+                              variant="destructive"
+                              size="sm"
+                              onClick={() => {
+                                if (confirm(`Disconnect ${conn.institutionName} - ${conn.accountName}?`)) {
+                                  disconnectMutation.mutate({ 
+                                    connectionId: conn.id, 
+                                    provider: conn.provider 
+                                  });
+                                }
+                              }}
+                              disabled={disconnectMutation.isPending}
+                              data-testid={`button-disconnect-${conn.id}`}
+                            >
+                              Disconnect
+                            </Button>
                           </TableCell>
                         </TableRow>
                       ))}
