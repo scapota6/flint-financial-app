@@ -8,7 +8,7 @@ import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
 import { getSnapUser } from "./store/snapUsers";
 import { rateLimits } from "./middleware/rateLimiter";
-import { authApi, accountsApi, snaptradeClient, portfolioApi } from './lib/snaptrade';
+import { authApi, accountsApi, snaptradeClient, portfolioApi, listBrokerageAuthorizations } from './lib/snaptrade';
 import { deleteSnapUser, saveSnapUser } from './store/snapUsers';
 import { WalletService } from "./services/WalletService";
 import { TradingAggregator } from "./services/TradingAggregator";
@@ -25,6 +25,8 @@ import {
   insertActivityLogSchema,
   insertAccountApplicationSchema,
   users,
+  snaptradeUsers,
+  snaptradeConnections,
 } from "@shared/schema";
 import { eq } from "drizzle-orm";
 import { db } from "./db";
@@ -147,6 +149,56 @@ export async function registerRoutes(app: Express): Promise<Server> {
               userId, 
               accountCount: accounts.length 
             });
+            
+            // Sync authorizations to database
+            try {
+              console.log('🔄 Syncing SnapTrade authorizations to database...');
+              
+              // Fetch authorizations from SnapTrade API
+              const authorizations = await listBrokerageAuthorizations(
+                userId as string,
+                userSecret as string
+              );
+              
+              console.log(`📥 Found ${authorizations?.length || 0} authorizations to sync`);
+              
+              // Sync each authorization to database
+              for (const auth of (authorizations || [])) {
+                await db
+                  .insert(snaptradeConnections)
+                  .values({
+                    flintUserId: userId as string,
+                    brokerageAuthorizationId: auth.id,
+                    brokerageName: auth.brokerage?.name || 'Unknown',
+                    disabled: auth.disabled || false,
+                    lastSyncAt: new Date(),
+                  })
+                  .onConflictDoUpdate({
+                    target: snaptradeConnections.brokerageAuthorizationId,
+                    set: {
+                      brokerageName: auth.brokerage?.name || 'Unknown',
+                      disabled: auth.disabled || false,
+                      updatedAt: new Date(),
+                      lastSyncAt: new Date(),
+                    }
+                  });
+                
+                console.log(`✅ Synced authorization: ${auth.brokerage?.name} (${auth.id})`);
+              }
+              
+              logger.info('SnapTrade authorizations synced successfully', {
+                userId,
+                count: authorizations?.length || 0
+              });
+            } catch (syncError) {
+              // Log error but don't fail the redirect - sync can be retried later
+              console.error('❌ Failed to sync authorizations:', syncError);
+              logger.error('SnapTrade authorization sync failed', {
+                userId,
+                error: syncError
+              });
+            }
+            
             return res.redirect('/accounts?snaptrade=success');
           } else {
             console.log('❌ Connection failed - no accounts found');
