@@ -38,7 +38,8 @@ const app = express();
           'https://js.stripe.com',
           'https://js.sentry-cdn.com',
           'https://replit.com',
-          'https://app.lemonsqueezy.com'
+          'https://app.lemonsqueezy.com',
+          'https://assets.lemonsqueezy.com'
         ],
         // Styles (separate style-src-elem is respected by newer browsers)
         styleSrc: [SELF, UNSAFE_INLINE, 'https://fonts.googleapis.com'],
@@ -66,6 +67,8 @@ const app = express();
           'https://o0.ingest.sentry.io',
           'https://o1.ingest.sentry.io',
           'https://sentry.io',
+          'https://app.lemonsqueezy.com',
+          'https://api.lemonsqueezy.com',
           // add your exact Replit base (scheme+host+port) if you ever call absolute URLs
         ],
         imgSrc: [SELF, 'data:', 'https://cdn.brandfetch.io'],
