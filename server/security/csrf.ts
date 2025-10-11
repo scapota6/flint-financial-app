@@ -19,6 +19,7 @@ export function installCsrf(app: Express) {
   const publicPaths = [
     '/api/teller/webhook',
     '/api/snaptrade/webhooks',
+    '/api/lemonsqueezy/webhook',  // Lemon Squeezy payment webhooks
     '/api/applications/submit',
     '/api/auth/setup-password',
     '/api/auth/request-reset',
