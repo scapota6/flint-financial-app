@@ -36,7 +36,9 @@ export class CredentialEncryption {
       throw new Error('Invalid authentication tag length');
     }
     
-    const decipher = crypto.createDecipheriv(ALGORITHM, ENCRYPTION_KEY, Buffer.from(iv, 'hex'));
+    const decipher = crypto.createDecipheriv(ALGORITHM, ENCRYPTION_KEY, Buffer.from(iv, 'hex'), {
+      authTagLength: 16
+    });
     decipher.setAuthTag(authTagBuffer);
     
     let decrypted = decipher.update(encrypted, 'hex', 'utf8');
