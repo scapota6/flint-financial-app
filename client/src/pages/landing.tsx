@@ -270,7 +270,7 @@ function Landing() {
                   </div>
                   <div className="flex items-center space-x-3 mb-4">
                     <Building className="h-6 w-6 text-blue-400" />
-                    <span className="font-semibold">Built on SnapTrade & Teller</span>
+                    <span className="font-semibold">Trusted financial infrastructure</span>
                   </div>
                   <div className="flex items-center space-x-3">
                     <Lock className="h-6 w-6 text-purple-400" />
@@ -298,8 +298,6 @@ function Landing() {
               paying off credit cards faster, and cutting hours of financial stress each week.
             </p>
             <div className="flex items-center justify-center space-x-8 opacity-60">
-              <div className="text-sm text-gray-400">SnapTrade</div>
-              <div className="text-sm text-gray-400">Teller</div>
               <div className="text-sm text-gray-400">Stripe</div>
             </div>
           </div>

@@ -101,8 +101,7 @@ export function ComplianceDisclaimer({
           </ul>
           <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
             <p className="text-xs">
-              Flint uses bank-level security through Teller.io for banking connections and SnapTrade for brokerage connections, 
-              both of which are regulated financial data providers.
+              Flint uses bank-level security for all financial connections through trusted, industry-standard financial infrastructure.
             </p>
           </div>
         </div>

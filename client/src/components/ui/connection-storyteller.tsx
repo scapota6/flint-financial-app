@@ -24,7 +24,7 @@ const bankSteps: ConnectionStep[] = [
   {
     id: 'init',
     title: 'Initializing Connection',
-    description: 'Preparing secure channel with Teller.io...',
+    description: 'Preparing secure bank connection...',
     icon: Shield,
     duration: 1500
   },
@@ -54,7 +54,7 @@ const bankSteps: ConnectionStep[] = [
 const brokerageSteps: ConnectionStep[] = [
   {
     id: 'init',
-    title: 'Preparing SnapTrade Connection',
+    title: 'Preparing Brokerage Connection',
     description: 'Setting up secure brokerage connection...',
     icon: Shield,
     duration: 1500
@@ -68,7 +68,7 @@ const brokerageSteps: ConnectionStep[] = [
   },
   {
     id: 'redirect',
-    title: 'Opening SnapTrade Portal',
+    title: 'Opening Brokerage Portal',
     description: 'Redirecting to secure connection portal...',
     icon: TrendingUp,
     duration: 1500

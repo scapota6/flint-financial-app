@@ -47,7 +47,7 @@ export default function SnapTradeConnectionAlert({ snapTradeStatus }: SnapTradeC
     } catch (error) {
       toast({
         title: "Connection Failed",
-        description: "Unable to start SnapTrade connection",
+        description: "Unable to start brokerage connection",
         variant: "destructive"
       });
     } finally {

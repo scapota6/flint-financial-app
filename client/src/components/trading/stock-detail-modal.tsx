@@ -214,7 +214,7 @@ export function StockDetailModal({ symbol, isOpen, onClose }: StockDetailModalPr
               {symbolInfo && (
                 <Card className="bg-gray-800/50 border-gray-700">
                   <CardHeader>
-                    <CardTitle className="text-white text-sm">SnapTrade Symbol Information</CardTitle>
+                    <CardTitle className="text-white text-sm">Symbol Information</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="grid grid-cols-2 gap-4 text-sm">

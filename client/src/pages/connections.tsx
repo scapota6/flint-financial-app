@@ -317,7 +317,7 @@ export default function Connections() {
                       <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
                         <div className="flex items-center gap-2">
                           <Trash2 className="h-4 w-4 text-destructive" />
-                          <span className="text-sm font-medium">Disconnect All SnapTrade Accounts</span>
+                          <span className="text-sm font-medium">Disconnect All Brokerage Accounts</span>
                         </div>
                         <Button
                           variant="destructive"

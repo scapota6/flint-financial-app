@@ -333,7 +333,7 @@ export default function SimpleConnectButtons({ accounts, userTier, isAdmin }: Si
                 </div>
                 <div>
                   <h3 className="text-white font-medium">Bank & Credit</h3>
-                  <p className="text-gray-400 text-sm">Connect via Teller.io</p>
+                  <p className="text-gray-400 text-sm">Connect Bank Account</p>
                 </div>
               </div>
               
@@ -374,7 +374,7 @@ export default function SimpleConnectButtons({ accounts, userTier, isAdmin }: Si
                 </div>
                 <div>
                   <h3 className="text-white font-medium">Brokerage & Crypto</h3>
-                  <p className="text-gray-400 text-sm">Connect via SnapTrade</p>
+                  <p className="text-gray-400 text-sm">Connect Brokerage</p>
                 </div>
               </div>
               

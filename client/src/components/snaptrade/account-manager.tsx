@@ -50,7 +50,7 @@ export function SnapTradeAccountManager() {
   if (accountsError) {
     return (
       <ErrorRetryCard
-        title="Failed to load SnapTrade accounts"
+        title="Failed to load brokerage accounts"
         description="Could not connect to your brokerage accounts"
         onRetry={() => refetchAccounts()}
       />
@@ -63,7 +63,7 @@ export function SnapTradeAccountManager() {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-semibold text-white">Brokerage Accounts</h2>
-          <p className="text-gray-400">Manage your connected brokerage accounts via SnapTrade</p>
+          <p className="text-gray-400">Manage your connected brokerage accounts</p>
         </div>
         <div className="flex gap-2">
           <Button 
