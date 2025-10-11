@@ -10,6 +10,7 @@ import { useAuth } from "@/hooks/useAuth";
 import NotFound from "@/pages/not-found";
 import Landing from "@/pages/landing";
 import SuccessPage from "@/pages/success";
+import PaymentSuccessPage from "@/pages/payment-success";
 import Dashboard from "@/pages/dashboard";
 import Trading from "@/pages/Trading";
 import Transfers from "@/pages/transfers";
@@ -70,6 +71,7 @@ function Router() {
                 <Route path="/login" component={Login} />
                 <Route path="/success" component={SuccessPage} />
                 <Route path="/landing/success" component={SuccessPage} />
+                <Route path="/payment-success" component={PaymentSuccessPage} />
                 <Route path="/setup-password" component={PasswordSetup} />
                 <Route path="/reset-password" component={ResetPassword} />
                 {/* Redirect any protected routes to login */}
