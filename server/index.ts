@@ -2,6 +2,7 @@ import express, { type Request, Response, NextFunction } from "express";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import helmet from "helmet";
+import compression from "compression";
 import { installCsrf } from "./security/csrf";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
@@ -20,7 +21,23 @@ const app = express();
 
 (async () => {
   try {
-  // 1) Security + parsers (improved CSP configuration)
+  // 1) HTTP Compression with gzip/deflate support (must be early in middleware stack)
+  // Note: Brotli is supported natively by Node.js v10.16+ via zlib module but requires
+  // custom middleware implementation. For production use, consider nginx/CDN-level Brotli.
+  app.use(compression({
+    level: 6, // Compression level (0-9, where 6 is a good balance)
+    threshold: 1024, // Only compress responses larger than 1KB
+    filter: (req, res) => {
+      // Don't compress if client doesn't support it
+      if (req.headers['x-no-compression']) {
+        return false;
+      }
+      // Use compression filter for everything else
+      return compression.filter(req, res);
+    },
+  }));
+
+  // 2) Security + parsers (improved CSP configuration)
   const SELF = "'self'";
   const UNSAFE_INLINE = "'unsafe-inline'"; // keep temporarily if you rely on inline styles/scripts
   const isProdCSP = process.env.NODE_ENV === 'production';
@@ -90,7 +107,28 @@ const app = express();
   app.use(express.urlencoded({ extended: false }));
   app.use(cookieParser());
 
-  // 2) CORS — allow credentials from your client origin
+  // 3) Add caching headers for better performance
+  app.use((req, res, next) => {
+    // Cache static assets aggressively
+    if (req.url.match(/\.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$/)) {
+      res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+    }
+    // API responses - different strategies based on endpoint
+    else if (req.url.startsWith('/api/')) {
+      if (req.url.includes('/auth') || req.url.includes('/login') || req.url.includes('/logout')) {
+        res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+      } else if (req.url.includes('/dashboard')) {
+        res.setHeader('Cache-Control', 'private, max-age=60'); // 60s for dashboard
+      } else if (req.url.includes('/portfolio-holdings') || req.url.includes('/quotes')) {
+        res.setHeader('Cache-Control', 'private, max-age=5'); // 5s for real-time data
+      } else {
+        res.setHeader('Cache-Control', 'private, max-age=300'); // 5min default for API
+      }
+    }
+    next();
+  });
+
+  // 4) CORS — allow credentials from your client origin
   const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN ?? 'https://28036d48-949d-4fd5-9e63-54ed8b7fd662-00-1i1qwnyczdy9x.kirk.replit.dev';
   app.use(cors({
     origin: CLIENT_ORIGIN,

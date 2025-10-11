@@ -110,9 +110,13 @@ export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       queryFn: getQueryFn({ on401: "throw" }),
-      refetchInterval: false,
-      refetchOnWindowFocus: false,
-      staleTime: Infinity,
+      // Optimized staleTime based on data volatility
+      staleTime: 60 * 1000, // Default 1 minute for most data
+      gcTime: 5 * 60 * 1000, // Keep data in cache for 5 minutes (was cacheTime)
+      // Optimized refetch settings to minimize unnecessary requests
+      refetchOnWindowFocus: false, // Don't refetch when user returns to tab (reduces bandwidth)
+      refetchOnReconnect: false, // Don't refetch when connection restored (reduces server load)
+      refetchInterval: false, // No automatic polling by default
       retry: (failureCount: number, error: any) => {
         // Don't retry beyond 3 attempts
         if (failureCount >= 3) return false;

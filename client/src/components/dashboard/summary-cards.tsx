@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { TrendingUp, Wallet, Building2, ArrowUpRight, ArrowDownRight } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { MetricCard } from '@/components/ui/metric-card';
@@ -10,7 +11,7 @@ interface SummaryCardsProps {
   change24h?: number;
 }
 
-export default function SummaryCards({ 
+const SummaryCards = memo(function SummaryCards({ 
   totalBalance, 
   bankBalance, 
   investmentValue, 
@@ -100,4 +101,6 @@ export default function SummaryCards({
       </div>
     </div>
   );
-}
+});
+
+export default SummaryCards;

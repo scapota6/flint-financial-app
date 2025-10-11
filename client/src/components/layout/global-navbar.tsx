@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, memo } from 'react';
 import { Link, useLocation } from 'wouter';
 import { Menu, X, User, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -20,7 +20,7 @@ const navLinks = [
   { href: '/trading', label: 'Trading (Coming Soon)', comingSoon: true },
 ];
 
-export default function GlobalNavbar() {
+const GlobalNavbar = memo(function GlobalNavbar() {
   const [location] = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   
@@ -207,4 +207,6 @@ export default function GlobalNavbar() {
       )}
     </nav>
   );
-}
+});
+
+export default GlobalNavbar;

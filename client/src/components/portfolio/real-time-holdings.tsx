@@ -4,7 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { apiRequest } from '@/lib/queryClient';
 import { getUserEmailOptional } from '@/lib/userEmail';
 import { TrendingUp, TrendingDown, DollarSign, Activity } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, memo } from 'react';
 
 interface Holding {
   accountId: string;
@@ -29,7 +29,7 @@ interface RealTimeHoldingsProps {
   onHoldingClick?: (symbol: string, name: string) => void;
 }
 
-export default function RealTimeHoldings({ 
+const RealTimeHoldings = memo(function RealTimeHoldings({ 
   maxItems = 20, 
   showAccountProvider = true,
   onHoldingClick 
@@ -321,4 +321,6 @@ export default function RealTimeHoldings({
       </CardContent>
     </Card>
   );
-}
+});
+
+export default RealTimeHoldings;

@@ -1,3 +1,4 @@
+import { lazy, Suspense } from "react";
 import { Switch, Route } from "wouter";
 import { AnimatePresence } from "framer-motion";
 import { queryClient } from "./lib/queryClient";
@@ -7,33 +8,42 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import GlobalNavbar from "@/components/layout/global-navbar";
 import { useAuth } from "@/hooks/useAuth";
-import NotFound from "@/pages/not-found";
-import Landing from "@/pages/landing";
-import SuccessPage from "@/pages/success";
-import PaymentSuccessPage from "@/pages/payment-success";
-import Dashboard from "@/pages/dashboard";
-import Trading from "@/pages/Trading";
-import Transfers from "@/pages/transfers";
-import WatchlistPage from "@/pages/Watchlist";
-import Activity from "@/pages/activity";
-import Subscribe from "@/pages/subscribe";
-import Profile from "@/pages/profile";
-import News from "@/pages/news";
-import StockDetail from "@/pages/stock-detail";
-import AssetDetail from "@/pages/asset-detail";
-import Accounts from "@/pages/Accounts";
-import BrokerageDetail from "@/pages/BrokerageDetail";
-import BankDetail from "@/pages/BankDetail";
-import Connections from "@/pages/connections";
-import Portfolio from "@/pages/Portfolio";
-import Settings from "@/pages/Settings";
-import Security from "@/pages/Security";
-import Monitoring from "@/pages/Monitoring";
-import TellerCallback from "@/pages/TellerCallback";
-import AdminDashboard from "@/pages/admin";
-import PasswordSetup from "@/pages/password-setup";
-import ResetPassword from "@/pages/reset-password";
-import Login from "@/pages/login";
+
+// Code-split all page components for optimal bundle size
+const NotFound = lazy(() => import("@/pages/not-found"));
+const Landing = lazy(() => import("@/pages/landing"));
+const SuccessPage = lazy(() => import("@/pages/success"));
+const PaymentSuccessPage = lazy(() => import("@/pages/payment-success"));
+const Dashboard = lazy(() => import("@/pages/dashboard"));
+const Trading = lazy(() => import("@/pages/Trading"));
+const Transfers = lazy(() => import("@/pages/transfers"));
+const WatchlistPage = lazy(() => import("@/pages/Watchlist"));
+const Activity = lazy(() => import("@/pages/activity"));
+const Subscribe = lazy(() => import("@/pages/subscribe"));
+const Profile = lazy(() => import("@/pages/profile"));
+const News = lazy(() => import("@/pages/news"));
+const StockDetail = lazy(() => import("@/pages/stock-detail"));
+const AssetDetail = lazy(() => import("@/pages/asset-detail"));
+const Accounts = lazy(() => import("@/pages/Accounts"));
+const BrokerageDetail = lazy(() => import("@/pages/BrokerageDetail"));
+const BankDetail = lazy(() => import("@/pages/BankDetail"));
+const Connections = lazy(() => import("@/pages/connections"));
+const Portfolio = lazy(() => import("@/pages/Portfolio"));
+const Settings = lazy(() => import("@/pages/Settings"));
+const Security = lazy(() => import("@/pages/Security"));
+const Monitoring = lazy(() => import("@/pages/Monitoring"));
+const TellerCallback = lazy(() => import("@/pages/TellerCallback"));
+const AdminDashboard = lazy(() => import("@/pages/admin"));
+const PasswordSetup = lazy(() => import("@/pages/password-setup"));
+const ResetPassword = lazy(() => import("@/pages/reset-password"));
+const Login = lazy(() => import("@/pages/login"));
+
+// Loading fallback component
+const PageLoader = () => (
+  <div className="min-h-screen flex items-center justify-center bg-black">
+    <div className="animate-spin w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full" />
+  </div>
+);
 
 // Public route wrapper that redirects authenticated users
 function PublicRoute({ component: Component }: { component: React.ComponentType }) {
@@ -63,7 +73,8 @@ function Router() {
       {isAuthenticated && <GlobalNavbar />}
       <div className={isAuthenticated ? "pt-16" : ""}>
         <AnimatePresence mode="wait">
-          <Switch>
+          <Suspense fallback={<PageLoader />}>
+            <Switch>
             {!isAuthenticated ? (
               <>
                 <Route path="/" component={Landing} />
@@ -134,6 +145,7 @@ function Router() {
             )}
             <Route component={NotFound} />
           </Switch>
+          </Suspense>
         </AnimatePresence>
       </div>
     </>

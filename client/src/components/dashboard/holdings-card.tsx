@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, memo } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -13,7 +13,7 @@ interface HoldingsCardProps {
   data: any[];
 }
 
-export function HoldingsCard({ data }: HoldingsCardProps) {
+export const HoldingsCard = memo(function HoldingsCard({ data }: HoldingsCardProps) {
   const [holdings, setHoldings] = useState<SnapTradeHolding[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
@@ -206,4 +206,4 @@ export function HoldingsCard({ data }: HoldingsCardProps) {
       </CardContent>
     </Card>
   );
-}
+});

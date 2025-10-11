@@ -50,7 +50,10 @@ export const users = pgTable("users", {
   // snaptradeUserSecret: varchar("snaptrade_user_secret"), // SnapTrade user secret
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
-});
+}, (table) => [
+  index("users_last_login_idx").on(table.lastLogin),
+  index("users_subscription_tier_idx").on(table.subscriptionTier),
+]);
 
 // SnapTrade users table per specification: snaptrade_users(flint_user_id PK, user_secret, created_at, rotated_at)
 export const snaptradeUsers = pgTable('snaptrade_users', {
@@ -96,7 +99,12 @@ export const connectedAccounts = pgTable("connected_accounts", {
   institutionId: varchar("institution_id"), // provider's institution ID
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
-});
+}, (table) => [
+  index("connected_accounts_user_idx").on(table.userId),
+  index("connected_accounts_type_idx").on(table.accountType),
+  index("connected_accounts_active_idx").on(table.isActive),
+  index("connected_accounts_user_type_idx").on(table.userId, table.accountType),
+]);
 
 // SnapTrade accounts table per specification: snaptrade_accounts(id PK, connection_id, institution, name, number_masked, raw_type, status, currency, total_balance_amount, last_holdings_sync_at)
 export const snaptradeAccounts = pgTable('snaptrade_accounts', {
@@ -238,7 +246,12 @@ export const holdings = pgTable("holdings", {
   gainLossPercentage: decimal("gain_loss_percentage", { precision: 5, scale: 2 }).notNull(),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
-});
+}, (table) => [
+  index("holdings_user_idx").on(table.userId),
+  index("holdings_account_idx").on(table.accountId),
+  index("holdings_symbol_idx").on(table.symbol),
+  index("holdings_user_symbol_idx").on(table.userId, table.symbol),
+]);
 
 // Watchlist
 export const watchlist = pgTable("watchlist", {
@@ -250,7 +263,11 @@ export const watchlist = pgTable("watchlist", {
   currentPrice: decimal("current_price", { precision: 15, scale: 2 }).notNull(),
   changePercent: decimal("change_percent", { precision: 5, scale: 2 }).notNull(),
   createdAt: timestamp("created_at").defaultNow(),
-});
+}, (table) => [
+  index("watchlist_user_idx").on(table.userId),
+  index("watchlist_symbol_idx").on(table.symbol),
+  index("watchlist_user_symbol_idx").on(table.userId, table.symbol),
+]);
 
 // Trades
 export const trades = pgTable("trades", {
@@ -267,7 +284,12 @@ export const trades = pgTable("trades", {
   status: varchar("status").notNull(), // pending, filled, cancelled
   executedAt: timestamp("executed_at"),
   createdAt: timestamp("created_at").defaultNow(),
-});
+}, (table) => [
+  index("trades_user_idx").on(table.userId),
+  index("trades_account_idx").on(table.accountId),
+  index("trades_status_idx").on(table.status),
+  index("trades_created_idx").on(table.createdAt),
+]);
 
 // Transfers
 export const transfers = pgTable("transfers", {
@@ -281,7 +303,11 @@ export const transfers = pgTable("transfers", {
   description: text("description"),
   executedAt: timestamp("executed_at"),
   createdAt: timestamp("created_at").defaultNow(),
-});
+}, (table) => [
+  index("transfers_user_idx").on(table.userId),
+  index("transfers_status_idx").on(table.status),
+  index("transfers_created_idx").on(table.createdAt),
+]);
 
 // Activity log
 export const activityLog = pgTable("activity_log", {
@@ -293,7 +319,11 @@ export const activityLog = pgTable("activity_log", {
   ipAddress: varchar("ip_address"),
   userAgent: text("user_agent"),
   createdAt: timestamp("created_at").defaultNow(),
-});
+}, (table) => [
+  index("activity_log_user_idx").on(table.userId),
+  index("activity_log_action_idx").on(table.action),
+  index("activity_log_created_idx").on(table.createdAt),
+]);
 
 // Market data cache
 export const marketData = pgTable("market_data", {
@@ -306,7 +336,11 @@ export const marketData = pgTable("market_data", {
   volume: decimal("volume", { precision: 20, scale: 2 }),
   marketCap: decimal("market_cap", { precision: 20, scale: 2 }),
   lastUpdated: timestamp("last_updated").defaultNow(),
-});
+}, (table) => [
+  index("market_data_symbol_idx").on(table.symbol),
+  index("market_data_asset_type_idx").on(table.assetType),
+  index("market_data_updated_idx").on(table.lastUpdated),
+]);
 
 // Schema types
 export type UpsertUser = typeof users.$inferInsert;
