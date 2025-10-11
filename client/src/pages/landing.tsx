@@ -82,23 +82,52 @@ function Landing() {
   const [formSubmitted, setFormSubmitted] = useState(false);
   const { toast } = useToast();
 
-  // Initialize Lemon Squeezy
+  // Initialize Lemon Squeezy (load once, keep for session)
   useEffect(() => {
+    const setupEventHandler = () => {
+      if (window.createLemonSqueezy) {
+        window.createLemonSqueezy();
+      }
+      
+      if (window.LemonSqueezy) {
+        window.LemonSqueezy.Setup({
+          eventHandler: (event) => {
+            console.log('Lemon Squeezy Event:', event);
+            
+            if (event.event === 'Checkout.Success') {
+              const email = event.data?.checkout_data?.email;
+              const successUrl = email 
+                ? `/payment-success?email=${encodeURIComponent(email)}`
+                : '/payment-success';
+              
+              window.location.href = successUrl;
+            }
+          }
+        });
+      }
+    };
+
+    // Check if script already loaded
+    const existingScript = document.querySelector('script[src="https://app.lemonsqueezy.com/js/lemon.js"]');
+    if (existingScript) {
+      // Script exists - set up handler (either immediately or when loaded)
+      if (window.LemonSqueezy) {
+        setupEventHandler();
+      } else {
+        // Wait for script to load
+        existingScript.addEventListener('load', setupEventHandler);
+      }
+      return;
+    }
+
     // Load Lemon.js script
     const script = document.createElement('script');
     script.src = 'https://app.lemonsqueezy.com/js/lemon.js';
     script.defer = true;
-    script.onload = () => {
-      if (window.createLemonSqueezy) {
-        window.createLemonSqueezy();
-      }
-    };
+    script.onload = setupEventHandler;
     document.head.appendChild(script);
 
-    return () => {
-      // Cleanup script on unmount
-      document.head.removeChild(script);
-    };
+    // No cleanup - keep Lemon.js loaded for the session
   }, []);
 
   // Track section views
