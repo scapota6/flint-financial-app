@@ -363,7 +363,7 @@ function Landing() {
                 <Switch 
                   checked={isYearly} 
                   onCheckedChange={setIsYearly}
-                  className="data-[state=checked]:bg-purple-600"
+                  className="data-[state=checked]:bg-purple-600 data-[state=unchecked]:bg-gray-600 border-2 border-gray-500"
                 />
                 <span className={`text-lg ${isYearly ? 'text-white font-semibold' : 'text-gray-400'}`}>
                   Yearly
