@@ -50,6 +50,9 @@ router.get('/checkout/:ctaId', async (req, res) => {
         attributes: {
           checkout_options: {
             embed: true, // Enable overlay mode
+            success_url: email 
+              ? `${baseUrl}/payment-success?email=${encodeURIComponent(email as string)}`
+              : `${baseUrl}/payment-success`
           },
           checkout_data: {},
         },
@@ -70,10 +73,9 @@ router.get('/checkout/:ctaId', async (req, res) => {
       },
     };
 
-    // Add email and success URL if provided
+    // Add email to checkout if provided
     if (email) {
       checkoutData.data.attributes.checkout_data.email = email;
-      checkoutData.data.attributes.checkout_options.success_url = `${baseUrl}/payment-success?email=${encodeURIComponent(email as string)}`;
     }
 
     // Make API request to create checkout
