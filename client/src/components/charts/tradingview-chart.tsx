@@ -23,7 +23,7 @@ export default function TradingViewChart({
     const script = document.createElement('script');
     script.src = 'https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js';
     script.async = true;
-    script.innerHTML = JSON.stringify({
+    script.textContent = JSON.stringify({
       autosize: true,
       symbol: symbol.includes('-') ? `COINBASE:${symbol}` : `NASDAQ:${symbol}`,
       interval: 'D',
