@@ -78,8 +78,15 @@ export class EncryptionService {
       const authTag = combined.subarray(this.ivLength, this.ivLength + this.tagLength);
       const encrypted = combined.subarray(this.ivLength + this.tagLength);
       
-      // Create decipher
-      const decipher = crypto.createDecipheriv(this.algorithm, this.encryptionKey, iv);
+      // Validate authentication tag length for GCM security
+      if (authTag.length !== this.tagLength) {
+        throw new Error('Invalid authentication tag length');
+      }
+      
+      // Create decipher with explicit auth tag length
+      const decipher = crypto.createDecipheriv(this.algorithm, this.encryptionKey, iv, {
+        authTagLength: this.tagLength
+      });
       decipher.setAuthTag(authTag);
       
       // Decrypt the data
