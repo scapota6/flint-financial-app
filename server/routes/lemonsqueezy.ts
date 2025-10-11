@@ -150,15 +150,13 @@ router.post('/webhook', async (req, res) => {
       return res.status(401).json({ error: 'Missing signature' });
     }
 
-    // Get raw body - should be a Buffer from express.raw() middleware
-    const rawBody = req.body;
+    // Get raw body - should be a string from express.text() middleware
+    const bodyString = req.body;
     
-    if (!Buffer.isBuffer(rawBody)) {
-      logger.error('Webhook body is not a buffer - middleware configuration error');
+    if (typeof bodyString !== 'string') {
+      logger.error('Webhook body is not a string - middleware configuration error');
       return res.status(500).json({ error: 'Server configuration error' });
     }
-
-    const bodyString = rawBody.toString('utf8');
 
     // Verify signature using raw body with timing-safe comparison
     const computedHmac = crypto
@@ -166,17 +164,21 @@ router.post('/webhook', async (req, res) => {
       .update(bodyString)
       .digest('hex');
 
-    const receivedSignature = Buffer.from(signature, 'hex');
-    const computedSignature = Buffer.from(computedHmac, 'hex');
+    // Convert both to Buffers for timing-safe comparison
+    // Lemon Squeezy sends signature as hex string in X-Signature header
+    const expectedSig = Buffer.from(computedHmac, 'utf8');
+    const receivedSig = Buffer.from(signature, 'utf8');
 
     // Use timing-safe comparison to prevent timing attacks
-    if (receivedSignature.length !== computedSignature.length || 
-        !crypto.timingSafeEqual(receivedSignature, computedSignature)) {
+    if (expectedSig.length !== receivedSig.length || 
+        !crypto.timingSafeEqual(expectedSig, receivedSig)) {
       logger.warn('Invalid webhook signature', { 
         metadata: { 
           error: 'Signature mismatch',
           received: signature.substring(0, 10) + '...', 
-          computed: computedHmac.substring(0, 10) + '...' 
+          computed: computedHmac.substring(0, 10) + '...',
+          bodyLength: bodyString.length,
+          secretLength: webhookSecret.length
         }
       });
       return res.status(401).json({ error: 'Invalid signature' });

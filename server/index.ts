@@ -82,7 +82,8 @@ const app = express();
   }));
   
   // Raw body middleware for Lemon Squeezy webhook (MUST be before express.json())
-  app.use('/api/lemonsqueezy/webhook', express.raw({ type: 'application/json' }));
+  // Use express.text() to preserve exact body string for signature validation
+  app.use('/api/lemonsqueezy/webhook', express.text({ type: 'application/json' }));
   
   // Standard JSON parsing for all other routes
   app.use(express.json());
