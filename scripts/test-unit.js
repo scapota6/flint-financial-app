@@ -30,7 +30,6 @@ async function runTests(testType, command, args = []) {
     
     const testProcess = spawn(command, args, {
       stdio: 'inherit',
-      shell: true,
       cwd: path.resolve(__dirname, '..')
     });
 
