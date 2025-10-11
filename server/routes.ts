@@ -523,10 +523,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
               investmentValue += balance;
               totalBalance += balance;
               
+              // Normalize account name to handle "Default", "default", " default ", whitespace-only, etc.
+              const normalizedName = account.name?.trim().toLowerCase();
+              const isDefaultOrEmpty = !normalizedName || normalizedName === 'default';
+              
               enrichedAccounts.push({
                 id: account.id || `snaptrade-${Math.random()}`,
                 provider: 'snaptrade',
-                accountName: account.name || account.account_type || 'Investment Account',
+                accountName: isDefaultOrEmpty
+                  ? (account.institution_name || account.account_type || 'Investment Account')
+                  : (account.name?.trim() || 'Investment Account'),
                 accountNumber: account.number,
                 balance: balance,
                 type: 'investment' as const,
