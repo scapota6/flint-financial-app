@@ -72,6 +72,9 @@ email-draft.txt
 *.key
 *.pem
 
+# Data files that may contain credentials
+server/data/
+
 # Development artifacts
 create-snaptrade.js
 deploy-setup.md
