@@ -84,8 +84,10 @@ router.get('/checkout/:ctaId', async (req, res) => {
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
       logger.error('Lemon Squeezy API error', { 
-        status: response.status,
-        error: errorData 
+        metadata: {
+          status: response.status,
+          error: errorData 
+        }
       });
       return res.status(500).json({ 
         error: 'Unable to create checkout session' 
@@ -96,7 +98,9 @@ router.get('/checkout/:ctaId', async (req, res) => {
     const checkoutUrl = checkoutResponse.data?.attributes?.url;
 
     if (!checkoutUrl) {
-      logger.error('No checkout URL in API response', { response: checkoutResponse });
+      logger.error('No checkout URL in API response', { 
+        metadata: { response: checkoutResponse }
+      });
       return res.status(500).json({ 
         error: 'Invalid checkout response' 
       });
@@ -169,8 +173,8 @@ router.post('/webhook', async (req, res) => {
     if (receivedSignature.length !== computedSignature.length || 
         !crypto.timingSafeEqual(receivedSignature, computedSignature)) {
       logger.warn('Invalid webhook signature', { 
-        error: 'Signature mismatch',
         metadata: { 
+          error: 'Signature mismatch',
           received: signature.substring(0, 10) + '...', 
           computed: computedHmac.substring(0, 10) + '...' 
         }
