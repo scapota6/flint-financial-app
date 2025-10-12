@@ -55,13 +55,9 @@ export default function Subscribe() {
             console.log('Lemon Squeezy Event:', event);
             
             if (event.event === 'Checkout.Success') {
-              const email = event.data?.checkout_data?.email;
-              const successUrl = email 
-                ? `/payment-success?email=${encodeURIComponent(email)}`
-                : '/payment-success';
-              
+              // Redirect to dashboard since user is already logged in
               setTimeout(() => {
-                window.location.href = successUrl;
+                window.location.href = '/dashboard';
               }, 500);
             }
           }
@@ -285,7 +281,7 @@ export default function Subscribe() {
                     ) : currentTier === tier.id ? (
                       'Current Plan'
                     ) : (
-                      `Choose ${tier.name.split(' ')[1]} ${isAnnual ? 'Yearly' : 'Monthly'}`
+                      `Choose ${tier.name} ${isAnnual ? 'Yearly' : 'Monthly'}`
                     )}
                   </Button>
                 </CardContent>
