@@ -593,7 +593,7 @@ export function AccountDetailsModal({
         </div>
       ) : (
         <div className="space-y-4">
-          <div className="border rounded-lg overflow-hidden">
+          <div className="border rounded-lg overflow-hidden overflow-y-auto max-h-[400px]">
             <Table>
               <TableHeader>
                 <TableRow>

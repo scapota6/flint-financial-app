@@ -1401,7 +1401,7 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
                       <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-indigo-500 flex items-center justify-center text-white font-bold text-sm mr-3">🏪</div>
                       Recent Transactions
                     </h3>
-                    <div className="overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm">
+                    <div className="overflow-x-auto overflow-y-auto max-h-[400px] rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm">
                       <table className="w-full text-sm">
                         <thead className="bg-gradient-to-r from-purple-50 to-indigo-50 dark:from-purple-900/30 dark:to-indigo-900/30">
                           <tr>

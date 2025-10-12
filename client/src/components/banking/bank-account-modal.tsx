@@ -248,7 +248,7 @@ export function BankAccountModal({ account, isOpen, onClose }: BankAccountModalP
                     ))}
                   </div>
                 ) : (
-                  <div className="space-y-3">
+                  <div className="space-y-3 max-h-[400px] overflow-y-auto">
                     {displayTransactions.slice(0, 5).map((transaction) => (
                       <div key={transaction.id} className="flex items-center gap-3 p-3 rounded-lg bg-gray-700/30 hover:bg-gray-700/50 transition-colors">
                         <div className="p-2 rounded-full bg-gray-600/50">

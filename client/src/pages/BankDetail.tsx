@@ -264,7 +264,7 @@ export default function BankDetail() {
                   <p className="text-muted-foreground">No transactions found</p>
                 </div>
               ) : (
-                <div className="overflow-x-auto">
+                <div className="overflow-x-auto overflow-y-auto max-h-[400px]">
                   <Table>
                     <TableHeader>
                       <TableRow>
