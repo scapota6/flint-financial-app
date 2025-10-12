@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useStripe, useElements, PaymentElement, Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/hooks/useAuth";
@@ -160,11 +160,13 @@ export default function Subscribe() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pb-20 md:pb-6">
         <div className="mb-8 text-center space-y-6">
           <div>
-            <h2 className="text-3xl sm:text-4xl font-bold mb-4">Choose Your Plan</h2>
+            <h2 className="text-3xl sm:text-4xl font-bold mb-4">
+              Choose your <span className="text-purple-400">plan</span>
+            </h2>
             <p className="text-gray-400 text-lg">Unlock the full potential of Flint with our premium features</p>
           </div>
           
-          {/* Monthly/Annual Toggle */}
+          {/* Monthly/Yearly Toggle */}
           <div className="flex items-center justify-center space-x-4">
             <span className={`text-lg ${!isAnnual ? 'text-white font-semibold' : 'text-gray-400'}`}>
               Monthly
@@ -176,7 +178,7 @@ export default function Subscribe() {
               data-testid="switch-billing-toggle"
             />
             <span className={`text-lg ${isAnnual ? 'text-white font-semibold' : 'text-gray-400'}`}>
-              Annual
+              Yearly
             </span>
             {isAnnual && (
               <Badge className="bg-green-600 text-white">2 months free</Badge>
@@ -214,72 +216,73 @@ export default function Subscribe() {
 
         {/* Pricing Plans */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
-          {SUBSCRIPTION_TIERS.map((tier) => (
-            <Card 
-              key={tier.id}
-              className={`trade-card relative ${
-                tier.id === 'unlimited' ? 'ring-2 ring-purple-500' : ''
-              }`}
-              data-testid={`card-pricing-${tier.id}`}
-            >
-              {tier.id === 'unlimited' && (
-                <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                  <Badge className="bg-purple-600 text-white">Most Popular</Badge>
-                </div>
-              )}
-              <CardHeader className="text-center">
-                <div className={`mx-auto mb-4 ${getTierColor(tier.id)}`}>
-                  {getTierIcon(tier.id)}
-                </div>
-                <CardTitle className="text-2xl font-bold text-white">{tier.name}</CardTitle>
-                <div className="space-y-2">
-                  <div className="text-4xl font-bold text-white" data-testid={`text-price-${tier.id}`}>
-                    ${isAnnual ? (tier.annualPrice / 12).toFixed(2) : tier.monthlyPrice.toFixed(2)}
-                  </div>
-                  <div className="text-gray-400">
-                    {isAnnual ? '/mo (billed yearly)' : '/month'}
-                  </div>
-                  {isAnnual && (
-                    <div className="text-sm text-gray-500">
-                      ${tier.annualPrice.toFixed(2)} billed annually
+          {SUBSCRIPTION_TIERS.map((tier) => {
+            const tierDescriptions = {
+              plus: "Best for individuals who just want to see everything in one place.",
+              pro: "Best for individuals who want to manage money and simplify payments.",
+              unlimited: "Best for individuals who want complete control and future features."
+            };
+            
+            return (
+              <Card 
+                key={tier.id}
+                className={`relative ${
+                  tier.id === 'unlimited' ? 'bg-purple-900 border-purple-600' : 'bg-gray-800 border-gray-700'
+                }`}
+                data-testid={`card-pricing-${tier.id}`}
+              >
+                {tier.id === 'unlimited' && (
+                  <Badge className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-yellow-500 text-black">
+                    ⭐ Most Popular
+                  </Badge>
+                )}
+                <CardHeader className={`text-center space-y-4 ${tier.id === 'unlimited' ? 'pt-8' : ''}`}>
+                  <CardTitle className="text-2xl">{tier.name}</CardTitle>
+                  <div className="space-y-2">
+                    <div className="text-4xl font-bold" data-testid={`text-price-${tier.id}`}>
+                      ${isAnnual ? (tier.annualPrice / 12).toFixed(2) : tier.monthlyPrice.toFixed(2)}
                     </div>
-                  )}
-                </div>
-              </CardHeader>
-              <CardContent>
-                <ul className="space-y-3 mb-6">
-                  {tier.features.map((feature, index) => (
-                    <li key={index} className="flex items-center space-x-3">
-                      <Check className="h-5 w-5 text-green-500 flex-shrink-0" />
-                      <span className="text-gray-300">{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-                <Button
-                  onClick={() => handleSelectTier(tier.id)}
-                  disabled={isProcessing || currentTier === tier.id || !stripePromise}
-                  className={`w-full ${
-                    tier.id === 'unlimited' 
-                      ? 'bg-purple-600 hover:bg-purple-700' 
-                      : tier.id === 'pro'
-                      ? 'bg-blue-600 hover:bg-blue-700'
-                      : 'bg-gray-700 hover:bg-gray-600'
-                  } text-white py-3 text-lg font-semibold`}
-                  data-testid={`button-select-${tier.id}`}
-                >
-                  {isProcessing && selectedTier === tier.id ? (
-                    'Processing...'
-                  ) : currentTier === tier.id ? (
-                    'Current Plan'
-                  ) : !stripePromise ? (
-                    'Payment Unavailable'
-                  ) : (
-                    'Select Plan'
-                  )}
-                </Button>
-              </CardContent>
-            </Card>
-          ))}
+                    <div className={tier.id === 'unlimited' ? 'text-gray-300' : 'text-gray-400'}>
+                      {isAnnual ? '/mo (billed yearly)' : '/month'}
+                    </div>
+                  </div>
+                  <CardDescription className="text-gray-300">
+                    {tierDescriptions[tier.id as keyof typeof tierDescriptions]}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="text-center">
+                  <Button
+                    onClick={() => handleSelectTier(tier.id)}
+                    disabled={isProcessing || currentTier === tier.id || !stripePromise}
+                    className={`w-full ${
+                      tier.id === 'unlimited' 
+                        ? 'bg-purple-600 hover:bg-purple-700' 
+                        : tier.id === 'pro'
+                        ? 'bg-blue-600 hover:bg-blue-700'
+                        : 'bg-gray-700 hover:bg-gray-600'
+                    } text-white`}
+                    data-testid={`button-select-${tier.id}`}
+                  >
+                    {isProcessing && selectedTier === tier.id ? (
+                      'Processing...'
+                    ) : currentTier === tier.id ? (
+                      'Current Plan'
+                    ) : !stripePromise ? (
+                      'Payment Unavailable'
+                    ) : (
+                      `Choose ${tier.name.split(' ')[1]} ${isAnnual ? 'Yearly' : 'Monthly'}`
+                    )}
+                  </Button>
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
+        
+        <div className="text-center space-y-2 mb-8">
+          <Badge variant="outline" className="border-yellow-500 text-yellow-400">
+            Founding Member Pricing — lock this in before new features launch
+          </Badge>
         </div>
 
         {/* Payment Form */}
@@ -333,12 +336,12 @@ export default function Subscribe() {
                   <tbody>
                     <tr className="border-b border-gray-800">
                       <td className="py-3 text-white">Account Connections</td>
-                      <td className="text-center py-3 text-gray-400">1-4</td>
-                      <td className="text-center py-3 text-gray-400">Up to 10</td>
+                      <td className="text-center py-3 text-gray-400">3</td>
+                      <td className="text-center py-3 text-gray-400">5</td>
                       <td className="text-center py-3 text-gray-400">Unlimited</td>
                     </tr>
                     <tr className="border-b border-gray-800">
-                      <td className="py-3 text-white">Portfolio Tracking</td>
+                      <td className="py-3 text-white">Recurring Subscription Management</td>
                       <td className="text-center py-3">
                         <Check className="h-5 w-5 text-green-500 mx-auto" />
                       </td>
@@ -350,7 +353,7 @@ export default function Subscribe() {
                       </td>
                     </tr>
                     <tr className="border-b border-gray-800">
-                      <td className="py-3 text-white">Advanced Analytics</td>
+                      <td className="py-3 text-white">Transfer Funds (Coming Soon)</td>
                       <td className="text-center py-3 text-gray-600">-</td>
                       <td className="text-center py-3">
                         <Check className="h-5 w-5 text-green-500 mx-auto" />
@@ -360,27 +363,15 @@ export default function Subscribe() {
                       </td>
                     </tr>
                     <tr className="border-b border-gray-800">
-                      <td className="py-3 text-white">Real-time Alerts</td>
+                      <td className="py-3 text-white">Trading (Coming Soon)</td>
                       <td className="text-center py-3 text-gray-600">-</td>
-                      <td className="text-center py-3">
-                        <Check className="h-5 w-5 text-green-500 mx-auto" />
-                      </td>
-                      <td className="text-center py-3">
-                        <Check className="h-5 w-5 text-green-500 mx-auto" />
-                      </td>
-                    </tr>
-                    <tr className="border-b border-gray-800">
-                      <td className="py-3 text-white">Priority Support</td>
                       <td className="text-center py-3 text-gray-600">-</td>
-                      <td className="text-center py-3">
-                        <Check className="h-5 w-5 text-green-500 mx-auto" />
-                      </td>
                       <td className="text-center py-3">
                         <Check className="h-5 w-5 text-green-500 mx-auto" />
                       </td>
                     </tr>
                     <tr>
-                      <td className="py-3 text-white">Advanced Trading Tools</td>
+                      <td className="py-3 text-white">Priority Support</td>
                       <td className="text-center py-3 text-gray-600">-</td>
                       <td className="text-center py-3 text-gray-600">-</td>
                       <td className="text-center py-3">
