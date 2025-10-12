@@ -832,8 +832,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
             
             // Only include outgoing transactions (negative amounts) for subscription detection
             const outgoingTransactions = transactions
-              .filter(t => parseFloat(t.amount) < 0)
-              .map(t => ({
+              .filter((t: any) => t.status === 'posted')
+              .filter((t: any) => t.type === 'card_payment')
+              .filter((t: any) => parseFloat(t.amount) < 0)
+              .map((t: any) => ({
                 ...t,
                 accountId: account.id,
                 accountName: account.accountName,
@@ -3926,7 +3928,7 @@ function analyzeRecurringPattern(transactions: any[]) {
   
   // Check for monthly pattern (28-32 days)
   const monthlyIntervals = intervals.filter(interval => interval >= 28 && interval <= 32);
-  if (monthlyIntervals.length >= Math.max(1, intervals.length * 0.6)) {
+  if (monthlyIntervals.length >= Math.max(1, intervals.length * 0.7)) {
     return {
       frequency: 'monthly',
       averageAmount: calculateAverageAmount(transactions),
@@ -3936,7 +3938,7 @@ function analyzeRecurringPattern(transactions: any[]) {
   
   // Check for weekly pattern (6-8 days)
   const weeklyIntervals = intervals.filter(interval => interval >= 6 && interval <= 8);
-  if (weeklyIntervals.length >= Math.max(1, intervals.length * 0.6)) {
+  if (weeklyIntervals.length >= Math.max(1, intervals.length * 0.7)) {
     return {
       frequency: 'weekly',
       averageAmount: calculateAverageAmount(transactions),
