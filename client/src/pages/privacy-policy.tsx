@@ -173,7 +173,38 @@ export default function PrivacyPolicy() {
               </p>
             </div>
 
-            {/* More sections will be added as you provide them */}
+            <div>
+              <h2 className="text-2xl font-semibold text-white mb-3">7. Cookies and Tracking</h2>
+              <p className="text-gray-300 leading-relaxed">
+                We may use cookies or similar technologies for analytics, authentication, and performance optimization.
+                You can disable cookies through your browser, though this may impact functionality.
+              </p>
+            </div>
+
+            <div>
+              <h2 className="text-2xl font-semibold text-white mb-3">8. Children's Privacy</h2>
+              <p className="text-gray-300 leading-relaxed">
+                Flint's Services are intended for users 18 and older. We do not knowingly collect personal information from minors. If you believe a minor has provided data, contact us for deletion.
+              </p>
+            </div>
+
+            <div>
+              <h2 className="text-2xl font-semibold text-white mb-3">9. Changes to This Policy</h2>
+              <p className="text-gray-300 leading-relaxed">
+                Flint may update this Privacy Policy periodically. The updated version will be posted with a new "Last Updated" date.
+                Continued use of the Services after updates constitutes acceptance.
+              </p>
+            </div>
+
+            <div>
+              <h2 className="text-2xl font-semibold text-white mb-3">10. Contact</h2>
+              <p className="text-gray-300 leading-relaxed">
+                If you have questions about this Privacy Policy or wish to exercise your rights, contact us at:
+              </p>
+              <p className="text-gray-300 leading-relaxed mt-3">
+                📧 <a href="mailto:support@flint-investing.com" className="text-purple-400 hover:text-purple-300">support@flint-investing.com</a>
+              </p>
+            </div>
           </div>
         </div>
       </div>
