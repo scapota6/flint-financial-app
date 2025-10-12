@@ -70,7 +70,7 @@ export default function RecurringSubscriptions() {
     
     if (diffDays === 0) return 'Today';
     if (diffDays === 1) return 'Tomorrow';
-    if (diffDays < 7) return `${diffDays} days`;
+    if (Math.abs(diffDays) < 7) return `${Math.abs(diffDays)} days`;
     
     return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
   };
