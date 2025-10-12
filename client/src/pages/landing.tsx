@@ -343,9 +343,6 @@ function Landing() {
               Over <strong>2,847 users</strong> already upgraded Flint and are managing 12+ accounts, 
               paying off credit cards faster, and cutting hours of financial stress each week.
             </p>
-            <div className="flex items-center justify-center space-x-8 opacity-60">
-              <div className="text-sm text-gray-400">Stripe</div>
-            </div>
           </div>
         </section>
 
