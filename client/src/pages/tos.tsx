@@ -108,6 +108,62 @@ export default function TermsOfService() {
               </ul>
             </div>
 
+            <div>
+              <h2 className="text-2xl font-semibold text-white mb-3">7. Data Accuracy and Availability</h2>
+              <p className="text-gray-300 leading-relaxed">
+                Financial data displayed through the Services is aggregated from third-party APIs and may not be complete or accurate.
+                Flint makes no guarantees regarding:
+              </p>
+              <ul className="list-disc list-inside text-gray-300 space-y-2 mt-3 ml-4">
+                <li>Accuracy or timeliness of account balances or transactions</li>
+                <li>Continuity or uptime of integrations</li>
+                <li>Absence of errors, bugs, or delays</li>
+              </ul>
+              <p className="text-gray-300 leading-relaxed mt-4">
+                Use of this information is at your sole discretion and risk.
+              </p>
+            </div>
+
+            <div>
+              <h2 className="text-2xl font-semibold text-white mb-3">8. Intellectual Property Rights</h2>
+              <p className="text-gray-300 leading-relaxed">
+                All content, software, UI/UX design, graphics, code, and documentation related to Flint are the intellectual property of Flint LLC and its licensors.
+                You may not copy, modify, distribute, reverse engineer, or commercially exploit any part of the Services without express written consent.
+              </p>
+            </div>
+
+            <div>
+              <h2 className="text-2xl font-semibold text-white mb-3">9. Limitation of Liability</h2>
+              <p className="text-gray-300 leading-relaxed">
+                To the fullest extent permitted by law, Flint LLC, its employees, partners, and affiliates shall not be liable for any direct, indirect, incidental, consequential, or special damages, including but not limited to:
+              </p>
+              <ul className="list-disc list-inside text-gray-300 space-y-2 mt-3 ml-4">
+                <li>Financial loss or investment decisions based on displayed data</li>
+                <li>Data inaccuracies or service interruptions</li>
+                <li>Unauthorized access or breaches via third-party providers</li>
+              </ul>
+              <p className="text-gray-300 leading-relaxed mt-4">
+                In no event shall Flint's total liability exceed the total amount paid by you for the Services within the past twelve (12) months.
+              </p>
+            </div>
+
+            <div>
+              <h2 className="text-2xl font-semibold text-white mb-3">10. Indemnification</h2>
+              <p className="text-gray-300 leading-relaxed">
+                You agree to indemnify and hold harmless Flint LLC, its affiliates, officers, and contractors from all claims, damages, liabilities, and expenses arising out of your use of the Services, your violation of these Terms, or your violation of any law or third-party rights.
+              </p>
+            </div>
+
+            <div>
+              <h2 className="text-2xl font-semibold text-white mb-3">11. Modifications and Termination</h2>
+              <p className="text-gray-300 leading-relaxed">
+                Flint may modify, suspend, or discontinue the Services at any time without prior notice. We may also revise these Terms at any time by posting an updated version on our site. Continued use after any change constitutes acceptance.
+              </p>
+              <p className="text-gray-300 leading-relaxed mt-4">
+                You may discontinue use at any time by closing your account.
+              </p>
+            </div>
+
             {/* More sections will be added as you provide them */}
           </div>
         </div>
