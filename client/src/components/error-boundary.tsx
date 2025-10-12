@@ -1,7 +1,6 @@
 import { Component, ErrorInfo, ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { AlertCircle } from "lucide-react";
-import * as Sentry from "@sentry/react";
 
 interface Props {
   children: ReactNode;
@@ -16,7 +15,7 @@ interface State {
 
 /**
  * Global Error Boundary Component
- * Catches React component errors and reports them to Sentry
+ * Catches React component errors and logs them to console
  */
 export class ErrorBoundary extends Component<Props, State> {
   constructor(props: Props) {
@@ -29,19 +28,8 @@ export class ErrorBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    // Log error to console in development
-    if (process.env.NODE_ENV === "development") {
-      console.error("Error caught by ErrorBoundary:", error, errorInfo);
-    }
-
-    // Report to Sentry with redacted PII
-    Sentry.withScope((scope) => {
-      scope.setExtras({
-        componentStack: errorInfo.componentStack,
-        errorBoundary: true,
-      });
-      Sentry.captureException(error);
-    });
+    // Log error to console
+    console.error("Error caught by ErrorBoundary:", error, errorInfo);
 
     this.setState({ errorInfo });
   }

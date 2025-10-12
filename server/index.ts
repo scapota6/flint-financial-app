@@ -6,16 +6,12 @@ import compression from "compression";
 import { installCsrf } from "./security/csrf";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
-import { initSentry, sentryErrorHandler } from "./lib/sentry";
 import { logger } from "@shared/logger";
 import snaptradeRouter from "./routes/snaptrade";
 import ordersRouter from "./routes/orders";
 import orderPreviewRouter from "./routes/order-preview";
 import watchlistRouter from "./routes/watchlist";
 import quotesRouter from "./routes/quotes";
-
-// Initialize Sentry for error tracking
-initSentry();
 
 const app = express();
 
@@ -53,7 +49,6 @@ const app = express();
           UNSAFE_INLINE,              // ideally replace with nonces/hashes later
           'https://cdn.teller.io',
           'https://js.stripe.com',
-          'https://js.sentry-cdn.com',
           'https://replit.com',
           'https://app.lemonsqueezy.com',
           'https://assets.lemonsqueezy.com'
@@ -81,9 +76,6 @@ const app = express();
           'https://js.stripe.com',
           'https://api.stripe.com',
           'https://hooks.stripe.com',
-          'https://o0.ingest.sentry.io',
-          'https://o1.ingest.sentry.io',
-          'https://sentry.io',
           'https://app.lemonsqueezy.com',
           'https://api.lemonsqueezy.com',
           // add your exact Replit base (scheme+host+port) if you ever call absolute URLs
