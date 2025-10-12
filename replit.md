@@ -76,3 +76,28 @@ Preferred communication style: Simple, everyday language.
 - **tailwindcss**: CSS framework.
 - **esbuild**: Backend bundling.
 - **date-fns**: Date formatting.
+
+## Production Infrastructure
+
+### Database Backup & Recovery
+- **Provider**: Neon Database (PostgreSQL-compatible serverless database)
+- **Automatic Backups**: Neon provides continuous data protection with automatic point-in-time recovery (PITR)
+- **Recovery Window**: Can restore database to any point within the last 7 days (or 30 days on paid plans)
+- **Backup Method**: Continuous automated backups using Write-Ahead Log (WAL) archiving - no manual backup configuration needed
+- **Disaster Recovery**: Full database snapshots taken automatically, stored in geographically distributed cloud storage
+- **Recovery Process**: Database can be restored via Neon console by selecting a specific timestamp
+- **Zero Downtime**: Recovery operations don't require application downtime - can restore to a new branch or instance
+
+### SSL/HTTPS Configuration
+- **Provider**: Replit Platform
+- **Certificate Management**: Automatic SSL certificate provisioning via Let's Encrypt when application is published
+- **Auto-Renewal**: Certificates automatically renewed before expiration - no manual intervention required
+- **Deployment**: SSL/HTTPS enabled automatically on publish - all traffic encrypted in transit
+- **Custom Domains**: SSL certificates automatically provisioned for custom domains configured in Replit settings
+- **Security**: TLS 1.2+ enforced, modern cipher suites, HTTPS redirects configured automatically
+
+### Error Monitoring
+- **Framework**: Sentry integration configured but currently disabled (no DSN provided)
+- **PII Protection**: beforeSend hooks configured to redact sensitive data (emails, passwords, tokens, cookies)
+- **Coverage**: Both client-side (React) and server-side (Express) error tracking ready
+- **Configuration**: Set SENTRY_DSN and VITE_SENTRY_DSN environment variables to enable
