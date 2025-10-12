@@ -511,7 +511,7 @@ function Landing() {
                     { month: 'Month 5', amount: 635, label: '$635' },
                     { month: 'Month 6', amount: 762, label: '$762' }
                   ].map((bar, index) => {
-                    const maxHeight = 320; // 80 * 4 = 320px (h-80)
+                    const maxHeight = 280; // Leave 40px padding at top
                     const heightPx = (bar.amount / 762) * maxHeight;
                     return (
                       <div key={bar.month} className="flex-1 max-w-[140px] flex flex-col items-center gap-3 relative z-10">
