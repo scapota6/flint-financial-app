@@ -489,7 +489,7 @@ function Landing() {
             {/* Cumulative Savings Bar Chart */}
             <div className="bg-gray-800/50 rounded-xl p-8 border border-gray-700">
               <div className="space-y-6">
-                <div className="relative flex items-end justify-center gap-2 h-64">
+                <div className="relative flex items-end justify-center gap-2 h-80">
                   {/* SVG Line Overlay */}
                   <svg className="absolute inset-0 w-full h-full pointer-events-none" preserveAspectRatio="none">
                     <polyline
@@ -511,14 +511,15 @@ function Landing() {
                     { month: 'Month 5', amount: 635, label: '$635' },
                     { month: 'Month 6', amount: 762, label: '$762' }
                   ].map((bar, index) => {
-                    const heightPercent = (bar.amount / 762) * 100;
+                    const maxHeight = 320; // 80 * 4 = 320px (h-80)
+                    const heightPx = (bar.amount / 762) * maxHeight;
                     return (
                       <div key={bar.month} className="flex-1 max-w-[140px] flex flex-col items-center gap-3 relative z-10">
-                        <div className="relative w-full flex flex-col items-center">
+                        <div className="relative w-full flex flex-col items-center justify-end">
                           {/* Bar */}
                           <div 
                             className="w-full bg-gradient-to-t from-blue-600 to-cyan-400 rounded-t-lg transition-all duration-300 hover:from-blue-500 hover:to-cyan-300"
-                            style={{ height: `${heightPercent}%` }}
+                            style={{ height: `${heightPx}px` }}
                           />
                         </div>
                         {/* Value Label Below Bar */}
