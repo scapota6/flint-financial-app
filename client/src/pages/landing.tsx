@@ -597,7 +597,7 @@ function Landing() {
                       <tr className="border-b border-gray-800">
                         <td className="py-3 text-white">Account Connections</td>
                         <td className="text-center py-3 text-gray-400">3</td>
-                        <td className="text-center py-3 text-gray-400">Up to 10</td>
+                        <td className="text-center py-3 text-gray-400">5</td>
                         <td className="text-center py-3 text-gray-400">Unlimited</td>
                       </tr>
                       <tr className="border-b border-gray-800">
