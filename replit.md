@@ -45,7 +45,7 @@ Preferred communication style: Simple, everyday language.
 ### Production Infrastructure
 - **Database Backup & Recovery**: Neon Database provides continuous data protection with automatic point-in-time recovery (PITR) within a 7-day window.
 - **SSL/HTTPS Configuration**: Automatic SSL certificate provisioning and auto-renewal via Let's Encrypt on the Replit Platform.
-- **Error Monitoring**: Sentry integration is configured but requires environment variables to be enabled for both client and server-side error tracking with PII redaction.
+- **Error Monitoring & Logging**: Betterstack Logtail integration for real-time error tracking and log streaming. Features automatic PII redaction, structured logging with full context (user IDs, request IDs, stack traces), resilient error handling for service outages, and graceful shutdown that ensures all logs are flushed before process termination. Configured via `LOGTAIL_SOURCE_TOKEN` environment variable.
 
 ## External Dependencies
 
