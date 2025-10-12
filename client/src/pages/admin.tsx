@@ -89,6 +89,9 @@ interface Connection {
   balance: number;
   lastSynced: string;
   createdAt: string;
+  connectionCount?: number;
+  connectionLimit?: number;
+  isOverLimit?: boolean;
 }
 
 interface Pagination {
@@ -920,12 +923,23 @@ function ConnectionsTab() {
         userId: conn.userId,
         email: conn.email || 'Unknown',
         tier: conn.tier || 'free',
+        connectionCount: conn.connectionCount || 0,
+        connectionLimit: conn.connectionLimit || 2,
+        isOverLimit: conn.isOverLimit || false,
         connections: []
       };
     }
     acc[conn.userId].connections.push(conn);
     return acc;
-  }, {} as Record<string, { userId: string; email: string; tier: string; connections: Connection[] }>);
+  }, {} as Record<string, { 
+    userId: string; 
+    email: string; 
+    tier: string; 
+    connectionCount: number;
+    connectionLimit: number;
+    isOverLimit: boolean;
+    connections: Connection[] 
+  }>);
 
   const userGroups = Object.values(groupedConnections || {});
 
@@ -949,8 +963,9 @@ function ConnectionsTab() {
                     <ChevronRight className="h-4 w-4 transition-transform group-data-[state=open]:rotate-90 text-gray-400" />
                     <div className="text-left">
                       <p className="font-medium text-white" data-testid={`text-email-${group.userId}`}>{group.email}</p>
-                      <p className="text-sm text-gray-400" data-testid={`text-summary-${group.userId}`}>
-                        {group.connections.length} connection{group.connections.length !== 1 ? 's' : ''} · {group.tier} tier
+                      <p className={`text-sm ${group.isOverLimit ? 'text-red-400 font-semibold' : 'text-gray-400'}`} data-testid={`text-summary-${group.userId}`}>
+                        {group.connectionCount}/{group.connectionLimit} connection{group.connectionCount !== 1 ? 's' : ''} · {group.tier} tier
+                        {group.isOverLimit && <span className="ml-2 text-red-500">⚠ Over limit</span>}
                       </p>
                     </div>
                   </div>

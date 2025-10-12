@@ -18,6 +18,7 @@ import { eq, desc, and, sql, count, gte, lte } from 'drizzle-orm';
 import { sendApprovalEmail, sendRejectionEmail, sendPasswordResetEmail } from '../services/email';
 import { hashToken, generateSecureToken } from '../lib/token-utils';
 import { getAllSnapUsers } from '../store/snapUsers';
+import { getAccountLimit } from '../routes';
 
 const router = Router();
 
@@ -912,8 +913,40 @@ router.get('/connections', isAuthenticated, requireAdmin(), async (req: any, res
         return new Date(a.createdAt!).getTime() - new Date(b.createdAt!).getTime();
       });
 
-    const total = allConnections.length;
-    const paginatedConnections = allConnections.slice(offset, offset + limitNum);
+    // Group by user to add connection limit info
+    const userConnectionCounts = new Map<string, { tier: string; count: number }>();
+    allConnections.forEach(conn => {
+      if (!conn.userId) return;
+      const existing = userConnectionCounts.get(conn.userId);
+      if (existing) {
+        existing.count++;
+      } else {
+        userConnectionCounts.set(conn.userId, { 
+          tier: conn.tier || 'free', 
+          count: 1 
+        });
+      }
+    });
+
+    // Add connection limit info to each connection
+    const connectionsWithLimits = allConnections.map(conn => {
+      if (!conn.userId) return conn;
+      const userInfo = userConnectionCounts.get(conn.userId);
+      const tier = userInfo?.tier || 'free';
+      const connectionCount = userInfo?.count || 0;
+      const connectionLimit = getAccountLimit(tier);
+      const isOverLimit = connectionCount > connectionLimit;
+
+      return {
+        ...conn,
+        connectionCount,
+        connectionLimit,
+        isOverLimit,
+      };
+    });
+
+    const total = connectionsWithLimits.length;
+    const paginatedConnections = connectionsWithLimits.slice(offset, offset + limitNum);
 
     await logAdminAction(req.adminEmail, 'view_connections', {
       provider,
