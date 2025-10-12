@@ -3817,7 +3817,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
 }
 
 // Helper function for account limits
-export function getAccountLimit(tier: string): number {
+export function getAccountLimit(tier: string, isAdmin?: boolean): number | null {
+  // Admin users have unlimited connections
+  if (isAdmin === true) {
+    return null;
+  }
+  
   switch (tier) {
     case 'free': return 2;  // Match frontend limit
     case 'basic': return 3;

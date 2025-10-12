@@ -80,6 +80,7 @@ interface Connection {
   userId: string;
   email: string;
   tier: string;
+  isAdmin?: boolean;
   provider: string;
   accountId: string;
   accountType: string;
@@ -90,7 +91,7 @@ interface Connection {
   lastSynced: string;
   createdAt: string;
   connectionCount?: number;
-  connectionLimit?: number;
+  connectionLimit?: number | 'unlimited';
   isOverLimit?: boolean;
 }
 
@@ -885,9 +886,16 @@ function UsersTab() {
 // Connections Tab
 function ConnectionsTab() {
   const { toast } = useToast();
+  const [connectionFilter, setConnectionFilter] = useState<string>('all');
   
   const { data, isLoading } = useQuery<{ connections: Connection[] }>({
-    queryKey: ['/api/admin-panel/connections'],
+    queryKey: ['/api/admin-panel/connections', connectionFilter],
+    queryFn: async () => {
+      const filterParam = connectionFilter !== 'all' ? `?filter=${connectionFilter}` : '';
+      const response = await fetch(`/api/admin-panel/connections${filterParam}`);
+      if (!response.ok) throw new Error('Failed to fetch connections');
+      return response.json();
+    },
   });
 
   const disconnectMutation = useMutation({
@@ -936,7 +944,7 @@ function ConnectionsTab() {
     email: string; 
     tier: string; 
     connectionCount: number;
-    connectionLimit: number;
+    connectionLimit: number | 'unlimited';
     isOverLimit: boolean;
     connections: Connection[] 
   }>);
@@ -950,26 +958,79 @@ function ConnectionsTab() {
           <CardTitle>User Connections</CardTitle>
           <CardDescription>View connections grouped by user. Click to expand.</CardDescription>
         </CardHeader>
-        <CardContent className="space-y-2">
+        <CardContent className="space-y-4">
+          {/* Filter Buttons */}
+          <div className="flex gap-2 flex-wrap" data-testid="filter-buttons">
+            <Button
+              variant={connectionFilter === 'all' ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setConnectionFilter('all')}
+              className={connectionFilter === 'all' ? 'bg-purple-600 hover:bg-purple-700' : ''}
+              data-testid="button-filter-all"
+            >
+              All
+            </Button>
+            <Button
+              variant={connectionFilter === 'over_limit' ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setConnectionFilter('over_limit')}
+              className={connectionFilter === 'over_limit' ? 'bg-purple-600 hover:bg-purple-700' : ''}
+              data-testid="button-filter-over-limit"
+            >
+              <AlertTriangle className="h-4 w-4 mr-1" />
+              Over Limit
+            </Button>
+            <Button
+              variant={connectionFilter === 'within_limit' ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setConnectionFilter('within_limit')}
+              className={connectionFilter === 'within_limit' ? 'bg-purple-600 hover:bg-purple-700' : ''}
+              data-testid="button-filter-within-limit"
+            >
+              Within Limit
+            </Button>
+            <Button
+              variant={connectionFilter === 'zero_connections' ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setConnectionFilter('zero_connections')}
+              className={connectionFilter === 'zero_connections' ? 'bg-purple-600 hover:bg-purple-700' : ''}
+              data-testid="button-filter-zero-connections"
+            >
+              0 Connections
+            </Button>
+          </div>
+          
+          <div className="space-y-2">
           {userGroups.length === 0 ? (
             <div className="text-center py-8 text-gray-500" data-testid="text-no-connections">
               No connected accounts found
             </div>
           ) : (
-            userGroups.map((group) => (
-              <Collapsible key={group.userId} className="border border-gray-800 rounded-lg" data-testid={`collapsible-user-${group.userId}`}>
-                <CollapsibleTrigger className="w-full p-4 flex items-center justify-between hover:bg-gray-800/50 transition-colors group" data-testid={`trigger-user-${group.userId}`}>
-                  <div className="flex items-center gap-4">
-                    <ChevronRight className="h-4 w-4 transition-transform group-data-[state=open]:rotate-90 text-gray-400" />
-                    <div className="text-left">
-                      <p className="font-medium text-white" data-testid={`text-email-${group.userId}`}>{group.email}</p>
-                      <p className={`text-sm ${group.isOverLimit ? 'text-red-400 font-semibold' : 'text-gray-400'}`} data-testid={`text-summary-${group.userId}`}>
-                        {group.connectionCount}/{group.connectionLimit} connection{group.connectionCount !== 1 ? 's' : ''} · {group.tier} tier
-                        {group.isOverLimit && <span className="ml-2 text-red-500">⚠ Over limit</span>}
-                      </p>
+            userGroups.map((group) => {
+              const isUnlimited = group.connectionLimit === 'unlimited';
+              const limitDisplay = isUnlimited ? '∞' : group.connectionLimit;
+              
+              return (
+                <Collapsible key={group.userId} className="border border-gray-800 rounded-lg" data-testid={`collapsible-user-${group.userId}`}>
+                  <CollapsibleTrigger className="w-full p-4 flex items-center justify-between hover:bg-gray-800/50 transition-colors group" data-testid={`trigger-user-${group.userId}`}>
+                    <div className="flex items-center gap-4">
+                      <ChevronRight className="h-4 w-4 transition-transform group-data-[state=open]:rotate-90 text-gray-400" />
+                      <div className="text-left">
+                        <div className="flex items-center gap-2">
+                          <p className="font-medium text-white" data-testid={`text-email-${group.userId}`}>{group.email}</p>
+                          {isUnlimited && (
+                            <Badge className="bg-purple-600 text-xs" data-testid={`badge-admin-${group.userId}`}>
+                              Admin
+                            </Badge>
+                          )}
+                        </div>
+                        <p className={`text-sm ${group.isOverLimit ? 'text-red-400 font-semibold' : 'text-gray-400'}`} data-testid={`text-summary-${group.userId}`}>
+                          {group.connectionCount}/{limitDisplay} connection{group.connectionCount !== 1 ? 's' : ''} · {group.tier} tier
+                          {group.isOverLimit && !isUnlimited && <span className="ml-2 text-red-500">⚠ Over limit</span>}
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                </CollapsibleTrigger>
+                  </CollapsibleTrigger>
                 
                 <CollapsibleContent className="px-4 pb-4" data-testid={`content-user-${group.userId}`}>
                   <Table>
@@ -1023,8 +1084,10 @@ function ConnectionsTab() {
                   </Table>
                 </CollapsibleContent>
               </Collapsible>
-            ))
+              );
+            })
           )}
+          </div>
         </CardContent>
       </Card>
     </div>

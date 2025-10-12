@@ -845,7 +845,7 @@ router.get('/analytics/errors', isAuthenticated, requireAdmin(), async (req: any
 // GET /api/admin/connections - Get all connections with user info
 router.get('/connections', isAuthenticated, requireAdmin(), async (req: any, res) => {
   try {
-    const { page = '1', limit = '20', provider, status } = req.query;
+    const { page = '1', limit = '20', provider, status, filter } = req.query;
     const pageNum = parseInt(page as string);
     const limitNum = parseInt(limit as string);
     const offset = (pageNum - 1) * limitNum;
@@ -862,6 +862,7 @@ router.get('/connections', isAuthenticated, requireAdmin(), async (req: any, res
         userId: connectedAccounts.userId,
         email: users.email,
         tier: users.subscriptionTier,
+        isAdmin: users.isAdmin,
         provider: connectedAccounts.provider,
         accountId: connectedAccounts.externalAccountId,
         accountType: connectedAccounts.accountType,
@@ -890,6 +891,7 @@ router.get('/connections', isAuthenticated, requireAdmin(), async (req: any, res
         userId: snaptradeConnections.flintUserId,
         email: users.email,
         tier: users.subscriptionTier,
+        isAdmin: users.isAdmin,
         provider: sql<string>`'snaptrade'`.as('provider'),
         accountId: sql<string>`NULL::text`.as('account_id'),
         accountType: sql<string>`'brokerage'`.as('account_type'),
@@ -913,9 +915,48 @@ router.get('/connections', isAuthenticated, requireAdmin(), async (req: any, res
         return new Date(a.createdAt!).getTime() - new Date(b.createdAt!).getTime();
       });
 
+    // Get all users to find those with zero connections (only when needed)
+    let allConnectionsIncludingZero = allConnections;
+    
+    if (!filter || filter === 'zero_connections') {
+      const allUsers = await db
+        .select({
+          userId: users.id,
+          email: users.email,
+          tier: users.subscriptionTier,
+          isAdmin: users.isAdmin,
+        })
+        .from(users);
+
+      // Identify users with zero connections
+      const usersWithConnections = new Set(allConnections.map(c => c.userId));
+      const usersWithZeroConnections = allUsers.filter(u => !usersWithConnections.has(u.userId));
+
+      // Create synthetic connection records for zero-connection users
+      const zeroConnectionRecords = usersWithZeroConnections.map(user => ({
+        id: 0,
+        userId: user.userId,
+        email: user.email,
+        tier: user.tier,
+        isAdmin: user.isAdmin,
+        provider: 'none' as const,
+        accountId: null,
+        accountType: 'none' as const,
+        accountName: 'No connections',
+        institutionName: 'N/A',
+        status: 'none' as const,
+        balance: '0',
+        lastSynced: null,
+        createdAt: null,
+      }));
+
+      // Include zero-connection records
+      allConnectionsIncludingZero = [...allConnections, ...zeroConnectionRecords];
+    }
+
     // Group by user to add connection limit info
-    const userConnectionCounts = new Map<string, { tier: string; count: number }>();
-    allConnections.forEach(conn => {
+    const userConnectionCounts = new Map<string, { tier: string; count: number; isAdmin: boolean }>();
+    allConnectionsIncludingZero.forEach(conn => {
       if (!conn.userId) return;
       const existing = userConnectionCounts.get(conn.userId);
       if (existing) {
@@ -923,34 +964,98 @@ router.get('/connections', isAuthenticated, requireAdmin(), async (req: any, res
       } else {
         userConnectionCounts.set(conn.userId, { 
           tier: conn.tier || 'free', 
-          count: 1 
+          count: conn.provider === 'none' ? 0 : 1,
+          isAdmin: conn.isAdmin || false
         });
       }
     });
 
     // Add connection limit info to each connection
-    const connectionsWithLimits = allConnections.map(conn => {
+    const connectionsWithLimits = allConnectionsIncludingZero.map(conn => {
       if (!conn.userId) return conn;
       const userInfo = userConnectionCounts.get(conn.userId);
       const tier = userInfo?.tier || 'free';
       const connectionCount = userInfo?.count || 0;
-      const connectionLimit = getAccountLimit(tier);
-      const isOverLimit = connectionCount > connectionLimit;
-
+      const isAdmin = userInfo?.isAdmin || false;
+      
+      // Get limit - returns null for admin users (unlimited)
+      const limit = getAccountLimit(tier, isAdmin);
+      
+      // Handle admin users (unlimited connections)
+      if (limit === null) {
+        return {
+          ...conn,
+          connectionCount,
+          connectionLimit: 'unlimited',
+          isOverLimit: false,
+        };
+      }
+      
+      // Handle regular users with numeric limits
+      const isOverLimit = connectionCount > limit;
       return {
         ...conn,
         connectionCount,
-        connectionLimit,
+        connectionLimit: limit,
         isOverLimit,
       };
     });
 
-    const total = connectionsWithLimits.length;
-    const paginatedConnections = connectionsWithLimits.slice(offset, offset + limitNum);
+    // Apply user-level filtering if specified
+    let filteredConnections = connectionsWithLimits;
+    
+    if (filter) {
+      // Group by user to apply user-level filters
+      type EnrichedConnection = typeof connectionsWithLimits[number];
+      const userGroups = new Map<string, EnrichedConnection[]>();
+      connectionsWithLimits.forEach(conn => {
+        if (!conn.userId) return;
+        const existing = userGroups.get(conn.userId);
+        if (existing) {
+          existing.push(conn);
+        } else {
+          userGroups.set(conn.userId, [conn]);
+        }
+      });
+      
+      // Apply filter and flatten
+      filteredConnections = [];
+      userGroups.forEach((userConns) => {
+        if (userConns.length === 0) return;
+        
+        const firstConn = userConns[0];
+        const connectionCount = (firstConn as any).connectionCount || 0;
+        const isOverLimit = (firstConn as any).isOverLimit || false;
+        
+        let includeUser = false;
+        
+        switch (filter) {
+          case 'over_limit':
+            includeUser = isOverLimit === true && connectionCount > 0;
+            break;
+          case 'within_limit':
+            includeUser = isOverLimit === false && connectionCount > 0;
+            break;
+          case 'zero_connections':
+            includeUser = connectionCount === 0;
+            break;
+          default:
+            includeUser = true;
+        }
+        
+        if (includeUser) {
+          filteredConnections.push(...userConns);
+        }
+      });
+    }
+
+    const total = filteredConnections.length;
+    const paginatedConnections = filteredConnections.slice(offset, offset + limitNum);
 
     await logAdminAction(req.adminEmail, 'view_connections', {
       provider,
       status,
+      filter,
       total,
     });
 
