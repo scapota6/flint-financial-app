@@ -164,7 +164,45 @@ export default function TermsOfService() {
               </p>
             </div>
 
-            {/* More sections will be added as you provide them */}
+            <div>
+              <h2 className="text-2xl font-semibold text-white mb-3">12. Governing Law and Dispute Resolution</h2>
+              <p className="text-gray-300 leading-relaxed">
+                These Terms are governed by the laws of the State of Florida, excluding its conflict-of-law provisions.
+                Any disputes arising under or related to these Terms will be resolved through binding arbitration in Miami, Florida, in accordance with the rules of the American Arbitration Association.
+                You waive any right to trial by jury or participation in class actions.
+              </p>
+            </div>
+
+            <div>
+              <h2 className="text-2xl font-semibold text-white mb-3">13. Force Majeure</h2>
+              <p className="text-gray-300 leading-relaxed">
+                Flint shall not be liable for delays or failures resulting from causes beyond its reasonable control, including acts of God, cyberattacks, natural disasters, or failures of third-party providers.
+              </p>
+            </div>
+
+            <div>
+              <h2 className="text-2xl font-semibold text-white mb-3">14. Severability</h2>
+              <p className="text-gray-300 leading-relaxed">
+                If any portion of these Terms is held invalid, the remaining sections will continue in full force and effect.
+              </p>
+            </div>
+
+            <div>
+              <h2 className="text-2xl font-semibold text-white mb-3">15. Entire Agreement</h2>
+              <p className="text-gray-300 leading-relaxed">
+                These Terms represent the complete agreement between you and Flint LLC and supersede all prior communications, representations, or agreements, whether oral or written.
+              </p>
+            </div>
+
+            <div>
+              <h2 className="text-2xl font-semibold text-white mb-3">16. Contact Information</h2>
+              <p className="text-gray-300 leading-relaxed">
+                For support or questions about these Terms, contact us at:
+              </p>
+              <p className="text-gray-300 leading-relaxed mt-3">
+                📧 <a href="mailto:support@flint-investing.com" className="text-purple-400 hover:text-purple-300">support@flint-investing.com</a>
+              </p>
+            </div>
           </div>
         </div>
       </div>
