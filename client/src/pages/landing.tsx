@@ -405,7 +405,7 @@ function Landing() {
                 <p className="text-xl italic text-gray-300">
                   "Flint is the only place where my banks, cards, and brokerages just… add up."
                 </p>
-                <cite className="text-sm text-gray-400">— Early user</cite>
+                <cite className="text-sm text-gray-400">— Emily T.</cite>
               </blockquote>
             </div>
           </div>
