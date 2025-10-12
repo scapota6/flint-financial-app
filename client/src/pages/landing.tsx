@@ -601,7 +601,7 @@ function Landing() {
                         <td className="text-center py-3 text-gray-400">Unlimited</td>
                       </tr>
                       <tr className="border-b border-gray-800">
-                        <td className="py-3 text-white">Portfolio Tracking</td>
+                        <td className="py-3 text-white">Recurring Subscription Management</td>
                         <td className="text-center py-3">
                           <Check className="h-5 w-5 text-green-500 mx-auto" />
                         </td>
