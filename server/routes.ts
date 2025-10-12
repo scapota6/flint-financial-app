@@ -3973,24 +3973,86 @@ function calculateAverageAmount(transactions: any[]) {
 }
 
 function calculateNextBillingDate(lastDate: string, frequency: string) {
-  const date = new Date(lastDate);
+  const lastBillingDate = new Date(lastDate);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0); // Reset time for date-only comparison
   
-  switch (frequency) {
-    case 'weekly':
-      date.setDate(date.getDate() + 7);
-      break;
-    case 'monthly':
-      date.setMonth(date.getMonth() + 1);
-      break;
-    case 'quarterly':
-      date.setMonth(date.getMonth() + 3);
-      break;
-    case 'yearly':
-      date.setFullYear(date.getFullYear() + 1);
-      break;
+  // If the last billing date is already in the future, return it
+  if (lastBillingDate > today) {
+    return lastBillingDate.toISOString().split('T')[0];
   }
   
-  return date.toISOString().split('T')[0];
+  // Calculate intervals needed using proper calendar math
+  let intervalsNeeded: number;
+  const nextDate = new Date(lastDate);
+  
+  switch (frequency) {
+    case 'weekly': {
+      // Calculate number of weeks between dates
+      const daysDiff = Math.floor((today.getTime() - lastBillingDate.getTime()) / (24 * 60 * 60 * 1000));
+      intervalsNeeded = Math.ceil(daysDiff / 7);
+      nextDate.setDate(nextDate.getDate() + 7 * intervalsNeeded);
+      break;
+    }
+    case 'monthly': {
+      // Calculate number of months between dates
+      const yearsDiff = today.getFullYear() - lastBillingDate.getFullYear();
+      const monthsDiff = today.getMonth() - lastBillingDate.getMonth();
+      intervalsNeeded = yearsDiff * 12 + monthsDiff + (today.getDate() >= lastBillingDate.getDate() ? 1 : 0);
+      nextDate.setMonth(nextDate.getMonth() + intervalsNeeded);
+      break;
+    }
+    case 'quarterly': {
+      // Calculate number of quarters between dates
+      const yearsDiff = today.getFullYear() - lastBillingDate.getFullYear();
+      const monthsDiff = today.getMonth() - lastBillingDate.getMonth();
+      const totalMonths = yearsDiff * 12 + monthsDiff;
+      intervalsNeeded = Math.ceil(totalMonths / 3) + (today.getDate() >= lastBillingDate.getDate() ? 1 : 0);
+      nextDate.setMonth(nextDate.getMonth() + 3 * intervalsNeeded);
+      break;
+    }
+    case 'yearly': {
+      // Calculate number of years between dates
+      intervalsNeeded = today.getFullYear() - lastBillingDate.getFullYear();
+      if (today.getMonth() > lastBillingDate.getMonth() || 
+          (today.getMonth() === lastBillingDate.getMonth() && today.getDate() >= lastBillingDate.getDate())) {
+        intervalsNeeded++;
+      }
+      nextDate.setFullYear(nextDate.getFullYear() + intervalsNeeded);
+      break;
+    }
+    default: {
+      // Unknown frequency, default to monthly
+      const yearsDiff = today.getFullYear() - lastBillingDate.getFullYear();
+      const monthsDiff = today.getMonth() - lastBillingDate.getMonth();
+      intervalsNeeded = yearsDiff * 12 + monthsDiff + (today.getDate() >= lastBillingDate.getDate() ? 1 : 0);
+      nextDate.setMonth(nextDate.getMonth() + intervalsNeeded);
+      break;
+    }
+  }
+  
+  // Final safety check: ensure the date is in the future
+  if (nextDate <= today) {
+    switch (frequency) {
+      case 'weekly':
+        nextDate.setDate(nextDate.getDate() + 7);
+        break;
+      case 'monthly':
+        nextDate.setMonth(nextDate.getMonth() + 1);
+        break;
+      case 'quarterly':
+        nextDate.setMonth(nextDate.getMonth() + 3);
+        break;
+      case 'yearly':
+        nextDate.setFullYear(nextDate.getFullYear() + 1);
+        break;
+      default:
+        nextDate.setMonth(nextDate.getMonth() + 1);
+        break;
+    }
+  }
+  
+  return nextDate.toISOString().split('T')[0];
 }
 
 
