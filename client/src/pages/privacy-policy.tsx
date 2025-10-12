@@ -93,6 +93,86 @@ export default function PrivacyPolicy() {
               </p>
             </div>
 
+            <div>
+              <h2 className="text-2xl font-semibold text-white mb-3">3. Data Sharing</h2>
+              <p className="text-gray-300 leading-relaxed mb-4">
+                We may share limited user information with the following third parties solely for operational purposes:
+              </p>
+
+              <div className="overflow-x-auto">
+                <table className="w-full border border-gray-700 rounded-lg">
+                  <thead className="bg-gray-800">
+                    <tr>
+                      <th className="px-4 py-3 text-left text-white font-semibold border-b border-gray-700">Provider</th>
+                      <th className="px-4 py-3 text-left text-white font-semibold border-b border-gray-700">Purpose</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr className="border-b border-gray-800">
+                      <td className="px-4 py-3 text-gray-300">Teller.io</td>
+                      <td className="px-4 py-3 text-gray-300">Bank and account aggregation</td>
+                    </tr>
+                    <tr className="border-b border-gray-800">
+                      <td className="px-4 py-3 text-gray-300">SnapTrade</td>
+                      <td className="px-4 py-3 text-gray-300">Brokerage aggregation and portfolio data</td>
+                    </tr>
+                    <tr className="border-b border-gray-800">
+                      <td className="px-4 py-3 text-gray-300">Resend</td>
+                      <td className="px-4 py-3 text-gray-300">Transactional and system emails</td>
+                    </tr>
+                    <tr className="border-b border-gray-800">
+                      <td className="px-4 py-3 text-gray-300">Lemon Squeezy</td>
+                      <td className="px-4 py-3 text-gray-300">Billing, invoicing, and subscription processing</td>
+                    </tr>
+                    <tr className="border-b border-gray-800">
+                      <td className="px-4 py-3 text-gray-300">Replit</td>
+                      <td className="px-4 py-3 text-gray-300">Application hosting and infrastructure</td>
+                    </tr>
+                    <tr>
+                      <td className="px-4 py-3 text-gray-300">Analytics Providers</td>
+                      <td className="px-4 py-3 text-gray-300">Site usage insights (if applicable)</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <p className="text-gray-300 leading-relaxed mt-4">
+                Each third party maintains its own privacy policy and complies with relevant data protection standards.
+              </p>
+            </div>
+
+            <div>
+              <h2 className="text-2xl font-semibold text-white mb-3">4. Data Retention</h2>
+              <p className="text-gray-300 leading-relaxed">
+                We retain account data for as long as necessary to provide our Services or comply with legal obligations.
+                Financial data linked via Teller.io or SnapTrade is read-only and non-persistent—we do not store raw credentials or permanent financial records after disconnection.
+              </p>
+            </div>
+
+            <div>
+              <h2 className="text-2xl font-semibold text-white mb-3">5. Security</h2>
+              <p className="text-gray-300 leading-relaxed">
+                We implement reasonable administrative, technical, and physical safeguards to protect user data. However, no internet transmission or storage system can be guaranteed 100% secure.
+                You use our Services at your own risk and acknowledge potential exposure inherent in online systems.
+              </p>
+            </div>
+
+            <div>
+              <h2 className="text-2xl font-semibold text-white mb-3">6. Your Rights</h2>
+              <p className="text-gray-300 leading-relaxed mb-3">
+                Depending on your jurisdiction (e.g., GDPR, CCPA), you may have rights to:
+              </p>
+              <ul className="list-disc list-inside text-gray-300 space-y-2 ml-4">
+                <li>Access or export your data;</li>
+                <li>Request deletion of your account;</li>
+                <li>Withdraw consent for communications;</li>
+                <li>Lodge a complaint with a data protection authority.</li>
+              </ul>
+              <p className="text-gray-300 leading-relaxed mt-4">
+                Requests may be sent to <a href="mailto:support@flint-investing.com" className="text-purple-400 hover:text-purple-300">support@flint-investing.com</a>
+              </p>
+            </div>
+
             {/* More sections will be added as you provide them */}
           </div>
         </div>
