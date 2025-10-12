@@ -545,10 +545,6 @@ function Landing() {
                 </div>
               </div>
             </div>
-            
-            <p className="text-sm text-gray-400">
-              Save <strong className="text-green-400">$762+ in 6 months</strong> — Based on data from 1,000+ active Flint Plus users
-            </p>
           </div>
         </section>
 
