@@ -489,7 +489,20 @@ function Landing() {
             {/* Cumulative Savings Bar Chart */}
             <div className="bg-gray-800/50 rounded-xl p-8 border border-gray-700">
               <div className="space-y-6">
-                <div className="flex items-end justify-between gap-4 h-64">
+                <div className="relative flex items-end justify-between gap-4 h-64">
+                  {/* SVG Line Overlay */}
+                  <svg className="absolute inset-0 w-full h-full pointer-events-none" preserveAspectRatio="none">
+                    <polyline
+                      points="8.33%,83.33% 25%,66.67% 41.67%,50% 58.33%,33.33% 75%,16.67% 91.67%,0%"
+                      fill="none"
+                      stroke="rgb(74, 222, 128)"
+                      strokeWidth="3"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="drop-shadow-lg"
+                    />
+                  </svg>
+                  
                   {[
                     { month: 'Month 1', amount: 127, label: '$127' },
                     { month: 'Month 2', amount: 254, label: '$254' },
@@ -500,13 +513,13 @@ function Landing() {
                   ].map((bar, index) => {
                     const heightPercent = (bar.amount / 762) * 100;
                     return (
-                      <div key={bar.month} className="flex-1 flex flex-col items-center gap-3">
+                      <div key={bar.month} className="flex-1 flex flex-col items-center gap-3 relative z-10">
                         <div className="relative group w-full">
                           <div 
                             className="w-full bg-gradient-to-t from-green-600 to-green-400 rounded-t-lg transition-all duration-300 hover:from-green-500 hover:to-green-300"
                             style={{ height: `${heightPercent}%` }}
                           >
-                            <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 absolute -top-10 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-sm px-2 py-1 rounded whitespace-nowrap">
+                            <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 absolute -top-10 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-sm px-2 py-1 rounded whitespace-nowrap z-20">
                               {bar.label}
                             </div>
                           </div>
