@@ -495,12 +495,19 @@ function Landing() {
                     <polyline
                       points="8.33%,83.33% 25%,66.67% 41.67%,50% 58.33%,33.33% 75%,16.67% 91.67%,0%"
                       fill="none"
-                      stroke="rgb(74, 222, 128)"
-                      strokeWidth="3"
+                      stroke="#fbbf24"
+                      strokeWidth="4"
                       strokeLinecap="round"
                       strokeLinejoin="round"
-                      className="drop-shadow-lg"
+                      opacity="0.9"
                     />
+                    {/* Data point circles */}
+                    <circle cx="8.33%" cy="83.33%" r="6" fill="#fbbf24" />
+                    <circle cx="25%" cy="66.67%" r="6" fill="#fbbf24" />
+                    <circle cx="41.67%" cy="50%" r="6" fill="#fbbf24" />
+                    <circle cx="58.33%" cy="33.33%" r="6" fill="#fbbf24" />
+                    <circle cx="75%" cy="16.67%" r="6" fill="#fbbf24" />
+                    <circle cx="91.67%" cy="0%" r="6" fill="#fbbf24" />
                   </svg>
                   
                   {[
