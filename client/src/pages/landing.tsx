@@ -521,15 +521,16 @@ function Landing() {
                     const heightPercent = (bar.amount / 762) * 100;
                     return (
                       <div key={bar.month} className="flex-1 flex flex-col items-center gap-3 relative z-10">
-                        <div className="relative group w-full">
+                        <div className="relative w-full flex flex-col items-center">
+                          {/* Value Label Above Bar */}
+                          <div className="mb-2 text-sm font-semibold text-white">
+                            {bar.label}
+                          </div>
+                          {/* Bar */}
                           <div 
                             className="w-full bg-gradient-to-t from-green-600 to-green-400 rounded-t-lg transition-all duration-300 hover:from-green-500 hover:to-green-300"
                             style={{ height: `${heightPercent}%` }}
-                          >
-                            <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 absolute -top-10 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-sm px-2 py-1 rounded whitespace-nowrap z-20">
-                              {bar.label}
-                            </div>
-                          </div>
+                          />
                         </div>
                         <span className="text-sm text-gray-400 font-medium">{bar.month}</span>
                       </div>
