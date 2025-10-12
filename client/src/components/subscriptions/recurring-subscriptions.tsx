@@ -55,6 +55,8 @@ export default function RecurringSubscriptions() {
 
   const subscriptions = data?.subscriptions || [];
   const totalMonthlySpend = data?.totalMonthlySpend || 0;
+  // Round monthly total for consistent math display
+  const monthlyRounded = Math.round(totalMonthlySpend * 100) / 100;
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
@@ -182,9 +184,9 @@ export default function RecurringSubscriptions() {
             <Badge variant="secondary" className="bg-purple-600/20 text-purple-400">
               {subscriptions.length} Active
             </Badge>
-            {totalMonthlySpend > 0 && (
+            {monthlyRounded > 0 && (
               <Badge variant="secondary" className="bg-green-600/20 text-green-400">
-                {formatCurrency(totalMonthlySpend)}/mo
+                {formatCurrency(monthlyRounded)}/mo
               </Badge>
             )}
           </div>
@@ -246,11 +248,11 @@ export default function RecurringSubscriptions() {
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div className="flex items-center justify-between">
                 <span className="text-gray-400">Total Monthly</span>
-                <span className="text-white font-semibold">{formatCurrency(totalMonthlySpend)}</span>
+                <span className="text-white font-semibold">{formatCurrency(monthlyRounded)}</span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-gray-400">Annual Cost</span>
-                <span className="text-white font-semibold">{formatCurrency(totalMonthlySpend * 12)}</span>
+                <span className="text-white font-semibold">{formatCurrency(monthlyRounded * 12)}</span>
               </div>
             </div>
             <p className="text-xs text-gray-500 mt-3 text-center">
