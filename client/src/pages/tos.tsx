@@ -10,11 +10,9 @@ export default function TermsOfService() {
   return (
     <div className="min-h-screen bg-black text-white">
       <div className="max-w-4xl mx-auto px-6 py-12">
-        <Link href="/">
-          <a className="inline-flex items-center gap-2 text-purple-400 hover:text-purple-300 mb-8">
-            <ArrowLeft className="h-4 w-4" />
-            Back to Home
-          </a>
+        <Link href="/" className="inline-flex items-center gap-2 text-purple-400 hover:text-purple-300 mb-8">
+          <ArrowLeft className="h-4 w-4" />
+          Back to Home
         </Link>
 
         <div className="prose prose-invert prose-lg max-w-none">

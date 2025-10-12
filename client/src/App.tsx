@@ -38,6 +38,7 @@ const PasswordSetup = lazy(() => import("@/pages/password-setup"));
 const ResetPassword = lazy(() => import("@/pages/reset-password"));
 const Login = lazy(() => import("@/pages/login"));
 const TermsOfService = lazy(() => import("@/pages/tos"));
+const PrivacyPolicy = lazy(() => import("@/pages/privacy-policy"));
 
 // Loading fallback component
 const PageLoader = () => (
@@ -87,6 +88,7 @@ function Router() {
                 <Route path="/setup-password" component={PasswordSetup} />
                 <Route path="/reset-password" component={ResetPassword} />
                 <Route path="/tos" component={TermsOfService} />
+                <Route path="/privacy-policy" component={PrivacyPolicy} />
                 {/* Redirect any protected routes to login */}
                 <Route path="/dashboard">
                   {() => { window.location.href = '/api/login'; return null; }}
@@ -143,6 +145,7 @@ function Router() {
                 <Route path="/teller/callback" component={TellerCallback} />
                 <Route path="/admin" component={AdminDashboard} />
                 <Route path="/tos" component={TermsOfService} />
+                <Route path="/privacy-policy" component={PrivacyPolicy} />
                 {/* Redirect authenticated users away from landing page */}
                 <Route path="/landing">
                   {() => { window.location.href = '/dashboard'; return null; }}
