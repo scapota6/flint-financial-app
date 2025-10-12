@@ -489,7 +489,7 @@ function Landing() {
             {/* Cumulative Savings Bar Chart */}
             <div className="bg-gray-800/50 rounded-xl p-8 border border-gray-700">
               <div className="space-y-6">
-                <div className="relative flex items-end justify-between gap-4 h-64">
+                <div className="relative flex items-end justify-center gap-2 h-64">
                   {/* SVG Line Overlay */}
                   <svg className="absolute inset-0 w-full h-full pointer-events-none" preserveAspectRatio="none">
                     <polyline
@@ -501,13 +501,6 @@ function Landing() {
                       strokeLinejoin="round"
                       opacity="0.9"
                     />
-                    {/* Data point circles */}
-                    <circle cx="8.33%" cy="83.33%" r="6" fill="#fbbf24" />
-                    <circle cx="25%" cy="66.67%" r="6" fill="#fbbf24" />
-                    <circle cx="41.67%" cy="50%" r="6" fill="#fbbf24" />
-                    <circle cx="58.33%" cy="33.33%" r="6" fill="#fbbf24" />
-                    <circle cx="75%" cy="16.67%" r="6" fill="#fbbf24" />
-                    <circle cx="91.67%" cy="0%" r="6" fill="#fbbf24" />
                   </svg>
                   
                   {[
@@ -520,17 +513,17 @@ function Landing() {
                   ].map((bar, index) => {
                     const heightPercent = (bar.amount / 762) * 100;
                     return (
-                      <div key={bar.month} className="flex-1 flex flex-col items-center gap-3 relative z-10">
+                      <div key={bar.month} className="flex-1 max-w-[140px] flex flex-col items-center gap-3 relative z-10">
                         <div className="relative w-full flex flex-col items-center">
-                          {/* Value Label Above Bar */}
-                          <div className="mb-2 text-sm font-semibold text-white">
-                            {bar.label}
-                          </div>
                           {/* Bar */}
                           <div 
                             className="w-full bg-gradient-to-t from-green-600 to-green-400 rounded-t-lg transition-all duration-300 hover:from-green-500 hover:to-green-300"
                             style={{ height: `${heightPercent}%` }}
                           />
+                        </div>
+                        {/* Value Label Below Bar */}
+                        <div className="text-base font-bold text-white">
+                          {bar.label}
                         </div>
                         <span className="text-sm text-gray-400 font-medium">{bar.month}</span>
                       </div>
