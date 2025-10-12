@@ -466,7 +466,7 @@ function Landing() {
               </Button>
               
               <p className="text-sm text-gray-400">
-                Great for 1–4 accounts & core insights.
+                Great for 3 accounts connections & core insights.
               </p>
             </div>
           </div>
