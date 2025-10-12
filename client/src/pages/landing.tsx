@@ -614,7 +614,9 @@ function Landing() {
                       </tr>
                       <tr className="border-b border-gray-800">
                         <td className="py-3 text-white">Transfer Funds (Coming Soon)</td>
-                        <td className="text-center py-3 text-gray-600">-</td>
+                        <td className="text-center py-3">
+                          <Check className="h-5 w-5 text-green-500 mx-auto" />
+                        </td>
                         <td className="text-center py-3">
                           <Check className="h-5 w-5 text-green-500 mx-auto" />
                         </td>
@@ -633,9 +635,7 @@ function Landing() {
                       <tr>
                         <td className="py-3 text-white">Priority Support</td>
                         <td className="text-center py-3 text-gray-600">-</td>
-                        <td className="text-center py-3">
-                          <Check className="h-5 w-5 text-green-500 mx-auto" />
-                        </td>
+                        <td className="text-center py-3 text-gray-600">-</td>
                         <td className="text-center py-3">
                           <Check className="h-5 w-5 text-green-500 mx-auto" />
                         </td>
