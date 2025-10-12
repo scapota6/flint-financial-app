@@ -1,3 +1,5 @@
+import { Logtail } from '@logtail/node';
+
 /**
  * Structured Logging System
  * Centralized logging with PII redaction and environment-aware output
@@ -21,10 +23,15 @@ export interface LogContext {
 class Logger {
   private logLevel: LogLevel;
   private isDevelopment: boolean;
+  private logtail?: Logtail;
 
   constructor() {
     this.isDevelopment = process.env.NODE_ENV === "development";
     this.logLevel = this.isDevelopment ? LogLevel.DEBUG : LogLevel.INFO;
+    
+    if (process.env.LOGTAIL_SOURCE_TOKEN) {
+      this.logtail = new Logtail(process.env.LOGTAIL_SOURCE_TOKEN as string);
+    }
   }
 
   /**
@@ -86,24 +93,60 @@ class Logger {
   debug(message: string, context?: LogContext): void {
     if (this.logLevel <= LogLevel.DEBUG) {
       console.log(this.formatLog("DEBUG", message, context));
+      
+      // Send to Logtail with REDACTED context
+      if (this.logtail) {
+        const redactedContext = this.redactPII(context) as any;
+        this.logtail.debug(message, redactedContext).catch((error: Error) => {
+          // Silently absorb Logtail errors to prevent unhandled rejections
+          // Don't log to avoid infinite loops
+        });
+      }
     }
   }
 
   info(message: string, context?: LogContext): void {
     if (this.logLevel <= LogLevel.INFO) {
       console.log(this.formatLog("INFO", message, context));
+      
+      // Send to Logtail with REDACTED context
+      if (this.logtail) {
+        const redactedContext = this.redactPII(context) as any;
+        this.logtail.info(message, redactedContext).catch((error: Error) => {
+          // Silently absorb Logtail errors to prevent unhandled rejections
+          // Don't log to avoid infinite loops
+        });
+      }
     }
   }
 
   warn(message: string, context?: LogContext): void {
     if (this.logLevel <= LogLevel.WARN) {
       console.warn(this.formatLog("WARN", message, context));
+      
+      // Send to Logtail with REDACTED context
+      if (this.logtail) {
+        const redactedContext = this.redactPII(context) as any;
+        this.logtail.warn(message, redactedContext).catch((error: Error) => {
+          // Silently absorb Logtail errors to prevent unhandled rejections
+          // Don't log to avoid infinite loops
+        });
+      }
     }
   }
 
   error(message: string, context?: LogContext): void {
     if (this.logLevel <= LogLevel.ERROR) {
       console.error(this.formatLog("ERROR", message, context));
+      
+      // Send to Logtail with REDACTED context
+      if (this.logtail) {
+        const redactedContext = this.redactPII(context) as any;
+        this.logtail.error(message, redactedContext).catch((error: Error) => {
+          // Silently absorb Logtail errors to prevent unhandled rejections
+          // Don't log to avoid infinite loops
+        });
+      }
     }
   }
 
@@ -132,6 +175,13 @@ class Logger {
       action,
       metadata: this.redactPII(details) as Record<string, unknown>,
     });
+  }
+
+  /**
+   * Flush all pending logs to Logtail (for graceful shutdown)
+   */
+  async flush(): Promise<void> {
+    await this.logtail?.flush();
   }
 }
 

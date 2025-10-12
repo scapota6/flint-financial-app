@@ -198,6 +198,46 @@ const app = express();
   // Initialize authentication and base routes
   const server = await registerRoutes(app);
   
+  // Graceful shutdown flag
+  let isShuttingDown = false;
+  
+  // Graceful shutdown function
+  const gracefulShutdown = async (signal: string) => {
+    if (isShuttingDown) return;
+    isShuttingDown = true;
+    
+    logger.info(`${signal} received, shutting down gracefully`);
+    
+    // Create timeout promise (30 seconds max wait)
+    const timeoutPromise = new Promise<void>((_, reject) => {
+      setTimeout(() => reject(new Error('Shutdown timeout')), 30000);
+    });
+    
+    // Create server close promise
+    const closePromise = new Promise<void>((resolve) => {
+      server.close(() => {
+        logger.info('HTTP server closed');
+        resolve();
+      });
+    });
+    
+    try {
+      // Wait for server to close OR timeout
+      await Promise.race([closePromise, timeoutPromise]);
+    } catch (error) {
+      logger.error('Forcefully shutting down after timeout');
+    }
+    
+    // Flush logs before exit
+    try {
+      await logger.flush();
+    } catch (error) {
+      console.error('Error flushing logs:', error);
+    }
+    
+    process.exit(0);
+  };
+  
   // Mount SnapTrade API routers AFTER auth setup (require authentication)
   app.use("/api/snaptrade", snaptradeRouter);
   
@@ -379,6 +419,10 @@ const app = express();
       res.status(status).send(message);
     }
   });
+
+  // Graceful shutdown handlers
+  process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
+  process.on('SIGINT', () => gracefulShutdown('SIGINT'));
 
   // ALWAYS serve the app on the port specified in the environment variable PORT
   // Other ports are firewalled. Default to 5000 if not specified.
