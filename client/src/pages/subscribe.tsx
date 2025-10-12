@@ -1,73 +1,33 @@
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useStripe, useElements, PaymentElement, Elements } from '@stripe/react-stripe-js';
-import { loadStripe } from '@stripe/stripe-js';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { isUnauthorizedError } from "@/lib/authUtils";
-import { StripeAPI, SUBSCRIPTION_TIERS } from "@/lib/stripe";
+import { SUBSCRIPTION_TIERS } from "@/lib/stripe";
 import { Check, Crown, Star, Zap } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 
-// Make sure to call `loadStripe` outside of a component's render to avoid
-// recreating the `Stripe` object on every render.
-const stripePromise = import.meta.env.VITE_STRIPE_PUBLIC_KEY ? loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY) : null;
-
-const SubscribeForm = ({ tier }: { tier: string }) => {
-  const stripe = useStripe();
-  const elements = useElements();
-  const { toast } = useToast();
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!stripe || !elements) {
-      return;
-    }
-
-    const { error } = await stripe.confirmPayment({
-      elements,
-      confirmParams: {
-        return_url: window.location.origin,
-      },
-    });
-
-    if (error) {
-      toast({
-        title: "Payment Failed",
-        description: error.message,
-        variant: "destructive",
-      });
-    } else {
-      toast({
-        title: "Payment Successful",
-        description: "You are now subscribed!",
-      });
-    }
-  };
-
-  return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      <PaymentElement className="text-white" />
-      <Button
-        type="submit"
-        disabled={!stripe}
-        className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 text-lg font-semibold"
-      >
-        Subscribe to {tier}
-      </Button>
-    </form>
-  );
-};
+// Declare Lemon Squeezy types
+declare global {
+  interface Window {
+    createLemonSqueezy: () => void;
+    LemonSqueezy: {
+      Url: {
+        Open: (url: string) => void;
+      };
+      Setup: (config: {
+        eventHandler: (event: { event: string; data: any }) => void;
+      }) => void;
+    };
+  }
+}
 
 export default function Subscribe() {
   const { user } = useAuth();
   const { toast } = useToast();
-  const [selectedTier, setSelectedTier] = useState('');
-  const [clientSecret, setClientSecret] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
   const [isAnnual, setIsAnnual] = useState(false);
 
@@ -76,6 +36,57 @@ export default function Subscribe() {
     queryKey: ["/api/auth/user"],
     retry: false,
   });
+
+  // Initialize Lemon Squeezy
+  useEffect(() => {
+    let setupComplete = false;
+    
+    const setupEventHandler = () => {
+      if (setupComplete) return;
+      setupComplete = true;
+      
+      if (window.createLemonSqueezy) {
+        window.createLemonSqueezy();
+      }
+      
+      if (window.LemonSqueezy) {
+        window.LemonSqueezy.Setup({
+          eventHandler: (event) => {
+            console.log('Lemon Squeezy Event:', event);
+            
+            if (event.event === 'Checkout.Success') {
+              const email = event.data?.checkout_data?.email;
+              const successUrl = email 
+                ? `/payment-success?email=${encodeURIComponent(email)}`
+                : '/payment-success';
+              
+              setTimeout(() => {
+                window.location.href = successUrl;
+              }, 500);
+            }
+          }
+        });
+      }
+    };
+
+    const existingScript = document.querySelector('script[src="https://app.lemonsqueezy.com/js/lemon.js"]') as HTMLScriptElement;
+    if (existingScript) {
+      if (existingScript.dataset.loaded === 'true') {
+        setupEventHandler();
+      } else {
+        existingScript.addEventListener('load', setupEventHandler);
+      }
+    } else {
+      const script = document.createElement('script');
+      script.src = 'https://app.lemonsqueezy.com/js/lemon.js';
+      script.defer = true;
+      script.addEventListener('load', () => {
+        script.dataset.loaded = 'true';
+        setupEventHandler();
+      });
+      document.head.appendChild(script);
+    }
+  }, []);
 
   // Handle unauthorized errors
   useEffect(() => {
@@ -92,18 +103,23 @@ export default function Subscribe() {
   }, [error, toast]);
 
   const handleSelectTier = async (tierId: string) => {
-    setSelectedTier(tierId);
     setIsProcessing(true);
 
     try {
-      const billingFrequency = isAnnual ? 'annual' : 'monthly';
-      const response = await StripeAPI.createSubscription(tierId, billingFrequency);
+      // Map tier IDs to CTA IDs for the checkout endpoint
+      const ctaId = isAnnual ? `${tierId}-yearly` : `${tierId}-monthly`;
       
-      // Redirect to Lemon Squeezy checkout
-      if (response.checkoutUrl) {
-        window.location.href = response.checkoutUrl;
+      // Get checkout URL from backend (same as landing page)
+      const userEmail = (user as any)?.email;
+      const response = await fetch(`/api/lemonsqueezy/checkout/${ctaId}${userEmail ? `?email=${encodeURIComponent(userEmail)}` : ''}`);
+      const data = await response.json();
+      
+      if (data.checkoutUrl && window.LemonSqueezy) {
+        // Open Lemon Squeezy overlay
+        window.LemonSqueezy.Url.Open(data.checkoutUrl);
       } else {
-        throw new Error('No checkout URL received');
+        // Fallback to direct URL
+        window.location.href = data.checkoutUrl || `/api/lemonsqueezy/checkout/${ctaId}`;
       }
     } catch (error) {
       if (isUnauthorizedError(error as Error)) {
@@ -119,9 +135,10 @@ export default function Subscribe() {
       }
       toast({
         title: "Error",
-        description: "Failed to create subscription. Please try again.",
+        description: "Failed to open checkout. Please try again.",
         variant: "destructive",
       });
+    } finally {
       setIsProcessing(false);
     }
   };
@@ -253,7 +270,7 @@ export default function Subscribe() {
                 <CardContent className="text-center">
                   <Button
                     onClick={() => handleSelectTier(tier.id)}
-                    disabled={isProcessing || currentTier === tier.id || !stripePromise}
+                    disabled={isProcessing || currentTier === tier.id}
                     className={`w-full ${
                       tier.id === 'unlimited' 
                         ? 'bg-purple-600 hover:bg-purple-700' 
@@ -263,12 +280,10 @@ export default function Subscribe() {
                     } text-white`}
                     data-testid={`button-select-${tier.id}`}
                   >
-                    {isProcessing && selectedTier === tier.id ? (
+                    {isProcessing ? (
                       'Processing...'
                     ) : currentTier === tier.id ? (
                       'Current Plan'
-                    ) : !stripePromise ? (
-                      'Payment Unavailable'
                     ) : (
                       `Choose ${tier.name.split(' ')[1]} ${isAnnual ? 'Yearly' : 'Monthly'}`
                     )}
@@ -284,35 +299,6 @@ export default function Subscribe() {
             Founding Member Pricing — lock this in before new features launch
           </Badge>
         </div>
-
-        {/* Payment Form */}
-        {clientSecret && selectedTier && (
-          <div className="max-w-md mx-auto">
-            <Card className="trade-card">
-              <CardHeader>
-                <CardTitle className="text-xl font-semibold text-white text-center">
-                  Complete Your Subscription
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {stripePromise ? (
-                  <Elements stripe={stripePromise} options={{ clientSecret }}>
-                    <SubscribeForm tier={selectedTier} />
-                  </Elements>
-                ) : (
-                  <div className="text-center py-8">
-                    <p className="text-red-400 mb-4">
-                      Payment processing is currently unavailable.
-                    </p>
-                    <p className="text-gray-400 text-sm">
-                      Please contact support to complete your subscription.
-                    </p>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </div>
-        )}
 
         {/* Features Comparison */}
         <div className="mt-16">
