@@ -331,7 +331,6 @@ export default function UnifiedDashboard() {
                           ? 'Coinbase' 
                           : account.accountName}
                       </div>
-                      <div className="text-gray-400 text-sm capitalize">{account.provider}</div>
                     </div>
                   </div>
                 </div>
