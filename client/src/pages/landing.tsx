@@ -14,10 +14,13 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Switch } from "@/components/ui/switch";
-import { ArrowRight, Shield, TrendingUp, Zap, CheckCircle, Star, Users, DollarSign, Lock, Building, CreditCard, Check } from "lucide-react";
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
+import { ArrowRight, Shield, TrendingUp, Zap, CheckCircle, Star, Users, DollarSign, Lock, Building, CreditCard, Check, X } from "lucide-react";
 import { Link } from "wouter";
 import { useToast } from "@/hooks/use-toast";
 import flintLogo from "@assets/flint-logo.png";
+import dashboardPreview from "@assets/dashboard-preview.png";
 
 // Declare Lemon Squeezy types
 declare global {
@@ -80,6 +83,7 @@ function Landing() {
     connectType: ''
   });
   const [formSubmitted, setFormSubmitted] = useState(false);
+  const [dashboardPreviewOpen, setDashboardPreviewOpen] = useState(false);
   const { toast } = useToast();
 
   // Initialize Lemon Squeezy (load once, keep for session)
@@ -373,14 +377,32 @@ function Landing() {
           </div>
         </section>
 
-        {/* Social Proof Block #2 */}
+        {/* Dashboard Preview Section */}
         <section className="py-16 bg-gray-900/50">
-          <div className="max-w-4xl mx-auto">
+          <div className="max-w-6xl mx-auto">
             <div className="grid lg:grid-cols-2 gap-8 items-center">
-              <div className="bg-gray-800 rounded-lg p-6 space-y-4">
-                <div className="text-sm text-gray-400">Dashboard Preview</div>
-                <div className="h-32 bg-gradient-to-r from-purple-500 to-blue-500 rounded opacity-20" />
-                <div className="text-xs text-gray-500">Mockup placeholder</div>
+              <div className="space-y-4">
+                <div className="text-sm text-purple-400 font-semibold">Dashboard Preview</div>
+                <h3 className="text-2xl font-bold text-white">See Your Complete Financial Picture</h3>
+                <p className="text-gray-300">
+                  View all your accounts in one unified dashboard. Track your net worth, monitor balances, and manage your finances with ease.
+                </p>
+                <button
+                  onClick={() => setDashboardPreviewOpen(true)}
+                  className="relative group cursor-pointer overflow-hidden rounded-lg border border-gray-700 hover:border-purple-500 transition-all duration-300"
+                  data-testid="button-dashboard-preview"
+                >
+                  <img 
+                    src={dashboardPreview} 
+                    alt="Flint Dashboard Preview" 
+                    className="w-full h-auto rounded-lg transition-transform duration-300 group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-300 flex items-center justify-center">
+                    <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-purple-600 text-white px-4 py-2 rounded-lg">
+                      Click to enlarge
+                    </div>
+                  </div>
+                </button>
               </div>
               <blockquote className="space-y-4">
                 <p className="text-xl italic text-gray-300">
@@ -391,6 +413,32 @@ function Landing() {
             </div>
           </div>
         </section>
+
+        {/* Dashboard Preview Modal */}
+        <Dialog open={dashboardPreviewOpen} onOpenChange={setDashboardPreviewOpen}>
+          <DialogContent className="max-w-7xl w-full p-0 bg-black border-gray-800">
+            <VisuallyHidden>
+              <DialogTitle>Dashboard Preview</DialogTitle>
+              <DialogDescription>
+                Enlarged view of the Flint dashboard showing all your financial accounts and information in one place
+              </DialogDescription>
+            </VisuallyHidden>
+            <div className="relative">
+              <button
+                onClick={() => setDashboardPreviewOpen(false)}
+                className="absolute top-4 right-4 z-10 p-2 bg-gray-900 hover:bg-gray-800 rounded-full text-white transition-colors"
+                data-testid="button-close-preview"
+              >
+                <X className="h-6 w-6" />
+              </button>
+              <img 
+                src={dashboardPreview} 
+                alt="Flint Dashboard Full Preview" 
+                className="w-full h-auto"
+              />
+            </div>
+          </DialogContent>
+        </Dialog>
 
         {/* CTA 3: Plus Annual */}
         <section id="plus-annual" data-section="plus-annual" className="py-20">
