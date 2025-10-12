@@ -85,6 +85,16 @@ export default function RecurringSubscriptions() {
     return labels[frequency as keyof typeof labels] || frequency;
   };
 
+  const getMonthlyEquivalent = (amount: number, frequency: string) => {
+    switch (frequency) {
+      case 'weekly': return amount * 4.33;
+      case 'monthly': return amount;
+      case 'quarterly': return amount / 3;
+      case 'yearly': return amount / 12;
+      default: return amount;
+    }
+  };
+
   const getCategoryIcon = (category: string) => {
     const icons = {
       'Streaming': <Play className="h-4 w-4" />,
@@ -209,6 +219,11 @@ export default function RecurringSubscriptions() {
                   <div className="font-semibold text-white">
                     {formatCurrency(subscription.amount)}
                   </div>
+                  {subscription.frequency !== 'monthly' && (
+                    <div className="text-xs text-gray-500">
+                      ≈ {formatCurrency(getMonthlyEquivalent(subscription.amount, subscription.frequency))}/mo
+                    </div>
+                  )}
                   <div className="text-sm text-gray-400 flex items-center justify-end gap-1">
                     <Calendar className="h-3 w-3" />
                     Next: {formatDate(subscription.nextBillingDate)}
@@ -238,6 +253,9 @@ export default function RecurringSubscriptions() {
                 <span className="text-white font-semibold">{formatCurrency(totalMonthlySpend * 12)}</span>
               </div>
             </div>
+            <p className="text-xs text-gray-500 mt-3 text-center">
+              Weekly subscriptions are converted to monthly costs (×4.33 weeks/month)
+            </p>
           </div>
         )}
 
