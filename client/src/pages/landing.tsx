@@ -14,7 +14,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Switch } from "@/components/ui/switch";
-import { ArrowRight, Shield, TrendingUp, Zap, CheckCircle, Star, Users, DollarSign, Lock, Building, CreditCard } from "lucide-react";
+import { ArrowRight, Shield, TrendingUp, Zap, CheckCircle, Star, Users, DollarSign, Lock, Building, CreditCard, Check } from "lucide-react";
 import { Link } from "wouter";
 import { useToast } from "@/hooks/use-toast";
 import flintLogo from "@assets/flint-logo.png";
@@ -570,6 +570,91 @@ function Landing() {
                 Founding Member Pricing — lock this in before new features launch
               </Badge>
             </div>
+          </div>
+        </section>
+
+        {/* Feature Comparison Table */}
+        <section id="feature-comparison" data-section="feature-comparison" className="py-20">
+          <div className="max-w-6xl mx-auto">
+            <Card className="bg-gray-800 border-gray-700">
+              <CardHeader>
+                <CardTitle className="text-2xl font-semibold text-white text-center">
+                  Feature Comparison
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="overflow-x-auto">
+                  <table className="w-full" data-testid="table-feature-comparison">
+                    <thead>
+                      <tr className="border-b border-gray-700">
+                        <th className="text-left py-3 text-gray-400">Feature</th>
+                        <th className="text-center py-3 text-gray-400">Plus</th>
+                        <th className="text-center py-3 text-gray-400">Pro</th>
+                        <th className="text-center py-3 text-gray-400">Unlimited</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr className="border-b border-gray-800">
+                        <td className="py-3 text-white">Account Connections</td>
+                        <td className="text-center py-3 text-gray-400">1-4</td>
+                        <td className="text-center py-3 text-gray-400">Up to 10</td>
+                        <td className="text-center py-3 text-gray-400">Unlimited</td>
+                      </tr>
+                      <tr className="border-b border-gray-800">
+                        <td className="py-3 text-white">Portfolio Tracking</td>
+                        <td className="text-center py-3">
+                          <Check className="h-5 w-5 text-green-500 mx-auto" />
+                        </td>
+                        <td className="text-center py-3">
+                          <Check className="h-5 w-5 text-green-500 mx-auto" />
+                        </td>
+                        <td className="text-center py-3">
+                          <Check className="h-5 w-5 text-green-500 mx-auto" />
+                        </td>
+                      </tr>
+                      <tr className="border-b border-gray-800">
+                        <td className="py-3 text-white">Advanced Analytics</td>
+                        <td className="text-center py-3 text-gray-600">-</td>
+                        <td className="text-center py-3">
+                          <Check className="h-5 w-5 text-green-500 mx-auto" />
+                        </td>
+                        <td className="text-center py-3">
+                          <Check className="h-5 w-5 text-green-500 mx-auto" />
+                        </td>
+                      </tr>
+                      <tr className="border-b border-gray-800">
+                        <td className="py-3 text-white">Real-time Alerts</td>
+                        <td className="text-center py-3 text-gray-600">-</td>
+                        <td className="text-center py-3">
+                          <Check className="h-5 w-5 text-green-500 mx-auto" />
+                        </td>
+                        <td className="text-center py-3">
+                          <Check className="h-5 w-5 text-green-500 mx-auto" />
+                        </td>
+                      </tr>
+                      <tr className="border-b border-gray-800">
+                        <td className="py-3 text-white">Priority Support</td>
+                        <td className="text-center py-3 text-gray-600">-</td>
+                        <td className="text-center py-3">
+                          <Check className="h-5 w-5 text-green-500 mx-auto" />
+                        </td>
+                        <td className="text-center py-3">
+                          <Check className="h-5 w-5 text-green-500 mx-auto" />
+                        </td>
+                      </tr>
+                      <tr>
+                        <td className="py-3 text-white">Advanced Trading Tools</td>
+                        <td className="text-center py-3 text-gray-600">-</td>
+                        <td className="text-center py-3 text-gray-600">-</td>
+                        <td className="text-center py-3">
+                          <Check className="h-5 w-5 text-green-500 mx-auto" />
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </section>
 
