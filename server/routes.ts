@@ -3824,10 +3824,10 @@ export function getAccountLimit(tier: string, isAdmin?: boolean): number | null 
   }
   
   switch (tier) {
-    case 'free': return 2;  // Match frontend limit
+    case 'free': return 2;
     case 'basic': return 3;
-    case 'pro': return 10;
-    case 'premium': return 25;
+    case 'pro': return 5;
+    case 'premium': return null; // Unlimited
     default: return 2;
   }
 }
