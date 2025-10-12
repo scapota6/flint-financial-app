@@ -10,6 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import { isUnauthorizedError } from "@/lib/authUtils";
 import { StripeAPI, SUBSCRIPTION_TIERS } from "@/lib/stripe";
 import { Check, Crown, Star, Zap } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
 
 // Make sure to call `loadStripe` outside of a component's render to avoid
 // recreating the `Stripe` object on every render.
@@ -68,6 +69,7 @@ export default function Subscribe() {
   const [selectedTier, setSelectedTier] = useState('');
   const [clientSecret, setClientSecret] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
+  const [isAnnual, setIsAnnual] = useState(false);
 
   // Fetch user data to check current subscription
   const { data: userData, error } = useQuery<{ subscriptionTier?: string; subscriptionStatus?: string }>({
@@ -94,8 +96,15 @@ export default function Subscribe() {
     setIsProcessing(true);
 
     try {
-      const response = await StripeAPI.createSubscription(tierId);
-      setClientSecret(response.clientSecret);
+      const billingFrequency = isAnnual ? 'annual' : 'monthly';
+      const response = await StripeAPI.createSubscription(tierId, billingFrequency);
+      
+      // Redirect to Lemon Squeezy checkout
+      if (response.checkoutUrl) {
+        window.location.href = response.checkoutUrl;
+      } else {
+        throw new Error('No checkout URL received');
+      }
     } catch (error) {
       if (isUnauthorizedError(error as Error)) {
         toast({
@@ -113,18 +122,17 @@ export default function Subscribe() {
         description: "Failed to create subscription. Please try again.",
         variant: "destructive",
       });
-    } finally {
       setIsProcessing(false);
     }
   };
 
   const getTierIcon = (tierId: string) => {
     switch (tierId) {
-      case 'basic':
+      case 'plus':
         return <Star className="h-6 w-6" />;
       case 'pro':
         return <Zap className="h-6 w-6" />;
-      case 'premium':
+      case 'unlimited':
         return <Crown className="h-6 w-6" />;
       default:
         return <Star className="h-6 w-6" />;
@@ -133,11 +141,11 @@ export default function Subscribe() {
 
   const getTierColor = (tierId: string) => {
     switch (tierId) {
-      case 'basic':
+      case 'plus':
         return 'text-blue-500';
       case 'pro':
         return 'text-purple-500';
-      case 'premium':
+      case 'unlimited':
         return 'text-yellow-500';
       default:
         return 'text-gray-500';
@@ -150,9 +158,30 @@ export default function Subscribe() {
   return (
     <div className="min-h-screen bg-black text-white">
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pb-20 md:pb-6">
-        <div className="mb-8 text-center">
-          <h2 className="text-3xl sm:text-4xl font-bold mb-4">Choose Your Plan</h2>
-          <p className="text-gray-400 text-lg">Unlock the full potential of Flint with our premium features</p>
+        <div className="mb-8 text-center space-y-6">
+          <div>
+            <h2 className="text-3xl sm:text-4xl font-bold mb-4">Choose Your Plan</h2>
+            <p className="text-gray-400 text-lg">Unlock the full potential of Flint with our premium features</p>
+          </div>
+          
+          {/* Monthly/Annual Toggle */}
+          <div className="flex items-center justify-center space-x-4">
+            <span className={`text-lg ${!isAnnual ? 'text-white font-semibold' : 'text-gray-400'}`}>
+              Monthly
+            </span>
+            <Switch 
+              checked={isAnnual} 
+              onCheckedChange={setIsAnnual}
+              className="data-[state=checked]:bg-purple-600 data-[state=unchecked]:bg-gray-600 border-2 border-gray-500"
+              data-testid="switch-billing-toggle"
+            />
+            <span className={`text-lg ${isAnnual ? 'text-white font-semibold' : 'text-gray-400'}`}>
+              Annual
+            </span>
+            {isAnnual && (
+              <Badge className="bg-green-600 text-white">2 months free</Badge>
+            )}
+          </div>
         </div>
 
         {/* Current Subscription Status */}
@@ -189,12 +218,13 @@ export default function Subscribe() {
             <Card 
               key={tier.id}
               className={`trade-card relative ${
-                tier.id === 'pro' ? 'ring-2 ring-blue-500' : ''
+                tier.id === 'unlimited' ? 'ring-2 ring-purple-500' : ''
               }`}
+              data-testid={`card-pricing-${tier.id}`}
             >
-              {tier.id === 'pro' && (
+              {tier.id === 'unlimited' && (
                 <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                  <Badge className="bg-blue-600 text-white">Most Popular</Badge>
+                  <Badge className="bg-purple-600 text-white">Most Popular</Badge>
                 </div>
               )}
               <CardHeader className="text-center">
@@ -202,9 +232,18 @@ export default function Subscribe() {
                   {getTierIcon(tier.id)}
                 </div>
                 <CardTitle className="text-2xl font-bold text-white">{tier.name}</CardTitle>
-                <div className="text-4xl font-bold text-white mb-2">
-                  ${tier.price}
-                  <span className="text-lg font-normal text-gray-400">/month</span>
+                <div className="space-y-2">
+                  <div className="text-4xl font-bold text-white" data-testid={`text-price-${tier.id}`}>
+                    ${isAnnual ? (tier.annualPrice / 12).toFixed(2) : tier.monthlyPrice.toFixed(2)}
+                  </div>
+                  <div className="text-gray-400">
+                    {isAnnual ? '/mo (billed yearly)' : '/month'}
+                  </div>
+                  {isAnnual && (
+                    <div className="text-sm text-gray-500">
+                      ${tier.annualPrice.toFixed(2)} billed annually
+                    </div>
+                  )}
                 </div>
               </CardHeader>
               <CardContent>
@@ -220,10 +259,13 @@ export default function Subscribe() {
                   onClick={() => handleSelectTier(tier.id)}
                   disabled={isProcessing || currentTier === tier.id || !stripePromise}
                   className={`w-full ${
-                    tier.id === 'pro' 
-                      ? 'bg-blue-600 hover:bg-blue-700' 
+                    tier.id === 'unlimited' 
+                      ? 'bg-purple-600 hover:bg-purple-700' 
+                      : tier.id === 'pro'
+                      ? 'bg-blue-600 hover:bg-blue-700'
                       : 'bg-gray-700 hover:bg-gray-600'
                   } text-white py-3 text-lg font-semibold`}
+                  data-testid={`button-select-${tier.id}`}
                 >
                   {isProcessing && selectedTier === tier.id ? (
                     'Processing...'
@@ -283,15 +325,15 @@ export default function Subscribe() {
                   <thead>
                     <tr className="border-b border-gray-700">
                       <th className="text-left py-3 text-gray-400">Feature</th>
-                      <th className="text-center py-3 text-gray-400">Basic</th>
+                      <th className="text-center py-3 text-gray-400">Plus</th>
                       <th className="text-center py-3 text-gray-400">Pro</th>
-                      <th className="text-center py-3 text-gray-400">Premium</th>
+                      <th className="text-center py-3 text-gray-400">Unlimited</th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr className="border-b border-gray-800">
                       <td className="py-3 text-white">Account Connections</td>
-                      <td className="text-center py-3 text-gray-400">Up to 3</td>
+                      <td className="text-center py-3 text-gray-400">1-4</td>
                       <td className="text-center py-3 text-gray-400">Up to 10</td>
                       <td className="text-center py-3 text-gray-400">Unlimited</td>
                     </tr>

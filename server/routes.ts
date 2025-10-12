@@ -1470,6 +1470,153 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Create subscription with Lemon Squeezy
+  app.post('/api/create-subscription', isAuthenticated, async (req: any, res) => {
+    try {
+      const { tier, billingFrequency } = req.body;
+      
+      if (!tier) {
+        return res.status(400).json({ message: "Tier is required" });
+      }
+      
+      if (!billingFrequency || !['monthly', 'annual'].includes(billingFrequency)) {
+        return res.status(400).json({ message: "Valid billing frequency is required (monthly or annual)" });
+      }
+
+      // Map tier names to match Lemon Squeezy CTA IDs
+      // The frontend uses 'plus', 'pro', 'unlimited'
+      // Lemon Squeezy uses 'plus-monthly', 'plus-yearly', etc.
+      const frequencySuffix = billingFrequency === 'annual' ? 'yearly' : 'monthly';
+      const ctaId = `${tier}-${frequencySuffix}`;
+      
+      // Get user email for pre-filling checkout
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      const userEmail = user?.email;
+      
+      logger.info('Creating subscription checkout', {
+        metadata: {
+          tier,
+          billingFrequency,
+          ctaId,
+          userId
+        }
+      });
+
+      // Get variant config by CTA ID
+      const { getVariantByCTA } = await import('./lib/lemonsqueezy-config');
+      const variant = getVariantByCTA(ctaId);
+      
+      if (!variant) {
+        logger.warn('Invalid CTA ID for subscription', { metadata: { ctaId, tier, billingFrequency } });
+        return res.status(400).json({ 
+          message: 'Invalid subscription plan configuration' 
+        });
+      }
+
+      // Get Lemon Squeezy credentials
+      const apiKey = process.env.LEMONSQUEEZY_API_KEY;
+      const storeId = process.env.LEMONSQUEEZY_STORE_ID;
+
+      if (!apiKey || !storeId) {
+        logger.error('Lemon Squeezy credentials not configured');
+        return res.status(500).json({ 
+          message: 'Payment system not configured' 
+        });
+      }
+
+      // Generate base URL for success redirect
+      const baseUrl = process.env.REPLIT_DEPLOYMENT 
+        ? `https://${process.env.REPLIT_DEPLOYMENT}` 
+        : 'http://localhost:5000';
+
+      // Create checkout via Lemon Squeezy API
+      const checkoutData: any = {
+        data: {
+          type: 'checkouts',
+          attributes: {
+            checkout_data: userEmail ? { email: userEmail } : undefined,
+          },
+          relationships: {
+            store: {
+              data: {
+                type: 'stores',
+                id: storeId,
+              },
+            },
+            variant: {
+              data: {
+                type: 'variants',
+                id: variant.variantId,
+              },
+            },
+          },
+        },
+      };
+
+      // Make API request to create checkout
+      const response = await fetch('https://api.lemonsqueezy.com/v1/checkouts', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/vnd.api+json',
+          'Content-Type': 'application/vnd.api+json',
+          'Authorization': `Bearer ${apiKey}`,
+        },
+        body: JSON.stringify(checkoutData),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        logger.error('Lemon Squeezy API error', { 
+          metadata: {
+            status: response.status,
+            error: errorData 
+          }
+        });
+        return res.status(500).json({ 
+          message: 'Unable to create checkout session' 
+        });
+      }
+
+      const checkoutResponse = await response.json();
+      const checkoutUrl = checkoutResponse.data?.attributes?.url;
+
+      if (!checkoutUrl) {
+        logger.error('No checkout URL in API response', { 
+          metadata: { response: checkoutResponse }
+        });
+        return res.status(500).json({ 
+          message: 'Invalid checkout response' 
+        });
+      }
+
+      logger.info('Subscription checkout created', { 
+        metadata: {
+          ctaId, 
+          variantId: variant.variantId,
+          checkoutId: checkoutResponse.data?.id,
+          tier,
+          billingFrequency
+        }
+      });
+
+      // Return checkout URL for frontend to redirect
+      res.json({ 
+        checkoutUrl,
+        variant: {
+          name: variant.name,
+          price: variant.price,
+          tier: variant.tier
+        }
+      });
+    } catch (error: any) {
+      logger.error('Subscription creation failed', { error: error.message });
+      res.status(500).json({ 
+        message: 'Failed to create subscription' 
+      });
+    }
+  });
+
   // Landing page Stripe checkout routes
   app.get('/api/checkout/:planId', async (req, res) => {
     try {

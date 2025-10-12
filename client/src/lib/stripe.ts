@@ -3,18 +3,20 @@ import { apiRequest } from "./queryClient";
 export interface SubscriptionTier {
   id: string;
   name: string;
-  price: number;
+  monthlyPrice: number;
+  annualPrice: number;
   features: string[];
 }
 
 export const SUBSCRIPTION_TIERS: SubscriptionTier[] = [
   {
-    id: 'basic',
-    name: 'Basic',
-    price: 39.99,
+    id: 'plus',
+    name: 'Plus',
+    monthlyPrice: 19.99,
+    annualPrice: 199.99,
     features: [
-      'Connect up to 3 accounts',
-      'Basic portfolio tracking',
+      '1-4 accounts',
+      'Portfolio tracking',
       'Email support',
       'Mobile app access',
     ],
@@ -22,9 +24,10 @@ export const SUBSCRIPTION_TIERS: SubscriptionTier[] = [
   {
     id: 'pro',
     name: 'Pro',
-    price: 45.00,
+    monthlyPrice: 39.99,
+    annualPrice: 399.99,
     features: [
-      'Connect up to 10 accounts',
+      'Up to 10 accounts',
       'Advanced analytics',
       'Real-time alerts',
       'Priority support',
@@ -32,11 +35,12 @@ export const SUBSCRIPTION_TIERS: SubscriptionTier[] = [
     ],
   },
   {
-    id: 'premium',
-    name: 'Premium',
-    price: 49.99,
+    id: 'unlimited',
+    name: 'Unlimited',
+    monthlyPrice: 49.99,
+    annualPrice: 499.99,
     features: [
-      'Unlimited account connections',
+      'Unlimited accounts',
       'Advanced trading tools',
       'Custom alerts',
       'Phone support',
@@ -47,8 +51,11 @@ export const SUBSCRIPTION_TIERS: SubscriptionTier[] = [
 ];
 
 export class StripeAPI {
-  static async createSubscription(tier: string) {
-    const response = await apiRequest("POST", "/api/create-subscription", { tier });
-    return response.json();
+  static async createSubscription(tier: string, billingFrequency: 'monthly' | 'annual' = 'monthly') {
+    const response = await apiRequest("/api/create-subscription", {
+      method: "POST",
+      body: JSON.stringify({ tier, billingFrequency })
+    });
+    return response;
   }
 }
