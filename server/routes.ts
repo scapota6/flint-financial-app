@@ -8,7 +8,7 @@ import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
 import { getSnapUser } from "./store/snapUsers";
 import { rateLimits } from "./middleware/rateLimiter";
-import { authApi, accountsApi, snaptradeClient, portfolioApi, listBrokerageAuthorizations } from './lib/snaptrade';
+import { authApi, accountsApi, snaptradeClient, portfolioApi, tradingApi, listBrokerageAuthorizations, detailBrokerageAuthorization } from './lib/snaptrade';
 import { deleteSnapUser, saveSnapUser } from './store/snapUsers';
 import { WalletService } from "./services/WalletService";
 import { TradingAggregator } from "./services/TradingAggregator";
@@ -126,7 +126,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { success, error, userId, userSecret } = req.query;
       
       if (error) {
-        logger.error('SnapTrade callback error', { error });
+        logger.error('SnapTrade callback error', { error: error as string });
         return res.redirect('/?snaptrade=error');
       }
       
@@ -146,7 +146,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           if (accounts.length > 0) {
             console.log('✅ Connection validated - accounts found');
             logger.info('SnapTrade connection validated successfully', { 
-              userId, 
+              userId: userId as string, 
               accountCount: accounts.length 
             });
             
@@ -155,15 +155,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
               console.log('🔄 Syncing SnapTrade authorizations to database...');
               
               // Fetch authorizations from SnapTrade API
-              const authorizations = await listBrokerageAuthorizations(
+              const authorizationsResponse = await listBrokerageAuthorizations(
                 userId as string,
                 userSecret as string
               );
               
-              console.log(`📥 Found ${authorizations?.length || 0} authorizations to sync`);
+              const authorizations = authorizationsResponse?.data || [];
+              
+              console.log(`📥 Found ${authorizations.length} authorizations to sync`);
               
               // Sync each authorization to database
-              for (const auth of (authorizations || [])) {
+              for (const auth of authorizations) {
                 await db
                   .insert(snaptradeConnections)
                   .values({
@@ -187,14 +189,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
               }
               
               logger.info('SnapTrade authorizations synced successfully', {
-                userId,
-                count: authorizations?.length || 0
+                userId: userId as string,
+                count: authorizations.length
               });
             } catch (syncError) {
               // Log error but don't fail the redirect - sync can be retried later
               console.error('❌ Failed to sync authorizations:', syncError);
               logger.error('SnapTrade authorization sync failed', {
-                userId,
+                userId: userId as string,
                 error: syncError
               });
             }
@@ -212,14 +214,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
               console.log('⚠️ Failed to cleanup user:', cleanupError);
             }
             
-            logger.warn('SnapTrade connection failed - no accounts', { userId });
+            logger.warn('SnapTrade connection failed - no accounts', { userId: userId as string });
             return res.redirect('/?snaptrade=error&reason=no_accounts');
           }
         } catch (validationError) {
           console.error('❌ Connection validation failed:', validationError);
           logger.error('SnapTrade connection validation failed', { 
-            userId, 
-            error: validationError 
+            userId: userId as string, 
+            error: validationError
           });
           return res.redirect('/?snaptrade=error&reason=validation_failed');
         }
@@ -570,8 +572,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
           
           if (accounts.data && Array.isArray(accounts.data)) {
             for (const account of accounts.data) {
-              const balance = parseFloat(account.total_value?.amount || account.balance?.total?.amount || '0') || 0;
-              const cash = parseFloat(account.cash?.amount || account.balance?.cash?.amount || '0') || 0;
+              const balance = parseFloat((account as any).total_value?.amount || (account as any).balance?.total?.amount || '0') || 0;
+              const cash = parseFloat((account as any).cash?.amount || '0') || 0;
               const holdings = balance - cash;
               
               investmentValue += balance;
@@ -1058,7 +1060,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (snaptradeClient && snapUser) {
         try {
           // Get all connected SnapTrade accounts
-          const accountsResponse = await snaptradeClient.accountInformation.listUserAccounts({
+          const accountsResponse = await accountsApi.listUserAccounts({
             userId: snapUser.userId,
             userSecret: snapUser.userSecret,
           });
@@ -1071,7 +1073,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             if (accountId && account.id !== accountId) continue;
 
             try {
-              const activitiesResponse = await snaptradeClient.transactionsAndReporting.getActivities({
+              const activitiesResponse = await portfolioApi.getActivities({
                 userId: snapUser.userId,
                 userSecret: snapUser.userSecret,
                 accountId: account.id,
@@ -1309,7 +1311,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const tradeId = uuidv4();
 
       // Place order using SnapTrade API
-      const orderResponse = await snaptradeClient.trading.placeForceOrder({
+      const orderResponse = await tradingApi.placeForceOrder({
         userId: credentials.userId,
         userSecret: credentials.userSecret,
         accountId,
@@ -1916,13 +1918,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
         try {
           // Delete SnapTrade user (this revokes all access)
-          if (snaptradeClient) {
-            await snaptradeClient.authentication.deleteSnapTradeUser({
-              userId: credentials.userId,
-              userSecret: credentials.userSecret
-            });
-            console.log(`✅ SnapTrade user ${credentials.userId} deleted`);
-          }
+          await authApi.deleteSnapTradeUser({
+            userId: credentials.userId
+          });
+          console.log(`✅ SnapTrade user ${credentials.userId} deleted`);
         } catch (snapError) {
           console.warn(`⚠️ SnapTrade deletion failed (continuing with local cleanup):`, snapError);
         }
@@ -2018,12 +2017,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Helper function to register user (CLI pattern)
       const registerUser = async () => {
         const { data } = await authApi.registerSnapTradeUser({
-          userId: snaptradeUserId,
-          metadata: {
-            email: email,
-            flintUserId: user.id,
-            createdAt: new Date().toISOString()
-          }
+          userId: snaptradeUserId
         });
         
         console.log('[SnapTrade] User created:', { userId: data.userId });
@@ -2549,14 +2543,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
           }
           
           // Get account positions/holdings
-          const positionsResponse = await snaptradeClient.accountInformation.getUserAccountPositions({
+          const positionsResponse = await accountsApi.getUserAccountPositions({
             userId: snapUser.userId,
             userSecret: snapUser.userSecret,
             accountId: account.externalAccountId!
           });
           
           // Get recent activities/transactions
-          const activitiesResponse = await snaptradeClient.transactionsAndReporting.getActivities({
+          const activitiesResponse = await portfolioApi.getActivities({
             userId: snapUser.userId,
             userSecret: snapUser.userSecret,
             accounts: account.externalAccountId!
@@ -2572,18 +2566,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
               number: snapAccount.number,
               brokerage: snapAccount.institution_name,
               type: snapAccount.meta?.type || 'investment',
-              status: snapAccount.meta?.status || 'active',
-              currency: snapAccount.balance?.total?.currency || 'USD',
+              status: (snapAccount as any).meta?.status || 'active',
+              currency: (snapAccount as any).balance?.total?.currency || 'USD',
               balancesOverview: {
-                cash: snapAccount.balance?.cash?.amount || 0,
-                equity: snapAccount.balance?.total?.amount || 0,
+                cash: (snapAccount as any).cash?.amount || 0,
+                equity: (snapAccount as any).balance?.total?.amount || 0,
                 buyingPower: snapAccount.buying_power?.amount || 0
               }
             },
             balancesAndHoldings: {
               balances: {
-                cashAvailableToTrade: snapAccount.balance?.cash?.amount || 0,
-                totalEquityValue: snapAccount.balance?.total?.amount || 0,
+                cashAvailableToTrade: (snapAccount as any).cash?.amount || 0,
+                totalEquityValue: (snapAccount as any).balance?.total?.amount || 0,
                 buyingPowerOrMargin: snapAccount.buying_power?.amount || 0
               },
               holdings: positionsResponse.data?.map((position: any) => ({
@@ -3001,7 +2995,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // app.use('/api/snaptrade/accounts/:accountId/*', resolveSnapTradeContext);
 
   // 1) Account Details (identity/meta)
-  app.get('/api/snaptrade/accounts/:accountId/details', async (req, res) => {
+  app.get('/api/snaptrade/accounts/:accountId/details', async (req: any, res) => {
     try {
       const { snapUserId, userSecret } = req.snapTradeContext;
       const { accountId } = req.params;
@@ -3021,13 +3015,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!brokerageName && accountDetails.brokerage_authorization) {
         try {
           // Try to get brokerage name from authorization if missing
-          const { accountsApi } = await import('./lib/snaptrade');
-          const authDetails = await accountsApi.detailBrokerageAuthorization({
-            authorizationId: accountDetails.brokerage_authorization,
-            userId: snapUserId,
-            userSecret: userSecret
-          });
-          brokerageName = authDetails.data?.brokerage?.name || accountDetails.institution_name;
+          const authDetails = await detailBrokerageAuthorization(
+            snapUserId,
+            userSecret,
+            accountDetails.brokerage_authorization
+          );
+          brokerageName = authDetails?.brokerage?.name || accountDetails.institution_name;
         } catch (authError) {
           console.warn('[SnapTrade] Could not fetch brokerage authorization details:', authError);
           brokerageName = accountDetails.institution_name;
@@ -3066,7 +3059,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // 2) Account Balances (cards at top)
-  app.get('/api/snaptrade/accounts/:accountId/balances', async (req, res) => {
+  app.get('/api/snaptrade/accounts/:accountId/balances', async (req: any, res) => {
     try {
       const { snapUserId, userSecret } = req.snapTradeContext;
       const { accountId } = req.params;
@@ -3081,12 +3074,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Call SnapTrade API
       const balanceData = await getUserAccountBalance(snapUserId, userSecret, accountId);
 
+      // balanceData is a Balance[] array, extract the first element or handle empty array
+      const balance = Array.isArray(balanceData) && balanceData.length > 0 ? balanceData[0] : null;
+
       // Apply fallback logic per requirements with currency safety
-      const currency = (balanceData.total && balanceData.total.currency) || 'USD'; // ALWAYS default to USD
-      const total = balanceData.total_value || balanceData.equity || balanceData.total || null;
-      const cash = balanceData.cash || balanceData.cash_available || null;
-      const buyingPower = balanceData.buying_power || balanceData.margin_buying_power || null;
-      const maintenanceExcess = balanceData.maintenance_excess || null;
+      const currency = (balance?.currency as any) || 'USD'; // ALWAYS default to USD
+      const total = balance ? (balance as any).amount || null : null;
+      const cash = null; // Balance type doesn't have cash property
+      const buyingPower = null; // Balance type doesn't have buying_power property
+      const maintenanceExcess = null; // Balance type doesn't have maintenance_excess property
 
       // Return balances with all fields (null if missing) - NEVER omit keys
       const response = {
@@ -3116,7 +3112,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // 3) Positions (equities/ETFs) or Holdings (aggregate)
-  app.get('/api/snaptrade/accounts/:accountId/positions', async (req, res) => {
+  app.get('/api/snaptrade/accounts/:accountId/positions', async (req: any, res) => {
     try {
       const { snapUserId, userSecret } = req.snapTradeContext;
       const { accountId } = req.params;
@@ -3186,7 +3182,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // 4) Orders (read-only list)
-  app.get('/api/snaptrade/accounts/:accountId/orders', async (req, res) => {
+  app.get('/api/snaptrade/accounts/:accountId/orders', async (req: any, res) => {
     try {
       const { snapUserId, userSecret } = req.snapTradeContext;
       const { accountId } = req.params;
@@ -3221,15 +3217,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (from || to) {
         filteredOrders = filteredOrders.filter(order => {
           const orderDate = new Date(order.created_at || order.placed_at || order.updated_at);
-          if (from && orderDate < new Date(from)) return false;
-          if (to && orderDate > new Date(to)) return false;
+          if (from && orderDate < new Date(from as string)) return false;
+          if (to && orderDate > new Date(to as string)) return false;
           return true;
         });
       }
 
       // Apply limit
       if (limit) {
-        filteredOrders = filteredOrders.slice(0, parseInt(limit));
+        filteredOrders = filteredOrders.slice(0, parseInt(limit as string));
       }
 
       // Transform orders
@@ -3290,7 +3286,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // 5) Activities (cash/dividends/trades/fees/transfers)
-  app.get('/api/snaptrade/accounts/:accountId/activities', async (req, res) => {
+  app.get('/api/snaptrade/accounts/:accountId/activities', async (req: any, res) => {
     try {
       const { snapUserId, userSecret } = req.snapTradeContext;
       const { accountId } = req.params;
@@ -3353,8 +3349,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (from || to) {
         filteredActivities = activities.filter(activity => {
           const activityDate = new Date(activity.date);
-          if (from && activityDate < new Date(from)) return false;
-          if (to && activityDate > new Date(to)) return false;
+          if (from && activityDate < new Date(from as string)) return false;
+          if (to && activityDate > new Date(to as string)) return false;
           return true;
         });
       }
@@ -3391,7 +3387,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // 6) Options Holdings (using optionsApi or fallback to positions filter)
-  app.get('/api/snaptrade/accounts/:accountId/options', async (req, res) => {
+  app.get('/api/snaptrade/accounts/:accountId/options', async (req: any, res) => {
     try {
       const { snapUserId, userSecret } = req.snapTradeContext;
       const { accountId } = req.params;
@@ -3521,7 +3517,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.use('/api/snaptrade/connections*', resolveSnapTradeContext);
 
   // 7) List Connections (for header display and health monitoring)
-  app.get('/api/snaptrade/connections', async (req, res) => {
+  app.get('/api/snaptrade/connections', async (req: any, res) => {
     try {
       const { snapUserId, userSecret } = req.snapTradeContext;
       const requestId = req.headers['x-request-id'] || `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -3532,13 +3528,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
 
       // Call SnapTrade connections API
-      const { accountsApi } = await import('./lib/snaptrade');
-      const connectionsResponse = await accountsApi.listBrokerageAuthorizations({
-        userId: snapUserId,
-        userSecret: userSecret
-      });
+      const connectionsResponse = await listBrokerageAuthorizations(
+        snapUserId,
+        userSecret
+      );
 
-      const authorizations = connectionsResponse.data || [];
+      const authorizations = connectionsResponse?.data || [];
 
       // Determine connection health for each authorization
       const determineConnectionHealth = (authorization) => {
@@ -3619,7 +3614,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // 8) Connection Details (specific authorization)
-  app.get('/api/snaptrade/connections/:authorizationId', async (req, res) => {
+  app.get('/api/snaptrade/connections/:authorizationId', async (req: any, res) => {
     try {
       const { snapUserId, userSecret } = req.snapTradeContext;
       const { authorizationId } = req.params;
@@ -3632,14 +3627,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
 
       // Call SnapTrade connection details API
-      const { accountsApi } = await import('./lib/snaptrade');
-      const connectionResponse = await accountsApi.detailBrokerageAuthorization({
-        authorizationId: authorizationId,
-        userId: snapUserId,
-        userSecret: userSecret
-      });
+      const connectionResponse = await detailBrokerageAuthorization(
+        snapUserId,
+        userSecret,
+        authorizationId
+      );
 
-      const auth = connectionResponse.data;
+      const auth = connectionResponse;
       if (!auth) {
         return res.status(404).json({
           error: {
