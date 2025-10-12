@@ -181,7 +181,7 @@ export default function RecurringSubscriptions() {
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="space-y-2">
+        <div className="space-y-2 max-h-[400px] overflow-y-auto">
           {subscriptions.length > 0 ? (
             subscriptions.map((subscription) => (
               <div 
