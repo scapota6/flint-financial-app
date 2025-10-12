@@ -27,7 +27,7 @@ Preferred communication style: Simple, everyday language.
 - **Authentication System**: Supports both Replit OAuth and local email/password login, secured with session-based, PostgreSQL-stored sessions.
 - **Database Schema**: Includes tables for Users, Connected Accounts, Holdings, Watchlist, Trades, Transfers, Activity Log, Market Data, Price Alerts, and more.
 - **Application Approval System**: Landing page form for account applications with admin review and automated user account creation.
-- **Admin Dashboard**: Restricted access at `/admin` for user, account, subscription, and analytics management.
+- **Admin Dashboard**: Restricted access at `/admin` for user, account, subscription, and analytics management. Features connection limit tracking showing current/max connections per user (e.g., "13/∞" for admin users), with filtering options for over-limit users (audit risk), within-limit users, and zero-connection users (churn risk). Admin users have unlimited connections regardless of subscription tier.
 - **Email Service**: Resend-based email system for notifications and password resets, with database logging.
 - **Alert Monitoring System**: Background service for price alerts with debouncing and email/push notifications.
 - **Financial Data Management**: Multi-account connections, real-time balance tracking, portfolio management, and trade execution simulation.
