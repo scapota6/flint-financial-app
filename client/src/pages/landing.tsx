@@ -538,10 +538,6 @@ function Landing() {
                     <div className="w-4 h-4 bg-gradient-to-t from-blue-600 to-cyan-400 rounded"></div>
                     <span className="text-sm text-gray-400">Total Saved</span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <TrendingUp className="w-4 h-4 text-yellow-400" />
-                    <span className="text-sm text-gray-400">$127/month × time</span>
-                  </div>
                 </div>
               </div>
             </div>
