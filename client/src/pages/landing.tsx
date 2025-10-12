@@ -517,7 +517,7 @@ function Landing() {
                         <div className="relative w-full flex flex-col items-center">
                           {/* Bar */}
                           <div 
-                            className="w-full bg-gradient-to-t from-green-600 to-green-400 rounded-t-lg transition-all duration-300 hover:from-green-500 hover:to-green-300"
+                            className="w-full bg-gradient-to-t from-blue-600 to-cyan-400 rounded-t-lg transition-all duration-300 hover:from-blue-500 hover:to-cyan-300"
                             style={{ height: `${heightPercent}%` }}
                           />
                         </div>
@@ -534,11 +534,11 @@ function Landing() {
                 {/* Chart Legend */}
                 <div className="flex items-center justify-center gap-6 pt-4 border-t border-gray-700">
                   <div className="flex items-center gap-2">
-                    <div className="w-4 h-4 bg-gradient-to-t from-green-600 to-green-400 rounded"></div>
+                    <div className="w-4 h-4 bg-gradient-to-t from-blue-600 to-cyan-400 rounded"></div>
                     <span className="text-sm text-gray-400">Total Saved</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <TrendingUp className="w-4 h-4 text-green-400" />
+                    <TrendingUp className="w-4 h-4 text-yellow-400" />
                     <span className="text-sm text-gray-400">$127/month × time</span>
                   </div>
                 </div>
