@@ -49,6 +49,65 @@ export default function TermsOfService() {
               </p>
             </div>
 
+            <div>
+              <h2 className="text-2xl font-semibold text-white mb-3">3. No Financial or Investment Advice</h2>
+              <p className="text-gray-300 leading-relaxed">
+                Flint is not a financial advisor and provides no guarantees regarding the accuracy or timeliness of displayed data.
+                All information presented is for informational purposes only and should not be construed as:
+              </p>
+              <ul className="list-disc list-inside text-gray-300 space-y-2 mt-3 ml-4">
+                <li>Financial advice</li>
+                <li>Investment recommendations</li>
+                <li>Tax or legal guidance</li>
+              </ul>
+              <p className="text-gray-300 leading-relaxed mt-4">
+                You acknowledge that any reliance on Flint's data or insights is entirely at your own discretion and risk. Always consult a qualified professional before making financial or investment decisions.
+              </p>
+            </div>
+
+            <div>
+              <h2 className="text-2xl font-semibold text-white mb-3">4. Third-Party Services and Integrations</h2>
+              <p className="text-gray-300 leading-relaxed">
+                Flint connects with external services including Teller.io, SnapTrade, Resend, Lemon Squeezy, and Replit for hosting and functionality.
+                You understand and agree that:
+              </p>
+              <ul className="list-disc list-inside text-gray-300 space-y-2 mt-3 ml-4">
+                <li>Flint has no control over the accuracy, reliability, or availability of third-party APIs or services.</li>
+                <li>Your use of those integrations may be governed by their own terms and privacy policies.</li>
+                <li>Flint disclaims any and all responsibility for service interruptions, data delays, or inaccuracies caused by third-party providers.</li>
+              </ul>
+            </div>
+
+            <div>
+              <h2 className="text-2xl font-semibold text-white mb-3">5. Account Registration and Security</h2>
+              <p className="text-gray-300 leading-relaxed">
+                Users may create accounts to access advanced features. You agree to:
+              </p>
+              <ul className="list-disc list-inside text-gray-300 space-y-2 mt-3 ml-4">
+                <li>Provide accurate information;</li>
+                <li>Maintain the confidentiality of your credentials;</li>
+                <li>Notify us immediately of unauthorized access or suspicious activity.</li>
+              </ul>
+              <p className="text-gray-300 leading-relaxed mt-4">
+                Flint reserves the right to suspend or terminate accounts that violate these Terms or engage in abusive, fraudulent, or unlawful conduct.
+              </p>
+            </div>
+
+            <div>
+              <h2 className="text-2xl font-semibold text-white mb-3">6. Payments, Subscriptions, and Refunds</h2>
+              <p className="text-gray-300 leading-relaxed">
+                Flint's paid plans and subscriptions are managed via Lemon Squeezy.
+              </p>
+              <p className="text-gray-300 leading-relaxed mt-4">
+                <strong className="text-white">All sales are final. No refunds, chargebacks, or partial credits will be issued under any circumstances.</strong>
+              </p>
+              <ul className="list-disc list-inside text-gray-300 space-y-2 mt-3 ml-4">
+                <li>You authorize Lemon Squeezy to process payments on your behalf for recurring plans until canceled.</li>
+                <li>It is your responsibility to review your plan and cancel prior to renewal if you do not wish to continue.</li>
+                <li>By purchasing a subscription, you agree to Lemon Squeezy's billing terms and policies.</li>
+              </ul>
+            </div>
+
             {/* More sections will be added as you provide them */}
           </div>
         </div>
