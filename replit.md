@@ -31,7 +31,7 @@ Preferred communication style: Simple, everyday language.
 - **Email Service**: Resend-based email system for notifications and password resets, with database logging.
 - **Alert Monitoring System**: Background service for price alerts with debouncing and email/push notifications.
 - **Financial Data Management**: Multi-account connections, real-time balance tracking, portfolio management, and trade execution simulation.
-- **Subscription System**: Multi-tier model (Free, Basic, Pro, Premium) integrated with Lemon Squeezy for payment processing and feature gating.
+- **Subscription System**: Multi-tier model (Free, Basic, Pro, Premium) integrated with Lemon Squeezy for payment processing and feature gating. Features calendar-aware next billing date calculations for recurring subscriptions (weekly, monthly, quarterly, yearly) that correctly handle historical data and always display future dates.
 - **Security Framework**: AES-256-GCM encryption for sensitive credentials, multi-tier rate limiting, activity logging, secure sessions, double-submit-cookie CSRF protection, SHA-256 hashed password reset tokens, and RBAC middleware.
 - **Wallet Service Architecture**: Internal fund management with pre-authorization and hold/release, integrated with ACH transfers via Teller.
 - **Trading Aggregation Engine**: Comprehensive trading system with intelligent routing, real-time position consolidation, pre-trade validation, and robust trade preview/placement APIs.
