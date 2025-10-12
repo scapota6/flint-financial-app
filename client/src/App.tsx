@@ -37,6 +37,7 @@ const AdminDashboard = lazy(() => import("@/pages/admin"));
 const PasswordSetup = lazy(() => import("@/pages/password-setup"));
 const ResetPassword = lazy(() => import("@/pages/reset-password"));
 const Login = lazy(() => import("@/pages/login"));
+const TermsOfService = lazy(() => import("@/pages/tos"));
 
 // Loading fallback component
 const PageLoader = () => (
@@ -85,6 +86,7 @@ function Router() {
                 <Route path="/payment-success" component={PaymentSuccessPage} />
                 <Route path="/setup-password" component={PasswordSetup} />
                 <Route path="/reset-password" component={ResetPassword} />
+                <Route path="/tos" component={TermsOfService} />
                 {/* Redirect any protected routes to login */}
                 <Route path="/dashboard">
                   {() => { window.location.href = '/api/login'; return null; }}
@@ -140,6 +142,7 @@ function Router() {
                 <Route path="/monitoring" component={Monitoring} />
                 <Route path="/teller/callback" component={TellerCallback} />
                 <Route path="/admin" component={AdminDashboard} />
+                <Route path="/tos" component={TermsOfService} />
                 {/* Redirect authenticated users away from landing page */}
                 <Route path="/landing">
                   {() => { window.location.href = '/dashboard'; return null; }}
