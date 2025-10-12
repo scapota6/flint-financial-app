@@ -382,7 +382,7 @@ function Landing() {
                 <div className="text-sm text-purple-400 font-semibold">Dashboard Preview</div>
                 <h3 className="text-2xl font-bold text-white">See Your Complete Financial Picture</h3>
                 <p className="text-gray-300">
-                  View all your accounts in one unified dashboard. Track your net worth, monitor balances, and manage your finances with ease.
+                  View all your Bank, Credit, Stock and Crypto accounts in one unified dashboard. Track your net worth, monitor balances, and manage your finances with ease.
                 </p>
                 <button
                   onClick={() => setDashboardPreviewOpen(true)}
