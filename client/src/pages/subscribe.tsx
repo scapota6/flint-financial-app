@@ -52,8 +52,6 @@ export default function Subscribe() {
       if (window.LemonSqueezy) {
         window.LemonSqueezy.Setup({
           eventHandler: (event) => {
-            console.log('Lemon Squeezy Event:', event);
-            
             if (event.event === 'Checkout.Success') {
               // Redirect to dashboard since user is already logged in
               setTimeout(() => {

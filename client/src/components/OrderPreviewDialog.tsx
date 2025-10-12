@@ -74,7 +74,7 @@ export default function OrderPreviewDialog({
   const previewMutation = useMutation({
     mutationFn: (orderData: any) => apiRequest('/api/order-preview', {
       method: 'POST',
-      body: JSON.stringify(orderData),
+      body: orderData,
     }),
     onSuccess: (data: any) => {
       if (data.success && data.preview) {
@@ -101,7 +101,7 @@ export default function OrderPreviewDialog({
   const confirmMutation = useMutation({
     mutationFn: (confirmData: any) => apiRequest('/api/order-preview/confirm', {
       method: 'POST',
-      body: JSON.stringify(confirmData),
+      body: confirmData,
     }),
     onSuccess: (data: any) => {
       if (data.success) {

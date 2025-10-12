@@ -66,10 +66,7 @@ export default function OrdersList({ accountId, onOrderCancelled }: OrdersListPr
     mutationFn: async (orderId: string) => {
       return apiRequest('/api/trade/cancel', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ orderId, accountId })
+        body: { orderId, accountId }
       });
     },
     onSuccess: () => {

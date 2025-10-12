@@ -100,9 +100,7 @@ export function EnhancedTradeModal({
     mutationFn: async (orderData: any) => {
       const tradeId = generateTradeId();
       
-      console.log(`Placing order with tradeId: ${tradeId}`, orderData);
-      
-      return apiRequest("/api/orders", {
+      const response = await apiRequest("/api/orders", {
         method: "POST",
         body: {
           ...orderData,
@@ -112,6 +110,8 @@ export function EnhancedTradeModal({
           isDollarMode: formData.isDollarMode, // Send the mode flag
         },
       });
+      const data = await response.json();
+      return data;
     },
     onSuccess: (data, variables) => {
       const shares = data.orderDetails?.shares || calculateShares();
@@ -244,7 +244,6 @@ export function EnhancedTradeModal({
       
     if (orderValue > 10000) {
       // Could add a confirmation dialog here
-      console.log(`Large order warning: $${orderValue.toFixed(2)}`);
     }
     
     // Place the order

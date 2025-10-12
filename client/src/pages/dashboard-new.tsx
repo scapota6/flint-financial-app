@@ -46,7 +46,7 @@ export default function Dashboard() {
   const { data: dashboardData, isLoading, error, refetch } = useQuery({
     queryKey: ["/api/dashboard"],
     queryFn: async () => {
-      const response = await apiRequest('GET', '/api/dashboard');
+      const response = await apiRequest('/api/dashboard');
       if (!response.ok) throw new Error('Failed to fetch dashboard data');
       return response.json();
     },
@@ -57,7 +57,7 @@ export default function Dashboard() {
   useEffect(() => {
     const logLogin = async () => {
       try {
-        await apiRequest('POST', '/api/log-login');
+        await apiRequest('/api/log-login', { method: 'POST' });
       } catch (error) {
         console.error('Failed to log login:', error);
       }
@@ -86,7 +86,7 @@ export default function Dashboard() {
 
   const handleConnectBank = async () => {
     try {
-      const response = await apiRequest('POST', '/api/teller/connect-init');
+      const response = await apiRequest('/api/teller/connect-init', { method: 'POST' });
       if (!response.ok) throw new Error('Failed to initialize bank connection');
       
       const data = await response.json();
@@ -119,7 +119,7 @@ export default function Dashboard() {
 
   const handleConnectBrokerage = async () => {
     try {
-      const response = await apiRequest('POST', '/api/snaptrade/register');
+      const response = await apiRequest('/api/snaptrade/register', { method: 'POST' });
       if (!response.ok) throw new Error('Failed to initialize brokerage connection');
       
       const data = await response.json();
@@ -162,10 +162,6 @@ export default function Dashboard() {
       accountType: account.type || account.accountType,
       needsReconnection: account.needsReconnection || false
     };
-    // Debug logging for disconnected accounts
-    if (account.id?.includes('disconnected')) {
-      console.log('Disconnected account data:', { original: account, transformed });
-    }
     return transformed;
   }) : [];
 

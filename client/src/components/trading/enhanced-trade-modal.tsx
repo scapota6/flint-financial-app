@@ -117,10 +117,7 @@ export default function EnhancedTradeModal({
 
       const previewResponse = await apiRequest('/api/trade/preview', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(previewData)
+        body: previewData
       });
       
       if (!previewResponse.ok) {
@@ -148,10 +145,7 @@ export default function EnhancedTradeModal({
 
       const placeResponse = await apiRequest('/api/trade/place', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(orderData)
+        body: orderData
       });
       
       if (!placeResponse.ok) {

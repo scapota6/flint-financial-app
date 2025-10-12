@@ -75,7 +75,7 @@ export default function PriceAlerts() {
     mutationFn: async (data: any) => {
       return await apiRequest('/api/alerts/price', {
         method: 'POST',
-        body: JSON.stringify(data)
+        body: data
       });
     },
     onSuccess: () => {
@@ -101,7 +101,7 @@ export default function PriceAlerts() {
     mutationFn: async ({ id, active }: { id: number; active: boolean }) => {
       return await apiRequest(`/api/alerts/price/${id}`, {
         method: 'PATCH',
-        body: JSON.stringify({ active })
+        body: { active }
       });
     },
     onSuccess: () => {
@@ -130,7 +130,7 @@ export default function PriceAlerts() {
     mutationFn: async (data: Partial<NotificationPreferences>) => {
       return await apiRequest('/api/alerts/preferences', {
         method: 'PUT',
-        body: JSON.stringify(data)
+        body: data
       });
     },
     onSuccess: () => {

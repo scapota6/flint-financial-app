@@ -48,14 +48,12 @@ export default function TellerCallback() {
         return;
       }
 
-      console.log('🏦 Teller Callback: Received enrollment ID:', enrollmentId);
-
       try {
         // Ensure CSRF token
         await getCsrfToken();
         
         // Exchange enrollment ID for account data
-        const data = await apiRequest("/api/teller/exchange-token", {
+        const response = await apiRequest("/api/teller/exchange-token", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ 
@@ -63,6 +61,7 @@ export default function TellerCallback() {
             tellerToken: enrollmentId // Teller uses enrollment_id as the token
           })
         });
+        const data = await response.json();
         
         if (data.success) {
           toast({

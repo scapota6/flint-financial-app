@@ -158,25 +158,27 @@ export function DepositModal({ isOpen, onClose, accounts = [] }: DepositModalPro
         totalAmount: getTotalAmount()
       };
 
-      console.log('Submitting deposit:', depositData);
-
       if (formData.method === 'stripe') {
         // Redirect to Stripe payment processing
-        const response = await apiRequest('POST', '/api/deposits/stripe', {
+        const response = await apiRequest('/api/deposits/stripe', {
+          method: 'POST',
           body: depositData
         });
+        const data = await response.json();
 
-        if (response.success && response.checkoutUrl) {
-          window.location.href = response.checkoutUrl;
+        if (data.success && data.checkoutUrl) {
+          window.location.href = data.checkoutUrl;
           return;
         }
       } else {
         // Process ACH or wire transfer
-        const response = await apiRequest('POST', '/api/deposits', {
+        const response = await apiRequest('/api/deposits', {
+          method: 'POST',
           body: depositData
         });
+        const data = await response.json();
 
-        if (response.success) {
+        if (data.success) {
           toast({
             title: "Deposit Initiated",
             description: `$${formData.amount} deposit to ${selectedAccount?.name} via ${depositMethods.find(m => m.id === formData.method)?.name}`,
@@ -191,7 +193,7 @@ export function DepositModal({ isOpen, onClose, accounts = [] }: DepositModalPro
           });
           onClose();
         } else {
-          throw new Error(response.message || 'Deposit failed');
+          throw new Error(data.message || 'Deposit failed');
         }
       }
     } catch (error: any) {

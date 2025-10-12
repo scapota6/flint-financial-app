@@ -48,7 +48,7 @@ export default function WatchlistPanel() {
     mutationFn: async (symbol: string) => {
       return await apiRequest('/api/watchlist', {
         method: 'POST',
-        body: JSON.stringify({ symbol })
+        body: { symbol }
       });
     },
     onSuccess: () => {

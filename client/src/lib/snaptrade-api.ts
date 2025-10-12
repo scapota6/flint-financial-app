@@ -44,8 +44,6 @@ export interface SnapTradeOrder {
 
 export class SnapTradeAPI {
   static async getConnectionUrl(): Promise<{ url: string }> {
-    console.log('SnapTrade: Requesting connection URL from new register endpoint...');
-    
     // Get authenticated user data first
     const userResp = await apiRequest("/api/auth/user");
     if (!userResp.ok) throw new Error("Authentication required");
@@ -57,12 +55,10 @@ export class SnapTradeAPI {
 
     const response = await apiRequest("/api/connections/snaptrade/register", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ userId }),
+      body: { userId },
     });
     
     const data = await response.json();
-    console.log('SnapTrade: Received connection URL response:', data);
     return data.connect || data;
   }
 
@@ -125,7 +121,7 @@ export class SnapTradeAPI {
   }
 
   static async searchSymbols(query: string): Promise<SnapTradeQuote[]> {
-    const response = await apiRequest("GET", `/api/snaptrade/search?q=${encodeURIComponent(query)}`);
+    const response = await apiRequest(`/api/snaptrade/search?q=${encodeURIComponent(query)}`);
     const data = await response.json();
     
     // Normalize the symbol data to ensure consistent structure
@@ -144,7 +140,7 @@ export class SnapTradeAPI {
   }
 
   static async getQuote(symbol: string): Promise<SnapTradeQuote> {
-    const response = await apiRequest("GET", `/api/snaptrade/quote/${symbol}`);
+    const response = await apiRequest(`/api/snaptrade/quote/${symbol}`);
     return response.json();
   }
 
@@ -156,18 +152,23 @@ export class SnapTradeAPI {
     price?: number;
     orderType: 'MARKET' | 'LIMIT';
   }): Promise<SnapTradeOrder> {
-    const response = await apiRequest("POST", "/api/snaptrade/orders", orderData);
+    const response = await apiRequest("/api/snaptrade/orders", {
+      method: "POST",
+      body: orderData
+    });
     return response.json();
   }
 
   static async getOrders(accountId?: string): Promise<SnapTradeOrder[]> {
     const url = accountId ? `/api/snaptrade/orders/${accountId}` : "/api/snaptrade/orders";
-    const response = await apiRequest("GET", url);
+    const response = await apiRequest(url);
     return response.json();
   }
 
   static async disconnectAccount(accountId: string) {
-    const response = await apiRequest("DELETE", `/api/snaptrade/accounts/${accountId}`);
+    const response = await apiRequest(`/api/snaptrade/accounts/${accountId}`, {
+      method: "DELETE"
+    });
     return response.json();
   }
 }

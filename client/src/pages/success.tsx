@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/button";
 
 // Analytics tracking
 const trackEvent = (eventName: string, properties: Record<string, any> = {}) => {
-  console.log('Analytics Event:', eventName, properties);
   if (typeof window !== 'undefined' && (window as any).gtag) {
     (window as any).gtag('event', eventName, properties);
   }

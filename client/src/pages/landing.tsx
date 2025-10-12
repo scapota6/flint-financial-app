@@ -40,7 +40,6 @@ declare global {
 // Analytics tracking
 const trackEvent = (eventName: string, properties: Record<string, any> = {}) => {
   // In production, integrate with GA4/Segment
-  console.log('Analytics Event:', eventName, properties);
   if (typeof window !== 'undefined' && (window as any).gtag) {
     (window as any).gtag('event', eventName, properties);
   }
@@ -102,8 +101,6 @@ function Landing() {
       if (window.LemonSqueezy) {
         window.LemonSqueezy.Setup({
           eventHandler: (event) => {
-            console.log('Lemon Squeezy Event:', event);
-            
             if (event.event === 'Checkout.Success') {
               const email = event.data?.checkout_data?.email;
               const successUrl = email 

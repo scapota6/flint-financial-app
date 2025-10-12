@@ -70,9 +70,14 @@ export function PaymentDialog({
   // Check payment capability
   const { data: capability } = useQuery({
     queryKey: ['/api/teller/payments/capability', selectedBankAccount, creditCardAccount.externalAccountId],
-    queryFn: () => selectedBankAccount && creditCardAccount.externalAccountId
-      ? apiRequest(`/api/teller/payments/capability?fromAccountId=${selectedBankAccount}&toAccountId=${creditCardAccount.externalAccountId}`)
-      : null,
+    queryFn: async () => {
+      if (selectedBankAccount && creditCardAccount.externalAccountId) {
+        const response = await apiRequest(`/api/teller/payments/capability?fromAccountId=${selectedBankAccount}&toAccountId=${creditCardAccount.externalAccountId}`);
+        const data = await response.json();
+        return data;
+      }
+      return null;
+    },
     enabled: !!selectedBankAccount && !!creditCardAccount.externalAccountId,
   });
 
@@ -81,16 +86,18 @@ export function PaymentDialog({
     mutationFn: async () => {
       setPaymentStatus("preparing");
       const csrfToken = await getCsrfToken();
-      return apiRequest('/api/teller/payments/prepare', {
+      const response = await apiRequest('/api/teller/payments/prepare', {
         method: 'POST',
         headers: {
           'x-csrf-token': csrfToken,
         },
-        body: JSON.stringify({
+        body: {
           fromAccountId: selectedBankAccount,
           toAccountId: creditCardAccount.externalAccountId,
-        }),
+        },
       });
+      const data = await response.json();
+      return data;
     },
     onSuccess: (data) => {
       // Data includes minimumDue, statementBalance, dueDate
@@ -118,18 +125,20 @@ export function PaymentDialog({
       }
 
       const csrfToken = await getCsrfToken();
-      return apiRequest('/api/teller/payments/create', {
+      const response = await apiRequest('/api/teller/payments/create', {
         method: 'POST',
         headers: {
           'x-csrf-token': csrfToken,
         },
-        body: JSON.stringify({
+        body: {
           fromAccountId: selectedBankAccount,
           toAccountId: creditCardAccount.externalAccountId,
           amount: amount.toFixed(2),
           memo: `Credit card payment to ${creditCardAccount.name}`,
-        }),
+        },
       });
+      const data = await response.json();
+      return data;
     },
     onSuccess: (data) => {
       setPaymentId(data.paymentId);
@@ -172,7 +181,8 @@ export function PaymentDialog({
       }
       
       try {
-        const status = await apiRequest(`/api/teller/payments/${id}`);
+        const response = await apiRequest(`/api/teller/payments/${id}`);
+        const status = await response.json();
         
         if (status.status === "completed" || status.status === "success") {
           setPaymentStatus("completed");

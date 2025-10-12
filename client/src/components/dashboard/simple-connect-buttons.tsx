@@ -100,16 +100,12 @@ export default function SimpleConnectButtons({ accounts, userTier, isAdmin }: Si
   // Teller Connect mutation - Proper CSRF implementation
   const tellerConnectMutation = useMutation({
     mutationFn: async () => {
-      console.log('🏦 Teller Connect: Starting bank connection with SDK');
-      
       try {
         // Get fresh CSRF token
-        console.log('🏦 Teller Connect: Getting CSRF token');
         const tokenRes = await fetch('/api/csrf-token', { credentials: 'include' });
         const { csrfToken } = await tokenRes.json();
         
         // Get Teller application ID with CSRF protection
-        console.log('🏦 Teller Connect: Getting application ID');
         let initResponse = await fetch("/api/teller/connect-init", {
           method: "POST",
           credentials: "include",
@@ -122,7 +118,6 @@ export default function SimpleConnectButtons({ accounts, userTier, isAdmin }: Si
         
         // Auto-retry once with fresh token if 403 CSRF error
         if (initResponse.status === 403) {
-          console.log('🏦 Teller Connect: CSRF error, retrying with fresh token');
           const t2 = await fetch('/api/csrf-token', { credentials: 'include' }).then(r => r.json());
           initResponse = await fetch("/api/teller/connect-init", {
             method: "POST",
@@ -141,7 +136,6 @@ export default function SimpleConnectButtons({ accounts, userTier, isAdmin }: Si
         }
         
         const initData = await initResponse.json();
-        console.log('🏦 Teller Connect: Init response:', initData);
         
         const { applicationId, environment } = initData;
         
@@ -154,11 +148,7 @@ export default function SimpleConnectButtons({ accounts, userTier, isAdmin }: Si
           throw new Error('Teller Connect SDK not loaded. Please refresh the page.');
         }
         
-        console.log('🏦 Setting up Teller Connect SDK with applicationId:', applicationId);
-        
         return new Promise((resolve, reject) => {
-          console.log('🏦 Initializing Teller with sandbox mode and applicationId:', applicationId);
-          
           // Initialize Teller Connect with SDK - Explicitly force sandbox mode
           const tellerConnect = (window as any).TellerConnect.setup({
             applicationId: applicationId,
@@ -167,14 +157,11 @@ export default function SimpleConnectButtons({ accounts, userTier, isAdmin }: Si
             selectAccount: 'multiple', // Allow multiple account selection
             skipPicker: false, // Show institution picker
             onInit: () => {
-              console.log('🏦 Teller Connect SDK initialized in SANDBOX mode');
+              // SDK initialized
             },
             onSuccess: async (enrollment: any) => {
-              console.log('🏦 Teller Connect: Success with enrollment:', enrollment);
-              
               // Save the account using the access token
               try {
-                console.log('🏦 Saving account to backend');
                 
                 // Get fresh CSRF token for save-account call
                 const saveTokenRes = await fetch('/api/csrf-token', { credentials: 'include' });
@@ -200,7 +187,6 @@ export default function SimpleConnectButtons({ accounts, userTier, isAdmin }: Si
                 }
                 
                 const saveData = await saveResponse.json();
-                console.log('🏦 Account saved:', saveData);
                 
                 // Refresh data
                 queryClient.invalidateQueries({ queryKey: ['/api/accounts'] });
@@ -213,7 +199,6 @@ export default function SimpleConnectButtons({ accounts, userTier, isAdmin }: Si
               }
             },
             onExit: () => {
-              console.log('🏦 Teller Connect: User exited');
               reject(new Error('Connection cancelled by user'));
             },
             onFailure: (failure: any) => {
@@ -232,7 +217,6 @@ export default function SimpleConnectButtons({ accounts, userTier, isAdmin }: Si
       }
     },
     onSuccess: () => {
-      console.log('🏦 Teller Connect: Bank account connected successfully');
       toast({
         title: "Bank Account Connected",
         description: "Your bank account has been successfully connected.",
@@ -251,8 +235,6 @@ export default function SimpleConnectButtons({ accounts, userTier, isAdmin }: Si
   // SnapTrade Connect mutation - simplified
   const snapTradeConnectMutation = useMutation({
     mutationFn: async () => {
-      console.log('📈 SnapTrade Connect: Starting brokerage connection');
-      
       // Get user ID for SnapTrade registration
       const userResp = await apiRequest("/api/auth/user");
       if (!userResp.ok) throw new Error("Authentication required");
@@ -260,10 +242,7 @@ export default function SimpleConnectButtons({ accounts, userTier, isAdmin }: Si
       
       const resp = await apiRequest("/api/connections/snaptrade/register", {
         method: "POST",
-        headers: { 
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ userId: currentUser.id })
+        body: { userId: currentUser.id }
       });
 
       // Handle both Response and plain JSON from apiRequest
@@ -273,12 +252,11 @@ export default function SimpleConnectButtons({ accounts, userTier, isAdmin }: Si
       const url: string | undefined = data?.redirectUrl;
       if (!url) throw new Error("No SnapTrade Connect URL returned");
       
-      console.log('📈 SnapTrade Connect: Redirecting to URL:', url);
       window.location.href = url;
       return true;
     },
     onSuccess: () => {
-      console.log('📈 SnapTrade Connect: Success callback triggered');
+      // Success callback
     },
     onError: (error: any) => {
       console.error('📈 SnapTrade Connect Error:', error);

@@ -43,8 +43,6 @@ export function TradeModalEnhanced({
       // Generate UUID tradeId for this order
       const tradeId = generateTradeId();
       
-      console.log(`Placing order with tradeId: ${tradeId}`, orderData);
-      
       return apiRequest("/api/orders", {
         method: "POST",
         body: {

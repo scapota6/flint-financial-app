@@ -51,7 +51,7 @@ export class FinancialAPI {
   }
 
   static async connectAccount(accountData: any) {
-    const response = await apiRequest("/api/accounts", { method: "POST", body: JSON.stringify(accountData) });
+    const response = await apiRequest("/api/accounts", { method: "POST", body: accountData });
     if (!response.ok) {
       throw new Error(`${response.status}: ${response.statusText}`);
     }
@@ -69,13 +69,13 @@ export class FinancialAPI {
   static async addToWatchlist(symbol: string, name: string, assetType: string) {
     const response = await apiRequest("/api/watchlist", {
       method: "POST",
-      body: JSON.stringify({
+      body: {
         symbol,
         name,
         assetType,
         currentPrice: "0",
         changePercent: "0",
-      })
+      }
     });
     if (!response.ok) {
       throw new Error(`${response.status}: ${response.statusText}`);
@@ -102,7 +102,7 @@ export class FinancialAPI {
   static async executeTrade(tradeData: any) {
     const response = await apiRequest("/api/trades", {
       method: "POST",
-      body: JSON.stringify(tradeData)
+      body: tradeData
     });
     if (!response.ok) {
       throw new Error(`${response.status}: ${response.statusText}`);
@@ -121,7 +121,7 @@ export class FinancialAPI {
   static async createTransfer(transferData: any) {
     const response = await apiRequest("/api/transfers", {
       method: "POST", 
-      body: JSON.stringify(transferData)
+      body: transferData
     });
     if (!response.ok) {
       throw new Error(`${response.status}: ${response.statusText}`);
@@ -141,7 +141,7 @@ export class FinancialAPI {
     try {
       await apiRequest('/api/log-login', {
         method: 'POST',
-        body: JSON.stringify({ ts: Date.now() })
+        body: { ts: Date.now() }
       });
     } catch (e) {
       // dev-only noise: do not bubble to UI

@@ -122,14 +122,14 @@ export function TransferModal({ isOpen, onClose, accounts = [] }: TransferModalP
         toAccountName: toAccount?.name
       };
 
-      console.log('Submitting transfer:', transferData);
-
       // Submit to transfer API
-      const response = await apiRequest('POST', '/api/transfers', {
+      const response = await apiRequest('/api/transfers', {
+        method: 'POST',
         body: transferData
       });
+      const data = await response.json();
 
-      if (response.success) {
+      if (data.success) {
         toast({
           title: "Transfer Successful",
           description: `$${formData.amount} transferred from ${fromAccount?.name} to ${toAccount?.name}`,
@@ -144,7 +144,7 @@ export function TransferModal({ isOpen, onClose, accounts = [] }: TransferModalP
         });
         onClose();
       } else {
-        throw new Error(response.message || 'Transfer failed');
+        throw new Error(data.message || 'Transfer failed');
       }
     } catch (error: any) {
       console.error('Transfer error:', error);

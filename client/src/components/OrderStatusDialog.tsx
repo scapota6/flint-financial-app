@@ -77,18 +77,25 @@ export default function OrderStatusDialog({
   // Fetch orders for the account
   const { data: orders = [], isLoading, refetch } = useQuery({
     queryKey: ['orders', accountId],
-    queryFn: () => apiRequest(`/api/orders?accountId=${accountId}&days=7`),
+    queryFn: async () => {
+      const response = await apiRequest(`/api/orders?accountId=${accountId}&days=7`);
+      const data = await response.json();
+      return data;
+    },
     enabled: isOpen,
     refetchInterval: 5000, // Auto-refresh every 5 seconds
   });
 
   // Cancel order mutation
   const cancelOrderMutation = useMutation({
-    mutationFn: ({ orderId }: { orderId: string }) => 
-      apiRequest(`/api/orders/${orderId}`, {
+    mutationFn: async ({ orderId }: { orderId: string }) => {
+      const response = await apiRequest(`/api/orders/${orderId}`, {
         method: 'DELETE',
-        body: JSON.stringify({ accountId }),
-      }),
+        body: { accountId },
+      });
+      const data = await response.json();
+      return data;
+    },
     onSuccess: (data: any) => {
       toast({
         title: 'Order Cancelled',
@@ -127,7 +134,11 @@ export default function OrderStatusDialog({
   // Fetch individual order status
   const { data: orderDetail, isLoading: orderDetailLoading } = useQuery({
     queryKey: ['order-status', selectedOrderId, accountId],
-    queryFn: () => apiRequest(`/api/orders/${selectedOrderId}?accountId=${accountId}`),
+    queryFn: async () => {
+      const response = await apiRequest(`/api/orders/${selectedOrderId}?accountId=${accountId}`);
+      const data = await response.json();
+      return data;
+    },
     enabled: !!selectedOrderId && isOpen,
     refetchInterval: 3000, // Refresh every 3 seconds for live status
   });

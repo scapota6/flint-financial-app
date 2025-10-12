@@ -54,7 +54,7 @@ export class StripeAPI {
   static async createSubscription(tier: string, billingFrequency: 'monthly' | 'annual' = 'monthly') {
     const response = await apiRequest("/api/create-subscription", {
       method: "POST",
-      body: JSON.stringify({ tier, billingFrequency })
+      body: { tier, billingFrequency }
     });
     return response;
   }

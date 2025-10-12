@@ -109,10 +109,7 @@ export function TradeModal({ isOpen, onClose, symbol = "", currentPrice = 0, onT
 
       const previewResponse = await apiRequest('/api/trade/preview', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(previewData)
+        body: previewData
       });
       
       if (!previewResponse.ok) {
@@ -139,10 +136,7 @@ export function TradeModal({ isOpen, onClose, symbol = "", currentPrice = 0, onT
 
       const placeResponse = await apiRequest('/api/trade/place', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(orderData)
+        body: orderData
       });
       
       if (!placeResponse.ok) {

@@ -117,7 +117,6 @@ export function usePlaceEquityOrder() {
       // Handle specific error scenarios
       const errorResult = handleSnapTradeError(error);
       if (errorResult.shouldRegister) {
-        console.log('[SnapTrade] User needs to register/reconnect');
         // TODO: Trigger registration flow
       }
     }
@@ -154,7 +153,6 @@ export function usePlaceCryptoOrder() {
       // Handle specific error scenarios
       const errorResult = handleSnapTradeError(error);
       if (errorResult.shouldRegister) {
-        console.log('[SnapTrade] User needs to register/reconnect');
         // TODO: Trigger registration flow
       }
     }

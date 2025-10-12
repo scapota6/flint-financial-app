@@ -8,9 +8,13 @@ async function throwIfResNotOk(res: Response) {
 }
 
 import { getCsrfToken, invalidateCsrf } from './csrf';
-import { requestJSON } from './http';
 
-export async function apiRequest(path: string, options: RequestInit = {}) {
+// Extended RequestInit that accepts objects for body (will be auto-stringified)
+interface ApiRequestInit extends Omit<RequestInit, 'body'> {
+  body?: BodyInit | Record<string, any> | null;
+}
+
+export async function apiRequest(path: string, options: ApiRequestInit = {}) {
   const base = '';
   const url = path.startsWith('http') ? path : `${base}${path}`;
 
@@ -19,8 +23,12 @@ export async function apiRequest(path: string, options: RequestInit = {}) {
     ...(options.headers || {}),
   };
 
-  // Add Content-Type header when sending JSON body
-  if (options.body && typeof options.body === 'string') {
+  // Automatically stringify object bodies and add Content-Type header
+  let body = options.body;
+  if (body && typeof body === 'object' && !(body instanceof FormData) && !(body instanceof Blob)) {
+    body = JSON.stringify(body);
+    headers['Content-Type'] = 'application/json';
+  } else if (body && typeof body === 'string') {
     headers['Content-Type'] = 'application/json';
   }
 
@@ -30,44 +38,24 @@ export async function apiRequest(path: string, options: RequestInit = {}) {
     headers['x-csrf-token'] = csrfToken; // csurf reads from this header by default
   }
 
-  // For GET requests or when the caller expects a Response object, return the Response
-  if (!options.method || options.method === 'GET') {
-    const resp = await fetch(url, {
-      method: options.method || 'GET',
-      headers,
-      credentials: 'include', // keep cookies/session
-      ...options,
-    });
+  // Create fetch options with proper body type
+  const { body: _body, ...restOptions } = options;
+  const fetchOptions: RequestInit = {
+    ...restOptions,
+    headers,
+    credentials: 'include',
+    body: body as BodyInit | null,
+  };
 
-    // Handle CSRF mismatch - refresh token and caller can retry
-    if (resp.status === 403) {
-      invalidateCsrf();
-    }
+  // Always return Response - callers handle resp.ok / resp.json()
+  const resp = await fetch(url, fetchOptions);
 
-    return resp; // callers can do resp.ok / resp.json()
+  // Handle CSRF mismatch - invalidate token so next call gets a fresh one
+  if (resp.status === 403) {
+    invalidateCsrf();
   }
 
-  // For state-changing requests, use defensive JSON parsing
-  try {
-    return await requestJSON(url, {
-      ...options,
-      headers,
-    });
-  } catch (error: any) {
-    // Handle CSRF token expiry
-    if (error.message?.includes('403') || error.message?.includes('CSRF')) {
-      invalidateCsrf();
-      // Get new token and retry once
-      const newToken = await getCsrfToken();
-      headers['x-csrf-token'] = newToken;
-      
-      return await requestJSON(url, {
-        ...options,
-        headers,
-      });
-    }
-    throw error;
-  }
+  return resp;
 }
 
 type UnauthorizedBehavior = "returnNull" | "throw";

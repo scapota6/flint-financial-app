@@ -15,7 +15,6 @@ import { useToast } from '@/hooks/use-toast';
 
 // Analytics tracking
 const trackEvent = (eventName: string, properties: Record<string, any> = {}) => {
-  console.log('Analytics Event:', eventName, properties);
   if (typeof window !== 'undefined' && (window as any).gtag) {
     (window as any).gtag('event', eventName, properties);
   }
