@@ -113,6 +113,9 @@ function Router() {
                 <Route path="/profile">
                   {() => { window.location.href = '/api/login'; return null; }}
                 </Route>
+                <Route path="/subscribe">
+                  {() => { window.location.href = '/api/login'; return null; }}
+                </Route>
               </>
             ) : (
               <>
