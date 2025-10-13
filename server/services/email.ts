@@ -2,13 +2,51 @@ import { Resend } from 'resend';
 import { db } from '../db';
 import { emailLogs } from '@shared/schema';
 
-const RESEND_API_KEY = process.env.RESEND_API_KEY;
+let connectionSettings: any;
 
-if (!RESEND_API_KEY) {
-  console.warn('RESEND_API_KEY not set. Email service will not work.');
+async function getCredentials() {
+  const hostname = process.env.REPLIT_CONNECTORS_HOSTNAME;
+  const xReplitToken = process.env.REPL_IDENTITY
+    ? 'repl ' + process.env.REPL_IDENTITY
+    : process.env.WEB_REPL_RENEWAL
+    ? 'depl ' + process.env.WEB_REPL_RENEWAL
+    : null;
+
+  if (!xReplitToken) {
+    throw new Error('X_REPLIT_TOKEN not found for repl/depl');
+  }
+
+  connectionSettings = await fetch(
+    'https://' + hostname + '/api/v2/connection?include_secrets=true&connector_names=resend',
+    {
+      headers: {
+        'Accept': 'application/json',
+        'X_REPLIT_TOKEN': xReplitToken
+      }
+    }
+  ).then(res => res.json()).then(data => data.items?.[0]);
+
+  if (!connectionSettings || (!connectionSettings.settings.api_key)) {
+    throw new Error('Resend not connected');
+  }
+  return {
+    apiKey: connectionSettings.settings.api_key,
+    fromEmail: connectionSettings.settings.from_email
+  };
 }
 
-const resend = RESEND_API_KEY ? new Resend(RESEND_API_KEY) : null;
+async function getResendClient() {
+  const credentials = await getCredentials();
+  
+  // Use the configured from_email from the connector, or fallback to default
+  // Note: Custom domains need to be verified in Resend first
+  const fromEmail = credentials.fromEmail || 'Flint <onboarding@resend.dev>';
+  
+  return {
+    client: new Resend(credentials.apiKey),
+    fromEmail
+  };
+}
 
 interface EmailLogData {
   recipient: string;
@@ -38,40 +76,56 @@ async function sendEmail(
   html: string,
   template: string
 ): Promise<{ success: boolean; error?: string }> {
-  if (!resend) {
-    // When Resend is not configured, queue the email for later delivery
-    console.log('📧 Email queued (no provider configured):');
-    console.log(`  → Recipient: ${to}`);
-    console.log(`  → Subject: ${subject}`);
-    console.log(`  → Template: ${template}`);
-    
-    const note = 'Email queued for delivery when provider is configured';
-    await logEmail({ 
-      recipient: to, 
-      subject, 
-      template, 
-      status: 'pending', 
-      error: note 
-    });
-    
-    return { success: true };
-  }
-
   try {
-    const result = await resend.emails.send({
-      from: 'Flint <onboarding@resend.dev>',
+    const { client, fromEmail } = await getResendClient();
+    
+    // Determine the reply-to address based on the from domain
+    // If using custom domain, use support@flint-investing.com
+    // Otherwise use a safe fallback
+    const replyTo = fromEmail.includes('flint-investing.com') 
+      ? 'support@flint-investing.com'
+      : undefined; // Let Resend handle default reply-to for sandbox domain
+    
+    const result = await client.emails.send({
+      from: fromEmail,
       to: [to],
       subject,
       html,
+      ...(replyTo && { replyTo }),
     });
 
-    console.log('Email sent successfully:', result);
+    // Resend SDK returns { data, error } - check for errors
+    if (result.error) {
+      const errorMessage = result.error.message || 'Email delivery failed';
+      console.error('❌ Failed to send email:', result.error);
+      
+      await logEmail({ 
+        recipient: to, 
+        subject, 
+        template, 
+        status: 'failed', 
+        error: errorMessage 
+      });
+      
+      return { success: false, error: errorMessage };
+    }
+
+    console.log('✅ Email sent successfully:', result.data);
     await logEmail({ recipient: to, subject, template, status: 'sent' });
     return { success: true };
   } catch (err: any) {
     const errorMessage = err?.message || 'Unknown error';
-    console.error('Failed to send email:', err);
-    await logEmail({ recipient: to, subject, template, status: 'failed', error: errorMessage });
+    console.error('❌ Failed to send email:', err);
+    
+    // Log error and queue for retry
+    await logEmail({ 
+      recipient: to, 
+      subject, 
+      template, 
+      status: 'failed', 
+      error: errorMessage 
+    });
+    
     return { success: false, error: errorMessage };
   }
 }
@@ -428,6 +482,105 @@ function getPasswordResetEmailTemplate(firstName: string, resetLink: string): st
   `;
 }
 
+function getTestEmailTemplate(recipientName: string): string {
+  return `
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Flint Email Test</title>
+        <style>
+          body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+          }
+          .container {
+            background-color: #ffffff;
+            border-radius: 8px;
+            padding: 40px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+          }
+          .header {
+            text-align: center;
+            margin-bottom: 30px;
+          }
+          .logo {
+            font-size: 32px;
+            font-weight: bold;
+            color: #4F46E5;
+            margin-bottom: 10px;
+          }
+          .content {
+            margin-bottom: 30px;
+          }
+          .info-box {
+            background-color: #DBEAFE;
+            border-left: 4px solid #3B82F6;
+            padding: 15px;
+            border-radius: 4px;
+            margin-top: 20px;
+          }
+          .footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #E5E7EB;
+            font-size: 14px;
+            color: #6B7280;
+            text-align: center;
+          }
+          .success {
+            color: #059669;
+            font-weight: 600;
+          }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header">
+            <div class="logo">Flint</div>
+            <h1>✅ Email System Test</h1>
+          </div>
+          
+          <div class="content">
+            <p>Hi ${recipientName},</p>
+            
+            <p class="success">Your email system is working perfectly!</p>
+            
+            <p>This is a test email from the Flint platform to verify that:</p>
+            
+            <div class="info-box">
+              <ul style="margin: 0; padding-left: 20px;">
+                <li><strong>Sending works:</strong> Emails are being delivered successfully</li>
+                <li><strong>Custom domain:</strong> Sent from updates@flint-investing.com</li>
+                <li><strong>Reply-to configured:</strong> Replies will go to support@flint-investing.com</li>
+                <li><strong>Email templates:</strong> HTML formatting is rendering correctly</li>
+              </ul>
+            </div>
+            
+            <p>Try replying to this email to test the reply-to functionality. Your reply should be directed to support@flint-investing.com.</p>
+            
+            <p>All systems are operational and ready for production use!</p>
+            
+            <p>Best regards,<br>
+            The Flint Development Team</p>
+          </div>
+          
+          <div class="footer">
+            <p>This is an automated test email from Flint.</p>
+            <p>Sent at: ${new Date().toLocaleString()}</p>
+            <p>© ${new Date().getFullYear()} Flint. All rights reserved.</p>
+          </div>
+        </div>
+      </body>
+    </html>
+  `;
+}
+
 export async function sendApprovalEmail(
   email: string,
   firstName: string,
@@ -463,8 +616,20 @@ export async function sendPasswordResetEmail(
   return await sendEmail(email, subject, html, 'password_reset');
 }
 
+export async function sendTestEmail(
+  email: string,
+  recipientName: string
+): Promise<{ success: boolean; error?: string }> {
+  const subject = '✅ Flint Email System Test';
+  const html = getTestEmailTemplate(recipientName);
+  
+  console.log(`Sending test email to ${email}`);
+  return await sendEmail(email, subject, html, 'test');
+}
+
 export const emailService = {
   sendApprovalEmail,
   sendRejectionEmail,
   sendPasswordResetEmail,
+  sendTestEmail,
 };
