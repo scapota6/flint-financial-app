@@ -1,6 +1,33 @@
 import crypto from 'crypto';
 
 /**
+ * TOKEN STORAGE FORMAT DOCUMENTATION
+ * ===================================
+ * 
+ * Password reset/setup tokens follow this security flow:
+ * 
+ * 1. GENERATION (admin-panel.ts):
+ *    - Generate plaintext token: generateSecureToken(32) → "a1b2c3d4..." (64 hex chars)
+ *    - Hash with SHA-256: hashToken(token) → "9f86d081..." (64 hex chars)
+ *    - Store HASH in database (passwordResetTokens.token column)
+ *    - Send plaintext token to user via email
+ * 
+ * 2. VERIFICATION (auth.ts setup-password endpoint):
+ *    - Receive plaintext token from user
+ *    - Hash submitted token: hashToken(submittedToken)
+ *    - Compare hash with stored hash using timing-safe comparison
+ * 
+ * 3. TESTING:
+ *    To test with token 'testtoken123':
+ *    - DO NOT insert 'testtoken123' directly into DB
+ *    - Instead, insert hashToken('testtoken123') into DB:
+ *      const hash = crypto.createHash('sha256').update('testtoken123').digest('hex');
+ *      // hash = "3fdb4f... " (64 hex chars)
+ *      INSERT INTO password_reset_tokens (token, ...) VALUES (hash, ...)
+ *    - Then submit 'testtoken123' (plaintext) to the endpoint
+ */
+
+/**
  * Hash a token using SHA-256 for secure storage
  * Tokens should be hashed before storing in the database to prevent theft if DB is compromised
  * 
@@ -29,8 +56,8 @@ export function verifyToken(token: string, hash: string): boolean {
   }
   
   return crypto.timingSafeEqual(
-    Buffer.from(tokenHash, 'utf-8'),
-    Buffer.from(hash, 'utf-8')
+    Buffer.from(tokenHash, 'hex'),
+    Buffer.from(hash, 'hex')
   );
 }
 

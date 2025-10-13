@@ -40,8 +40,6 @@ export const users = pgTable("users", {
   // MFA/TOTP
   mfaSecret: varchar("mfa_secret"), // TOTP secret for Google Authenticator
   mfaEnabled: boolean("mfa_enabled").default(false),
-  // Recovery codes (array of hashed codes)
-  recoveryCodes: text("recovery_codes").array(),
   // Password history (last N hashes to prevent reuse)
   lastPasswordHashes: text("last_password_hashes").array(),
   // Subscription & payment

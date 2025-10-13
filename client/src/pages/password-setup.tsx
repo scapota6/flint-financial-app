@@ -8,14 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
-import { CheckCircle2, XCircle, Loader2, Eye, EyeOff, Download, Copy } from "lucide-react";
-import { 
-  Dialog, 
-  DialogContent, 
-  DialogDescription, 
-  DialogHeader, 
-  DialogTitle 
-} from "@/components/ui/dialog";
+import { CheckCircle2, XCircle, Loader2, Eye, EyeOff } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 
 // Hardened password validation schema (12-128 chars, 3 of 4 character classes)
@@ -100,8 +93,6 @@ export default function PasswordSetup() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [passwordValue, setPasswordValue] = useState("");
-  const [recoveryCodes, setRecoveryCodes] = useState<string[]>([]);
-  const [showRecoveryCodes, setShowRecoveryCodes] = useState(false);
 
   const form = useForm<PasswordSetupFormValues>({
     resolver: zodResolver(passwordSetupSchema),
@@ -160,20 +151,14 @@ export default function PasswordSetup() {
         throw new Error(result.message || "Failed to set up password");
       }
 
-      // Show recovery codes if returned
-      if (result.recoveryCodes && result.recoveryCodes.length > 0) {
-        setRecoveryCodes(result.recoveryCodes);
-        setShowRecoveryCodes(true);
-      } else {
-        // No recovery codes, redirect directly
-        toast({
-          title: "Success!",
-          description: "Your password has been set up successfully. Redirecting to login...",
-        });
-        setTimeout(() => {
-          window.location.href = "/api/login";
-        }, 2000);
-      }
+      // Password setup successful, redirect to login
+      toast({
+        title: "Success!",
+        description: "Your password has been set up successfully. Redirecting to login...",
+      });
+      setTimeout(() => {
+        window.location.href = "/login";
+      }, 2000);
     } catch (error: any) {
       toast({
         title: "Error",
@@ -349,7 +334,7 @@ export default function PasswordSetup() {
             <p className="text-sm text-gray-400">
               Already have an account?{" "}
               <a 
-                href="/api/login" 
+                href="/login" 
                 className="text-blue-400 hover:text-blue-300"
                 data-testid="link-login"
               >
@@ -359,96 +344,6 @@ export default function PasswordSetup() {
           </div>
         </CardContent>
       </Card>
-
-      {/* Recovery Codes Dialog */}
-      <Dialog open={showRecoveryCodes} onOpenChange={setShowRecoveryCodes}>
-        <DialogContent className="bg-gray-800 border-gray-700 max-w-lg" data-testid="dialog-recovery-codes">
-          <DialogHeader>
-            <DialogTitle className="text-white text-xl">Save Your Recovery Codes</DialogTitle>
-            <DialogDescription className="text-gray-400">
-              Store these recovery codes in a safe place. You'll need them to access your account if you lose your password or 2FA device.
-            </DialogDescription>
-          </DialogHeader>
-          
-          <div className="space-y-4">
-            <div className="bg-gray-900 p-4 rounded-lg">
-              <div className="grid grid-cols-2 gap-2">
-                {recoveryCodes.map((code, index) => (
-                  <div 
-                    key={index} 
-                    className="font-mono text-sm text-gray-300 bg-gray-800 p-2 rounded"
-                    data-testid={`recovery-code-${index}`}
-                  >
-                    {code}
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="flex gap-2">
-              <Button
-                onClick={() => {
-                  navigator.clipboard.writeText(recoveryCodes.join('\n'));
-                  toast({
-                    title: "Copied!",
-                    description: "Recovery codes copied to clipboard",
-                  });
-                }}
-                variant="outline"
-                className="flex-1 border-gray-600 hover:bg-gray-700"
-                data-testid="button-copy-codes"
-              >
-                <Copy className="h-4 w-4 mr-2" />
-                Copy Codes
-              </Button>
-              <Button
-                onClick={() => {
-                  const blob = new Blob([recoveryCodes.join('\n')], { type: 'text/plain' });
-                  const url = URL.createObjectURL(blob);
-                  const a = document.createElement('a');
-                  a.href = url;
-                  a.download = 'flint-recovery-codes.txt';
-                  a.click();
-                  URL.revokeObjectURL(url);
-                  toast({
-                    title: "Downloaded!",
-                    description: "Recovery codes saved to file",
-                  });
-                }}
-                variant="outline"
-                className="flex-1 border-gray-600 hover:bg-gray-700"
-                data-testid="button-download-codes"
-              >
-                <Download className="h-4 w-4 mr-2" />
-                Download
-              </Button>
-            </div>
-
-            <div className="bg-yellow-900/20 border border-yellow-700/50 rounded-lg p-3">
-              <p className="text-sm text-yellow-400">
-                <strong>Warning:</strong> Each recovery code can only be used once. Store them securely offline.
-              </p>
-            </div>
-
-            <Button
-              onClick={() => {
-                setShowRecoveryCodes(false);
-                toast({
-                  title: "Success!",
-                  description: "Redirecting to login...",
-                });
-                setTimeout(() => {
-                  window.location.href = "/api/login";
-                }, 1500);
-              }}
-              className="w-full bg-blue-600 hover:bg-blue-700"
-              data-testid="button-continue"
-            >
-              I've Saved My Codes - Continue to Login
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }

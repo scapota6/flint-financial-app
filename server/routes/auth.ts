@@ -8,13 +8,9 @@ import { eq, and, ne } from 'drizzle-orm';
 import { validatePassword } from '../lib/password-validation';
 import { 
   hashPassword, 
-  generateRecoveryCodes, 
-  hashRecoveryCodes,
   updatePasswordHistory,
   isPasswordReused,
-  verifyPassword,
-  verifyRecoveryCode,
-  removeRecoveryCode
+  verifyPassword
 } from '../lib/argon2-utils';
 import { hashToken, verifyToken, generateSecureToken } from '../lib/token-utils';
 import { sendPasswordResetEmail, sendApprovalEmail } from '../services/email';
@@ -50,7 +46,6 @@ const loginSchema = z.object({
   email: z.string().email('Valid email is required'),
   password: z.string().min(1, 'Password is required'),
   mfaCode: z.string().optional(),
-  recoveryCode: z.string().optional(),
 });
 
 /**
@@ -107,7 +102,7 @@ router.post('/login', rateLimits.login, async (req, res) => {
       });
     }
 
-    const { email, password, mfaCode, recoveryCode } = parseResult.data;
+    const { email, password, mfaCode } = parseResult.data;
     const ipAddress = req.ip || 'unknown';
     const userAgent = req.headers['user-agent'] || 'unknown';
 
@@ -172,42 +167,21 @@ router.post('/login', rateLimits.login, async (req, res) => {
       });
     }
 
-    // If MFA is enabled, verify TOTP or recovery code
+    // If MFA is enabled, verify TOTP code
     if (user.mfaEnabled && user.mfaSecret) {
-      if (!mfaCode && !recoveryCode) {
+      if (!mfaCode) {
         return res.status(401).json({
           message: 'MFA code required',
           mfaRequired: true,
         });
       }
 
-      let mfaValid = false;
-
-      // Try TOTP code first
-      if (mfaCode) {
-        mfaValid = speakeasy.totp.verify({
-          secret: user.mfaSecret,
-          encoding: 'base32',
-          token: mfaCode,
-          window: 1, // Allow 1 time step before/after for clock skew
-        });
-      }
-
-      // If TOTP failed or not provided, try recovery code
-      if (!mfaValid && recoveryCode && user.recoveryCodes) {
-        const recoveryIndex = await verifyRecoveryCode(recoveryCode, user.recoveryCodes);
-        
-        if (recoveryIndex !== -1) {
-          mfaValid = true;
-          
-          // Remove used recovery code
-          const updatedRecoveryCodes = removeRecoveryCode(user.recoveryCodes, recoveryIndex);
-          await db
-            .update(users)
-            .set({ recoveryCodes: updatedRecoveryCodes })
-            .where(eq(users.id, user.id));
-        }
-      }
+      const mfaValid = speakeasy.totp.verify({
+        secret: user.mfaSecret,
+        encoding: 'base32',
+        token: mfaCode,
+        window: 1, // Allow 1 time step before/after for clock skew
+      });
 
       if (!mfaValid) {
         await logLoginAttempt(email, false, user.id, ipAddress, userAgent, 'Invalid MFA code');
@@ -577,17 +551,12 @@ router.post('/mfa/verify-setup', requireAuth, async (req, res) => {
       });
     }
 
-    // Generate recovery codes
-    const plainRecoveryCodes = generateRecoveryCodes(8);
-    const hashedRecoveryCodes = await hashRecoveryCodes(plainRecoveryCodes);
-
     // Save MFA settings to database
     await db
       .update(users)
       .set({
         mfaSecret: secret,
         mfaEnabled: true,
-        recoveryCodes: hashedRecoveryCodes,
         updatedAt: new Date(),
       })
       .where(eq(users.id, userId));
@@ -605,7 +574,6 @@ router.post('/mfa/verify-setup', requireAuth, async (req, res) => {
     return res.status(200).json({
       success: true,
       message: 'MFA enabled successfully',
-      recoveryCodes: plainRecoveryCodes,
     });
   } catch (error) {
     console.error('Error verifying MFA setup:', error);
@@ -667,7 +635,6 @@ router.delete('/mfa/disable', requireAuth, async (req, res) => {
       .set({
         mfaEnabled: false,
         mfaSecret: null,
-        recoveryCodes: null,
         updatedAt: new Date(),
       })
       .where(eq(users.id, userId));
@@ -708,22 +675,31 @@ router.post('/setup-password', async (req, res) => {
 
     const { token, password } = parseResult.data;
 
+    console.log('[Setup Password] Token verification started:', {
+      tokenLength: token.length,
+      tokenPrefix: token.substring(0, 8) + '...',
+    });
+
     // Find all non-expired, unused tokens and verify against our hash
     const allTokens = await db
       .select()
       .from(passwordResetTokens)
       .where(eq(passwordResetTokens.used, false));
 
+    console.log('[Setup Password] Found unused tokens in DB:', allTokens.length);
+
     // Find matching token using timing-safe comparison
     let resetToken = null;
     for (const dbToken of allTokens) {
       if (verifyToken(token, dbToken.token)) {
         resetToken = dbToken;
+        console.log('[Setup Password] Token match found for user:', dbToken.userId);
         break;
       }
     }
 
     if (!resetToken) {
+      console.log('[Setup Password] No matching token found');
       return res.status(400).json({
         message: 'Invalid or expired token',
       });
@@ -778,10 +754,6 @@ router.post('/setup-password', async (req, res) => {
     // Hash password using Argon2id
     const passwordHash = await hashPassword(password);
 
-    // Generate recovery codes (8 codes)
-    const plainRecoveryCodes = generateRecoveryCodes(8);
-    const hashedRecoveryCodes = await hashRecoveryCodes(plainRecoveryCodes);
-
     // Update password history
     const updatedPasswordHistory = updatePasswordHistory(
       passwordHash, 
@@ -789,14 +761,13 @@ router.post('/setup-password', async (req, res) => {
       5
     );
 
-    // Update user password and recovery codes in a transaction
+    // Update user password in a transaction
     await db.transaction(async (tx) => {
-      // Update user with new password, recovery codes, and mark email as verified
+      // Update user with new password and mark email as verified
       await tx
         .update(users)
         .set({
           passwordHash,
-          recoveryCodes: hashedRecoveryCodes,
           lastPasswordHashes: updatedPasswordHistory,
           emailVerified: true,
           updatedAt: new Date(),
@@ -815,7 +786,6 @@ router.post('/setup-password', async (req, res) => {
     return res.status(200).json({
       message: 'Password set successfully',
       success: true,
-      recoveryCodes: plainRecoveryCodes, // Send plain codes to user once
     });
   } catch (error) {
     console.error('Error setting up password:', error);
@@ -909,7 +879,7 @@ router.post('/request-reset', async (req, res) => {
 });
 
 // POST /api/auth/reset-password - Reset password with token
-router.post('/reset-password', rateLimits.passwordReset, async (req, res) => {
+router.post('/reset-password', rateLimits.auth, async (req, res) => {
   try {
     const parseResult = resetPasswordSchema.safeParse(req.body);
     
