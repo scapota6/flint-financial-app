@@ -472,7 +472,7 @@ router.delete('/users/:userId', requireAuth, requireAdmin(), async (req: any, re
     // 6. Delete price alerts (alertHistory will cascade via FK)
     await db.delete(priceAlerts).where(eq(priceAlerts.userId, userId));
     
-    // 7. Delete user auth data
+    // 7. Delete user auth data and sessions
     await db.delete(refreshTokens).where(eq(refreshTokens.userId, userId));
     await db.delete(passwordResetTokens).where(eq(passwordResetTokens.userId, userId));
     
