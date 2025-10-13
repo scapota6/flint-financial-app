@@ -30,29 +30,39 @@ export const sessions = pgTable(
 export const users = pgTable("users", {
   id: varchar("id").primaryKey().notNull(),
   email: varchar("email").unique(),
-  passwordHash: varchar("password_hash"), // For password-based login
+  passwordHash: varchar("password_hash"), // For password-based login (Argon2id)
   firstName: varchar("first_name"),
   lastName: varchar("last_name"),
   profileImageUrl: varchar("profile_image_url"),
+  // Email verification
+  emailVerified: boolean("email_verified").default(false),
+  emailVerificationToken: varchar("email_verification_token"),
+  // MFA/TOTP
+  mfaSecret: varchar("mfa_secret"), // TOTP secret for Google Authenticator
+  mfaEnabled: boolean("mfa_enabled").default(false),
+  // Recovery codes (array of hashed codes)
+  recoveryCodes: text("recovery_codes").array(),
+  // Password history (last N hashes to prevent reuse)
+  lastPasswordHashes: text("last_password_hashes").array(),
+  // Subscription & payment
   stripeCustomerId: varchar("stripe_customer_id"),
   stripeSubscriptionId: varchar("stripe_subscription_id"),
   subscriptionTier: varchar("subscription_tier").default("free"), // free, basic, pro, premium
   subscriptionStatus: varchar("subscription_status").default("active"), // active, cancelled, expired
-  isAdmin: boolean("is_admin").default(false),
-  isBanned: boolean("is_banned").default(false),
-  lastLogin: timestamp("last_login").defaultNow(),
   // Lemon Squeezy payment tracking
   lemonSqueezyOrderId: varchar("lemonsqueezy_order_id"),
   lemonSqueezyCustomerId: varchar("lemonsqueezy_customer_id"),
   lemonSqueezyVariantId: varchar("lemonsqueezy_variant_id"),
-  // SnapTrade credentials moved to separate table
-  // snaptradeUserId: varchar("snaptrade_user_id"), // SnapTrade user ID
-  // snaptradeUserSecret: varchar("snaptrade_user_secret"), // SnapTrade user secret
+  // User metadata
+  isAdmin: boolean("is_admin").default(false),
+  isBanned: boolean("is_banned").default(false),
+  lastLogin: timestamp("last_login").defaultNow(),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 }, (table) => [
   index("users_last_login_idx").on(table.lastLogin),
   index("users_subscription_tier_idx").on(table.subscriptionTier),
+  index("users_email_verified_idx").on(table.emailVerified),
 ]);
 
 // SnapTrade users table per specification: snaptrade_users(flint_user_id PK, user_secret, created_at, rotated_at)
@@ -524,6 +534,23 @@ export const passwordResetTokens = pgTable("password_reset_tokens", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// JWT refresh tokens table for session management
+export const refreshTokens = pgTable("refresh_tokens", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id").references(() => users.id).notNull(),
+  token: varchar("token").notNull().unique(),
+  deviceInfo: varchar("device_info"), // User agent, device name
+  ipAddress: varchar("ip_address"),
+  expiresAt: timestamp("expires_at").notNull(),
+  revoked: boolean("revoked").default(false),
+  revokedAt: timestamp("revoked_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+  lastUsedAt: timestamp("last_used_at").defaultNow(),
+}, (table) => [
+  index("refresh_tokens_user_idx").on(table.userId),
+  index("refresh_tokens_token_idx").on(table.token),
+]);
+
 // Insert schemas for new tables
 export const insertAccountApplicationSchema = createInsertSchema(accountApplications).omit({
   id: true,
@@ -549,6 +576,12 @@ export const insertPasswordResetTokenSchema = createInsertSchema(passwordResetTo
   createdAt: true,
 });
 
+export const insertRefreshTokenSchema = createInsertSchema(refreshTokens).omit({
+  id: true,
+  createdAt: true,
+  lastUsedAt: true,
+});
+
 // Types for new tables
 export type AccountApplication = typeof accountApplications.$inferSelect;
 export type InsertAccountApplication = z.infer<typeof insertAccountApplicationSchema>;
@@ -564,3 +597,6 @@ export type InsertFeatureFlag = z.infer<typeof insertFeatureFlagSchema>;
 
 export type PasswordResetToken = typeof passwordResetTokens.$inferSelect;
 export type InsertPasswordResetToken = z.infer<typeof insertPasswordResetTokenSchema>;
+
+export type RefreshToken = typeof refreshTokens.$inferSelect;
+export type InsertRefreshToken = z.infer<typeof insertRefreshTokenSchema>;
