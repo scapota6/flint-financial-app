@@ -1,0 +1,41 @@
+connect-43bf7d199aedbd0146fd5be9e8e888a8.js?vsn=d:16 Blocked autofocusing on a <input> element in a cross-origin subframe.
+addChild @ connect-43bf7d199aedbd0146fd5be9e8e888a8.js?vsn=d:16
+J @ connect-43bf7d199aedbd0146fd5be9e8e888a8.js?vsn=d:16
+$ @ connect-43bf7d199aedbd0146fd5be9e8e888a8.js?vsn=d:16
+(anonymous) @ connect-43bf7d199aedbd0146fd5be9e8e888a8.js?vsn=d:16
+(anonymous) @ connect-43bf7d199aedbd0146fd5be9e8e888a8.js?vsn=d:16
+time @ connect-43bf7d199aedbd0146fd5be9e8e888a8.js?vsn=d:22
+perform @ connect-43bf7d199aedbd0146fd5be9e8e888a8.js?vsn=d:16
+performPatch @ connect-43bf7d199aedbd0146fd5be9e8e888a8.js?vsn=d:16
+applyJoinPatch @ connect-43bf7d199aedbd0146fd5be9e8e888a8.js?vsn=d:16
+onJoinComplete @ connect-43bf7d199aedbd0146fd5be9e8e888a8.js?vsn=d:16
+(anonymous) @ connect-43bf7d199aedbd0146fd5be9e8e888a8.js?vsn=d:16
+applyDiff @ connect-43bf7d199aedbd0146fd5be9e8e888a8.js?vsn=d:16
+onJoin @ connect-43bf7d199aedbd0146fd5be9e8e888a8.js?vsn=d:16
+(anonymous) @ connect-43bf7d199aedbd0146fd5be9e8e888a8.js?vsn=d:16
+after @ connect-43bf7d199aedbd0146fd5be9e8e888a8.js?vsn=d:22
+requestDOMUpdate @ connect-43bf7d199aedbd0146fd5be9e8e888a8.js?vsn=d:22
+(anonymous) @ connect-43bf7d199aedbd0146fd5be9e8e888a8.js?vsn=d:16
+(anonymous) @ connect-43bf7d199aedbd0146fd5be9e8e888a8.js?vsn=d:22
+matchReceive @ connect-43bf7d199aedbd0146fd5be9e8e888a8.js?vsn=d:22
+(anonymous) @ connect-43bf7d199aedbd0146fd5be9e8e888a8.js?vsn=d:22
+trigger @ connect-43bf7d199aedbd0146fd5be9e8e888a8.js?vsn=d:22
+(anonymous) @ connect-43bf7d199aedbd0146fd5be9e8e888a8.js?vsn=d:22
+trigger @ connect-43bf7d199aedbd0146fd5be9e8e888a8.js?vsn=d:22
+(anonymous) @ connect-43bf7d199aedbd0146fd5be9e8e888a8.js?vsn=d:23
+decode @ connect-43bf7d199aedbd0146fd5be9e8e888a8.js?vsn=d:23
+onConnMessage @ connect-43bf7d199aedbd0146fd5be9e8e888a8.js?vsn=d:23
+conn.onmessage @ connect-43bf7d199aedbd0146fd5be9e8e888a8.js?vsn=d:23Understand this error
+simple-connect-buttons.tsx:170  POST https://28036d48-949d-4fd5-9e63-54ed8b7fd662-00-1i1qwnyczdy9x.kirk.replit.dev/api/teller/save-account 401 (Unauthorized)
+onSuccess @ simple-connect-buttons.tsx:170
+await in onSuccess
+success @ connect.js:1
+I @ connect.js:1Understand this error
+simple-connect-buttons.tsx:197 🏦 Error saving account: Error: Authentication required
+    at Object.onSuccess (simple-connect-buttons.tsx:186:25)
+onSuccess @ simple-connect-buttons.tsx:197
+await in onSuccess
+success @ connect.js:1
+I @ connect.js:1Understand this error
+simple-connect-buttons.tsx:226 🏦 Teller Connect Error: Error: Authentication required
+    at Object.onSuccess (simple-connect-buttons.tsx:186:25)
