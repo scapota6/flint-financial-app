@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { z } from 'zod';
-import { isAuthenticated } from '../replitAuth';
+import { requireAuth } from '../middleware/jwt-auth';
 import { isAdmin } from '../middleware/rbac';
 import { hashPassword, validatePasswordStrength } from '../lib/password-utils';
 import { db } from '../db';
@@ -14,7 +14,7 @@ const setPasswordSchema = z.object({
   password: z.string().min(1, 'Password is required'),
 });
 
-router.post('/users/:userId/password', isAuthenticated, isAdmin(), async (req, res) => {
+router.post('/users/:userId/password', requireAuth, isAdmin(), async (req, res) => {
   try {
     const { userId } = req.params;
     
@@ -71,7 +71,7 @@ const testEmailSchema = z.object({
   recipientName: z.string().min(1, 'Recipient name is required'),
 });
 
-router.post('/test-email', isAuthenticated, isAdmin(), async (req, res) => {
+router.post('/test-email', requireAuth, isAdmin(), async (req, res) => {
   try {
     const parseResult = testEmailSchema.safeParse(req.body);
     if (!parseResult.success) {

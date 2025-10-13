@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { z } from 'zod';
 import crypto from 'crypto';
-import { isAuthenticated } from '../replitAuth';
+import { requireAuth } from '../middleware/jwt-auth';
 import { requireAdmin, logAdminAction } from '../middleware/admin';
 import { db } from '../db';
 import {
@@ -27,7 +27,7 @@ const router = Router();
 // ============================================================================
 
 // GET /api/admin/applications - Get all applications with pagination/filtering
-router.get('/applications', isAuthenticated, requireAdmin(), async (req: any, res) => {
+router.get('/applications', requireAuth, requireAdmin(), async (req: any, res) => {
   try {
     const { 
       page = '1', 
@@ -84,7 +84,7 @@ router.get('/applications', isAuthenticated, requireAdmin(), async (req: any, re
 });
 
 // POST /api/admin/applications/:id/approve - Approve application
-router.post('/applications/:id/approve', isAuthenticated, requireAdmin(), async (req: any, res) => {
+router.post('/applications/:id/approve', requireAuth, requireAdmin(), async (req: any, res) => {
   try {
     const { id } = req.params;
     const applicationId = parseInt(id);
@@ -207,7 +207,7 @@ router.post('/applications/:id/approve', isAuthenticated, requireAdmin(), async 
 });
 
 // POST /api/admin/applications/:id/reject - Reject application
-router.post('/applications/:id/reject', isAuthenticated, requireAdmin(), async (req: any, res) => {
+router.post('/applications/:id/reject', requireAuth, requireAdmin(), async (req: any, res) => {
   try {
     const { id } = req.params;
     const { reviewNotes } = req.body;
@@ -266,7 +266,7 @@ router.post('/applications/:id/reject', isAuthenticated, requireAdmin(), async (
 });
 
 // GET /api/admin/applications/stats - Get application statistics
-router.get('/applications/stats', isAuthenticated, requireAdmin(), async (req: any, res) => {
+router.get('/applications/stats', requireAuth, requireAdmin(), async (req: any, res) => {
   try {
     const stats = await db
       .select({
@@ -302,7 +302,7 @@ router.get('/applications/stats', isAuthenticated, requireAdmin(), async (req: a
 // ============================================================================
 
 // GET /api/admin/users - Get all users with pagination
-router.get('/users', isAuthenticated, requireAdmin(), async (req: any, res) => {
+router.get('/users', requireAuth, requireAdmin(), async (req: any, res) => {
   try {
     const { 
       page = '1', 
@@ -391,7 +391,7 @@ router.get('/users', isAuthenticated, requireAdmin(), async (req: any, res) => {
 });
 
 // DELETE /api/admin/users/:userId - Soft delete user (ban)
-router.delete('/users/:userId', isAuthenticated, requireAdmin(), async (req: any, res) => {
+router.delete('/users/:userId', requireAuth, requireAdmin(), async (req: any, res) => {
   try {
     const { userId } = req.params;
 
@@ -433,7 +433,7 @@ router.delete('/users/:userId', isAuthenticated, requireAdmin(), async (req: any
 });
 
 // POST /api/admin/users/:userId/reset-password - Generate password reset token
-router.post('/users/:userId/reset-password', isAuthenticated, requireAdmin(), async (req: any, res) => {
+router.post('/users/:userId/reset-password', requireAuth, requireAdmin(), async (req: any, res) => {
   try {
     const { userId } = req.params;
 
@@ -501,7 +501,7 @@ const setPasswordSchema = z.object({
   password: z.string().min(8, 'Password must be at least 8 characters'),
 });
 
-router.post('/users/:userId/set-password', isAuthenticated, requireAdmin(), async (req: any, res) => {
+router.post('/users/:userId/set-password', requireAuth, requireAdmin(), async (req: any, res) => {
   try {
     const { userId } = req.params;
     const parseResult = setPasswordSchema.safeParse(req.body);
@@ -556,7 +556,7 @@ const updateTierSchema = z.object({
   tier: z.enum(['free', 'basic', 'pro', 'premium']),
 });
 
-router.patch('/users/:userId/tier', isAuthenticated, requireAdmin(), async (req: any, res) => {
+router.patch('/users/:userId/tier', requireAuth, requireAdmin(), async (req: any, res) => {
   try {
     const { userId } = req.params;
     const parseResult = updateTierSchema.safeParse(req.body);
@@ -611,7 +611,7 @@ const banSchema = z.object({
   banned: z.boolean(),
 });
 
-router.patch('/users/:userId/ban', isAuthenticated, requireAdmin(), async (req: any, res) => {
+router.patch('/users/:userId/ban', requireAuth, requireAdmin(), async (req: any, res) => {
   try {
     const { userId } = req.params;
     const parseResult = banSchema.safeParse(req.body);
@@ -669,7 +669,7 @@ router.patch('/users/:userId/ban', isAuthenticated, requireAdmin(), async (req: 
 // ============================================================================
 
 // GET /api/admin/analytics/overview - KPIs
-router.get('/analytics/overview', isAuthenticated, requireAdmin(), async (req: any, res) => {
+router.get('/analytics/overview', requireAuth, requireAdmin(), async (req: any, res) => {
   try {
     // Total users
     const [{ totalUsers }] = await db
@@ -740,7 +740,7 @@ router.get('/analytics/overview', isAuthenticated, requireAdmin(), async (req: a
 });
 
 // GET /api/admin/analytics/connections - Connection statistics by provider
-router.get('/analytics/connections', isAuthenticated, requireAdmin(), async (req: any, res) => {
+router.get('/analytics/connections', requireAuth, requireAdmin(), async (req: any, res) => {
   try {
     // Teller connections by status
     const tellerStats = await db
@@ -802,7 +802,7 @@ router.get('/analytics/connections', isAuthenticated, requireAdmin(), async (req
 });
 
 // GET /api/admin/analytics/errors - Error logs
-router.get('/analytics/errors', isAuthenticated, requireAdmin(), async (req: any, res) => {
+router.get('/analytics/errors', requireAuth, requireAdmin(), async (req: any, res) => {
   try {
     const { days = '7' } = req.query;
     const daysNum = parseInt(days as string);
@@ -846,7 +846,7 @@ router.get('/analytics/errors', isAuthenticated, requireAdmin(), async (req: any
 // ============================================================================
 
 // GET /api/admin/connections - Get all connections with user info
-router.get('/connections', isAuthenticated, requireAdmin(), async (req: any, res) => {
+router.get('/connections', requireAuth, requireAdmin(), async (req: any, res) => {
   try {
     const { page = '1', limit = '20', provider, status, filter } = req.query;
     const pageNum = parseInt(page as string);
@@ -1082,7 +1082,7 @@ const revokeConnectionSchema = z.object({
   provider: z.enum(['teller', 'snaptrade']),
 });
 
-router.post('/connections/:id/revoke', isAuthenticated, requireAdmin(), async (req: any, res) => {
+router.post('/connections/:id/revoke', requireAuth, requireAdmin(), async (req: any, res) => {
   try {
     const { id } = req.params;
     const parseResult = revokeConnectionSchema.safeParse(req.body);
@@ -1155,7 +1155,7 @@ router.post('/connections/:id/revoke', isAuthenticated, requireAdmin(), async (r
 });
 
 // POST /api/admin/connections/:id/resync - Force resync connection
-router.post('/connections/:id/resync', isAuthenticated, requireAdmin(), async (req: any, res) => {
+router.post('/connections/:id/resync', requireAuth, requireAdmin(), async (req: any, res) => {
   try {
     const { id } = req.params;
     const { provider } = req.body;
@@ -1222,7 +1222,7 @@ router.post('/connections/:id/resync', isAuthenticated, requireAdmin(), async (r
 });
 
 // DELETE /api/admin/connections/:connectionId - Admin disconnect connection
-router.delete('/connections/:connectionId', isAuthenticated, requireAdmin(), async (req: any, res) => {
+router.delete('/connections/:connectionId', requireAuth, requireAdmin(), async (req: any, res) => {
   try {
     const { connectionId } = req.params;
     const { provider } = req.query;
@@ -1327,7 +1327,7 @@ router.delete('/connections/:connectionId', isAuthenticated, requireAdmin(), asy
 // ============================================================================
 
 // GET /api/admin/feature-flags - Get all feature flags
-router.get('/feature-flags', isAuthenticated, requireAdmin(), async (req: any, res) => {
+router.get('/feature-flags', requireAuth, requireAdmin(), async (req: any, res) => {
   try {
     const flags = await db
       .select()
@@ -1349,7 +1349,7 @@ const updateFeatureFlagSchema = z.object({
   description: z.string().optional(),
 });
 
-router.patch('/feature-flags/:key', isAuthenticated, requireAdmin(), async (req: any, res) => {
+router.patch('/feature-flags/:key', requireAuth, requireAdmin(), async (req: any, res) => {
   try {
     const { key } = req.params;
     const parseResult = updateFeatureFlagSchema.safeParse(req.body);
@@ -1413,7 +1413,7 @@ router.patch('/feature-flags/:key', isAuthenticated, requireAdmin(), async (req:
 // ============================================================================
 
 // GET /api/admin/audit-logs - Get audit logs with filtering
-router.get('/audit-logs', isAuthenticated, requireAdmin(), async (req: any, res) => {
+router.get('/audit-logs', requireAuth, requireAdmin(), async (req: any, res) => {
   try {
     const {
       page = '1',
@@ -1478,6 +1478,95 @@ router.get('/audit-logs', isAuthenticated, requireAdmin(), async (req: any, res)
   } catch (error) {
     console.error('Error fetching audit logs:', error);
     res.status(500).json({ message: 'Failed to fetch audit logs' });
+  }
+});
+
+// ============================================================================
+// SNAPTRADE CONNECTION MANAGEMENT
+// ============================================================================
+
+// GET /api/admin-panel/snaptrade/connections - List all SnapTrade connections
+router.get('/snaptrade/connections', requireAuth, requireAdmin(), async (req: any, res) => {
+  try {
+    const { snaptradeUsers } = await import('@shared/schema');
+    
+    // Get all SnapTrade users with their Flint user details
+    const connections = await db
+      .select({
+        id: snaptradeUsers.id,
+        flintUserId: snaptradeUsers.flintUserId,
+        snaptradeUserId: snaptradeUsers.snaptradeUserId,
+        userSecret: snaptradeUsers.userSecret,
+        connectedAt: snaptradeUsers.connectedAt,
+        lastSyncAt: snaptradeUsers.lastSyncAt,
+        userEmail: users.email,
+        userName: users.name,
+      })
+      .from(snaptradeUsers)
+      .leftJoin(users, eq(snaptradeUsers.flintUserId, users.id))
+      .orderBy(desc(snaptradeUsers.connectedAt));
+
+    await logAdminAction(
+      req.adminEmail,
+      'view_snaptrade_connections',
+      { count: connections.length }
+    );
+
+    res.json({ connections });
+  } catch (error) {
+    console.error('Error fetching SnapTrade connections:', error);
+    res.status(500).json({ message: 'Failed to fetch SnapTrade connections' });
+  }
+});
+
+// DELETE /api/admin-panel/snaptrade/connections/:connectionId - Delete SnapTrade connection
+router.delete('/snaptrade/connections/:connectionId', requireAuth, requireAdmin(), async (req: any, res) => {
+  try {
+    const { connectionId } = req.params;
+    const { snaptradeUsers, snaptradeConnections } = await import('@shared/schema');
+
+    // Get connection details before deletion
+    const [connection] = await db
+      .select()
+      .from(snaptradeUsers)
+      .where(eq(snaptradeUsers.id, parseInt(connectionId)));
+
+    if (!connection) {
+      return res.status(404).json({ message: 'SnapTrade connection not found' });
+    }
+
+    // Delete associated SnapTrade authorizations/accounts
+    await db
+      .delete(snaptradeConnections)
+      .where(eq(snaptradeConnections.flintUserId, connection.flintUserId));
+
+    // Delete SnapTrade user record
+    await db
+      .delete(snaptradeUsers)
+      .where(eq(snaptradeUsers.id, parseInt(connectionId)));
+
+    await logAdminAction(
+      req.adminEmail,
+      'delete_snaptrade_connection',
+      { 
+        connectionId,
+        flintUserId: connection.flintUserId,
+        snaptradeUserId: connection.snaptradeUserId
+      },
+      connection.flintUserId
+    );
+
+    res.json({ 
+      message: 'SnapTrade connection deleted successfully',
+      deletedConnection: {
+        id: connection.id,
+        flintUserId: connection.flintUserId,
+        snaptradeUserId: connection.snaptradeUserId
+      }
+    });
+  } catch (error) {
+    console.error('Error deleting SnapTrade connection:', error);
+    res.status(500).json({ message: 'Failed to delete SnapTrade connection' });
   }
 });
 
