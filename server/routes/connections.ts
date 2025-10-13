@@ -133,8 +133,15 @@ router.post("/snaptrade/register", requireAuth, async (req: any, res) => {
     let userMessage = "Unable to connect to brokerage service";
     let errorDetails = error.response?.data?.detail || error.message;
     
+    // Check for SnapTrade API errors (various formats)
+    const isSnapTradeApiError = 
+      error.response?.status === 400 || 
+      error.response?.status === 401 ||
+      error.message?.includes('status code 400') ||
+      error.message?.includes('status code 401');
+    
     // SnapTrade API error - provide helpful message
-    if (error.response?.status === 400 || error.response?.status === 401) {
+    if (isSnapTradeApiError) {
       statusCode = 503; // Service Unavailable - external API issue
       userMessage = "Brokerage connection service is temporarily unavailable. This is a known issue with our provider. Please try again later or contact support.";
     } else if (error.message?.includes('credentials') || error.message?.includes('authentication')) {
