@@ -274,12 +274,12 @@ export default function RecurringSubscriptions() {
                 <p className="text-gray-400 mb-4">
                   Upgrade to Basic, Pro, or Premium to automatically detect and track your recurring subscriptions from bank transactions, including merchant names, amounts, and billing dates.
                 </p>
-                <Link href="/settings?tab=billing">
+                <a href="https://28036d48-949d-4fd5-9e63-54ed8b7fd662-00-1i1qwnyczdy9x.kirk.replit.dev/subscribe" target="_blank" rel="noopener noreferrer">
                   <Button className="bg-purple-600 hover:bg-purple-700 text-white" data-testid="button-upgrade">
                     <Crown className="h-4 w-4 mr-2" />
                     Upgrade Plan
                   </Button>
-                </Link>
+                </a>
                 {subscriptions.length > 0 && (
                   <p className="text-xs text-gray-500 mt-3">
                     {subscriptions.length} {subscriptions.length === 1 ? 'subscription' : 'subscriptions'} detected
