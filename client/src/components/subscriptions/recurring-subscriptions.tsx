@@ -302,9 +302,6 @@ export default function RecurringSubscriptions() {
                   <span className="text-white font-semibold" data-testid="text-annual-cost">{formatCurrency(monthlyRounded * 12)}</span>
                 </div>
               </div>
-              <p className="text-xs text-gray-500 mt-3 text-center">
-                Weekly subscriptions are converted to monthly costs (×4.33 weeks/month)
-              </p>
             </div>
           )}
         </div>
