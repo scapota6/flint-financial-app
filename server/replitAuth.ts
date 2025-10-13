@@ -269,7 +269,8 @@ export const isAuthenticated: RequestHandler = async (req, res, next) => {
   // Add debugging breadcrumb header
   res.setHeader('X-Debug-Reason', 'AUTH_CHECKING');
 
-  if (!req.isAuthenticated()) {
+  // Check if user exists (set by JWT middleware or Passport)
+  if (!user) {
     res.setHeader('X-Debug-Reason', 'AUTH_REQUIRED');
     return res.status(401).json({ 
       code: 'AUTH_REQUIRED',
@@ -277,13 +278,21 @@ export const isAuthenticated: RequestHandler = async (req, res, next) => {
     });
   }
 
-  // For local auth users, just check if authenticated
-  if (user?.authType === 'local') {
+  // For JWT auth users, ensure claims structure exists
+  if (!user.claims && user.userId) {
+    user.claims = {
+      sub: user.userId,
+      email: user.email,
+    };
+  }
+
+  // For local/JWT auth users
+  if (user?.authType === 'local' || user?.userId) {
     res.setHeader('X-Debug-Reason', 'OK');
-    // Create claims-like structure for compatibility
+    // Create claims-like structure for compatibility if missing
     if (!user.claims) {
       user.claims = {
-        sub: user.id,
+        sub: user.id || user.userId,
         email: user.email,
         first_name: user.firstName,
         last_name: user.lastName,
@@ -294,11 +303,8 @@ export const isAuthenticated: RequestHandler = async (req, res, next) => {
 
   // For OAuth users, check token expiration
   if (!user?.expires_at) {
-    res.setHeader('X-Debug-Reason', 'AUTH_REQUIRED');
-    return res.status(401).json({ 
-      code: 'AUTH_REQUIRED',
-      message: "Authentication required" 
-    });
+    res.setHeader('X-Debug-Reason', 'OK'); // JWT users don't have expires_at in user object
+    return next();
   }
 
   const now = Math.floor(Date.now() / 1000);
