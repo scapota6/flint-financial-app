@@ -1383,8 +1383,8 @@ function SnapTradeTab() {
   });
 
   const deleteMutation = useMutation({
-    mutationFn: async (flintUserId: string) => {
-      const resp = await apiRequest(`/api/admin-panel/snaptrade/connections/${flintUserId}`, {
+    mutationFn: async (connectionId: number) => {
+      const resp = await apiRequest(`/api/admin-panel/snaptrade/connections/${connectionId}`, {
         method: 'DELETE',
       });
       if (!resp.ok) throw new Error('Failed to delete connection');
@@ -1427,33 +1427,37 @@ function SnapTradeTab() {
               <TableRow className="border-gray-800">
                 <TableHead>User Email</TableHead>
                 <TableHead>Flint User ID</TableHead>
-                <TableHead>User Name</TableHead>
+                <TableHead>Brokerage</TableHead>
                 <TableHead>Connected</TableHead>
+                <TableHead>Last Sync</TableHead>
                 <TableHead>Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {data?.connections?.map((conn: any) => (
-                <TableRow key={conn.flintUserId} className="border-gray-800" data-testid={`row-snaptrade-${conn.flintUserId}`}>
-                  <TableCell className="font-medium" data-testid={`text-email-${conn.flintUserId}`}>
+                <TableRow key={conn.connectionId} className="border-gray-800" data-testid={`row-snaptrade-${conn.connectionId}`}>
+                  <TableCell className="font-medium" data-testid={`text-email-${conn.connectionId}`}>
                     {conn.userEmail || 'Unknown'}
                   </TableCell>
-                  <TableCell data-testid={`text-flint-id-${conn.flintUserId}`}>
+                  <TableCell data-testid={`text-flint-id-${conn.connectionId}`}>
                     {conn.flintUserId}
                   </TableCell>
-                  <TableCell data-testid={`text-name-${conn.flintUserId}`}>
-                    {conn.firstName && conn.lastName ? `${conn.firstName} ${conn.lastName}` : '-'}
+                  <TableCell data-testid={`text-brokerage-${conn.connectionId}`}>
+                    {conn.brokerageName}
                   </TableCell>
-                  <TableCell data-testid={`text-connected-${conn.flintUserId}`}>
-                    {conn.createdAt ? new Date(conn.createdAt).toLocaleDateString() : '-'}
+                  <TableCell data-testid={`text-connected-${conn.connectionId}`}>
+                    {conn.connectedAt ? new Date(conn.connectedAt).toLocaleDateString() : '-'}
+                  </TableCell>
+                  <TableCell data-testid={`text-sync-${conn.connectionId}`}>
+                    {conn.lastSyncAt ? new Date(conn.lastSyncAt).toLocaleDateString() : '-'}
                   </TableCell>
                   <TableCell>
                     <Button
                       variant="destructive"
                       size="sm"
-                      onClick={() => deleteMutation.mutate(conn.flintUserId)}
+                      onClick={() => deleteMutation.mutate(conn.connectionId)}
                       disabled={deleteMutation.isPending}
-                      data-testid={`button-delete-${conn.flintUserId}`}
+                      data-testid={`button-delete-${conn.connectionId}`}
                     >
                       <Trash2 className="h-4 w-4 mr-1" />
                       Disconnect
@@ -1463,7 +1467,7 @@ function SnapTradeTab() {
               ))}
               {(!data?.connections || data.connections.length === 0) && (
                 <TableRow>
-                  <TableCell colSpan={5} className="text-center text-gray-500 py-8">
+                  <TableCell colSpan={6} className="text-center text-gray-500 py-8">
                     No SnapTrade connections found
                   </TableCell>
                 </TableRow>
