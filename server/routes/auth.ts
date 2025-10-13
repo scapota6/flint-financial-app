@@ -3,8 +3,8 @@ import { z } from 'zod';
 import crypto from 'crypto';
 import speakeasy from 'speakeasy';
 import { db } from '../db';
-import { users, passwordResetTokens, auditLogs } from '@shared/schema';
-import { eq, and } from 'drizzle-orm';
+import { users, passwordResetTokens, auditLogs, refreshTokens } from '@shared/schema';
+import { eq, and, ne } from 'drizzle-orm';
 import { validatePassword } from '../lib/password-validation';
 import { 
   hashPassword, 
@@ -28,6 +28,7 @@ import {
   refreshTokensWithRotation
 } from '../lib/auth-tokens';
 import { rateLimits } from '../middleware/rateLimiter';
+import { requireAuth } from '../middleware/jwt-auth';
 
 const router = Router();
 
@@ -38,6 +39,11 @@ const setupPasswordSchema = z.object({
 
 const requestResetSchema = z.object({
   email: z.string().email('Valid email is required'),
+});
+
+const resetPasswordSchema = z.object({
+  token: z.string().min(1, 'Token is required'),
+  password: z.string().min(1, 'Password is required'),
 });
 
 const loginSchema = z.object({
@@ -211,9 +217,6 @@ router.post('/login', rateLimits.login, async (req, res) => {
       }
     }
 
-    // Clear any existing refresh tokens for this user (new login = invalidate old sessions)
-    await revokeAllUserTokens(user.id);
-
     // Generate new access and refresh tokens
     const accessToken = generateAccessToken(user.id, user.email || '');
     const refreshTokenData = generateRefreshToken();
@@ -341,6 +344,352 @@ router.post('/logout', async (req, res) => {
     clearAuthCookies(res);
     return res.status(500).json({
       message: 'An error occurred during logout',
+    });
+  }
+});
+
+// ========================================
+// SESSION MANAGEMENT ENDPOINTS
+// ========================================
+
+// GET /api/auth/sessions - Get list of active sessions
+router.get('/sessions', requireAuth, async (req, res) => {
+  try {
+    const userId = req.user?.userId;
+
+    if (!userId) {
+      return res.status(401).json({
+        message: 'Unauthorized',
+      });
+    }
+
+    // Get current refresh token from cookie
+    const currentRefreshToken = req.cookies.refreshToken;
+    const { hashRefreshToken } = await import('../lib/auth-tokens');
+    const currentHashedToken = currentRefreshToken ? hashRefreshToken(currentRefreshToken) : null;
+
+    // Fetch all active (non-revoked, non-expired) refresh tokens for the user
+    const activeSessions = await db
+      .select()
+      .from(refreshTokens)
+      .where(and(
+        eq(refreshTokens.userId, userId),
+        eq(refreshTokens.revoked, false)
+      ));
+
+    // Filter out expired sessions and format response
+    const now = new Date();
+    const sessions = activeSessions
+      .filter(session => session.expiresAt > now)
+      .map(session => ({
+        id: session.id,
+        deviceInfo: session.deviceInfo,
+        ipAddress: session.ipAddress,
+        createdAt: session.createdAt,
+        lastUsedAt: session.lastUsedAt,
+        isCurrent: session.token === currentHashedToken,
+      }));
+
+    return res.status(200).json({
+      sessions,
+    });
+  } catch (error) {
+    console.error('Error fetching sessions:', error);
+    return res.status(500).json({
+      message: 'Failed to fetch sessions',
+    });
+  }
+});
+
+// DELETE /api/auth/sessions/:tokenId - Revoke specific session
+router.delete('/sessions/:tokenId', requireAuth, async (req, res) => {
+  try {
+    const userId = req.user?.userId;
+    const tokenId = parseInt(req.params.tokenId);
+
+    if (!userId) {
+      return res.status(401).json({
+        message: 'Unauthorized',
+      });
+    }
+
+    if (isNaN(tokenId)) {
+      return res.status(400).json({
+        message: 'Invalid token ID',
+      });
+    }
+
+    // Find the session
+    const [session] = await db
+      .select()
+      .from(refreshTokens)
+      .where(eq(refreshTokens.id, tokenId))
+      .limit(1);
+
+    if (!session) {
+      return res.status(404).json({
+        message: 'Session not found',
+      });
+    }
+
+    // Verify user owns this session
+    if (session.userId !== userId) {
+      return res.status(403).json({
+        message: 'You can only revoke your own sessions',
+      });
+    }
+
+    // Revoke the session
+    await db
+      .update(refreshTokens)
+      .set({
+        revoked: true,
+        revokedAt: new Date(),
+      })
+      .where(eq(refreshTokens.id, tokenId));
+
+    return res.status(200).json({
+      success: true,
+      message: 'Session revoked successfully',
+    });
+  } catch (error) {
+    console.error('Error revoking session:', error);
+    return res.status(500).json({
+      message: 'Failed to revoke session',
+    });
+  }
+});
+
+// DELETE /api/auth/sessions - Revoke all sessions except current
+router.delete('/sessions', requireAuth, async (req, res) => {
+  try {
+    const userId = req.user?.userId;
+
+    if (!userId) {
+      return res.status(401).json({
+        message: 'Unauthorized',
+      });
+    }
+
+    // Get current refresh token from cookie
+    const currentRefreshToken = req.cookies.refreshToken;
+    
+    if (!currentRefreshToken) {
+      // No current session, just revoke all
+      await revokeAllUserTokens(userId);
+    } else {
+      // Revoke all tokens except the current one
+      const { hashRefreshToken } = await import('../lib/auth-tokens');
+      const currentHashedToken = hashRefreshToken(currentRefreshToken);
+
+      // Single optimized query: revoke all user's tokens except the current one
+      await db
+        .update(refreshTokens)
+        .set({
+          revoked: true,
+          revokedAt: new Date(),
+        })
+        .where(and(
+          eq(refreshTokens.userId, userId),
+          eq(refreshTokens.revoked, false),
+          ne(refreshTokens.token, currentHashedToken)
+        ));
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: 'All other sessions have been revoked',
+    });
+  } catch (error) {
+    console.error('Error revoking sessions:', error);
+    return res.status(500).json({
+      message: 'Failed to revoke sessions',
+    });
+  }
+});
+
+// ========================================
+// MFA/TOTP ENDPOINTS
+// ========================================
+
+// POST /api/auth/mfa/setup - Generate TOTP secret and QR code
+router.post('/mfa/setup', requireAuth, async (req, res) => {
+  try {
+    const userId = req.user?.userId;
+    const userEmail = req.user?.email;
+
+    if (!userId) {
+      return res.status(401).json({
+        message: 'Unauthorized',
+      });
+    }
+
+    // Generate TOTP secret
+    const secret = speakeasy.generateSecret({
+      name: `Flint (${userEmail})`,
+      issuer: 'Flint',
+      length: 32,
+    });
+
+    // Return secret and QR code data URI
+    // Note: We don't save to DB yet - wait for verification
+    return res.status(200).json({
+      secret: secret.base32,
+      qrCode: secret.otpauth_url,
+    });
+  } catch (error) {
+    console.error('Error setting up MFA:', error);
+    return res.status(500).json({
+      message: 'Failed to set up MFA',
+    });
+  }
+});
+
+// POST /api/auth/mfa/verify-setup - Verify TOTP and enable MFA
+router.post('/mfa/verify-setup', requireAuth, async (req, res) => {
+  try {
+    const userId = req.user?.userId;
+    const { secret, code } = req.body;
+
+    if (!userId) {
+      return res.status(401).json({
+        message: 'Unauthorized',
+      });
+    }
+
+    if (!secret || !code) {
+      return res.status(400).json({
+        message: 'Secret and code are required',
+      });
+    }
+
+    // Verify the TOTP code
+    const verified = speakeasy.totp.verify({
+      secret,
+      encoding: 'base32',
+      token: code,
+      window: 2, // Allow 2 time steps before/after (60 seconds total)
+    });
+
+    if (!verified) {
+      return res.status(400).json({
+        message: 'Invalid verification code',
+      });
+    }
+
+    // Generate recovery codes
+    const plainRecoveryCodes = generateRecoveryCodes(8);
+    const hashedRecoveryCodes = await hashRecoveryCodes(plainRecoveryCodes);
+
+    // Save MFA settings to database
+    await db
+      .update(users)
+      .set({
+        mfaSecret: secret,
+        mfaEnabled: true,
+        recoveryCodes: hashedRecoveryCodes,
+        updatedAt: new Date(),
+      })
+      .where(eq(users.id, userId));
+
+    // Log the MFA enablement
+    await db.insert(auditLogs).values({
+      userId,
+      adminEmail: req.user?.email || '',
+      action: 'mfa_enabled',
+      details: {
+        timestamp: new Date().toISOString(),
+      },
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: 'MFA enabled successfully',
+      recoveryCodes: plainRecoveryCodes,
+    });
+  } catch (error) {
+    console.error('Error verifying MFA setup:', error);
+    return res.status(500).json({
+      message: 'Failed to verify MFA setup',
+    });
+  }
+});
+
+// DELETE /api/auth/mfa/disable - Disable MFA with password verification
+router.delete('/mfa/disable', requireAuth, async (req, res) => {
+  try {
+    const userId = req.user?.userId;
+    const { password } = req.body;
+
+    if (!userId) {
+      return res.status(401).json({
+        message: 'Unauthorized',
+      });
+    }
+
+    if (!password) {
+      return res.status(400).json({
+        message: 'Password is required to disable MFA',
+      });
+    }
+
+    // Get user from database
+    const [user] = await db
+      .select()
+      .from(users)
+      .where(eq(users.id, userId))
+      .limit(1);
+
+    if (!user) {
+      return res.status(404).json({
+        message: 'User not found',
+      });
+    }
+
+    // Verify password
+    if (!user.passwordHash) {
+      return res.status(400).json({
+        message: 'No password set for this account',
+      });
+    }
+
+    const passwordValid = await verifyPassword(password, user.passwordHash);
+
+    if (!passwordValid) {
+      return res.status(401).json({
+        message: 'Invalid password',
+      });
+    }
+
+    // Disable MFA
+    await db
+      .update(users)
+      .set({
+        mfaEnabled: false,
+        mfaSecret: null,
+        recoveryCodes: null,
+        updatedAt: new Date(),
+      })
+      .where(eq(users.id, userId));
+
+    // Log the MFA disablement
+    await db.insert(auditLogs).values({
+      userId,
+      adminEmail: req.user?.email || '',
+      action: 'mfa_disabled',
+      details: {
+        timestamp: new Date().toISOString(),
+      },
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: 'MFA disabled successfully',
+    });
+  } catch (error) {
+    console.error('Error disabling MFA:', error);
+    return res.status(500).json({
+      message: 'Failed to disable MFA',
     });
   }
 });
@@ -517,10 +866,10 @@ router.post('/request-reset', async (req, res) => {
       });
     }
 
-    // Generate password reset token
+    // Generate password reset token with 30min TTL
     const plainToken = generateSecureToken();
     const tokenHash = hashToken(plainToken);
-    const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+    const expiresAt = new Date(Date.now() + 30 * 60 * 1000); // 30 minutes
 
     // Insert token
     await db.insert(passwordResetTokens).values({
@@ -555,6 +904,131 @@ router.post('/request-reset', async (req, res) => {
     console.error('Error requesting password reset:', error);
     return res.status(500).json({
       message: 'Failed to process password reset request',
+    });
+  }
+});
+
+// POST /api/auth/reset-password - Reset password with token
+router.post('/reset-password', rateLimits.passwordReset, async (req, res) => {
+  try {
+    const parseResult = resetPasswordSchema.safeParse(req.body);
+    
+    if (!parseResult.success) {
+      return res.status(400).json({
+        message: 'Invalid request',
+        errors: parseResult.error.errors.map(e => e.message),
+      });
+    }
+
+    const { token, password } = parseResult.data;
+
+    // Find token in database
+    const tokenHash = hashToken(token);
+    const [resetToken] = await db
+      .select()
+      .from(passwordResetTokens)
+      .where(eq(passwordResetTokens.token, tokenHash))
+      .limit(1);
+
+    // Validate token exists
+    if (!resetToken) {
+      return res.status(400).json({
+        message: 'Invalid or expired reset token',
+      });
+    }
+
+    // Check if token is expired
+    if (new Date() > resetToken.expiresAt) {
+      return res.status(400).json({
+        message: 'Reset token has expired',
+      });
+    }
+
+    // Check if token has been used
+    if (resetToken.used) {
+      return res.status(400).json({
+        message: 'Reset token has already been used',
+      });
+    }
+
+    // Get user
+    const [user] = await db
+      .select()
+      .from(users)
+      .where(eq(users.id, resetToken.userId))
+      .limit(1);
+
+    if (!user) {
+      return res.status(400).json({
+        message: 'User not found',
+      });
+    }
+
+    // Validate password strength
+    const passwordValidation = validatePassword(password, user.email || undefined, user.firstName || undefined);
+    if (!passwordValidation.valid) {
+      return res.status(400).json({
+        message: 'Password does not meet requirements',
+        errors: passwordValidation.errors,
+      });
+    }
+
+    // Check password history (prevent reuse of last 5 passwords)
+    const lastPasswordHashes = user.lastPasswordHashes || [];
+    const isReused = await isPasswordReused(password, lastPasswordHashes);
+    
+    if (isReused) {
+      return res.status(400).json({
+        message: 'Password has been used recently. Please choose a different password.',
+      });
+    }
+
+    // Hash the new password with Argon2id
+    const passwordHash = await hashPassword(password);
+
+    // Update password history (keep last 5 passwords)
+    const updatedPasswordHistory = updatePasswordHistory(passwordHash, lastPasswordHashes, 5);
+
+    // Update user password and history in database
+    await db.transaction(async (tx) => {
+      await tx
+        .update(users)
+        .set({
+          passwordHash,
+          lastPasswordHashes: updatedPasswordHistory,
+          emailVerified: true, // Mark email as verified on password reset
+          updatedAt: new Date(),
+        })
+        .where(eq(users.id, user.id));
+
+      // Mark token as used
+      await tx
+        .update(passwordResetTokens)
+        .set({
+          used: true,
+        })
+        .where(eq(passwordResetTokens.id, resetToken.id));
+    });
+
+    // Log the password reset
+    await db.insert(auditLogs).values({
+      userId: user.id,
+      adminEmail: user.email || '',
+      action: 'password_reset',
+      details: {
+        timestamp: new Date().toISOString(),
+        method: 'password_reset_token',
+      },
+    });
+
+    return res.status(200).json({
+      message: 'Password has been reset successfully',
+      success: true,
+    });
+  } catch (error) {
+    console.error('Error resetting password:', error);
+    return res.status(500).json({
+      message: 'Failed to reset password',
     });
   }
 });

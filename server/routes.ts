@@ -5,7 +5,7 @@ import crypto from "crypto";
 import { v4 as uuidv4 } from 'uuid';
 import { Snaptrade } from "snaptrade-typescript-sdk";
 import { storage } from "./storage";
-import { setupAuth, isAuthenticated } from "./replitAuth";
+import { requireAuth } from "./middleware/jwt-auth";
 import { getSnapUser } from "./store/snapUsers";
 import { rateLimits } from "./middleware/rateLimiter";
 import { authApi, accountsApi, snaptradeClient, portfolioApi, tradingApi, listBrokerageAuthorizations, detailBrokerageAuthorization } from './lib/snaptrade';
@@ -51,9 +51,6 @@ if (process.env.STRIPE_SECRET_KEY) {
 // SnapTrade SDK initialization is now handled in server/lib/snaptrade.ts
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Auth middleware
-  await setupAuth(app);
-  
   // Start alert monitoring service
   alertMonitor.start();
 
@@ -281,7 +278,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // GET /api/me endpoint - returns current user info
-  app.get('/api/me', rateLimits.auth, isAuthenticated, async (req: any, res) => {
+  app.get('/api/me', rateLimits.auth, requireAuth, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
       const user = await storage.getUser(userId);
@@ -313,7 +310,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
 
   // Auth routes (with rate limiting)
-  app.get('/api/auth/user', rateLimits.auth, isAuthenticated, async (req: any, res) => {
+  app.get('/api/auth/user', rateLimits.auth, requireAuth, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
       const user = await storage.getUser(userId);
@@ -352,7 +349,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Dashboard data (with data rate limiting) - Enhanced with real API integration
-  app.get('/api/dashboard', rateLimits.data, isAuthenticated, async (req: any, res) => {
+  app.get('/api/dashboard', rateLimits.data, requireAuth, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
       const userEmail = req.user.claims.email;
@@ -714,7 +711,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
 
   // Log user login activity with SnapTrade registration check
-  app.post('/api/log-login', isAuthenticated, async (req: any, res) => {
+  app.post('/api/log-login', requireAuth, async (req: any, res) => {
     try {
       // Best-effort analytics logging
       const userId = req.user.claims.sub;
@@ -737,7 +734,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Account connection management
-  app.get('/api/connected-accounts', isAuthenticated, async (req: any, res) => {
+  app.get('/api/connected-accounts', requireAuth, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
       const accounts = await storage.getConnectedAccounts(userId);
@@ -749,7 +746,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Trading page accounts endpoint - returns brokerage accounts for trading
-  app.get('/api/accounts', isAuthenticated, async (req: any, res) => {
+  app.get('/api/accounts', requireAuth, async (req: any, res) => {
     try {
       console.log('[/api/accounts] User object:', req.user ? 'exists' : 'missing');
       console.log('[/api/accounts] User claims:', req.user?.claims ? 'exists' : 'missing');
@@ -800,7 +797,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Subscriptions endpoint - detect recurring payments from bank transactions
-  app.get('/api/subscriptions', isAuthenticated, async (req: any, res) => {
+  app.get('/api/subscriptions', requireAuth, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
       
@@ -872,7 +869,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Watchlist management
-  app.get('/api/watchlist', isAuthenticated, async (req: any, res) => {
+  app.get('/api/watchlist', requireAuth, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
       const watchlist = await storage.getWatchlist(userId);
@@ -883,7 +880,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/watchlist', isAuthenticated, async (req: any, res) => {
+  app.post('/api/watchlist', requireAuth, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
       
@@ -900,7 +897,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete('/api/watchlist/:id', isAuthenticated, async (req: any, res) => {
+  app.delete('/api/watchlist/:id', requireAuth, async (req: any, res) => {
     try {
       const { id } = req.params;
       const userId = req.user.claims.sub;
@@ -914,7 +911,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Wallet Service Routes
-  app.get('/api/wallet/balance', rateLimits.data, isAuthenticated, async (req: any, res) => {
+  app.get('/api/wallet/balance', rateLimits.data, requireAuth, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
       const balance = await WalletService.getWalletBalance(userId);
@@ -925,7 +922,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/wallet/hold', rateLimits.trading, isAuthenticated, async (req: any, res) => {
+  app.post('/api/wallet/hold', rateLimits.trading, requireAuth, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
       const { amount, purpose } = req.body;
@@ -937,7 +934,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/wallet/allocate', rateLimits.trading, isAuthenticated, async (req: any, res) => {
+  app.post('/api/wallet/allocate', rateLimits.trading, requireAuth, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
       const { amount, brokerageId, purpose } = req.body;
@@ -949,7 +946,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/transfers/ach', rateLimits.external, isAuthenticated, async (req: any, res) => {
+  app.post('/api/transfers/ach', rateLimits.external, requireAuth, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
       const { fromAccountId, toAccountId, amount } = req.body;
@@ -962,7 +959,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Search endpoint for assets (stocks and crypto)
-  app.get('/api/search', rateLimits.data, isAuthenticated, async (req: any, res) => {
+  app.get('/api/search', rateLimits.data, requireAuth, async (req: any, res) => {
     try {
       const { q: query, type = 'all' } = req.query;
       
@@ -1043,7 +1040,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Transactions endpoint - fetch from SnapTrade and Teller
-  app.get('/api/transactions', rateLimits.data, isAuthenticated, async (req: any, res) => {
+  app.get('/api/transactions', rateLimits.data, requireAuth, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
       const user = await storage.getUser(userId);
@@ -1197,7 +1194,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
 
   // Trading Aggregation Routes
-  app.get('/api/trading/positions', rateLimits.data, isAuthenticated, async (req: any, res) => {
+  app.get('/api/trading/positions', rateLimits.data, requireAuth, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
       const positions = await TradingAggregator.getAggregatedPositions(userId);
@@ -1208,7 +1205,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/trading/route', rateLimits.trading, isAuthenticated, async (req: any, res) => {
+  app.post('/api/trading/route', rateLimits.trading, requireAuth, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
       const tradingRequest = { ...req.body, userId };
@@ -1220,7 +1217,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/trading/execute', rateLimits.trading, isAuthenticated, async (req: any, res) => {
+  app.post('/api/trading/execute', rateLimits.trading, requireAuth, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
       const tradingRequest = { ...req.body, userId };
@@ -1233,7 +1230,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Trade management  
-  app.get('/api/trades', rateLimits.data, isAuthenticated, async (req: any, res) => {
+  app.get('/api/trades', rateLimits.data, requireAuth, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
       const trades = await storage.getTrades(userId);
@@ -1244,7 +1241,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/trades', isAuthenticated, async (req: any, res) => {
+  app.post('/api/trades', requireAuth, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
       
@@ -1281,7 +1278,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Enhanced SnapTrade order placement with UUID
-  app.post('/api/snaptrade/place-order', rateLimits.trading, isAuthenticated, async (req: any, res) => {
+  app.post('/api/snaptrade/place-order', rateLimits.trading, requireAuth, async (req: any, res) => {
     try {
       if (!snaptradeClient) {
         return res.status(500).json({ message: 'SnapTrade client not initialized' });
@@ -1373,7 +1370,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Transfer management
-  app.get('/api/transfers', isAuthenticated, async (req: any, res) => {
+  app.get('/api/transfers', requireAuth, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
       const transfers = await storage.getTransfers(userId);
@@ -1384,7 +1381,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/transfers', isAuthenticated, async (req: any, res) => {
+  app.post('/api/transfers', requireAuth, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
       
@@ -1415,7 +1412,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Activity logs
-  app.get('/api/activity', isAuthenticated, async (req: any, res) => {
+  app.get('/api/activity', requireAuth, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
       const activities = await storage.getActivityLogs(userId);
@@ -1427,7 +1424,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Payment routes (Stripe integration)
-  app.post('/api/create-payment-intent', isAuthenticated, async (req: any, res) => {
+  app.post('/api/create-payment-intent', requireAuth, async (req: any, res) => {
     try {
       if (!stripe) {
         return res.status(500).json({ message: "Payment processing not configured" });
@@ -1451,7 +1448,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/confirm-subscription', isAuthenticated, async (req: any, res) => {
+  app.post('/api/confirm-subscription', requireAuth, async (req: any, res) => {
     try {
       const { tier } = req.body;
       const userId = req.user.claims.sub;
@@ -1475,7 +1472,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Create subscription with Lemon Squeezy
-  app.post('/api/create-subscription', isAuthenticated, async (req: any, res) => {
+  app.post('/api/create-subscription', requireAuth, async (req: any, res) => {
     try {
       const { tier, billingFrequency } = req.body;
       
@@ -1684,7 +1681,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Teller.io API routes (simplified working version)
-  app.post('/api/teller/connect-init', isAuthenticated, async (req: any, res) => {
+  app.post('/api/teller/connect-init', requireAuth, async (req: any, res) => {
     try {
       if (!process.env.TELLER_APPLICATION_ID) {
         return res.status(500).json({ message: "Teller not configured. Please add TELLER_APPLICATION_ID to environment variables." });
@@ -1701,7 +1698,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/teller/exchange-token', isAuthenticated, async (req: any, res) => {
+  app.post('/api/teller/exchange-token', requireAuth, async (req: any, res) => {
     try {
       const { token } = req.body;
       const userId = req.user.claims.sub;
@@ -1789,7 +1786,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
 // Clean replacement section for after the Teller exchange route
   // Teller.io bank account re-connection route for external popup flow
-  app.post('/api/stock/external/teller', isAuthenticated, async (req: any, res) => {
+  app.post('/api/stock/external/teller', requireAuth, async (req: any, res) => {
     try {
       const { token } = req.body;
       const userId = req.user.claims.sub;
@@ -1876,7 +1873,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // DELETE account disconnect route
-  app.delete('/api/accounts/:provider/:id', isAuthenticated, async (req: any, res) => {
+  app.delete('/api/accounts/:provider/:id', requireAuth, async (req: any, res) => {
     try {
       const { provider, id: accountId } = req.params;
       const user = req.user;
@@ -1986,7 +1983,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // SnapTrade registration endpoint (Saturday night working version)
-  app.post('/api/snaptrade/register', rateLimits.auth, isAuthenticated, async (req: any, res) => {
+  app.post('/api/snaptrade/register', rateLimits.auth, requireAuth, async (req: any, res) => {
     try {
       const email = req.user.claims.email?.toLowerCase();
       
@@ -2159,7 +2156,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   
   // Disconnect account endpoint
-  app.post('/api/accounts/disconnect', isAuthenticated, async (req: any, res) => {
+  app.post('/api/accounts/disconnect', requireAuth, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
       const { accountId } = req.body;
@@ -2184,7 +2181,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Account details endpoint that maps local account IDs to external account IDs
-  app.get('/api/accounts/:accountId/details', isAuthenticated, async (req: any, res) => {
+  app.get('/api/accounts/:accountId/details', requireAuth, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
       const { accountId } = req.params;
@@ -2646,7 +2643,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Credit card payment route using Teller Payments API
-  app.post('/api/accounts/:localAccountId/pay', isAuthenticated, async (req: any, res) => {
+  app.post('/api/accounts/:localAccountId/pay', requireAuth, async (req: any, res) => {
     const { amount, paymentType } = req.body; // paymentType: 'minimum', 'statement', 'custom'
     
     try {
@@ -2810,7 +2807,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Legacy route removed - duplicate of the main account details route at line 1910
 
   // Account details route that maps internal IDs to external IDs (with provider)
-  app.get('/api/accounts/:provider/:accountId/details', isAuthenticated, async (req: any, res) => {
+  app.get('/api/accounts/:provider/:accountId/details', requireAuth, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
       const { provider, accountId } = req.params;
@@ -2888,7 +2885,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   const resolveSnapTradeContext = async (req, res, next) => {
     try {
       // Get Flint user ID
-      if (!req.isAuthenticated()) {
+      if (!req.requireAuth()) {
         return res.status(401).json({
           error: {
             code: 'UNAUTHORIZED',
