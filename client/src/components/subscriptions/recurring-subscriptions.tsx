@@ -60,7 +60,7 @@ export default function RecurringSubscriptions() {
   });
 
   // Fetch user subscription tier
-  const { data: userData } = useQuery({
+  const { data: userData } = useQuery<{ subscriptionTier?: string }>({
     queryKey: ['/api/auth/user'],
     enabled: !!user,
   });
@@ -197,11 +197,11 @@ export default function RecurringSubscriptions() {
         <CardTitle className="flex items-center justify-between">
           <span>Recurring Subscriptions</span>
           <div className="flex items-center gap-2">
-            <Badge variant="secondary" className="bg-purple-600/20 text-purple-400">
+            <Badge variant="secondary" className="bg-purple-600/20 text-purple-400" data-testid="badge-active-count">
               {subscriptions.length} Active
             </Badge>
-            {monthlyRounded > 0 && (
-              <Badge variant="secondary" className="bg-green-600/20 text-green-400">
+            {monthlyRounded > 0 && !isFreeTier && (
+              <Badge variant="secondary" className="bg-green-600/20 text-green-400" data-testid="badge-monthly-spend">
                 {formatCurrency(monthlyRounded)}/mo
               </Badge>
             )}
@@ -209,73 +209,103 @@ export default function RecurringSubscriptions() {
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="space-y-2 max-h-[400px] overflow-y-auto">
-          {subscriptions.length > 0 ? (
-            subscriptions.map((subscription) => (
-              <div 
-                key={subscription.id} 
-                className="flex items-center justify-between p-3 bg-gray-800/50 rounded-lg hover:bg-gray-800 transition-colors"
-              >
-                <div className="flex items-center space-x-3">
-                  <div className={`p-2 rounded-lg border ${getCategoryColor(subscription.category)}`}>
-                    {getCategoryIcon(subscription.category)}
+        <div className="relative">
+          {/* Subscription List - Blurred for Free tier */}
+          <div className={`space-y-2 max-h-[400px] overflow-y-auto ${isFreeTier && subscriptions.length > 0 ? 'blur-md pointer-events-none select-none' : ''}`}>
+            {subscriptions.length > 0 ? (
+              subscriptions.map((subscription) => (
+                <div 
+                  key={subscription.id} 
+                  className="flex items-center justify-between p-3 bg-gray-800/50 rounded-lg hover:bg-gray-800 transition-colors"
+                  data-testid={`subscription-item-${subscription.id}`}
+                >
+                  <div className="flex items-center space-x-3">
+                    <div className={`p-2 rounded-lg border ${getCategoryColor(subscription.category)}`}>
+                      {getCategoryIcon(subscription.category)}
+                    </div>
+                    <div>
+                      <div className="font-semibold text-white">{subscription.merchantName}</div>
+                      <div className="text-sm text-gray-400 flex items-center gap-2">
+                        <span>{getFrequencyLabel(subscription.frequency)}</span>
+                        <span>•</span>
+                        <span>{subscription.accountName}</span>
+                        <span className={`${getConfidenceColor(subscription.confidence)}`}>
+                          ({Math.round(subscription.confidence * 100)}% confidence)
+                        </span>
+                      </div>
+                    </div>
                   </div>
-                  <div>
-                    <div className="font-semibold text-white">{subscription.merchantName}</div>
-                    <div className="text-sm text-gray-400 flex items-center gap-2">
-                      <span>{getFrequencyLabel(subscription.frequency)}</span>
-                      <span>•</span>
-                      <span>{subscription.accountName}</span>
-                      <span className={`${getConfidenceColor(subscription.confidence)}`}>
-                        ({Math.round(subscription.confidence * 100)}% confidence)
-                      </span>
+                  
+                  <div className="text-right">
+                    <div className="font-semibold text-white">
+                      {formatCurrency(subscription.amount)}
+                    </div>
+                    {subscription.frequency !== 'monthly' && (
+                      <div className="text-xs text-gray-500">
+                        ≈ {formatCurrency(getMonthlyEquivalent(subscription.amount, subscription.frequency))}/mo
+                      </div>
+                    )}
+                    <div className="text-sm text-gray-400 flex items-center justify-end gap-1">
+                      <Calendar className="h-3 w-3" />
+                      Next: {formatDate(subscription.nextBillingDate)}
                     </div>
                   </div>
                 </div>
-                
-                <div className="text-right">
-                  <div className="font-semibold text-white">
-                    {formatCurrency(subscription.amount)}
+              ))
+            ) : (
+              <div className="text-center py-8 text-gray-400">
+                <DollarSign className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                <p className="text-lg mb-2">No recurring subscriptions found</p>
+                <p className="text-sm">Connect your bank accounts to automatically detect recurring payments</p>
+              </div>
+            )}
+          </div>
+
+          {/* Upgrade Overlay for Free Tier */}
+          {isFreeTier && subscriptions.length > 0 && (
+            <div className="absolute inset-0 flex items-center justify-center z-10" data-testid="upgrade-overlay">
+              <div className="text-center p-6 bg-gray-900/95 rounded-lg border-2 border-purple-500/50 backdrop-blur-sm max-w-md">
+                <div className="flex items-center justify-center mb-4">
+                  <div className="p-3 bg-purple-600/20 rounded-full">
+                    <Crown className="h-8 w-8 text-purple-400" />
                   </div>
-                  {subscription.frequency !== 'monthly' && (
-                    <div className="text-xs text-gray-500">
-                      ≈ {formatCurrency(getMonthlyEquivalent(subscription.amount, subscription.frequency))}/mo
-                    </div>
-                  )}
-                  <div className="text-sm text-gray-400 flex items-center justify-end gap-1">
-                    <Calendar className="h-3 w-3" />
-                    Next: {formatDate(subscription.nextBillingDate)}
-                  </div>
+                </div>
+                <h3 className="text-xl font-bold text-white mb-2">Unlock Subscription Details</h3>
+                <p className="text-gray-400 mb-4">
+                  Upgrade to Basic, Pro, or Premium to view detailed subscription information including merchant names, amounts, and billing dates.
+                </p>
+                <Link href="/settings?tab=billing">
+                  <Button className="bg-purple-600 hover:bg-purple-700 text-white" data-testid="button-upgrade">
+                    <Crown className="h-4 w-4 mr-2" />
+                    Upgrade Plan
+                  </Button>
+                </Link>
+                <p className="text-xs text-gray-500 mt-3">
+                  You can see that you have {subscriptions.length} active {subscriptions.length === 1 ? 'subscription' : 'subscriptions'}
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* Summary - Only visible for non-Free tier */}
+          {subscriptions.length > 0 && !isFreeTier && (
+            <div className="mt-6 pt-4 border-t border-gray-800">
+              <div className="grid grid-cols-2 gap-4 text-sm">
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-400">Total Monthly</span>
+                  <span className="text-white font-semibold" data-testid="text-total-monthly">{formatCurrency(monthlyRounded)}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-400">Annual Cost</span>
+                  <span className="text-white font-semibold" data-testid="text-annual-cost">{formatCurrency(monthlyRounded * 12)}</span>
                 </div>
               </div>
-            ))
-          ) : (
-            <div className="text-center py-8 text-gray-400">
-              <DollarSign className="h-12 w-12 mx-auto mb-4 opacity-50" />
-              <p className="text-lg mb-2">No recurring subscriptions found</p>
-              <p className="text-sm">Connect your bank accounts to automatically detect recurring payments</p>
+              <p className="text-xs text-gray-500 mt-3 text-center">
+                Weekly subscriptions are converted to monthly costs (×4.33 weeks/month)
+              </p>
             </div>
           )}
         </div>
-
-        {/* Summary */}
-        {subscriptions.length > 0 && (
-          <div className="mt-6 pt-4 border-t border-gray-800">
-            <div className="grid grid-cols-2 gap-4 text-sm">
-              <div className="flex items-center justify-between">
-                <span className="text-gray-400">Total Monthly</span>
-                <span className="text-white font-semibold">{formatCurrency(monthlyRounded)}</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-gray-400">Annual Cost</span>
-                <span className="text-white font-semibold">{formatCurrency(monthlyRounded * 12)}</span>
-              </div>
-            </div>
-            <p className="text-xs text-gray-500 mt-3 text-center">
-              Weekly subscriptions are converted to monthly costs (×4.33 weeks/month)
-            </p>
-          </div>
-        )}
 
         {/* Data source info */}
         <div className="text-xs text-gray-500 text-center pt-4 mt-4 border-t border-gray-800">
