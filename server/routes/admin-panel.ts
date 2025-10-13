@@ -14,7 +14,7 @@ import {
   passwordResetTokens,
   emailLogs,
 } from '@shared/schema';
-import { eq, desc, and, sql, count, gte, lte } from 'drizzle-orm';
+import { eq, desc, and, sql, count, gte, lte, inArray } from 'drizzle-orm';
 import { sendApprovalEmail, sendRejectionEmail, sendPasswordResetEmail } from '../services/email';
 import { hashToken, generateSecureToken } from '../lib/token-utils';
 import { getAllSnapUsers } from '../store/snapUsers';
@@ -390,7 +390,7 @@ router.get('/users', requireAuth, requireAdmin(), async (req: any, res) => {
   }
 });
 
-// DELETE /api/admin/users/:userId - Soft delete user (ban)
+// DELETE /api/admin-panel/users/:userId - Permanently delete user and all their data
 router.delete('/users/:userId', requireAuth, requireAdmin(), async (req: any, res) => {
   try {
     const { userId } = req.params;
@@ -409,26 +409,95 @@ router.delete('/users/:userId', requireAuth, requireAdmin(), async (req: any, re
       return res.status(403).json({ message: 'Cannot delete admin users' });
     }
 
-    // Soft delete by setting isBanned to true
-    await db
-      .update(users)
-      .set({ 
-        isBanned: true,
-        updatedAt: new Date(),
-      })
-      .where(eq(users.id, userId));
+    // Import all necessary tables
+    const { 
+      snaptradeConnections, 
+      snaptradeUsers,
+      snaptradeAccounts,
+      snaptradeBalances,
+      snaptradePositions,
+      snaptradeOrders,
+      snaptradeActivities,
+      snaptradeOptionHoldings,
+      connectedAccounts, 
+      refreshTokens,
+      holdings,
+      watchlist,
+      priceAlerts,
+      alertHistory,
+      trades,
+      transfers,
+      activityLog,
+      emailLogs,
+      passwordResetTokens,
+      notificationPreferences
+    } = await import('@shared/schema');
+
+    // Hard delete user and all related data (cascade)
+    // Order matters to avoid foreign key violations
+    
+    // 1. Get all SnapTrade account IDs for this user
+    const userAccounts = await db
+      .select({ id: snaptradeAccounts.id })
+      .from(snaptradeAccounts)
+      .innerJoin(snaptradeConnections, eq(snaptradeAccounts.connectionId, snaptradeConnections.id))
+      .where(eq(snaptradeConnections.flintUserId, userId));
+    
+    const accountIds = userAccounts.map(a => a.id);
+    
+    // 2. Delete SnapTrade data linked to accounts
+    if (accountIds.length > 0) {
+      await db.delete(snaptradeActivities).where(inArray(snaptradeActivities.accountId, accountIds));
+      await db.delete(snaptradeOptionHoldings).where(inArray(snaptradeOptionHoldings.accountId, accountIds));
+      await db.delete(snaptradeOrders).where(inArray(snaptradeOrders.accountId, accountIds));
+      await db.delete(snaptradePositions).where(inArray(snaptradePositions.accountId, accountIds));
+      await db.delete(snaptradeBalances).where(inArray(snaptradeBalances.accountId, accountIds));
+      await db.delete(snaptradeAccounts).where(inArray(snaptradeAccounts.id, accountIds));
+    }
+    
+    // 3. Delete SnapTrade connections and user
+    await db.delete(snaptradeConnections).where(eq(snaptradeConnections.flintUserId, userId));
+    await db.delete(snaptradeUsers).where(eq(snaptradeUsers.flintUserId, userId));
+    
+    // 4. Delete connected accounts and related data
+    await db.delete(holdings).where(eq(holdings.userId, userId));
+    await db.delete(connectedAccounts).where(eq(connectedAccounts.userId, userId));
+    
+    // 5. Delete trading and financial data
+    await db.delete(trades).where(eq(trades.userId, userId));
+    await db.delete(transfers).where(eq(transfers.userId, userId));
+    await db.delete(watchlist).where(eq(watchlist.userId, userId));
+    
+    // 6. Delete price alerts (alertHistory will cascade via FK)
+    await db.delete(priceAlerts).where(eq(priceAlerts.userId, userId));
+    
+    // 7. Delete user auth data
+    await db.delete(refreshTokens).where(eq(refreshTokens.userId, userId));
+    await db.delete(passwordResetTokens).where(eq(passwordResetTokens.userId, userId));
+    
+    // 8. Delete logs and preferences
+    await db.delete(activityLog).where(eq(activityLog.userId, userId));
+    await db.delete(notificationPreferences).where(eq(notificationPreferences.userId, userId));
+    
+    // 6. Finally, delete the user
+    await db.delete(users).where(eq(users.id, userId));
 
     await logAdminAction(
       req.adminEmail,
-      'ban_user',
-      { userId, email: user.email },
-      userId
+      'delete_user_permanent',
+      { userId, email: user.email, deletedAt: new Date().toISOString() }
     );
 
-    res.json({ message: 'User banned successfully' });
+    res.json({ 
+      message: 'User permanently deleted',
+      deletedUser: {
+        email: user.email,
+        id: userId
+      }
+    });
   } catch (error) {
-    console.error('Error banning user:', error);
-    res.status(500).json({ message: 'Failed to ban user' });
+    console.error('Error permanently deleting user:', error);
+    res.status(500).json({ message: 'Failed to permanently delete user' });
   }
 });
 

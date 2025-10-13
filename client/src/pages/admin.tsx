@@ -694,9 +694,24 @@ function UsersTab() {
       <Dialog open={actionDialog === 'delete'} onOpenChange={() => setActionDialog(null)}>
         <DialogContent className="bg-gray-900 border-gray-800">
           <DialogHeader>
-            <DialogTitle>Delete User</DialogTitle>
-            <DialogDescription>
-              Are you sure you want to delete {selectedUser?.email}? This will ban the user.
+            <DialogTitle className="text-red-500">Permanently Delete User</DialogTitle>
+            <DialogDescription className="space-y-2">
+              <p className="text-white font-semibold">
+                Are you sure you want to permanently delete {selectedUser?.email}?
+              </p>
+              <p className="text-yellow-500">
+                ⚠️ This will permanently erase all user data including:
+              </p>
+              <ul className="list-disc list-inside text-gray-300 text-sm space-y-1 ml-2">
+                <li>Login credentials and authentication data</li>
+                <li>All connected bank and brokerage accounts</li>
+                <li>Trading history, holdings, and transfers</li>
+                <li>Watchlists, alerts, and preferences</li>
+                <li>All activity logs and records</li>
+              </ul>
+              <p className="text-red-400 font-semibold mt-3">
+                This action cannot be undone.
+              </p>
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
@@ -709,7 +724,7 @@ function UsersTab() {
               disabled={deleteMutation.isPending}
               data-testid="button-confirm-delete"
             >
-              Delete
+              Permanently Delete User
             </Button>
           </DialogFooter>
         </DialogContent>
