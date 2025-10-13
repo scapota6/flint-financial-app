@@ -109,7 +109,8 @@ router.post("/save-account", requireAuth, async (req: any, res) => {
     const user = await storage.getUser(userId);
     const existingAccounts = await storage.getConnectedAccounts(userId);
     const accountLimit = getAccountLimit(user?.subscriptionTier || 'free');
-    const availableSlots = Math.max(0, accountLimit - existingAccounts.length);
+    const isUnlimited = accountLimit === null;
+    const availableSlots = isUnlimited ? Infinity : Math.max(0, accountLimit - existingAccounts.length);
     
     // Get set of already-connected Teller account IDs
     const existingTellerIds = new Set(
@@ -127,14 +128,14 @@ router.post("/save-account", requireAuth, async (req: any, res) => {
       tier: user?.subscriptionTier || 'free',
       limit: accountLimit,
       existingCount: existingAccounts.length,
-      availableSlots,
+      availableSlots: isUnlimited ? 'unlimited' : availableSlots,
       totalFromTeller: accounts.length,
       newAccounts: newAccounts.length,
       duplicates: duplicateCount
     });
     
-    // If no slots available, reject all new accounts
-    if (availableSlots === 0 && newAccounts.length > 0) {
+    // If no slots available, reject all new accounts (skip check for unlimited)
+    if (!isUnlimited && availableSlots === 0 && newAccounts.length > 0) {
       logger.warn("No available slots for new accounts", { userId });
       return res.status(403).json({
         success: false,
@@ -147,8 +148,8 @@ router.post("/save-account", requireAuth, async (req: any, res) => {
       });
     }
     
-    // Save up to availableSlots new accounts
-    const accountsToSave = newAccounts.slice(0, availableSlots);
+    // Save new accounts (unlimited users get all, others get up to availableSlots)
+    const accountsToSave = isUnlimited ? newAccounts : newAccounts.slice(0, availableSlots);
     const rejectedCount = newAccounts.length - accountsToSave.length;
     
     // Store each account in database with better naming
@@ -262,7 +263,8 @@ router.post("/exchange-token", requireAuth, async (req: any, res) => {
     const user = await storage.getUser(userId);
     const existingAccounts = await storage.getConnectedAccounts(userId);
     const accountLimit = getAccountLimit(user?.subscriptionTier || 'free');
-    const availableSlots = Math.max(0, accountLimit - existingAccounts.length);
+    const isUnlimited = accountLimit === null;
+    const availableSlots = isUnlimited ? Infinity : Math.max(0, accountLimit - existingAccounts.length);
     
     // Get set of already-connected Teller account IDs
     const existingTellerIds = new Set(
@@ -280,14 +282,14 @@ router.post("/exchange-token", requireAuth, async (req: any, res) => {
       tier: user?.subscriptionTier || 'free',
       limit: accountLimit,
       existingCount: existingAccounts.length,
-      availableSlots,
+      availableSlots: isUnlimited ? 'unlimited' : availableSlots,
       totalFromTeller: accounts.length,
       newAccounts: newAccounts.length,
       duplicates: duplicateCount
     });
     
-    // If no slots available, reject all new accounts
-    if (availableSlots === 0 && newAccounts.length > 0) {
+    // If no slots available, reject all new accounts (skip check for unlimited)
+    if (!isUnlimited && availableSlots === 0 && newAccounts.length > 0) {
       logger.warn("No available slots for new accounts", { userId });
       return res.status(403).json({
         success: false,
@@ -300,8 +302,8 @@ router.post("/exchange-token", requireAuth, async (req: any, res) => {
       });
     }
     
-    // Save up to availableSlots new accounts
-    const accountsToSave = newAccounts.slice(0, availableSlots);
+    // Save new accounts (unlimited users get all, others get up to availableSlots)
+    const accountsToSave = isUnlimited ? newAccounts : newAccounts.slice(0, availableSlots);
     const rejectedCount = newAccounts.length - accountsToSave.length;
     
     // Store each account in database
