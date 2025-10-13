@@ -250,7 +250,13 @@ export default function SimpleConnectButtons({ accounts, userTier, isAdmin }: Si
 
       // Handle both Response and plain JSON from apiRequest
       const data = (typeof resp?.json === 'function') ? await resp.json() : resp;
-      if (resp?.ok === false || (resp?.status && !resp.ok)) throw new Error(data?.message || "Failed to start SnapTrade Connect");
+      
+      // Preserve full error response for better error handling
+      if (resp?.ok === false || (resp?.status && !resp.ok)) {
+        const error: any = new Error(data?.message || "Failed to start SnapTrade Connect");
+        error.response = { data }; // Attach full response data
+        throw error;
+      }
 
       const url: string | undefined = data?.redirectUrl;
       if (!url) throw new Error("No SnapTrade Connect URL returned");
@@ -264,22 +270,23 @@ export default function SimpleConnectButtons({ accounts, userTier, isAdmin }: Si
     onError: (error: any) => {
       console.error('📈 SnapTrade Connect Error:', error);
       
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      // Parse error response from backend
+      const errorData = error?.response?.data || error;
+      const userMessage = errorData?.message || (error instanceof Error ? error.message : 'Unknown error');
+      const suggestion = errorData?.suggestion || '';
       
-      // Check for credential errors
-      if (errorMessage.includes('credentials') || errorMessage.includes('503')) {
-        toast({
-          title: "Service Temporarily Unavailable",
-          description: "The brokerage connection service is experiencing issues. Please try again later or contact support.",
-          variant: "destructive",
-        });
-      } else {
-        toast({
-          title: "Connection Failed",
-          description: errorMessage,
-          variant: "destructive",
-        });
-      }
+      // Display user-friendly error message
+      toast({
+        title: "Brokerage Connection Unavailable",
+        description: (
+          <div className="space-y-2">
+            <p>{userMessage}</p>
+            {suggestion && <p className="text-sm opacity-90">{suggestion}</p>}
+          </div>
+        ),
+        variant: "destructive",
+        duration: 10000, // Show longer for important service errors
+      });
     },
   });
 

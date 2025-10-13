@@ -128,9 +128,24 @@ router.post("/snaptrade/register", requireAuth, async (req: any, res) => {
       userId: req.user?.claims?.sub
     });
     
-    res.status(500).json({ 
-      message: "Failed to register with SnapTrade",
-      error: error.response?.data?.detail || error.message
+    // Handle SnapTrade API specific errors with user-friendly messages
+    let statusCode = 500;
+    let userMessage = "Unable to connect to brokerage service";
+    let errorDetails = error.response?.data?.detail || error.message;
+    
+    // SnapTrade API error - provide helpful message
+    if (error.response?.status === 400 || error.response?.status === 401) {
+      statusCode = 503; // Service Unavailable - external API issue
+      userMessage = "Brokerage connection service is temporarily unavailable. This is a known issue with our provider. Please try again later or contact support.";
+    } else if (error.message?.includes('credentials') || error.message?.includes('authentication')) {
+      statusCode = 503;
+      userMessage = "Brokerage service authentication error. Our team has been notified. Please try again later.";
+    }
+    
+    res.status(statusCode).json({ 
+      message: userMessage,
+      technicalDetails: errorDetails,
+      suggestion: "If this issue persists, please contact support@flint-investing.com"
     });
   }
 });
