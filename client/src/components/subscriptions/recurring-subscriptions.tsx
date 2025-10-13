@@ -3,6 +3,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { apiRequest } from '@/lib/queryClient';
+import { useAuth } from '@/hooks/useAuth';
+import { Link } from 'wouter';
 import { 
   Calendar, 
   DollarSign, 
@@ -13,7 +15,9 @@ import {
   Code, 
   Dumbbell,
   Building2,
-  Package
+  Package,
+  Lock,
+  Crown
 } from 'lucide-react';
 
 interface RecurringSubscription {
@@ -40,6 +44,8 @@ interface SubscriptionData {
 }
 
 export default function RecurringSubscriptions() {
+  const { user } = useAuth();
+  
   const { data, isLoading, error } = useQuery<SubscriptionData>({
     queryKey: ['/api/subscriptions'],
     queryFn: async () => {
@@ -53,10 +59,20 @@ export default function RecurringSubscriptions() {
     refetchInterval: 30 * 60 * 1000, // Refresh every 30 minutes
   });
 
+  // Fetch user subscription tier
+  const { data: userData } = useQuery({
+    queryKey: ['/api/auth/user'],
+    enabled: !!user,
+  });
+
   const subscriptions = data?.subscriptions || [];
   const totalMonthlySpend = data?.totalMonthlySpend || 0;
   // Round monthly total for consistent math display
   const monthlyRounded = Math.round(totalMonthlySpend * 100) / 100;
+  
+  // Check if user is on Free tier
+  const userTier = userData?.subscriptionTier || 'free';
+  const isFreeTier = userTier === 'free';
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
