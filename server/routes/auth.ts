@@ -4,7 +4,14 @@ import crypto from 'crypto';
 import { db } from '../db';
 import { users, passwordResetTokens } from '@shared/schema';
 import { eq, and } from 'drizzle-orm';
-import { hashPassword, validatePasswordStrength } from '../lib/password-utils';
+import { validatePassword } from '../lib/password-validation';
+import { 
+  hashPassword, 
+  generateRecoveryCodes, 
+  hashRecoveryCodes,
+  updatePasswordHistory,
+  isPasswordReused 
+} from '../lib/argon2-utils';
 import { hashToken, verifyToken, generateSecureToken } from '../lib/token-utils';
 import { sendPasswordResetEmail, sendApprovalEmail } from '../services/email';
 
@@ -33,20 +40,7 @@ router.post('/setup-password', async (req, res) => {
 
     const { token, password } = parseResult.data;
 
-    // Validate password strength
-    const validation = validatePasswordStrength(password);
-    if (!validation.valid) {
-      return res.status(400).json({
-        message: 'Password does not meet requirements',
-        errors: validation.errors,
-      });
-    }
-
-    // Hash the plain token from the user to compare with stored hash
-    const tokenHash = hashToken(token);
-
     // Find all non-expired, unused tokens and verify against our hash
-    // We need to get all tokens because we can't query by hash directly
     const allTokens = await db
       .select()
       .from(passwordResetTokens)
@@ -74,7 +68,7 @@ router.post('/setup-password', async (req, res) => {
       });
     }
 
-    // Check if token has already been used (double-check)
+    // Check if token has already been used
     if (resetToken.used) {
       return res.status(400).json({
         message: 'Token has already been used',
@@ -93,16 +87,50 @@ router.post('/setup-password', async (req, res) => {
       });
     }
 
-    // Hash password
+    // Hardened password validation (12-128 chars, 3 of 4 classes, common passwords, etc.)
+    const validation = validatePassword(password, user.email || undefined);
+    if (!validation.valid) {
+      return res.status(400).json({
+        message: 'Password does not meet security requirements',
+        errors: validation.errors,
+      });
+    }
+
+    // Check password history to prevent reuse
+    if (user.lastPasswordHashes && user.lastPasswordHashes.length > 0) {
+      const isReused = await isPasswordReused(password, user.lastPasswordHashes);
+      if (isReused) {
+        return res.status(400).json({
+          message: 'Password has been used recently. Please choose a different password.',
+          errors: ['This password has been used recently'],
+        });
+      }
+    }
+
+    // Hash password using Argon2id
     const passwordHash = await hashPassword(password);
 
-    // Update user password and mark token as used in a transaction
+    // Generate recovery codes (8 codes)
+    const plainRecoveryCodes = generateRecoveryCodes(8);
+    const hashedRecoveryCodes = await hashRecoveryCodes(plainRecoveryCodes);
+
+    // Update password history
+    const updatedPasswordHistory = updatePasswordHistory(
+      passwordHash, 
+      user.lastPasswordHashes || [], 
+      5
+    );
+
+    // Update user password and recovery codes in a transaction
     await db.transaction(async (tx) => {
-      // Update user password
+      // Update user with new password, recovery codes, and mark email as verified
       await tx
         .update(users)
         .set({
           passwordHash,
+          recoveryCodes: hashedRecoveryCodes,
+          lastPasswordHashes: updatedPasswordHistory,
+          emailVerified: true,
           updatedAt: new Date(),
         })
         .where(eq(users.id, user.id));
@@ -119,6 +147,7 @@ router.post('/setup-password', async (req, res) => {
     return res.status(200).json({
       message: 'Password set successfully',
       success: true,
+      recoveryCodes: plainRecoveryCodes, // Send plain codes to user once
     });
   } catch (error) {
     console.error('Error setting up password:', error);
