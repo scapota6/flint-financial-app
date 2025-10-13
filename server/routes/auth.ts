@@ -153,14 +153,14 @@ router.post('/login', rateLimits.login, async (req, res) => {
       });
     }
 
-    // AFTER password is verified, check email verification status
-    // It's safe to show specific errors now because the user proved they know the password
-    if (!user.emailVerified) {
-      await logLoginAttempt(email, false, user.id, ipAddress, userAgent, 'Email not verified');
-      return res.status(401).json({
-        message: 'Please verify your email address to log in',
-      });
-    }
+    // Email verification disabled - users can log in immediately after account creation
+    // Uncomment below to re-enable email verification requirement:
+    // if (!user.emailVerified) {
+    //   await logLoginAttempt(email, false, user.id, ipAddress, userAgent, 'Email not verified');
+    //   return res.status(401).json({
+    //     message: 'Please verify your email address to log in',
+    //   });
+    // }
 
     // AFTER password is verified, check if user is banned
     // It's safe to show specific errors now because the user proved they know the password
