@@ -57,7 +57,9 @@ export default function SimpleConnectButtons({ accounts, userTier, isAdmin }: Si
               title: "Accounts Synced",
               description: `Successfully synced ${syncData.syncedCount} account(s)`,
             });
-            // Refresh dashboard
+            // Refresh dashboard - invalidate all dashboard-related queries
+            await queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+            await queryClient.invalidateQueries({ queryKey: ['/api/accounts'] });
             await queryClient.invalidateQueries({ queryKey: ['/api/dashboard'] });
           }
         } catch (error) {
@@ -188,7 +190,8 @@ export default function SimpleConnectButtons({ accounts, userTier, isAdmin }: Si
                 
                 const saveData = await saveResponse.json();
                 
-                // Refresh data
+                // Refresh data - invalidate all dashboard-related queries
+                queryClient.invalidateQueries({ queryKey: ['dashboard'] });
                 queryClient.invalidateQueries({ queryKey: ['/api/accounts'] });
                 queryClient.invalidateQueries({ queryKey: ['/api/dashboard'] });
                 
