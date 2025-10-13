@@ -81,12 +81,20 @@ export function generateRecoveryCodes(count: number = 8): string[] {
   const codes: string[] = [];
   
   for (let i = 0; i < count; i++) {
-    // Generate 12 random bytes, convert to alphanumeric
-    const bytes = crypto.randomBytes(6);
-    const code = bytes.toString('base64')
+    // Generate 9 random bytes to ensure we get at least 12 alphanumeric characters
+    const bytes = crypto.randomBytes(9);
+    let code = bytes.toString('base64')
       .replace(/[^A-Za-z0-9]/g, '')
-      .toUpperCase()
-      .slice(0, 12);
+      .toUpperCase();
+    
+    // Ensure we have at least 12 characters, pad if needed
+    while (code.length < 12) {
+      const extraBytes = crypto.randomBytes(3);
+      code += extraBytes.toString('base64').replace(/[^A-Za-z0-9]/g, '').toUpperCase();
+    }
+    
+    // Take exactly 12 characters
+    code = code.slice(0, 12);
     
     // Format: XXXX-XXXX-XXXX
     const formatted = `${code.slice(0, 4)}-${code.slice(4, 8)}-${code.slice(8, 12)}`;

@@ -8,17 +8,36 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
-import { CheckCircle2, XCircle, Loader2, Eye, EyeOff } from "lucide-react";
+import { CheckCircle2, XCircle, Loader2, Eye, EyeOff, Download, Copy } from "lucide-react";
+import { 
+  Dialog, 
+  DialogContent, 
+  DialogDescription, 
+  DialogHeader, 
+  DialogTitle 
+} from "@/components/ui/dialog";
 import { Progress } from "@/components/ui/progress";
 
-// Password validation schema
+// Hardened password validation schema (12-128 chars, 3 of 4 character classes)
 const passwordSetupSchema = z.object({
   password: z.string()
-    .min(8, "Password must be at least 8 characters long")
-    .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
-    .regex(/[a-z]/, "Password must contain at least one lowercase letter")
-    .regex(/[0-9]/, "Password must contain at least one number")
-    .regex(/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/, "Password must contain at least one special character"),
+    .min(12, "Password must be at least 12 characters long")
+    .max(128, "Password must not exceed 128 characters")
+    .refine(
+      (password) => password === password.trim(),
+      "Password cannot have leading or trailing spaces"
+    )
+    .refine(
+      (password) => {
+        let characterClassCount = 0;
+        if (/[a-z]/.test(password)) characterClassCount++;
+        if (/[A-Z]/.test(password)) characterClassCount++;
+        if (/[0-9]/.test(password)) characterClassCount++;
+        if (/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?`~]/.test(password)) characterClassCount++;
+        return characterClassCount >= 3;
+      },
+      "Password must include at least 3 of 4 types: lowercase, uppercase, digit, symbol"
+    ),
   confirmPassword: z.string().min(1, "Please confirm your password"),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Passwords don't match",
@@ -27,22 +46,28 @@ const passwordSetupSchema = z.object({
 
 type PasswordSetupFormValues = z.infer<typeof passwordSetupSchema>;
 
-// Password strength calculator
+// Password strength calculator (updated for 12-char minimum)
 function calculatePasswordStrength(password: string): { score: number; label: string; color: string } {
   let score = 0;
   
-  if (password.length >= 8) score += 20;
-  if (password.length >= 12) score += 10;
+  // Length scoring (minimum 12)
+  if (password.length >= 12) score += 20;
   if (password.length >= 16) score += 10;
+  if (password.length >= 20) score += 10;
+  
+  // Character diversity
   if (/[a-z]/.test(password)) score += 15;
   if (/[A-Z]/.test(password)) score += 15;
   if (/[0-9]/.test(password)) score += 15;
-  if (/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) score += 15;
+  if (/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?`~]/.test(password)) score += 15;
+  
+  // Bonus for spaces (passphrase indicator)
+  if (/\s/.test(password) && password.trim() === password) score += 5;
 
-  if (score <= 30) return { score, label: "Weak", color: "bg-red-500" };
+  if (score <= 40) return { score, label: "Weak", color: "bg-red-500" };
   if (score <= 60) return { score, label: "Fair", color: "bg-yellow-500" };
   if (score <= 80) return { score, label: "Good", color: "bg-blue-500" };
-  return { score: 100, label: "Strong", color: "bg-green-500" };
+  return { score: Math.min(score, 100), label: "Strong", color: "bg-green-500" };
 }
 
 // Password requirements checker
@@ -51,12 +76,20 @@ interface PasswordRequirement {
   test: (password: string) => boolean;
 }
 
+// Helper to count character classes
+function countCharacterClasses(password: string): number {
+  let count = 0;
+  if (/[a-z]/.test(password)) count++;
+  if (/[A-Z]/.test(password)) count++;
+  if (/[0-9]/.test(password)) count++;
+  if (/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?`~]/.test(password)) count++;
+  return count;
+}
+
 const passwordRequirements: PasswordRequirement[] = [
-  { label: "At least 8 characters", test: (p) => p.length >= 8 },
-  { label: "One uppercase letter", test: (p) => /[A-Z]/.test(p) },
-  { label: "One lowercase letter", test: (p) => /[a-z]/.test(p) },
-  { label: "One number", test: (p) => /[0-9]/.test(p) },
-  { label: "One special character", test: (p) => /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(p) },
+  { label: "12-128 characters", test: (p) => p.length >= 12 && p.length <= 128 },
+  { label: "No leading/trailing spaces", test: (p) => p === p.trim() },
+  { label: "3 of 4 types: lowercase, uppercase, digit, symbol", test: (p) => countCharacterClasses(p) >= 3 },
 ];
 
 export default function PasswordSetup() {
@@ -67,6 +100,8 @@ export default function PasswordSetup() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [passwordValue, setPasswordValue] = useState("");
+  const [recoveryCodes, setRecoveryCodes] = useState<string[]>([]);
+  const [showRecoveryCodes, setShowRecoveryCodes] = useState(false);
 
   const form = useForm<PasswordSetupFormValues>({
     resolver: zodResolver(passwordSetupSchema),
@@ -125,15 +160,20 @@ export default function PasswordSetup() {
         throw new Error(result.message || "Failed to set up password");
       }
 
-      toast({
-        title: "Success!",
-        description: "Your password has been set up successfully. Redirecting to login...",
-      });
-
-      // Redirect to login after 2 seconds
-      setTimeout(() => {
-        window.location.href = "/api/login";
-      }, 2000);
+      // Show recovery codes if returned
+      if (result.recoveryCodes && result.recoveryCodes.length > 0) {
+        setRecoveryCodes(result.recoveryCodes);
+        setShowRecoveryCodes(true);
+      } else {
+        // No recovery codes, redirect directly
+        toast({
+          title: "Success!",
+          description: "Your password has been set up successfully. Redirecting to login...",
+        });
+        setTimeout(() => {
+          window.location.href = "/api/login";
+        }, 2000);
+      }
     } catch (error: any) {
       toast({
         title: "Error",
@@ -319,6 +359,96 @@ export default function PasswordSetup() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Recovery Codes Dialog */}
+      <Dialog open={showRecoveryCodes} onOpenChange={setShowRecoveryCodes}>
+        <DialogContent className="bg-gray-800 border-gray-700 max-w-lg" data-testid="dialog-recovery-codes">
+          <DialogHeader>
+            <DialogTitle className="text-white text-xl">Save Your Recovery Codes</DialogTitle>
+            <DialogDescription className="text-gray-400">
+              Store these recovery codes in a safe place. You'll need them to access your account if you lose your password or 2FA device.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4">
+            <div className="bg-gray-900 p-4 rounded-lg">
+              <div className="grid grid-cols-2 gap-2">
+                {recoveryCodes.map((code, index) => (
+                  <div 
+                    key={index} 
+                    className="font-mono text-sm text-gray-300 bg-gray-800 p-2 rounded"
+                    data-testid={`recovery-code-${index}`}
+                  >
+                    {code}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="flex gap-2">
+              <Button
+                onClick={() => {
+                  navigator.clipboard.writeText(recoveryCodes.join('\n'));
+                  toast({
+                    title: "Copied!",
+                    description: "Recovery codes copied to clipboard",
+                  });
+                }}
+                variant="outline"
+                className="flex-1 border-gray-600 hover:bg-gray-700"
+                data-testid="button-copy-codes"
+              >
+                <Copy className="h-4 w-4 mr-2" />
+                Copy Codes
+              </Button>
+              <Button
+                onClick={() => {
+                  const blob = new Blob([recoveryCodes.join('\n')], { type: 'text/plain' });
+                  const url = URL.createObjectURL(blob);
+                  const a = document.createElement('a');
+                  a.href = url;
+                  a.download = 'flint-recovery-codes.txt';
+                  a.click();
+                  URL.revokeObjectURL(url);
+                  toast({
+                    title: "Downloaded!",
+                    description: "Recovery codes saved to file",
+                  });
+                }}
+                variant="outline"
+                className="flex-1 border-gray-600 hover:bg-gray-700"
+                data-testid="button-download-codes"
+              >
+                <Download className="h-4 w-4 mr-2" />
+                Download
+              </Button>
+            </div>
+
+            <div className="bg-yellow-900/20 border border-yellow-700/50 rounded-lg p-3">
+              <p className="text-sm text-yellow-400">
+                <strong>Warning:</strong> Each recovery code can only be used once. Store them securely offline.
+              </p>
+            </div>
+
+            <Button
+              onClick={() => {
+                setShowRecoveryCodes(false);
+                toast({
+                  title: "Success!",
+                  description: "Redirecting to login...",
+                });
+                setTimeout(() => {
+                  window.location.href = "/api/login";
+                }, 1500);
+              }}
+              className="w-full bg-blue-600 hover:bg-blue-700"
+              data-testid="button-continue"
+            >
+              I've Saved My Codes - Continue to Login
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
