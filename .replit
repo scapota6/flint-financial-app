@@ -67,3 +67,4 @@ localPort = 45589
 externalPort = 5173
 
 [agent]
+integrations = ["resend:1.0.0"]
