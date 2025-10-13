@@ -98,182 +98,7 @@ type Props = {
   localAccountId?: string; // Local database ID
 };
 
-// PayCardSection component for capability-based credit card payments
-const PayCardSection: React.FC<{
-  creditCardInfo: any;
-  accountId: string;
-  onPaymentRequested: (amount: number, type: string) => void;
-}> = ({ creditCardInfo, accountId, onPaymentRequested }) => {
-  const [selectedFromAccount, setSelectedFromAccount] = React.useState<string>('');
-  const [paymentCapability, setPaymentCapability] = React.useState<{canPay: boolean, reason?: string} | null>(null);
-  const [showPaymentForm, setShowPaymentForm] = React.useState(false);
-  
-  // Fetch user's checking/savings accounts for payment source selection
-  const { data: bankAccounts } = useQuery({
-    queryKey: ['/api/accounts/banks'],
-    enabled: true,
-    queryFn: async () => {
-      const response = await fetch('/api/accounts/banks', {
-        credentials: 'include'
-      });
-      if (!response.ok) throw new Error('Failed to fetch accounts');
-      return response.json();
-    }
-  });
-  
-  const checkingAccounts = bankAccounts?.accounts?.filter(
-    (acc: any) => acc.type === 'checking' || acc.type === 'savings'
-  ) || [];
-
-  // Check payment capability when from account is selected
-  const checkCapabilityMutation = useMutation({
-    mutationFn: async (fromAccountId: string) => {
-      const csrfToken = await getCsrfToken();
-      const response = await apiRequest(`/api/payment-capability`, {
-        method: 'POST',
-        headers: {
-          'x-csrf-token': csrfToken,
-        },
-        body: JSON.stringify({
-          fromAccountId,
-          toAccountId: accountId
-        })
-      });
-      const data = await response.json();
-      return data;
-    },
-    onSuccess: (data) => {
-      setPaymentCapability(data);
-    }
-  });
-
-  React.useEffect(() => {
-    if (selectedFromAccount) {
-      checkCapabilityMutation.mutate(selectedFromAccount);
-    } else {
-      setPaymentCapability(null);
-      setShowPaymentForm(false);
-    }
-  }, [selectedFromAccount]);
-
-  // Show Pay Card button only if payment capability check shows canPay = true
-  const shouldShowPayButton = paymentCapability?.canPay && checkingAccounts.length > 0;
-
-  return (
-    <section>
-      <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center">
-        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center text-white font-bold text-sm mr-3">💳</div>
-        Pay Your Card
-      </h3>
-      
-      {/* Check funding accounts availability first */}
-      {checkingAccounts.length === 0 ? (
-        <div className="p-4 bg-gray-50 dark:bg-gray-900/20 rounded-lg border border-gray-200 dark:border-gray-700">
-          <p className="text-gray-600 dark:text-gray-400 text-sm">
-            Connect a checking or savings account to enable credit card payments.
-          </p>
-        </div>
-      ) : (
-        <div className="space-y-4">
-          {/* Account Selection */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Pay from account:
-            </label>
-            <select
-              value={selectedFromAccount}
-              onChange={(e) => setSelectedFromAccount(e.target.value)}
-              className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
-            >
-              <option value="">Select an account...</option>
-              {checkingAccounts.map((account: any) => (
-                <option key={account.id} value={account.externalId}>
-                  {account.name} ({account.institutionName}) (...{account.lastFour || 'XXXX'}) - {fmtMoney(account.balance)}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Payment capability check results */}
-          {paymentCapability && (
-            <div>
-              {paymentCapability.canPay ? (
-                !showPaymentForm ? (
-                  // Show Pay Card button when capability confirmed
-                  <div className="text-center">
-                    <button
-                      onClick={() => setShowPaymentForm(true)}
-                      className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium"
-                    >
-                      Pay Card
-                    </button>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
-                      Payments processed securely via Zelle/bill-pay
-                    </p>
-                  </div>
-                ) : (
-                  // Payment amount selection form
-                  <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
-                    <h4 className="font-semibold text-green-800 dark:text-green-400 mb-3">Choose Payment Amount</h4>
-                    <div className="space-y-2">
-                      {creditCardInfo.minimumDue && (
-                        <button
-                          onClick={() => onPaymentRequested(creditCardInfo.minimumDue, 'minimum')}
-                          className="w-full px-4 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-sm text-left"
-                        >
-                          <div className="font-medium">Pay Minimum Due</div>
-                          <div className="text-blue-100">{fmtMoney(creditCardInfo.minimumDue)}</div>
-                        </button>
-                      )}
-                      {creditCardInfo.statementBalance && (
-                        <button
-                          onClick={() => onPaymentRequested(creditCardInfo.statementBalance, 'statement')}
-                          className="w-full px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm text-left"
-                        >
-                          <div className="font-medium">Pay Statement Balance</div>
-                          <div className="text-green-100">{fmtMoney(creditCardInfo.statementBalance)}</div>
-                        </button>
-                      )}
-                      <button
-                        onClick={() => onPaymentRequested(0, 'custom')}
-                        className="w-full px-4 py-3 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition-colors text-sm text-left"
-                      >
-                        <div className="font-medium">Custom Amount</div>
-                        <div className="text-purple-100">Enter your own amount</div>
-                      </button>
-                    </div>
-                    <button
-                      onClick={() => setShowPaymentForm(false)}
-                      className="mt-3 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200"
-                    >
-                      ← Back
-                    </button>
-                  </div>
-                )
-              ) : (
-                // Subtle info banner for unsupported payments (not an error)
-                <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
-                  <div className="flex items-start">
-                    <div className="flex-shrink-0">
-                      <svg className="h-5 w-5 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
-                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-                      </svg>
-                    </div>
-                    <div className="ml-3">
-                      <p className="text-sm text-blue-800 dark:text-blue-200">
-                        This issuer doesn't support in-app payments for this account. Use your bank or card app to pay.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-      )}
-    </section>
-  );
-};
+// PayCardSection component removed - showing "Coming Soon" instead
 
 interface AccountDetails {
   accountInformation: {
@@ -1454,46 +1279,22 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
 
             {/* e) Statements - Built into the credit card layout above */}
 
-            {/* 4. Pay Card Button - Capability-based for Teller Credit Cards ONLY */}
+            {/* 4. Card Payments - COMING SOON */}
             {data.provider === 'teller' && data.creditCardInfo && (
               <section>
                 <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center">
-                  <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center text-white font-bold text-sm mr-3">💳</div>
+                  <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-gray-400 to-gray-500 flex items-center justify-center text-white font-bold text-sm mr-3">💳</div>
                   Card Payments
                 </h3>
-                
-                {/* Check if payments are supported - capability-based */}
-                {data.paymentCapabilities?.canPay ? (
-                  <div className="p-4 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-lg border border-green-200 dark:border-green-800">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <h4 className="font-semibold text-green-800 dark:text-green-200">Payments Available</h4>
-                        <p className="text-sm text-green-600 dark:text-green-300 mt-1">You can make payments using Zelle through this account.</p>
-                      </div>
-                      <button
-                        onClick={() => alert('Payment feature would open here')}
-                        className="px-6 py-2 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-colors"
-                        data-testid="button-pay-card"
-                      >
-                        Pay Card
-                      </button>
-                    </div>
+                <div className="p-6 bg-gradient-to-r from-gray-50 to-slate-50 dark:from-gray-800/20 dark:to-slate-800/20 rounded-xl border border-gray-200 dark:border-gray-700 text-center">
+                  <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-purple-100 to-blue-100 dark:from-purple-900/30 dark:to-blue-900/30 flex items-center justify-center">
+                    <span className="text-2xl">💳</span>
                   </div>
-                ) : (
-                  <div className="p-4 bg-gradient-to-r from-gray-50 to-slate-50 dark:from-gray-800/20 dark:to-slate-800/20 rounded-lg border border-gray-200 dark:border-gray-700">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
-                        <span className="text-gray-500 dark:text-gray-400 text-sm">ℹ️</span>
-                      </div>
-                      <div>
-                        <h4 className="font-semibold text-gray-700 dark:text-gray-300">Payments Not Available</h4>
-                        <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                          This institution does not support Teller payments in sandbox mode. In production, check if your bank supports Zelle payments.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                )}
+                  <h4 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2">COMING SOON</h4>
+                  <p className="text-gray-600 dark:text-gray-400 text-sm">
+                    Credit card payment functionality will be available in a future release.
+                  </p>
+                </div>
               </section>
             )}
 
