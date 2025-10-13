@@ -38,9 +38,9 @@ async function getCredentials() {
 async function getResendClient() {
   const credentials = await getCredentials();
   
-  // Use the configured from_email from the connector, or fallback to default
-  // Note: Custom domains need to be verified in Resend first
-  const fromEmail = credentials.fromEmail || 'Flint <onboarding@resend.dev>';
+  // Use the verified subdomain: updates.flint-investing.com
+  // Any address @updates.flint-investing.com will work
+  const fromEmail = 'Flint <updates@updates.flint-investing.com>';
   
   return {
     client: new Resend(credentials.apiKey),
@@ -79,19 +79,11 @@ async function sendEmail(
   try {
     const { client, fromEmail } = await getResendClient();
     
-    // Determine the reply-to address based on the from domain
-    // If using custom domain, use support@flint-investing.com
-    // Otherwise use a safe fallback
-    const replyTo = fromEmail.includes('flint-investing.com') 
-      ? 'support@flint-investing.com'
-      : undefined; // Let Resend handle default reply-to for sandbox domain
-    
     const result = await client.emails.send({
       from: fromEmail,
       to: [to],
       subject,
       html,
-      ...(replyTo && { replyTo }),
     });
 
     // Resend SDK returns { data, error } - check for errors
@@ -259,6 +251,7 @@ function getApprovalEmailTemplate(firstName: string, passwordSetupLink: string):
           
           <div class="footer">
             <p>If you didn't request a Flint account, please ignore this email.</p>
+            <p><strong>Questions or need help?</strong> Email <a href="mailto:support@flint-investing.com" style="color: #4F46E5;">support@flint-investing.com</a></p>
             <p>© ${new Date().getFullYear()} Flint. All rights reserved.</p>
           </div>
         </div>
@@ -349,6 +342,7 @@ function getRejectionEmailTemplate(firstName: string): string {
           
           <div class="footer">
             <p>This email was sent to you regarding your Flint account application.</p>
+            <p><strong>Questions or need help?</strong> Email <a href="mailto:support@flint-investing.com" style="color: #4F46E5;">support@flint-investing.com</a></p>
             <p>© ${new Date().getFullYear()} Flint. All rights reserved.</p>
           </div>
         </div>
@@ -474,6 +468,7 @@ function getPasswordResetEmailTemplate(firstName: string, resetLink: string): st
           <div class="footer">
             <p>This email was sent to you because a password reset was requested for your Flint account.</p>
             <p>If you didn't request this, please ignore this email or contact support if you have concerns.</p>
+            <p><strong>Questions or need help?</strong> Email <a href="mailto:support@flint-investing.com" style="color: #4F46E5;">support@flint-investing.com</a></p>
             <p>© ${new Date().getFullYear()} Flint. All rights reserved.</p>
           </div>
         </div>
@@ -556,13 +551,13 @@ function getTestEmailTemplate(recipientName: string): string {
             <div class="info-box">
               <ul style="margin: 0; padding-left: 20px;">
                 <li><strong>Sending works:</strong> Emails are being delivered successfully</li>
-                <li><strong>Custom domain:</strong> Sent from updates@flint-investing.com</li>
-                <li><strong>Reply-to configured:</strong> Replies will go to support@flint-investing.com</li>
+                <li><strong>Custom domain:</strong> Sent from updates@updates.flint-investing.com</li>
+                <li><strong>Support contact:</strong> Displayed in email footer (support@flint-investing.com)</li>
                 <li><strong>Email templates:</strong> HTML formatting is rendering correctly</li>
               </ul>
             </div>
             
-            <p>Try replying to this email to test the reply-to functionality. Your reply should be directed to support@flint-investing.com.</p>
+            <p>Check the email footer below for the support contact. Users can email support@flint-investing.com for any questions or help.</p>
             
             <p>All systems are operational and ready for production use!</p>
             
@@ -573,6 +568,7 @@ function getTestEmailTemplate(recipientName: string): string {
           <div class="footer">
             <p>This is an automated test email from Flint.</p>
             <p>Sent at: ${new Date().toLocaleString()}</p>
+            <p><strong>Questions or need help?</strong> Email <a href="mailto:support@flint-investing.com" style="color: #4F46E5;">support@flint-investing.com</a></p>
             <p>© ${new Date().getFullYear()} Flint. All rights reserved.</p>
           </div>
         </div>
