@@ -128,6 +128,15 @@ export default function Portfolio() {
   // Fetch portfolio history for chart
   const { data: history } = useQuery<PortfolioHistory>({
     queryKey: ['/api/portfolio/history', selectedPeriod],
+    queryFn: async () => {
+      const response = await fetch(`/api/portfolio/history?period=${selectedPeriod}`, {
+        credentials: 'include'
+      });
+      if (!response.ok) {
+        throw new Error('Failed to fetch portfolio history');
+      }
+      return response.json();
+    },
     enabled: !!summary && connectedAccounts.length > 0
   });
 
