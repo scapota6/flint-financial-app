@@ -85,6 +85,18 @@ export function getInstitutionLogo(accountName: string) {
     };
   }
   
+  if (institutionName.includes('pnc')) {
+    return {
+      logo: <img 
+        src={`https://cdn.brandfetch.io/pnc.com?c=${BRANDFETCH_CLIENT_ID}`}
+        alt={displayName}
+        className="h-10 w-10 object-contain p-1"
+      />,
+      bgClass: 'bg-orange-600/20',
+      textClass: 'text-orange-600'
+    };
+  }
+  
   if (institutionName.includes('wells fargo')) {
     return {
       logo: <img 
@@ -130,6 +142,103 @@ export function getInstitutionLogo(accountName: string) {
       />,
       bgClass: 'bg-slate-600/20',
       textClass: 'text-slate-600'
+    };
+  }
+  
+  // Brokerage institutions
+  if (institutionName.includes('fidelity')) {
+    return {
+      logo: <img 
+        src={`https://cdn.brandfetch.io/fidelity.com?c=${BRANDFETCH_CLIENT_ID}`}
+        alt={displayName}
+        className="h-10 w-10 object-contain p-1"
+      />,
+      bgClass: 'bg-emerald-600/20',
+      textClass: 'text-emerald-600'
+    };
+  }
+  
+  if (institutionName.includes('schwab') || institutionName.includes('charles schwab')) {
+    return {
+      logo: <img 
+        src={`https://cdn.brandfetch.io/schwab.com?c=${BRANDFETCH_CLIENT_ID}`}
+        alt={displayName}
+        className="h-10 w-10 object-contain p-1"
+      />,
+      bgClass: 'bg-blue-700/20',
+      textClass: 'text-blue-700'
+    };
+  }
+  
+  if (institutionName.includes('etrade') || institutionName.includes('e*trade') || institutionName.includes('e-trade')) {
+    return {
+      logo: <img 
+        src={`https://cdn.brandfetch.io/etrade.com?c=${BRANDFETCH_CLIENT_ID}`}
+        alt={displayName}
+        className="h-10 w-10 object-contain p-1"
+      />,
+      bgClass: 'bg-purple-700/20',
+      textClass: 'text-purple-700'
+    };
+  }
+  
+  if (institutionName.includes('td ameritrade') || institutionName.includes('thinkorswim')) {
+    return {
+      logo: <img 
+        src={`https://cdn.brandfetch.io/tdameritrade.com?c=${BRANDFETCH_CLIENT_ID}`}
+        alt={displayName}
+        className="h-10 w-10 object-contain p-1"
+      />,
+      bgClass: 'bg-green-700/20',
+      textClass: 'text-green-700'
+    };
+  }
+  
+  if (institutionName.includes('interactive brokers') || institutionName.includes('ibkr')) {
+    return {
+      logo: <img 
+        src={`https://cdn.brandfetch.io/interactivebrokers.com?c=${BRANDFETCH_CLIENT_ID}`}
+        alt={displayName}
+        className="h-10 w-10 object-contain p-1"
+      />,
+      bgClass: 'bg-red-700/20',
+      textClass: 'text-red-700'
+    };
+  }
+  
+  if (institutionName.includes('webull')) {
+    return {
+      logo: <img 
+        src={`https://cdn.brandfetch.io/webull.com?c=${BRANDFETCH_CLIENT_ID}`}
+        alt={displayName}
+        className="h-10 w-10 object-contain p-1"
+      />,
+      bgClass: 'bg-yellow-600/20',
+      textClass: 'text-yellow-600'
+    };
+  }
+  
+  if (institutionName.includes('vanguard')) {
+    return {
+      logo: <img 
+        src={`https://cdn.brandfetch.io/vanguard.com?c=${BRANDFETCH_CLIENT_ID}`}
+        alt={displayName}
+        className="h-10 w-10 object-contain p-1"
+      />,
+      bgClass: 'bg-red-800/20',
+      textClass: 'text-red-800'
+    };
+  }
+  
+  if (institutionName.includes('merrill') || institutionName.includes('merrill lynch')) {
+    return {
+      logo: <img 
+        src={`https://cdn.brandfetch.io/ml.com?c=${BRANDFETCH_CLIENT_ID}`}
+        alt={displayName}
+        className="h-10 w-10 object-contain p-1"
+      />,
+      bgClass: 'bg-blue-800/20',
+      textClass: 'text-blue-800'
     };
   }
   

@@ -156,7 +156,11 @@ export default function AccountCard({ account }: AccountCardProps) {
                 {account.type === 'credit' ? 'Amount Spent This Cycle' : 'Available Balance'}
               </p>
               <p className={`text-2xl font-bold ${account.type === 'credit' ? 'text-red-500' : 'text-green-500'}`}>
-                {formatCurrency(account.balance)}
+                {formatCurrency(
+                  account.type === 'credit' 
+                    ? (account.amountSpent ?? (account.balance < 0 ? Math.abs(account.balance) : account.balance))
+                    : account.balance
+                )}
               </p>
               
               {/* Subtitle based on account type */}
