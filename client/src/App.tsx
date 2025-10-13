@@ -6,6 +6,8 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/contexts/ThemeContext";
+import { ActivityProvider } from "@/contexts/ActivityContext";
+import { ActivityTimeoutModal } from "@/components/ActivityTimeoutModal";
 import GlobalNavbar from "@/components/layout/global-navbar";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -73,6 +75,7 @@ function Router() {
   return (
     <>
       {isAuthenticated && <GlobalNavbar />}
+      {isAuthenticated && <ActivityTimeoutModal />}
       <div className={isAuthenticated ? "pt-16" : ""}>
         <AnimatePresence mode="wait">
           <Suspense fallback={<PageLoader />}>
@@ -165,12 +168,14 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
-        <TooltipProvider>
-          <div>
-            <Toaster />
-            <Router />
-          </div>
-        </TooltipProvider>
+        <ActivityProvider>
+          <TooltipProvider>
+            <div>
+              <Toaster />
+              <Router />
+            </div>
+          </TooltipProvider>
+        </ActivityProvider>
       </ThemeProvider>
     </QueryClientProvider>
   );

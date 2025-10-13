@@ -7,6 +7,7 @@ import { eq, and, lte } from 'drizzle-orm';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'development-secret-key-change-in-production';
 const ACCESS_TOKEN_EXPIRY = '20m'; // 20 minutes - matches inactivity timeout
+export const ACCESS_TOKEN_COOKIE_MAX_AGE = 20 * 60 * 1000; // 20 minutes in ms - MUST match ACCESS_TOKEN_EXPIRY
 const REFRESH_TOKEN_EXPIRY_DAYS = 7; // 7 days
 
 export interface AccessTokenPayload {
@@ -23,7 +24,7 @@ export interface RefreshTokenData {
 }
 
 /**
- * Generate an access token (JWT) with 15-minute expiry
+ * Generate an access token (JWT) with 20-minute expiry
  */
 export function generateAccessToken(userId: string, email: string): string {
   const payload: AccessTokenPayload = {
@@ -94,6 +95,16 @@ export function verifyRefreshToken(token: string, hashedToken: string): boolean 
 }
 
 /**
+ * Issue a proactive token refresh (sliding window)
+ * Generates a new access token when the current one is expiring soon
+ * Does NOT rotate refresh token - that only happens on explicit /api/auth/refresh
+ * @returns New access token
+ */
+export function issueProactiveRefresh(userId: string, email: string): string {
+  return generateAccessToken(userId, email);
+}
+
+/**
  * Set authentication cookies (httpOnly, Secure, SameSite=Strict)
  */
 export function setCookies(
@@ -107,7 +118,7 @@ export function setCookies(
     httpOnly: true,
     secure: isProduction,
     sameSite: 'strict',
-    maxAge: 15 * 60 * 1000, // 15 minutes in ms
+    maxAge: ACCESS_TOKEN_COOKIE_MAX_AGE, // 20 minutes in ms - matches JWT expiry
     path: '/',
   });
 

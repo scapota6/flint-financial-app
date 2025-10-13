@@ -13,6 +13,7 @@ import {
   featureFlags,
   passwordResetTokens,
   emailLogs,
+  sessions,
 } from '@shared/schema';
 import { eq, desc, and, sql, count, gte, lte, inArray } from 'drizzle-orm';
 import { sendApprovalEmail, sendRejectionEmail, sendPasswordResetEmail } from '../services/email';
@@ -474,6 +475,9 @@ router.delete('/users/:userId', requireAuth, requireAdmin(), async (req: any, re
     // 7. Delete user auth data
     await db.delete(refreshTokens).where(eq(refreshTokens.userId, userId));
     await db.delete(passwordResetTokens).where(eq(passwordResetTokens.userId, userId));
+    
+    // Delete sessions where sess.passport.user equals userId
+    await db.delete(sessions).where(sql`sess::jsonb->'passport'->>'user' = ${userId}`);
     
     // 8. Delete logs and preferences
     await db.delete(activityLog).where(eq(activityLog.userId, userId));

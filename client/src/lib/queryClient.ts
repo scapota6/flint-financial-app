@@ -9,6 +9,19 @@ async function throwIfResNotOk(res: Response) {
 
 import { getCsrfToken, invalidateCsrf } from './csrf';
 
+// Global activity tracker callback - set by ActivityProvider
+let activityResetCallback: (() => void) | null = null;
+
+export function setActivityResetCallback(callback: (() => void) | null) {
+  activityResetCallback = callback;
+}
+
+function notifyActivity() {
+  if (activityResetCallback) {
+    activityResetCallback();
+  }
+}
+
 // Extended RequestInit that accepts objects for body (will be auto-stringified)
 interface ApiRequestInit extends Omit<RequestInit, 'body'> {
   body?: BodyInit | Record<string, any> | null;
@@ -55,6 +68,11 @@ export async function apiRequest(path: string, options: ApiRequestInit = {}) {
     invalidateCsrf();
   }
 
+  // Track activity on successful API responses
+  if (resp.ok) {
+    notifyActivity();
+  }
+
   return resp;
 }
 
@@ -91,6 +109,12 @@ export const getQueryFn: <T>(options: {
     }
 
     await throwIfResNotOk(res);
+    
+    // Track activity on successful API responses
+    if (res.ok) {
+      notifyActivity();
+    }
+    
     return await res.json();
   };
 
