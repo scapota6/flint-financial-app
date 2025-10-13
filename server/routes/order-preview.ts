@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { randomUUID } from 'crypto';
 import { getSnapUser } from '../store/snapUsers.js';
 import { getOrderImpact, searchSymbols, placeOrder } from '../lib/snaptrade.js';
+import { requireAuth } from '../middleware/jwt-auth';
 
 const router = Router();
 
@@ -39,11 +40,7 @@ const ConfirmOrderSchema = z.object({
  * POST /api/order-preview
  * Preview an order before placement - Step 1 of SnapTrade's two-step process
  */
-router.post('/', async (req, res) => {
-  if (!req.isAuthenticated()) {
-    return res.status(401).json({ message: 'Unauthorized' });
-  }
-
+router.post('/', requireAuth, async (req, res) => {
   try {
     const user = req.user!;
     const data = OrderPreviewSchema.parse(req.body);

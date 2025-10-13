@@ -1,14 +1,7 @@
 import { Router } from 'express';
+import { requireAuth } from '../middleware/jwt-auth';
 
 const router = Router();
-
-// Middleware to check authentication
-const requireAuth = (req: any, res: any, next: any) => {
-  if (!req.isAuthenticated()) {
-    return res.status(401).json({ message: 'Unauthorized' });
-  }
-  next();
-};
 
 // Search for assets (stocks via Polygon, crypto via CoinGecko)
 router.get('/search', requireAuth, async (req, res) => {

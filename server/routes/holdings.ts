@@ -1,14 +1,11 @@
 import { Router } from 'express';
 import { listAccounts, getPositions } from '../lib/snaptrade';
 import { getSnapUser } from '../store/snapUsers';
+import { requireAuth } from '../middleware/jwt-auth';
 
 const router = Router();
 
-router.get('/portfolio-holdings', async (req: any, res) => {
-  if (!req.isAuthenticated()) {
-    return res.status(401).json({ message: 'Unauthorized' });
-  }
-
+router.get('/portfolio-holdings', requireAuth, async (req: any, res) => {
   try {
     // Get user ID from authenticated session (use sub, not email)
     const userId = req.user?.claims?.sub;

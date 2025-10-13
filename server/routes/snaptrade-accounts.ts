@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { authApi, accountsApi, getUserAccountDetails, getUserAccountBalance, getUserAccountPositions, getUserAccountOrders, getAccountActivities } from '../lib/snaptrade';
-import { isAuthenticated } from '../replitAuth';
+import { requireAuth } from '../middleware/jwt-auth';
 import { storage } from '../storage';
 import { mapSnapTradeError, logSnapTradeError, checkConnectionStatus, RateLimitHandler } from '../lib/snaptrade-errors';
 import type { AccountSummary, ListAccountsResponse, AccountDetails, AccountDetailsResponse, AccountBalances, AccountBalancesResponse, Position, PositionsResponse, Order, OrdersResponse, OrderSide, OrderType, TimeInForce, Activity, ActivitiesResponse, ActivityType, OptionHolding, OptionHoldingsResponse, AccountBalance, AccountPositions, AccountOrders, AccountActivities, ErrorResponse, ListResponse, DetailsResponse, ISODate, UUID, Money } from '@shared/types';
@@ -33,9 +33,8 @@ async function getSnaptradeCredentials(flintUserId: string) {
  * List all accounts with brokerage, number, sync status, total balance, type
  * Used for Accounts page & dashboard counts
  */
-router.get('/accounts', isAuthenticated, async (req: any, res) => {
+router.get('/accounts', requireAuth, async (req: any, res) => {
   console.log('[SnapTrade Accounts Route] Request received:', {
-    authenticated: req.isAuthenticated(),
     hasUser: !!req.user,
     userId: req.user?.claims?.sub
   });
@@ -134,7 +133,7 @@ router.get('/accounts', isAuthenticated, async (req: any, res) => {
  * Get account detail for header information
  * Returns: institution_name, name/number, status, raw_type, currency
  */
-router.get('/accounts/:accountId/details', isAuthenticated, async (req: any, res) => {
+router.get('/accounts/:accountId/details', requireAuth, async (req: any, res) => {
   const requestId = req.headers['x-request-id'] || `req-${Date.now()}`;
   console.log(`[DEBUG ${requestId}] === Account Details Request START ===`);
   console.log(`[DEBUG ${requestId}] Request headers:`, {
@@ -143,12 +142,9 @@ router.get('/accounts/:accountId/details', isAuthenticated, async (req: any, res
     userAgent: req.headers['user-agent']
   });
   console.log(`[DEBUG ${requestId}] Session status:`, {
-    isAuthenticated: req.isAuthenticated(),
     user: req.user ? {
       email: req.user.claims?.email,
-      sub: req.user.claims?.sub,
-      expiresAt: req.user.expires_at,
-      hasRefreshToken: !!req.user.refresh_token
+      sub: req.user.claims?.sub
     } : 'null'
   });
   
@@ -277,7 +273,7 @@ router.get('/accounts/:accountId/details', isAuthenticated, async (req: any, res
  * GET /api/snaptrade/accounts/:accountId/balances
  * List account balances for cash/equity/buying power widgets
  */
-router.get('/accounts/:accountId/balances', isAuthenticated, async (req: any, res) => {
+router.get('/accounts/:accountId/balances', requireAuth, async (req: any, res) => {
   try {
     const flintUser = await getFlintUserByAuth(req.user);
     const credentials = await getSnaptradeCredentials(flintUser.id);
@@ -366,7 +362,7 @@ router.get('/accounts/:accountId/balances', isAuthenticated, async (req: any, re
  * GET /api/snaptrade/accounts/:accountId/positions
  * List positions for holdings table: symbol, qty, avg price, market value, unrealized P/L
  */
-router.get('/accounts/:accountId/positions', isAuthenticated, async (req: any, res) => {
+router.get('/accounts/:accountId/positions', requireAuth, async (req: any, res) => {
   try {
     const flintUser = await getFlintUserByAuth(req.user);
     const credentials = await getSnaptradeCredentials(flintUser.id);
@@ -447,7 +443,7 @@ router.get('/accounts/:accountId/positions', isAuthenticated, async (req: any, r
  * GET /api/snaptrade/accounts/:accountId/orders
  * Get all orders for the account
  */
-router.get('/accounts/:accountId/orders', isAuthenticated, async (req: any, res) => {
+router.get('/accounts/:accountId/orders', requireAuth, async (req: any, res) => {
   try {
     const flintUser = await getFlintUserByAuth(req.user);
     const credentials = await getSnaptradeCredentials(flintUser.id);
@@ -576,7 +572,7 @@ router.get('/accounts/:accountId/orders', isAuthenticated, async (req: any, res)
  * GET /api/snaptrade/accounts/:accountId/recent-orders
  * Get recent orders for the account (last 30 days)
  */
-router.get('/accounts/:accountId/recent-orders', isAuthenticated, async (req: any, res) => {
+router.get('/accounts/:accountId/recent-orders', requireAuth, async (req: any, res) => {
   try {
     const flintUser = await getFlintUserByAuth(req.user);
     const credentials = await getSnaptradeCredentials(flintUser.id);
@@ -680,7 +676,7 @@ router.get('/accounts/:accountId/recent-orders', isAuthenticated, async (req: an
  * GET /api/snaptrade/accounts/:accountId/activities
  * Get account activities for activity tab (dividends, fees, transfers)
  */
-router.get('/accounts/:accountId/activities', isAuthenticated, async (req: any, res) => {
+router.get('/accounts/:accountId/activities', requireAuth, async (req: any, res) => {
   try {
     const flintUser = await getFlintUserByAuth(req.user);
     const credentials = await getSnaptradeCredentials(flintUser.id);
@@ -799,7 +795,7 @@ router.get('/accounts/:accountId/activities', isAuthenticated, async (req: any, 
  * GET /api/snaptrade/options/:accountId
  * Get options positions for account (optional endpoint)
  */
-router.get('/options/:accountId', isAuthenticated, async (req: any, res) => {
+router.get('/options/:accountId', requireAuth, async (req: any, res) => {
   try {
     const flintUser = await getFlintUserByAuth(req.user);
     const credentials = await getSnaptradeCredentials(flintUser.id);
@@ -875,7 +871,7 @@ router.get('/options/:accountId', isAuthenticated, async (req: any, res) => {
  * GET /api/snaptrade/accounts/:id/details
  * Get detailed account information
  */
-router.get('/accounts/:id/details', isAuthenticated, async (req: any, res) => {
+router.get('/accounts/:id/details', requireAuth, async (req: any, res) => {
   try {
     const flintUser = await getFlintUserByAuth(req.user);
     const credentials = await getSnaptradeCredentials(flintUser.id);
@@ -919,7 +915,7 @@ router.get('/accounts/:id/details', isAuthenticated, async (req: any, res) => {
  * GET /api/snaptrade/accounts/:id/balances
  * Get account balance information
  */
-router.get('/accounts/:id/balances', isAuthenticated, async (req: any, res) => {
+router.get('/accounts/:id/balances', requireAuth, async (req: any, res) => {
   try {
     const flintUser = await getFlintUserByAuth(req.user);
     const credentials = await getSnaptradeCredentials(flintUser.id);
@@ -963,7 +959,7 @@ router.get('/accounts/:id/balances', isAuthenticated, async (req: any, res) => {
  * GET /api/snaptrade/accounts/:id/positions
  * Get account positions
  */
-router.get('/accounts/:id/positions', isAuthenticated, async (req: any, res) => {
+router.get('/accounts/:id/positions', requireAuth, async (req: any, res) => {
   try {
     const flintUser = await getFlintUserByAuth(req.user);
     const credentials = await getSnaptradeCredentials(flintUser.id);
@@ -1036,7 +1032,7 @@ router.get('/accounts/:id/positions', isAuthenticated, async (req: any, res) => 
  * GET /api/snaptrade/accounts/:id/orders
  * Get account orders with optional status filter
  */
-router.get('/accounts/:id/orders', isAuthenticated, async (req: any, res) => {
+router.get('/accounts/:id/orders', requireAuth, async (req: any, res) => {
   try {
     const flintUser = await getFlintUserByAuth(req.user);
     const credentials = await getSnaptradeCredentials(flintUser.id);
@@ -1178,7 +1174,7 @@ router.get('/accounts/:id/orders', isAuthenticated, async (req: any, res) => {
  * GET /api/snaptrade/accounts/:id/activities
  * Get account activities with optional date filters
  */
-router.get('/accounts/:id/activities', isAuthenticated, async (req: any, res) => {
+router.get('/accounts/:id/activities', requireAuth, async (req: any, res) => {
   try {
     const flintUser = await getFlintUserByAuth(req.user);
     const credentials = await getSnaptradeCredentials(flintUser.id);
@@ -1271,7 +1267,7 @@ router.get('/accounts/:id/activities', isAuthenticated, async (req: any, res) =>
  * GET /api/snaptrade/options/:accountId/holdings
  * Get options holdings for an account (optional endpoint)
  */
-router.get('/options/:accountId/holdings', isAuthenticated, async (req: any, res) => {
+router.get('/options/:accountId/holdings', requireAuth, async (req: any, res) => {
   try {
     const flintUser = await getFlintUserByAuth(req.user);
     const credentials = await getSnaptradeCredentials(flintUser.id);

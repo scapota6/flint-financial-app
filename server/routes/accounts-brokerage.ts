@@ -2,15 +2,12 @@ import { Router } from 'express';
 import { authApi, accountsApi } from '../lib/snaptrade';
 import { storage } from '../storage';
 import { getSnapUser } from '../store/snapUsers';
+import { requireAuth } from '../middleware/jwt-auth';
 
 const router = Router();
 
 // Get user's brokerage accounts
-router.get('/accounts/brokerage', async (req, res) => {
-  if (!req.isAuthenticated()) {
-    return res.status(401).json({ message: 'Unauthorized' });
-  }
-
+router.get('/accounts/brokerage', requireAuth, async (req, res) => {
   try {
     const user = req.user as any;
     console.log('Fetching brokerage accounts for user:', user.claims?.email);

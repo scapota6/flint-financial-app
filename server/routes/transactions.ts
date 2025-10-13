@@ -3,16 +3,9 @@ import { db } from '../db';
 import { users, connectedAccounts } from '@/shared/schema';
 import { eq } from 'drizzle-orm';
 import { accountsApi, portfolioApi } from '../lib/snaptrade';
+import { requireAuth } from '../middleware/jwt-auth';
 
 const router = Router();
-
-// Middleware to check authentication
-const requireAuth = (req: any, res: any, next: any) => {
-  if (!req.isAuthenticated()) {
-    return res.status(401).json({ message: 'Unauthorized' });
-  }
-  next();
-};
 
 
 
