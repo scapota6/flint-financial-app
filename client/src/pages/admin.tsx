@@ -33,7 +33,8 @@ import {
   Trash2,
   Flag,
   ChevronDown,
-  ChevronRight
+  ChevronRight,
+  TrendingUp
 } from 'lucide-react';
 
 // Type definitions for API responses
@@ -193,6 +194,10 @@ export default function AdminDashboard() {
               <Shield className="h-4 w-4 mr-2" />
               Audit Trail
             </TabsTrigger>
+            <TabsTrigger value="snaptrade" data-testid="tab-snaptrade">
+              <TrendingUp className="h-4 w-4 mr-2" />
+              SnapTrade
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="overview">
@@ -209,6 +214,10 @@ export default function AdminDashboard() {
 
           <TabsContent value="connections">
             <ConnectionsTab />
+          </TabsContent>
+
+          <TabsContent value="snaptrade">
+            <SnapTradeTab />
           </TabsContent>
 
           <TabsContent value="analytics">
@@ -1358,6 +1367,107 @@ function AuditTrailTab() {
                   </TableCell>
                 </TableRow>
               ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+// SnapTrade Tab
+function SnapTradeTab() {
+  const { toast } = useToast();
+  const { data, isLoading, refetch } = useQuery<{ connections: any[] }>({
+    queryKey: ['/api/admin-panel/snaptrade/connections'],
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: async (flintUserId: string) => {
+      const resp = await apiRequest(`/api/admin-panel/snaptrade/connections/${flintUserId}`, {
+        method: 'DELETE',
+      });
+      if (!resp.ok) throw new Error('Failed to delete connection');
+      return resp.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Connection Deleted",
+        description: "SnapTrade connection has been removed successfully.",
+      });
+      queryClient.invalidateQueries({ queryKey: ['/api/admin-panel/snaptrade/connections'] });
+      refetch();
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Delete Failed",
+        description: error.message || "Failed to delete SnapTrade connection",
+        variant: "destructive",
+      });
+    },
+  });
+
+  if (isLoading) {
+    return <div className="text-center py-8" data-testid="loading-snaptrade">Loading SnapTrade connections...</div>;
+  }
+
+  return (
+    <div className="space-y-4" data-testid="section-snaptrade">
+      <Card className="bg-gray-900 border-gray-800">
+        <CardHeader>
+          <CardTitle className="flex items-center justify-between">
+            <span>SnapTrade Connections</span>
+            <Badge className="bg-blue-600">{data?.connections?.length || 0} Active</Badge>
+          </CardTitle>
+          <CardDescription>Manage SnapTrade user registrations and brokerage connections</CardDescription>
+        </CardHeader>
+        <CardContent className="p-0">
+          <Table>
+            <TableHeader>
+              <TableRow className="border-gray-800">
+                <TableHead>User Email</TableHead>
+                <TableHead>Flint User ID</TableHead>
+                <TableHead>User Name</TableHead>
+                <TableHead>Connected</TableHead>
+                <TableHead>Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {data?.connections?.map((conn: any) => (
+                <TableRow key={conn.flintUserId} className="border-gray-800" data-testid={`row-snaptrade-${conn.flintUserId}`}>
+                  <TableCell className="font-medium" data-testid={`text-email-${conn.flintUserId}`}>
+                    {conn.userEmail || 'Unknown'}
+                  </TableCell>
+                  <TableCell data-testid={`text-flint-id-${conn.flintUserId}`}>
+                    {conn.flintUserId}
+                  </TableCell>
+                  <TableCell data-testid={`text-name-${conn.flintUserId}`}>
+                    {conn.firstName && conn.lastName ? `${conn.firstName} ${conn.lastName}` : '-'}
+                  </TableCell>
+                  <TableCell data-testid={`text-connected-${conn.flintUserId}`}>
+                    {conn.createdAt ? new Date(conn.createdAt).toLocaleDateString() : '-'}
+                  </TableCell>
+                  <TableCell>
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => deleteMutation.mutate(conn.flintUserId)}
+                      disabled={deleteMutation.isPending}
+                      data-testid={`button-delete-${conn.flintUserId}`}
+                    >
+                      <Trash2 className="h-4 w-4 mr-1" />
+                      Disconnect
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+              {(!data?.connections || data.connections.length === 0) && (
+                <TableRow>
+                  <TableCell colSpan={5} className="text-center text-gray-500 py-8">
+                    No SnapTrade connections found
+                  </TableCell>
+                </TableRow>
+              )}
             </TableBody>
           </Table>
         </CardContent>

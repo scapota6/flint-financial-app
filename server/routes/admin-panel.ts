@@ -1493,18 +1493,16 @@ router.get('/snaptrade/connections', requireAuth, requireAdmin(), async (req: an
     // Get all SnapTrade users with their Flint user details
     const connections = await db
       .select({
-        id: snaptradeUsers.id,
         flintUserId: snaptradeUsers.flintUserId,
-        snaptradeUserId: snaptradeUsers.snaptradeUserId,
         userSecret: snaptradeUsers.userSecret,
-        connectedAt: snaptradeUsers.connectedAt,
-        lastSyncAt: snaptradeUsers.lastSyncAt,
+        createdAt: snaptradeUsers.createdAt,
         userEmail: users.email,
-        userName: users.name,
+        firstName: users.firstName,
+        lastName: users.lastName,
       })
       .from(snaptradeUsers)
       .leftJoin(users, eq(snaptradeUsers.flintUserId, users.id))
-      .orderBy(desc(snaptradeUsers.connectedAt));
+      .orderBy(desc(snaptradeUsers.createdAt));
 
     await logAdminAction(
       req.adminEmail,
@@ -1519,17 +1517,17 @@ router.get('/snaptrade/connections', requireAuth, requireAdmin(), async (req: an
   }
 });
 
-// DELETE /api/admin-panel/snaptrade/connections/:connectionId - Delete SnapTrade connection
-router.delete('/snaptrade/connections/:connectionId', requireAuth, requireAdmin(), async (req: any, res) => {
+// DELETE /api/admin-panel/snaptrade/connections/:flintUserId - Delete SnapTrade connection
+router.delete('/snaptrade/connections/:flintUserId', requireAuth, requireAdmin(), async (req: any, res) => {
   try {
-    const { connectionId } = req.params;
+    const { flintUserId } = req.params;
     const { snaptradeUsers, snaptradeConnections } = await import('@shared/schema');
 
     // Get connection details before deletion
     const [connection] = await db
       .select()
       .from(snaptradeUsers)
-      .where(eq(snaptradeUsers.id, parseInt(connectionId)));
+      .where(eq(snaptradeUsers.flintUserId, flintUserId));
 
     if (!connection) {
       return res.status(404).json({ message: 'SnapTrade connection not found' });
@@ -1538,30 +1536,27 @@ router.delete('/snaptrade/connections/:connectionId', requireAuth, requireAdmin(
     // Delete associated SnapTrade authorizations/accounts
     await db
       .delete(snaptradeConnections)
-      .where(eq(snaptradeConnections.flintUserId, connection.flintUserId));
+      .where(eq(snaptradeConnections.flintUserId, flintUserId));
 
     // Delete SnapTrade user record
     await db
       .delete(snaptradeUsers)
-      .where(eq(snaptradeUsers.id, parseInt(connectionId)));
+      .where(eq(snaptradeUsers.flintUserId, flintUserId));
 
     await logAdminAction(
       req.adminEmail,
       'delete_snaptrade_connection',
       { 
-        connectionId,
-        flintUserId: connection.flintUserId,
-        snaptradeUserId: connection.snaptradeUserId
+        flintUserId,
+        userSecret: connection.userSecret
       },
-      connection.flintUserId
+      flintUserId
     );
 
     res.json({ 
       message: 'SnapTrade connection deleted successfully',
       deletedConnection: {
-        id: connection.id,
-        flintUserId: connection.flintUserId,
-        snaptradeUserId: connection.snaptradeUserId
+        flintUserId: connection.flintUserId
       }
     });
   } catch (error) {
