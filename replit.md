@@ -17,14 +17,14 @@ Preferred communication style: Simple, everyday language.
 ### Backend
 - **Runtime**: Node.js with Express.js.
 - **Database**: PostgreSQL with Drizzle ORM, utilizing Neon Database.
-- **Authentication**: Replit Auth with OpenID Connect and PostgreSQL-backed session management, featuring httpOnly/SameSite cookies and double-submit-cookie CSRF protection.
+- **Authentication**: Custom hardened JWT-based authentication with Argon2id password hashing, featuring httpOnly/SameSite cookies, double-submit-cookie CSRF protection, and multi-device session management.
 - **API Pattern**: RESTful API with JSON responses and robust JSON error handling.
 
 ### Performance Optimizations
 - Route-based lazy loading, component memoization, comprehensive database indexing (23+ indexes), HTTP compression (gzip/deflate), intelligent browser caching, and TanStack Query optimizations (staleTime, gcTime).
 
 ### Key Components
-- **Authentication System**: Supports both Replit OAuth and local email/password login, secured with session-based, PostgreSQL-stored sessions.
+- **Authentication System**: Custom hardened authentication featuring Argon2id password hashing (timeCost=3, memoryCost=64MB, parallelism=2), strict password policies (12-128 chars, 3 of 4 character classes, common password blocking), JWT tokens (15-min access, 7-day refresh with rotation), MFA/TOTP support, multi-device session management, password reset via email with SHA-256 hashed tokens, and comprehensive security measures (rate limiting, account enumeration protection, timing-safe operations).
 - **Database Schema**: Includes tables for Users, Connected Accounts, Holdings, Watchlist, Trades, Transfers, Activity Log, Market Data, Price Alerts, and more.
 - **Application Approval System**: Landing page form for account applications with admin review and automated user account creation.
 - **Admin Dashboard**: Restricted access at `/admin` for user, account, subscription, and analytics management. Features connection limit tracking showing current/max connections per user (e.g., "13/∞" for admin users), with filtering options for over-limit users (audit risk), within-limit users, and zero-connection users (churn risk). Connection limits: Free (2), Basic (3), Pro (5), Premium (unlimited). Admin users have unlimited connections regardless of subscription tier.
@@ -63,8 +63,9 @@ Preferred communication style: Simple, everyday language.
 - **@stripe/stripe-js**: Stripe API integration.
 - **@tanstack/react-query**: Server state management.
 - **@radix-ui/react-\***: UI component primitives.
-- **passport**: Authentication middleware.
-- **openid-client**: OpenID Connect authentication.
+- **argon2**: Secure password hashing.
+- **jsonwebtoken**: JWT token generation and verification.
+- **speakeasy**: TOTP/MFA implementation.
 - **vite**: Frontend build tool.
 - **typescript**: Language.
 - **tailwindcss**: CSS framework.
