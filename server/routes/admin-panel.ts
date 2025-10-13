@@ -153,6 +153,7 @@ router.post('/applications/:id/approve', isAuthenticated, requireAdmin(), async 
     await db.insert(passwordResetTokens).values({
       userId: newUser.id,
       token: tokenHash,
+      tokenType: 'password_reset',
       expiresAt,
       used: false,
     });
@@ -453,6 +454,7 @@ router.post('/users/:userId/reset-password', isAuthenticated, requireAdmin(), as
     await db.insert(passwordResetTokens).values({
       userId: user.id,
       token: tokenHash,
+      tokenType: 'password_reset',
       expiresAt,
       used: false,
     });

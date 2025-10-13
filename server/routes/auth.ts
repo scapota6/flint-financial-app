@@ -141,29 +141,33 @@ router.post('/login', rateLimits.login, async (req, res) => {
       });
     }
 
-    // Check if email is verified
-    if (!user.emailVerified) {
-      await logLoginAttempt(email, false, user.id, ipAddress, userAgent, 'Email not verified');
-      return res.status(401).json({
-        message: 'Invalid email or password',
-      });
-    }
-
-    // Check if user is banned
-    if (user.isBanned) {
-      await logLoginAttempt(email, false, user.id, ipAddress, userAgent, 'User banned');
-      return res.status(401).json({
-        message: 'Invalid email or password',
-      });
-    }
-
-    // Verify password using Argon2id (constant-time comparison)
+    // Verify password FIRST using Argon2id (constant-time comparison)
+    // This prevents account enumeration - attackers with wrong passwords
+    // get generic errors regardless of email verification or ban status
     const passwordValid = await verifyPassword(password, user.passwordHash);
 
     if (!passwordValid) {
       await logLoginAttempt(email, false, user.id, ipAddress, userAgent, 'Invalid password');
       return res.status(401).json({
         message: 'Invalid email or password',
+      });
+    }
+
+    // AFTER password is verified, check email verification status
+    // It's safe to show specific errors now because the user proved they know the password
+    if (!user.emailVerified) {
+      await logLoginAttempt(email, false, user.id, ipAddress, userAgent, 'Email not verified');
+      return res.status(401).json({
+        message: 'Please verify your email address to log in',
+      });
+    }
+
+    // AFTER password is verified, check if user is banned
+    // It's safe to show specific errors now because the user proved they know the password
+    if (user.isBanned) {
+      await logLoginAttempt(email, false, user.id, ipAddress, userAgent, 'User banned');
+      return res.status(401).json({
+        message: 'This account has been disabled. Please contact support.',
       });
     }
 
@@ -680,11 +684,14 @@ router.post('/setup-password', async (req, res) => {
       tokenPrefix: token.substring(0, 8) + '...',
     });
 
-    // Find all non-expired, unused tokens and verify against our hash
+    // Find all non-expired, unused password reset tokens and verify against our hash
     const allTokens = await db
       .select()
       .from(passwordResetTokens)
-      .where(eq(passwordResetTokens.used, false));
+      .where(and(
+        eq(passwordResetTokens.used, false),
+        eq(passwordResetTokens.tokenType, 'password_reset')
+      ));
 
     console.log('[Setup Password] Found unused tokens in DB:', allTokens.length);
 
@@ -826,7 +833,10 @@ router.post('/request-reset', async (req, res) => {
     const existingToken = await db
       .select()
       .from(passwordResetTokens)
-      .where(eq(passwordResetTokens.userId, user.id))
+      .where(and(
+        eq(passwordResetTokens.userId, user.id),
+        eq(passwordResetTokens.tokenType, 'password_reset')
+      ))
       .limit(1);
     
     if (!user.passwordHash && existingToken.length === 0) {
@@ -845,6 +855,7 @@ router.post('/request-reset', async (req, res) => {
     await db.insert(passwordResetTokens).values({
       userId: user.id,
       token: tokenHash,
+      tokenType: 'password_reset',
       expiresAt,
       used: false,
     });
@@ -897,7 +908,10 @@ router.post('/reset-password', rateLimits.auth, async (req, res) => {
     const [resetToken] = await db
       .select()
       .from(passwordResetTokens)
-      .where(eq(passwordResetTokens.token, tokenHash))
+      .where(and(
+        eq(passwordResetTokens.token, tokenHash),
+        eq(passwordResetTokens.tokenType, 'password_reset')
+      ))
       .limit(1);
 
     // Validate token exists
@@ -1035,12 +1049,13 @@ router.post('/resend-setup-email', async (req, res) => {
       });
     }
 
-    // Delete any existing unused tokens for this user
+    // Delete any existing unused password reset tokens for this user
     await db
       .delete(passwordResetTokens)
       .where(and(
         eq(passwordResetTokens.userId, user.id),
-        eq(passwordResetTokens.used, false)
+        eq(passwordResetTokens.used, false),
+        eq(passwordResetTokens.tokenType, 'password_reset')
       ));
 
     // Generate new password setup token
@@ -1053,6 +1068,7 @@ router.post('/resend-setup-email', async (req, res) => {
     await db.insert(passwordResetTokens).values({
       userId: user.id,
       token: tokenHash,
+      tokenType: 'password_reset',
       expiresAt,
       used: false,
     });
@@ -1081,6 +1097,199 @@ router.post('/resend-setup-email', async (req, res) => {
     console.error('Error resending setup email:', error);
     return res.status(500).json({
       message: 'Failed to resend setup email. Please try again.',
+    });
+  }
+});
+
+// POST /api/auth/resend-verification - Resend email verification link
+router.post('/resend-verification', rateLimits.auth, async (req, res) => {
+  try {
+    const parseResult = requestResetSchema.safeParse(req.body);
+    
+    if (!parseResult.success) {
+      return res.status(400).json({
+        message: 'Valid email is required',
+      });
+    }
+
+    const { email } = parseResult.data;
+
+    // Find user by email
+    const [user] = await db
+      .select()
+      .from(users)
+      .where(eq(users.email, email.toLowerCase()));
+
+    if (!user) {
+      // Don't reveal if email exists (security)
+      return res.status(200).json({
+        message: 'If an account exists with this email, a verification link will be sent.',
+      });
+    }
+
+    // Check if email is already verified
+    if (user.emailVerified) {
+      return res.status(400).json({
+        message: 'Your email is already verified. You can log in now.',
+      });
+    }
+
+    // Delete any existing unused email verification tokens for this user
+    await db
+      .delete(passwordResetTokens)
+      .where(and(
+        eq(passwordResetTokens.userId, user.id),
+        eq(passwordResetTokens.used, false),
+        eq(passwordResetTokens.tokenType, 'email_verification')
+      ));
+
+    // Generate new verification token
+    const plainToken = generateSecureToken();
+    const tokenHash = hashToken(plainToken);
+    const expiresAt = new Date();
+    expiresAt.setHours(expiresAt.getHours() + 24); // 24 hour expiry
+
+    // Save token to database
+    await db.insert(passwordResetTokens).values({
+      userId: user.id,
+      token: tokenHash,
+      tokenType: 'email_verification',
+      expiresAt,
+      used: false,
+    });
+
+    // Generate verification link
+    const baseUrl = process.env.REPLIT_DEPLOYMENT 
+      ? `https://${process.env.REPLIT_DEPLOYMENT}` 
+      : process.env.BASE_URL 
+      || (process.env.REPL_SLUG && process.env.REPLIT_DOMAINS
+        ? `https://${process.env.REPL_SLUG}.${process.env.REPLIT_DOMAINS.split(',')[0]}`
+        : req.protocol + '://' + req.get('host'));
+    const verificationLink = `${baseUrl}/verify-email?token=${plainToken}`;
+
+    // Send verification email
+    const { sendVerificationEmail } = await import('../services/email');
+    await sendVerificationEmail(
+      user.email || '',
+      user.firstName || 'User',
+      verificationLink
+    );
+
+    return res.status(200).json({
+      success: true,
+      message: 'Verification email has been sent. Please check your inbox.',
+    });
+  } catch (error) {
+    console.error('Error resending verification email:', error);
+    return res.status(500).json({
+      message: 'Failed to send verification email. Please try again.',
+    });
+  }
+});
+
+// GET /api/auth/verify-email - Verify email with token
+router.get('/verify-email', async (req, res) => {
+  try {
+    const token = req.query.token as string;
+
+    if (!token) {
+      return res.status(400).json({
+        message: 'Verification token is required',
+      });
+    }
+
+    // Find email verification token in database
+    const tokenHash = hashToken(token);
+    const [verificationToken] = await db
+      .select()
+      .from(passwordResetTokens)
+      .where(and(
+        eq(passwordResetTokens.token, tokenHash),
+        eq(passwordResetTokens.tokenType, 'email_verification')
+      ))
+      .limit(1);
+
+    // Validate token exists
+    if (!verificationToken) {
+      return res.status(400).json({
+        message: 'Invalid or expired verification token',
+      });
+    }
+
+    // Check if token is expired
+    if (new Date() > verificationToken.expiresAt) {
+      return res.status(400).json({
+        message: 'Verification token has expired. Please request a new one.',
+      });
+    }
+
+    // Check if token has been used
+    if (verificationToken.used) {
+      return res.status(400).json({
+        message: 'Verification token has already been used',
+      });
+    }
+
+    // Get user
+    const [user] = await db
+      .select()
+      .from(users)
+      .where(eq(users.id, verificationToken.userId))
+      .limit(1);
+
+    if (!user) {
+      return res.status(400).json({
+        message: 'User not found',
+      });
+    }
+
+    // Check if email is already verified
+    if (user.emailVerified) {
+      return res.status(200).json({
+        message: 'Your email is already verified. You can log in now.',
+        success: true,
+        alreadyVerified: true,
+      });
+    }
+
+    // Update user email verification status in database
+    await db.transaction(async (tx) => {
+      await tx
+        .update(users)
+        .set({
+          emailVerified: true,
+          updatedAt: new Date(),
+        })
+        .where(eq(users.id, user.id));
+
+      // Mark token as used
+      await tx
+        .update(passwordResetTokens)
+        .set({
+          used: true,
+        })
+        .where(eq(passwordResetTokens.id, verificationToken.id));
+    });
+
+    // Log the email verification
+    await db.insert(auditLogs).values({
+      userId: user.id,
+      adminEmail: user.email || '',
+      action: 'email_verified',
+      details: {
+        timestamp: new Date().toISOString(),
+        method: 'verification_token',
+      },
+    });
+
+    return res.status(200).json({
+      message: 'Email verified successfully! You can now log in.',
+      success: true,
+    });
+  } catch (error) {
+    console.error('Error verifying email:', error);
+    return res.status(500).json({
+      message: 'Failed to verify email',
     });
   }
 });

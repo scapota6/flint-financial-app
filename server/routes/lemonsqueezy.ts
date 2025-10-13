@@ -321,6 +321,7 @@ async function handleOrderCreated(orderData: any) {
         await db.insert(passwordResetTokens).values({
           userId,
           token: tokenHash,
+          tokenType: 'password_reset',
           expiresAt,
           used: false,
         });

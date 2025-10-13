@@ -477,6 +477,121 @@ function getPasswordResetEmailTemplate(firstName: string, resetLink: string): st
   `;
 }
 
+function getVerificationEmailTemplate(firstName: string, verificationLink: string): string {
+  return `
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Verify Your Email</title>
+        <style>
+          body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+          }
+          .container {
+            background-color: #ffffff;
+            border-radius: 8px;
+            padding: 40px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+          }
+          .header {
+            text-align: center;
+            margin-bottom: 30px;
+          }
+          .logo {
+            font-size: 32px;
+            font-weight: bold;
+            color: #4F46E5;
+            margin-bottom: 10px;
+          }
+          .content {
+            margin-bottom: 30px;
+          }
+          .button {
+            display: inline-block;
+            background-color: #4F46E5;
+            color: #ffffff;
+            padding: 14px 28px;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            margin: 20px 0;
+          }
+          .button:hover {
+            background-color: #4338CA;
+          }
+          .button-container {
+            text-align: center;
+          }
+          .note {
+            background-color: #F3F4F6;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 20px;
+            font-size: 14px;
+          }
+          .footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #E5E7EB;
+            font-size: 14px;
+            color: #6B7280;
+            text-align: center;
+          }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header">
+            <div class="logo">Flint</div>
+            <h1>Verify Your Email</h1>
+          </div>
+          
+          <div class="content">
+            <p>Hi ${firstName},</p>
+            
+            <p>Thanks for signing up for Flint! To complete your registration and access all features, please verify your email address by clicking the button below:</p>
+            
+            <div class="button-container">
+              <a href="${verificationLink}" class="button">Verify Email Address</a>
+            </div>
+            
+            <div class="note">
+              <strong>⏰ Important:</strong> This verification link will expire in 24 hours for security purposes.
+            </div>
+            
+            <p>Once verified, you'll be able to:</p>
+            <ul>
+              <li><strong>Access your dashboard</strong> - View all your financial accounts in one place</li>
+              <li><strong>Connect accounts</strong> - Link banks and brokerages securely</li>
+              <li><strong>Start trading</strong> - Execute trades across connected accounts</li>
+              <li><strong>Set up alerts</strong> - Get notified about portfolio changes</li>
+            </ul>
+            
+            <p>If you didn't create a Flint account, you can safely ignore this email.</p>
+            
+            <p>Best regards,<br>
+            The Flint Team</p>
+          </div>
+          
+          <div class="footer">
+            <p>If you're having trouble clicking the button, copy and paste this URL into your browser:</p>
+            <p style="word-break: break-all; color: #4F46E5; margin: 10px 0;">${verificationLink}</p>
+            <p><strong>Questions or need help?</strong> Email <a href="mailto:support@flint-investing.com" style="color: #4F46E5;">support@flint-investing.com</a></p>
+            <p>© ${new Date().getFullYear()} Flint. All rights reserved.</p>
+          </div>
+        </div>
+      </body>
+    </html>
+  `;
+}
+
 function getTestEmailTemplate(recipientName: string): string {
   return `
     <!DOCTYPE html>
@@ -623,9 +738,22 @@ export async function sendTestEmail(
   return await sendEmail(email, subject, html, 'test');
 }
 
+export async function sendVerificationEmail(
+  email: string,
+  firstName: string,
+  verificationLink: string
+): Promise<{ success: boolean; error?: string }> {
+  const subject = 'Verify Your Flint Email Address';
+  const html = getVerificationEmailTemplate(firstName, verificationLink);
+  
+  console.log(`Sending verification email to ${email}`);
+  return await sendEmail(email, subject, html, 'email_verification');
+}
+
 export const emailService = {
   sendApprovalEmail,
   sendRejectionEmail,
   sendPasswordResetEmail,
   sendTestEmail,
+  sendVerificationEmail,
 };

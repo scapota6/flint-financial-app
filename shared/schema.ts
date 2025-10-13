@@ -527,10 +527,14 @@ export const passwordResetTokens = pgTable("password_reset_tokens", {
   id: serial("id").primaryKey(),
   userId: varchar("user_id").references(() => users.id).notNull(),
   token: varchar("token").notNull().unique(),
+  tokenType: varchar("token_type").notNull().default("password_reset"), // password_reset or email_verification
   expiresAt: timestamp("expires_at").notNull(),
   used: boolean("used").default(false),
   createdAt: timestamp("created_at").defaultNow(),
-});
+}, (table) => [
+  index("password_reset_tokens_type_idx").on(table.tokenType),
+  index("password_reset_tokens_user_type_idx").on(table.userId, table.tokenType),
+]);
 
 // JWT refresh tokens table for session management
 export const refreshTokens = pgTable("refresh_tokens", {

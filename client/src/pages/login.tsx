@@ -25,6 +25,8 @@ export default function Login() {
   const { toast } = useToast();
   const [showPassword, setShowPassword] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [errorCode, setErrorCode] = useState("");
+  const [userEmail, setUserEmail] = useState("");
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -43,7 +45,11 @@ export default function Login() {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({ message: response.statusText }));
-        throw new Error(errorData.message || "Login failed");
+        // Throw an object with both message and code
+        const error: any = new Error(errorData.message || "Login failed");
+        error.code = errorData.code;
+        error.email = errorData.email;
+        throw error;
       }
 
       return await response.json();
@@ -58,6 +64,9 @@ export default function Login() {
     onError: (error: any) => {
       const message = error.message || "Invalid email or password";
       setErrorMessage(message);
+      setErrorCode(error.code || "");
+      setUserEmail(error.email || "");
+      
       toast({
         title: "Login Failed",
         description: message,
@@ -66,9 +75,48 @@ export default function Login() {
     },
   });
 
+  const resendVerificationMutation = useMutation({
+    mutationFn: async (email: string) => {
+      const response = await apiRequest("/api/auth/resend-verification", {
+        method: "POST",
+        body: JSON.stringify({ email }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ message: response.statusText }));
+        throw new Error(errorData.message || "Failed to resend verification email");
+      }
+
+      return await response.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Verification Email Sent",
+        description: "Please check your inbox and click the verification link.",
+      });
+      setErrorMessage("");
+      setErrorCode("");
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to resend verification email",
+        variant: "destructive",
+      });
+    },
+  });
+
   const onSubmit = (data: LoginFormValues) => {
     setErrorMessage("");
+    setErrorCode("");
+    setUserEmail(data.email);
     loginMutation.mutate(data);
+  };
+
+  const handleResendVerification = () => {
+    if (userEmail) {
+      resendVerificationMutation.mutate(userEmail);
+    }
   };
 
   const handleOAuthLogin = () => {
@@ -100,6 +148,27 @@ export default function Login() {
               <AlertCircle className="h-4 w-4" />
               <AlertDescription data-testid="text-error-message">
                 {errorMessage}
+                {errorCode === "EMAIL_NOT_VERIFIED" && (
+                  <div className="mt-3">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handleResendVerification}
+                      disabled={resendVerificationMutation.isPending}
+                      className="w-full bg-blue-600 hover:bg-blue-700 text-white border-blue-700"
+                      data-testid="button-resend-verification"
+                    >
+                      {resendVerificationMutation.isPending ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Sending...
+                        </>
+                      ) : (
+                        "Resend Verification Email"
+                      )}
+                    </Button>
+                  </div>
+                )}
               </AlertDescription>
             </Alert>
           )}
