@@ -6,7 +6,7 @@ import { refreshTokens } from '@shared/schema';
 import { eq, and, lte } from 'drizzle-orm';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'development-secret-key-change-in-production';
-const ACCESS_TOKEN_EXPIRY = '15m'; // 15 minutes
+const ACCESS_TOKEN_EXPIRY = '20m'; // 20 minutes - matches inactivity timeout
 const REFRESH_TOKEN_EXPIRY_DAYS = 7; // 7 days
 
 export interface AccessTokenPayload {
