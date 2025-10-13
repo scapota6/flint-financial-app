@@ -211,7 +211,7 @@ export default function RecurringSubscriptions() {
       <CardContent>
         <div className="relative">
           {/* Subscription List - Blurred for Free tier */}
-          <div className={`space-y-2 max-h-[400px] overflow-y-auto ${isFreeTier && subscriptions.length > 0 ? 'blur-md pointer-events-none select-none' : ''}`}>
+          <div className={`space-y-2 max-h-[400px] overflow-y-auto ${isFreeTier ? 'blur-md pointer-events-none select-none' : ''}`}>
             {subscriptions.length > 0 ? (
               subscriptions.map((subscription) => (
                 <div 
@@ -262,7 +262,7 @@ export default function RecurringSubscriptions() {
           </div>
 
           {/* Upgrade Overlay for Free Tier */}
-          {isFreeTier && subscriptions.length > 0 && (
+          {isFreeTier && (
             <div className="absolute inset-0 flex items-center justify-center z-10" data-testid="upgrade-overlay">
               <div className="text-center p-6 bg-gray-900/95 rounded-lg border-2 border-purple-500/50 backdrop-blur-sm max-w-md">
                 <div className="flex items-center justify-center mb-4">
@@ -270,9 +270,9 @@ export default function RecurringSubscriptions() {
                     <Crown className="h-8 w-8 text-purple-400" />
                   </div>
                 </div>
-                <h3 className="text-xl font-bold text-white mb-2">Unlock Subscription Details</h3>
+                <h3 className="text-xl font-bold text-white mb-2">Unlock Subscription Tracking</h3>
                 <p className="text-gray-400 mb-4">
-                  Upgrade to Basic, Pro, or Premium to view detailed subscription information including merchant names, amounts, and billing dates.
+                  Upgrade to Basic, Pro, or Premium to automatically detect and track your recurring subscriptions from bank transactions, including merchant names, amounts, and billing dates.
                 </p>
                 <Link href="/settings?tab=billing">
                   <Button className="bg-purple-600 hover:bg-purple-700 text-white" data-testid="button-upgrade">
@@ -280,9 +280,11 @@ export default function RecurringSubscriptions() {
                     Upgrade Plan
                   </Button>
                 </Link>
-                <p className="text-xs text-gray-500 mt-3">
-                  You can see that you have {subscriptions.length} active {subscriptions.length === 1 ? 'subscription' : 'subscriptions'}
-                </p>
+                {subscriptions.length > 0 && (
+                  <p className="text-xs text-gray-500 mt-3">
+                    {subscriptions.length} {subscriptions.length === 1 ? 'subscription' : 'subscriptions'} detected
+                  </p>
+                )}
               </div>
             </div>
           )}
