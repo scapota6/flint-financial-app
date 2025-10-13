@@ -131,6 +131,7 @@ router.post('/applications/:id/approve', isAuthenticated, requireAdmin(), async 
           subscriptionStatus: 'active',
           isAdmin: false,
           isBanned: false,
+          emailVerified: true, // Auto-verify emails - users can log in immediately after setting password
         })
         .returning();
     } catch (dbError: any) {
