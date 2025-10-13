@@ -4,7 +4,7 @@
 
 import { Router } from "express";
 import { authApi, accountsApi, snaptradeClient } from "../lib/snaptrade";
-import { isAuthenticated } from "../replitAuth";
+import { requireAuth } from "../middleware/jwt-auth";
 import { storage } from "../storage";
 import { logger } from "@shared/logger";
 import crypto from "crypto";
@@ -16,7 +16,7 @@ const router = Router();
  * GET /api/connections
  * Returns all connected accounts for the authenticated user
  */
-router.get("/", isAuthenticated, async (req: any, res) => {
+router.get("/", requireAuth, async (req: any, res) => {
   try {
     const userId = req.user.claims.sub;
     
@@ -56,7 +56,7 @@ router.get("/", isAuthenticated, async (req: any, res) => {
  * Registers a user with SnapTrade and returns the redirect URL
  * This is the ONLY registration endpoint - all others are disabled
  */
-router.post("/snaptrade/register", isAuthenticated, async (req: any, res) => {
+router.post("/snaptrade/register", requireAuth, async (req: any, res) => {
   try {
     const userId = req.user.claims.sub;
     
@@ -138,10 +138,15 @@ router.post("/snaptrade/register", isAuthenticated, async (req: any, res) => {
 /**
  * GET /api/connections/snaptrade/callback
  * Handles the OAuth callback from SnapTrade
+ * NOTE: This route is not currently used. The active callback is /snaptrade/callback in routes.ts
+ * which receives userId/userSecret from SnapTrade in the query params
  */
-router.get("/snaptrade/callback", isAuthenticated, async (req: any, res) => {
+router.get("/snaptrade/callback", async (req: any, res) => {
   try {
-    const userId = req.user.claims.sub;
+    // This route is legacy - redirect to main callback
+    return res.redirect("/snaptrade/callback?" + new URLSearchParams(req.query).toString());
+    
+    const userId = req.user?.claims?.sub;
     const { status, message } = req.query;
     
     if (status === 'error') {
@@ -206,7 +211,7 @@ router.get("/snaptrade/callback", isAuthenticated, async (req: any, res) => {
  * POST /api/connections/teller/exchange
  * Exchanges Teller enrollment ID for access token
  */
-router.post("/teller/exchange", isAuthenticated, async (req: any, res) => {
+router.post("/teller/exchange", requireAuth, async (req: any, res) => {
   try {
     const userId = req.user.claims.sub;
     const { enrollmentId } = req.body;
@@ -276,7 +281,7 @@ router.post("/teller/exchange", isAuthenticated, async (req: any, res) => {
  * DELETE /api/connections/:id
  * Removes a connection
  */
-router.delete("/:id", isAuthenticated, async (req: any, res) => {
+router.delete("/:id", requireAuth, async (req: any, res) => {
   try {
     const userId = req.user.claims.sub;
     const connectionId = parseInt(req.params.id);

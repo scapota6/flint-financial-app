@@ -4,7 +4,7 @@
  */
 
 import { Router } from "express";
-import { isAuthenticated } from "../replitAuth";
+import { requireAuth } from "../middleware/jwt-auth";
 import { logger } from "@shared/logger";
 import { storage } from "../storage";
 import { v4 as uuidv4 } from 'uuid';
@@ -24,7 +24,7 @@ if (process.env.NODE_ENV === 'production' && !process.env.ALLOW_CONNECT_EDITS) {
  * POST /api/teller/connect-init
  * Initialize Teller Connect flow
  */
-router.post("/connect-init", isAuthenticated, async (req: any, res) => {
+router.post("/connect-init", requireAuth, async (req: any, res) => {
   try {
     const userId = req.user.claims.sub;
     const applicationId = process.env.TELLER_APPLICATION_ID;
@@ -66,7 +66,7 @@ router.post("/connect-init", isAuthenticated, async (req: any, res) => {
  * POST /api/teller/save-account
  * Save account from Teller SDK onSuccess callback
  */
-router.post("/save-account", isAuthenticated, async (req: any, res) => {
+router.post("/save-account", requireAuth, async (req: any, res) => {
   try {
     const userId = req.user.claims.sub;
     const { accessToken, enrollmentId, institution } = req.body;
@@ -215,7 +215,7 @@ router.post("/save-account", isAuthenticated, async (req: any, res) => {
  * POST /api/teller/exchange-token
  * Exchange Teller enrollment ID for access token and store account info
  */
-router.post("/exchange-token", isAuthenticated, async (req: any, res) => {
+router.post("/exchange-token", requireAuth, async (req: any, res) => {
   try {
     const userId = req.user.claims.sub;
     const { token, enrollmentId, tellerToken: bodyToken } = req.body; // Accept multiple formats
@@ -358,7 +358,7 @@ router.post("/exchange-token", isAuthenticated, async (req: any, res) => {
  * GET /api/teller/accounts
  * Get connected Teller accounts - with connectivity validation
  */
-router.get("/accounts", isAuthenticated, async (req: any, res) => {
+router.get("/accounts", requireAuth, async (req: any, res) => {
   try {
     const userId = req.user.claims.sub;
     
@@ -459,7 +459,7 @@ router.get("/accounts", isAuthenticated, async (req: any, res) => {
  * GET /api/teller/transactions/:accountId
  * Get transactions for a specific account
  */
-router.get("/transactions/:accountId", isAuthenticated, async (req: any, res) => {
+router.get("/transactions/:accountId", requireAuth, async (req: any, res) => {
   try {
     const userId = req.user.claims.sub;
     const { accountId } = req.params;
@@ -502,7 +502,7 @@ router.get("/transactions/:accountId", isAuthenticated, async (req: any, res) =>
  * POST /api/teller/transfer
  * Initiate a bank transfer (ACH)
  */
-router.post("/transfer", isAuthenticated, async (req: any, res) => {
+router.post("/transfer", requireAuth, async (req: any, res) => {
   try {
     const userId = req.user.claims.sub;
     const { fromAccountId, toAccountId, amount, description } = req.body;
@@ -559,7 +559,7 @@ router.post("/transfer", isAuthenticated, async (req: any, res) => {
  * POST /api/teller/pay-card
  * Make a credit card payment
  */
-router.post("/pay-card", isAuthenticated, async (req: any, res) => {
+router.post("/pay-card", requireAuth, async (req: any, res) => {
   try {
     const userId = req.user.claims.sub;
     const { cardAccountId, fromAccountId, amount } = req.body;
@@ -621,7 +621,7 @@ router.post("/pay-card", isAuthenticated, async (req: any, res) => {
  * GET /api/teller/balances
  * Get real-time balances for all connected accounts
  */
-router.get("/balances", isAuthenticated, async (req: any, res) => {
+router.get("/balances", requireAuth, async (req: any, res) => {
   try {
     const userId = req.user.claims.sub;
     
@@ -675,7 +675,7 @@ router.get("/balances", isAuthenticated, async (req: any, res) => {
  * GET /api/teller/identity
  * Get beneficial owner identity information for connected accounts
  */
-router.get("/identity", isAuthenticated, async (req: any, res) => {
+router.get("/identity", requireAuth, async (req: any, res) => {
   try {
     const userId = req.user.claims.sub;
     
@@ -719,7 +719,7 @@ router.get("/identity", isAuthenticated, async (req: any, res) => {
  * GET /api/teller/account/:accountId/details
  * Get detailed account information including routing/account numbers
  */
-router.get("/account/:accountId/details", isAuthenticated, async (req: any, res) => {
+router.get("/account/:accountId/details", requireAuth, async (req: any, res) => {
   try {
     const userId = req.user.claims.sub;
     const { accountId } = req.params;
@@ -762,7 +762,7 @@ router.get("/account/:accountId/details", isAuthenticated, async (req: any, res)
  * GET /api/teller/test-connection
  * Test Teller connection with a sample enrollment ID
  */
-router.get("/test-connection", isAuthenticated, async (req: any, res) => {
+router.get("/test-connection", requireAuth, async (req: any, res) => {
   try {
     const userId = req.user.claims.sub;
     const { enrollmentId } = req.query;
@@ -985,7 +985,7 @@ router.post("/webhook", async (req, res) => {
  * POST /api/teller/payments
  * Initiate capability-checked payment from account (requires issuer support)
  */
-router.post("/payments", isAuthenticated, async (req: any, res) => {
+router.post("/payments", requireAuth, async (req: any, res) => {
   try {
     const userId = req.user.claims.sub;
     const { 
@@ -1068,7 +1068,7 @@ router.post("/payments", isAuthenticated, async (req: any, res) => {
  * GET /api/teller/enrollment/:enrollmentId/status
  * Check enrollment connection status
  */
-router.get("/enrollment/:enrollmentId/status", isAuthenticated, async (req: any, res) => {
+router.get("/enrollment/:enrollmentId/status", requireAuth, async (req: any, res) => {
   try {
     const userId = req.user.claims.sub;
     const { enrollmentId } = req.params;
@@ -1117,7 +1117,7 @@ router.get("/enrollment/:enrollmentId/status", isAuthenticated, async (req: any,
  * GET /api/teller/account/:accountId/details
  * Fetch detailed account information from Teller API
  */
-router.get("/account/:accountId/details", isAuthenticated, async (req: any, res) => {
+router.get("/account/:accountId/details", requireAuth, async (req: any, res) => {
   try {
     const userId = req.user.claims.sub;
     const { accountId } = req.params;
@@ -1328,7 +1328,7 @@ function analyzeRecurringTransactions(transactions: any[]): any[] {
  * Get identity information for all connected accounts
  * Following: https://teller.io/docs/api/identity#get-identity
  */
-router.get("/identity", isAuthenticated, async (req: any, res) => {
+router.get("/identity", requireAuth, async (req: any, res) => {
   try {
     const userId = req.user.claims.sub;
     
@@ -1356,7 +1356,7 @@ router.get("/identity", isAuthenticated, async (req: any, res) => {
  * POST /api/teller/init-update
  * Initialize Teller Connect in update mode for reconnecting an existing account
  */
-router.post("/init-update", isAuthenticated, async (req: any, res) => {
+router.post("/init-update", requireAuth, async (req: any, res) => {
   try {
     const userId = req.user.claims.sub;
     const { accountId } = req.body;

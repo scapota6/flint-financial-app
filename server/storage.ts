@@ -314,7 +314,7 @@ export class DatabaseStorage implements IStorage {
   async updateAccountBalance(accountId: number, balance: string): Promise<void> {
     await db
       .update(connectedAccounts)
-      .set({ balance, lastSynced: new Date(), updatedAt: new Date() })
+      .set({ balance, lastCheckedAt: new Date(), updatedAt: new Date() })
       .where(eq(connectedAccounts.id, accountId));
   }
 

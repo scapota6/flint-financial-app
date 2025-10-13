@@ -438,7 +438,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
                   balance: accountType === 'credit' ? (amountSpent || 0) : displayBalance,
                   type: accountType,
                   institution: account.institutionName || (accountType === 'credit' ? 'Credit Card' : 'Bank'),
-                  lastUpdated: new Date().toISOString(),
+                  lastUpdated: account.lastSynced || account.lastCheckedAt || new Date().toISOString(),
                   // Store additional balance info for details view
                   availableBalance: parseFloat(tellerBalances.available || '0') || 0,
                   ledgerBalance: parseFloat(tellerBalances.ledger || '0') || 0,
@@ -590,7 +590,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
                 balance: balance,
                 type: 'investment' as const,
                 institution: account.institution_name || 'Brokerage',
-                lastUpdated: new Date().toISOString(),
+                lastUpdated: account.sync_status?.holdings?.last_successful_sync || account.sync_status?.last_successful_sync || new Date().toISOString(),
                 cash: cash,
                 holdings: holdings,
                 buyingPower: parseFloat(account.buying_power?.amount || '0') || cash

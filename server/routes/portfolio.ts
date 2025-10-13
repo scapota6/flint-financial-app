@@ -8,6 +8,7 @@ import { storage } from "../storage";
 import { marketDataService } from "../services/market-data";
 import { logger } from "@shared/logger";
 import { getSnapUser } from "../store/snapUsers";
+import { requireAuth } from "../middleware/jwt-auth";
 
 const router = Router();
 
@@ -15,7 +16,7 @@ const router = Router();
  * GET /api/portfolio/summary
  * Returns comprehensive portfolio summary with net worth breakdown
  */
-router.get("/summary", async (req: any, res) => {
+router.get("/summary", requireAuth, async (req: any, res) => {
   try {
     // Get userId from session like dashboard route
     const userId = req.user?.claims?.sub;
