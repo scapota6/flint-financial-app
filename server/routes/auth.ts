@@ -1,8 +1,9 @@
 import { Router } from 'express';
 import { z } from 'zod';
 import crypto from 'crypto';
+import speakeasy from 'speakeasy';
 import { db } from '../db';
-import { users, passwordResetTokens } from '@shared/schema';
+import { users, passwordResetTokens, auditLogs } from '@shared/schema';
 import { eq, and } from 'drizzle-orm';
 import { validatePassword } from '../lib/password-validation';
 import { 
@@ -10,10 +11,23 @@ import {
   generateRecoveryCodes, 
   hashRecoveryCodes,
   updatePasswordHistory,
-  isPasswordReused 
+  isPasswordReused,
+  verifyPassword,
+  verifyRecoveryCode,
+  removeRecoveryCode
 } from '../lib/argon2-utils';
 import { hashToken, verifyToken, generateSecureToken } from '../lib/token-utils';
 import { sendPasswordResetEmail, sendApprovalEmail } from '../services/email';
+import {
+  generateAccessToken,
+  generateRefreshToken,
+  setCookies,
+  clearAuthCookies,
+  storeRefreshToken,
+  revokeAllUserTokens,
+  refreshTokensWithRotation
+} from '../lib/auth-tokens';
+import { rateLimits } from '../middleware/rateLimiter';
 
 const router = Router();
 
@@ -24,6 +38,311 @@ const setupPasswordSchema = z.object({
 
 const requestResetSchema = z.object({
   email: z.string().email('Valid email is required'),
+});
+
+const loginSchema = z.object({
+  email: z.string().email('Valid email is required'),
+  password: z.string().min(1, 'Password is required'),
+  mfaCode: z.string().optional(),
+  recoveryCode: z.string().optional(),
+});
+
+/**
+ * Helper function to add jittered delay (200-500ms)
+ * Prevents timing attacks by making all responses take roughly the same time
+ */
+async function jitteredDelay(): Promise<void> {
+  const delay = 200 + Math.random() * 300; // 200-500ms
+  await new Promise(resolve => setTimeout(resolve, delay));
+}
+
+/**
+ * Log login attempt to audit logs
+ */
+async function logLoginAttempt(
+  email: string,
+  success: boolean,
+  userId?: string,
+  ipAddress?: string,
+  userAgent?: string,
+  reason?: string
+): Promise<void> {
+  try {
+    await db.insert(auditLogs).values({
+      userId: userId || null,
+      adminEmail: email,
+      action: success ? 'login_success' : 'login_failed',
+      details: {
+        ipAddress,
+        userAgent,
+        reason,
+        timestamp: new Date().toISOString(),
+      },
+    });
+  } catch (error) {
+    console.error('Failed to log login attempt:', error);
+  }
+}
+
+// POST /api/auth/login - Authenticate user and issue JWT tokens
+router.post('/login', rateLimits.login, async (req, res) => {
+  const startTime = Date.now();
+  let userFound = false;
+  let user: any = null;
+
+  try {
+    const parseResult = loginSchema.safeParse(req.body);
+    
+    if (!parseResult.success) {
+      await jitteredDelay();
+      return res.status(400).json({
+        message: 'Invalid request',
+        errors: parseResult.error.errors.map(e => e.message),
+      });
+    }
+
+    const { email, password, mfaCode, recoveryCode } = parseResult.data;
+    const ipAddress = req.ip || 'unknown';
+    const userAgent = req.headers['user-agent'] || 'unknown';
+
+    // Find user by email
+    const [foundUser] = await db
+      .select()
+      .from(users)
+      .where(eq(users.email, email.toLowerCase()))
+      .limit(1);
+
+    userFound = !!foundUser;
+    user = foundUser;
+
+    // Always add jittered delay before responding to prevent timing attacks
+    // This ensures the same response time whether user exists or not
+    const elapsedTime = Date.now() - startTime;
+    const minResponseTime = 200;
+    if (elapsedTime < minResponseTime) {
+      await new Promise(resolve => setTimeout(resolve, minResponseTime - elapsedTime));
+    }
+    await jitteredDelay();
+
+    // If user not found, return generic error (prevent user enumeration)
+    if (!userFound || !user) {
+      await logLoginAttempt(email, false, undefined, ipAddress, userAgent, 'User not found');
+      return res.status(401).json({
+        message: 'Invalid email or password',
+      });
+    }
+
+    // Check if user has a password set
+    if (!user.passwordHash) {
+      await logLoginAttempt(email, false, user.id, ipAddress, userAgent, 'No password set');
+      return res.status(401).json({
+        message: 'Invalid email or password',
+      });
+    }
+
+    // Check if email is verified
+    if (!user.emailVerified) {
+      await logLoginAttempt(email, false, user.id, ipAddress, userAgent, 'Email not verified');
+      return res.status(401).json({
+        message: 'Invalid email or password',
+      });
+    }
+
+    // Check if user is banned
+    if (user.isBanned) {
+      await logLoginAttempt(email, false, user.id, ipAddress, userAgent, 'User banned');
+      return res.status(401).json({
+        message: 'Invalid email or password',
+      });
+    }
+
+    // Verify password using Argon2id (constant-time comparison)
+    const passwordValid = await verifyPassword(password, user.passwordHash);
+
+    if (!passwordValid) {
+      await logLoginAttempt(email, false, user.id, ipAddress, userAgent, 'Invalid password');
+      return res.status(401).json({
+        message: 'Invalid email or password',
+      });
+    }
+
+    // If MFA is enabled, verify TOTP or recovery code
+    if (user.mfaEnabled && user.mfaSecret) {
+      if (!mfaCode && !recoveryCode) {
+        return res.status(401).json({
+          message: 'MFA code required',
+          mfaRequired: true,
+        });
+      }
+
+      let mfaValid = false;
+
+      // Try TOTP code first
+      if (mfaCode) {
+        mfaValid = speakeasy.totp.verify({
+          secret: user.mfaSecret,
+          encoding: 'base32',
+          token: mfaCode,
+          window: 1, // Allow 1 time step before/after for clock skew
+        });
+      }
+
+      // If TOTP failed or not provided, try recovery code
+      if (!mfaValid && recoveryCode && user.recoveryCodes) {
+        const recoveryIndex = await verifyRecoveryCode(recoveryCode, user.recoveryCodes);
+        
+        if (recoveryIndex !== -1) {
+          mfaValid = true;
+          
+          // Remove used recovery code
+          const updatedRecoveryCodes = removeRecoveryCode(user.recoveryCodes, recoveryIndex);
+          await db
+            .update(users)
+            .set({ recoveryCodes: updatedRecoveryCodes })
+            .where(eq(users.id, user.id));
+        }
+      }
+
+      if (!mfaValid) {
+        await logLoginAttempt(email, false, user.id, ipAddress, userAgent, 'Invalid MFA code');
+        return res.status(401).json({
+          message: 'Invalid MFA code',
+        });
+      }
+    }
+
+    // Clear any existing refresh tokens for this user (new login = invalidate old sessions)
+    await revokeAllUserTokens(user.id);
+
+    // Generate new access and refresh tokens
+    const accessToken = generateAccessToken(user.id, user.email || '');
+    const refreshTokenData = generateRefreshToken();
+
+    // Store refresh token in database
+    await storeRefreshToken(
+      user.id,
+      refreshTokenData.hashedToken,
+      refreshTokenData.expiresAt,
+      userAgent,
+      ipAddress
+    );
+
+    // Set httpOnly, Secure, SameSite=Strict cookies
+    setCookies(res, accessToken, refreshTokenData.token);
+
+    // Update last login timestamp
+    await db
+      .update(users)
+      .set({ lastLogin: new Date() })
+      .where(eq(users.id, user.id));
+
+    // Log successful login
+    await logLoginAttempt(email, true, user.id, ipAddress, userAgent, 'Login successful');
+
+    // Return user data (exclude sensitive fields)
+    return res.status(200).json({
+      success: true,
+      user: {
+        id: user.id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        role: user.isAdmin ? 'admin' : 'user',
+        subscriptionTier: user.subscriptionTier,
+        mfaEnabled: user.mfaEnabled,
+      },
+    });
+  } catch (error) {
+    console.error('Login error:', error);
+    
+    // Ensure consistent response time
+    await jitteredDelay();
+    
+    if (user) {
+      await logLoginAttempt(
+        req.body.email, 
+        false, 
+        user.id, 
+        req.ip, 
+        req.headers['user-agent'], 
+        'Server error'
+      );
+    }
+
+    return res.status(500).json({
+      message: 'An error occurred during login',
+    });
+  }
+});
+
+// POST /api/auth/refresh - Refresh access token using refresh token
+router.post('/refresh', async (req, res) => {
+  try {
+    const refreshToken = req.cookies.refreshToken;
+
+    if (!refreshToken) {
+      return res.status(401).json({
+        message: 'No refresh token provided',
+      });
+    }
+
+    const userAgent = req.headers['user-agent'] || 'unknown';
+    const ipAddress = req.ip || 'unknown';
+
+    // Refresh tokens with rotation (invalidate old, issue new)
+    const result = await refreshTokensWithRotation(
+      refreshToken,
+      userAgent,
+      ipAddress
+    );
+
+    if (!result) {
+      clearAuthCookies(res);
+      return res.status(401).json({
+        message: 'Invalid or expired refresh token',
+      });
+    }
+
+    // Set new cookies
+    setCookies(res, result.accessToken, result.refreshToken);
+
+    return res.status(200).json({
+      success: true,
+      message: 'Token refreshed successfully',
+    });
+  } catch (error) {
+    console.error('Token refresh error:', error);
+    clearAuthCookies(res);
+    return res.status(500).json({
+      message: 'An error occurred during token refresh',
+    });
+  }
+});
+
+// POST /api/auth/logout - Logout user and revoke tokens
+router.post('/logout', async (req, res) => {
+  try {
+    const refreshToken = req.cookies.refreshToken;
+
+    if (refreshToken) {
+      const { hashRefreshToken, revokeRefreshToken } = await import('../lib/auth-tokens');
+      const hashedToken = hashRefreshToken(refreshToken);
+      await revokeRefreshToken(hashedToken);
+    }
+
+    clearAuthCookies(res);
+
+    return res.status(200).json({
+      success: true,
+      message: 'Logged out successfully',
+    });
+  } catch (error) {
+    console.error('Logout error:', error);
+    clearAuthCookies(res);
+    return res.status(500).json({
+      message: 'An error occurred during logout',
+    });
+  }
 });
 
 // POST /api/auth/setup-password - Set up password for approved user

@@ -64,6 +64,31 @@ export function createRateLimit(config: RateLimitConfig) {
   };
 }
 
+/**
+ * Composite rate limiter that checks multiple time windows
+ * Used for login endpoint: 5 req/min AND 50 req/hr
+ */
+export function createCompositeRateLimit(configs: RateLimitConfig[]) {
+  const limiters = configs.map(config => createRateLimit(config));
+  
+  return (req: Request, res: Response, next: NextFunction) => {
+    let index = 0;
+    
+    const checkNext = () => {
+      if (index >= limiters.length) {
+        return next();
+      }
+      
+      const limiter = limiters[index];
+      index++;
+      
+      limiter(req, res, checkNext);
+    };
+    
+    checkNext();
+  };
+}
+
 // Predefined rate limits for different endpoint types
 export const rateLimits = {
   // Strict limits for authentication endpoints with brute-force protection
@@ -89,6 +114,46 @@ export const rateLimits = {
       });
     }
   }),
+
+  // Login-specific rate limiter with dual limits: 5 req/min AND 50 req/hr
+  login: createCompositeRateLimit([
+    {
+      windowMs: 60 * 1000, // 1 minute
+      maxRequests: 5,
+      keyGenerator: (req) => `login:minute:${req.ip}`,
+      onLimitReached: (req, res) => {
+        logger.warn('Login rate limit exceeded (1 minute window)', {
+          metadata: {
+            ip: req.ip,
+            userAgent: req.headers['user-agent'],
+          }
+        });
+        res.status(429).json({
+          error: 'Too many login attempts',
+          message: 'Too many login attempts. Please wait a minute before trying again.',
+          retryAfter: 60
+        });
+      }
+    },
+    {
+      windowMs: 60 * 60 * 1000, // 1 hour
+      maxRequests: 50,
+      keyGenerator: (req) => `login:hour:${req.ip}`,
+      onLimitReached: (req, res) => {
+        logger.warn('Login rate limit exceeded (1 hour window)', {
+          metadata: {
+            ip: req.ip,
+            userAgent: req.headers['user-agent'],
+          }
+        });
+        res.status(429).json({
+          error: 'Too many login attempts',
+          message: 'Too many login attempts from your IP address. Please wait an hour before trying again.',
+          retryAfter: 3600
+        });
+      }
+    }
+  ]),
   
   // Moderate limits for trading operations
   trading: createRateLimit({
