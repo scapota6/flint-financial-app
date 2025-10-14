@@ -264,8 +264,18 @@ function Landing() {
         </nav>
       </header>
 
-      {/* Hero Section - CTA 1: Unlimited Annual */}
+      {/* Value Proposition Section */}
       <main className="mx-auto max-w-7xl px-4 lg:px-8">
+        <section className="py-16 text-center space-y-6">
+          <h2 className="text-4xl lg:text-5xl font-bold tracking-tight">
+            Feel confident with your money again.
+          </h2>
+          <p className="text-xl lg:text-2xl text-gray-300 max-w-4xl mx-auto leading-relaxed">
+            Flint brings all your accounts together, helps you cut hidden fees, and grow toward your goals simply and clearly.
+          </p>
+        </section>
+
+        {/* Hero Section - CTA 1: Unlimited Annual */}
         <section id="annual" data-section="annual" className="grid lg:grid-cols-2 gap-12 py-20 items-center">
           <div className="space-y-8">
             <div className="space-y-4">
