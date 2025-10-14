@@ -266,13 +266,44 @@ function Landing() {
 
       {/* Value Proposition Section */}
       <main className="mx-auto max-w-7xl px-4 lg:px-8">
-        <section className="py-16 text-center space-y-6">
-          <h2 className="text-4xl lg:text-5xl font-bold tracking-tight">
-            Feel confident with your money again.
-          </h2>
-          <p className="text-xl lg:text-2xl text-gray-300 max-w-4xl mx-auto leading-relaxed">
-            Flint brings all your accounts together, helps you cut hidden fees, and grow toward your goals simply and clearly.
-          </p>
+        <section className="py-20 text-center space-y-8 relative overflow-hidden">
+          {/* Background gradient */}
+          <div className="absolute inset-0 bg-gradient-to-br from-purple-900/20 via-transparent to-blue-900/20 pointer-events-none" />
+          
+          <div className="relative z-10 space-y-6">
+            <h2 className="text-5xl lg:text-6xl font-bold tracking-tight">
+              Feel confident with your{' '}
+              <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 bg-clip-text text-transparent">
+                money again.
+              </span>
+            </h2>
+            <p className="text-xl lg:text-2xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
+              Flint brings all your accounts together, helps you cut hidden fees, and grow toward your goals{' '}
+              <span className="text-white font-semibold">simply and clearly.</span>
+            </p>
+            
+            {/* Visual elements */}
+            <div className="flex items-center justify-center gap-8 pt-8">
+              <div className="flex items-center gap-3 text-gray-300">
+                <div className="h-12 w-12 rounded-full bg-gradient-to-br from-purple-500 to-purple-700 flex items-center justify-center">
+                  <TrendingUp className="h-6 w-6 text-white" />
+                </div>
+                <span className="text-sm font-medium">Track Growth</span>
+              </div>
+              <div className="flex items-center gap-3 text-gray-300">
+                <div className="h-12 w-12 rounded-full bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center">
+                  <DollarSign className="h-6 w-6 text-white" />
+                </div>
+                <span className="text-sm font-medium">Cut Fees</span>
+              </div>
+              <div className="flex items-center gap-3 text-gray-300">
+                <div className="h-12 w-12 rounded-full bg-gradient-to-br from-green-500 to-green-700 flex items-center justify-center">
+                  <Shield className="h-6 w-6 text-white" />
+                </div>
+                <span className="text-sm font-medium">Stay Secure</span>
+              </div>
+            </div>
+          </div>
         </section>
 
         {/* Hero Section - CTA 1: Unlimited Annual */}
