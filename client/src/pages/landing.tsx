@@ -229,9 +229,35 @@ function Landing() {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white relative">
-      {/* Global gradient background */}
-      <div className="fixed inset-0 bg-gradient-to-br from-purple-900/20 via-black to-blue-900/20 pointer-events-none" />
+    <div className="min-h-screen bg-black text-white relative overflow-hidden">
+      {/* Animated gradient background */}
+      <div className="fixed inset-0 bg-gradient-to-br from-purple-900/30 via-black to-blue-900/30 pointer-events-none" />
+      
+      {/* Animated floating orbs */}
+      <div className="fixed inset-0 pointer-events-none">
+        {/* Purple orb - top left */}
+        <div className="absolute top-20 left-10 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl animate-pulse" 
+             style={{ animationDuration: '4s' }} />
+        
+        {/* Blue orb - top right */}
+        <div className="absolute top-40 right-20 w-80 h-80 bg-blue-500/20 rounded-full blur-3xl animate-pulse" 
+             style={{ animationDuration: '5s', animationDelay: '1s' }} />
+        
+        {/* Pink orb - middle */}
+        <div className="absolute top-1/2 left-1/3 w-72 h-72 bg-pink-500/15 rounded-full blur-3xl animate-pulse" 
+             style={{ animationDuration: '6s', animationDelay: '2s' }} />
+        
+        {/* Cyan orb - bottom left */}
+        <div className="absolute bottom-40 left-20 w-64 h-64 bg-cyan-500/20 rounded-full blur-3xl animate-pulse" 
+             style={{ animationDuration: '5s', animationDelay: '1.5s' }} />
+        
+        {/* Purple orb - bottom right */}
+        <div className="absolute bottom-20 right-32 w-96 h-96 bg-purple-600/15 rounded-full blur-3xl animate-pulse" 
+             style={{ animationDuration: '7s', animationDelay: '0.5s' }} />
+      </div>
+      
+      {/* Subtle grid overlay */}
+      <div className="fixed inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0icmdiYSgyNTUsMjU1LDI1NSwwLjAzKSIgc3Ryb2tlLXdpZHRoPSIxIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2dyaWQpIi8+PC9zdmc+')] opacity-40 pointer-events-none" />
       {/* Sticky Header */}
       <header className="sticky top-0 z-50 px-4 lg:px-8 py-4 bg-black/80 backdrop-blur-md border-b border-gray-800">
         <nav className="mx-auto flex max-w-7xl items-center justify-between">
