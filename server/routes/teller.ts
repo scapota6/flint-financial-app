@@ -166,6 +166,11 @@ router.post("/save-account", requireAuth, async (req: any, res) => {
         accountName = `${institutionName} - ${accountName}`;
       }
       
+      // For credit cards, use ledger balance (debt amount), for bank accounts use available
+      const balanceValue = account.type === 'credit' 
+        ? (account.balance?.ledger || 0)
+        : (account.balance?.available || 0);
+      
       await storage.upsertConnectedAccount({
         userId,
         provider: 'teller',
@@ -177,7 +182,7 @@ router.post("/save-account", requireAuth, async (req: any, res) => {
         currency: account.currency || 'USD',
         status: 'connected',
         accountType,
-        balance: String(account.balance?.available || 0),
+        balance: String(balanceValue),
         accessToken: accessToken, // CRITICAL: Store access token for API calls
       });
     }
@@ -308,13 +313,18 @@ router.post("/exchange-token", requireAuth, async (req: any, res) => {
     
     // Store each account in database
     for (const account of accountsToSave) {
+      // For credit cards, use ledger balance (debt amount), for bank accounts use available
+      const balanceValue = account.type === 'credit' 
+        ? (account.balance?.ledger || 0)
+        : (account.balance?.available || 0);
+      
       await storage.createConnectedAccount({
         userId,
         provider: 'teller',
         accountType: account.type === 'credit' ? 'card' : 'bank',
         accountName: account.name,
         accountNumber: account.last_four || '',
-        balance: String(account.balance?.available || 0),
+        balance: String(balanceValue),
         currency: account.currency || 'USD',
         institutionName: account.institution?.name || 'Unknown Bank',
         externalAccountId: account.id,
