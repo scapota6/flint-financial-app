@@ -63,9 +63,10 @@ export const users = pgTable("users", {
   index("users_email_verified_idx").on(table.emailVerified),
 ]);
 
-// SnapTrade users table per specification: snaptrade_users(flint_user_id PK, user_secret, created_at, rotated_at)
+// SnapTrade users table - using serial ID to match production schema
 export const snaptradeUsers = pgTable('snaptrade_users', {
-  flintUserId: varchar('flint_user_id').primaryKey().references(() => users.id), // Changed to PK as per spec
+  id: serial('id').primaryKey(), // Restored: NEVER change PK type - production has serial
+  flintUserId: varchar('flint_user_id').notNull().unique().references(() => users.id), // Unique but not PK
   snaptradeUserId: varchar('snaptrade_user_id').notNull(), // The actual SnapTrade user ID (original or versioned)
   userSecret: varchar('user_secret').notNull(), // Simplified name as per spec
   createdAt: timestamp('created_at').defaultNow(),
