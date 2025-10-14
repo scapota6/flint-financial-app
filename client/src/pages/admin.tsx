@@ -493,7 +493,7 @@ function UsersTab() {
   const [newPassword, setNewPassword] = useState('');
   const { toast } = useToast();
 
-  const { data, isLoading } = useQuery<{ users: User[]; pagination: Pagination }>({
+  const { data, isLoading, refetch } = useQuery<{ users: User[]; pagination: Pagination }>({
     queryKey: ['/api/admin-panel/users', { page, search, tier: tierFilter }],
   });
 
@@ -506,6 +506,7 @@ function UsersTab() {
       return response;
     },
     onSuccess: async () => {
+      await refetch();
       await queryClient.invalidateQueries({ 
         predicate: (query) => query.queryKey[0] === '/api/admin-panel/users'
       });
