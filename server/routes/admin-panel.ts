@@ -173,7 +173,12 @@ router.post('/applications/:id/approve', requireAuth, requireAdmin(), async (req
 
     // Send approval email with password setup link
     // IMPORTANT: Send the UNHASHED token to the user
-    const passwordSetupLink = `${process.env.BASE_URL || req.protocol + '://' + req.get('host')}/setup-password?token=${resetToken}`;
+    const replitDomain = process.env.REPLIT_DOMAINS?.split(',')[0];
+    const baseUrl = process.env.BASE_URL 
+      || (process.env.REPLIT_DEPLOYMENT ? `https://${process.env.REPLIT_DEPLOYMENT}` : '')
+      || (replitDomain ? `https://${replitDomain}` : '')
+      || `${req.protocol}://${req.get('host')}`;
+    const passwordSetupLink = `${baseUrl}/setup-password?token=${resetToken}`;
     
     const emailResult = await sendApprovalEmail(
       application.email,

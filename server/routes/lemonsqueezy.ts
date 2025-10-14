@@ -327,9 +327,12 @@ async function handleOrderCreated(orderData: any) {
         });
 
         // Generate password setup link
+        const replitDomain = process.env.REPLIT_DOMAINS?.split(',')[0];
         const baseUrl = process.env.REPLIT_DEPLOYMENT 
-          ? `https://${process.env.REPLIT_DEPLOYMENT}` 
-          : 'http://localhost:5000';
+          ? `https://${process.env.REPLIT_DEPLOYMENT}`
+          : replitDomain
+            ? `https://${replitDomain}`
+            : 'http://localhost:5000';
         const passwordSetupLink = `${baseUrl}/setup-password?token=${plainToken}`;
 
         // Send approval email with password setup link

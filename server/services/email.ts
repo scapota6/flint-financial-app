@@ -161,12 +161,15 @@ function getApprovalEmailTemplate(firstName: string, passwordSetupLink: string):
           .button {
             display: inline-block;
             background-color: #4F46E5;
-            color: #ffffff;
+            color: #ffffff !important;
             padding: 14px 28px;
             text-decoration: none;
             border-radius: 6px;
             font-weight: 600;
             margin: 20px 0;
+          }
+          a.button {
+            color: #ffffff !important;
           }
           .button:hover {
             background-color: #4338CA;
@@ -390,12 +393,15 @@ function getPasswordResetEmailTemplate(firstName: string, resetLink: string): st
           .button {
             display: inline-block;
             background-color: #4F46E5;
-            color: #ffffff;
+            color: #ffffff !important;
             padding: 14px 28px;
             text-decoration: none;
             border-radius: 6px;
             font-weight: 600;
             margin: 20px 0;
+          }
+          a.button {
+            color: #ffffff !important;
           }
           .button:hover {
             background-color: #4338CA;
@@ -516,12 +522,15 @@ function getVerificationEmailTemplate(firstName: string, verificationLink: strin
           .button {
             display: inline-block;
             background-color: #4F46E5;
-            color: #ffffff;
+            color: #ffffff !important;
             padding: 14px 28px;
             text-decoration: none;
             border-radius: 6px;
             font-weight: 600;
             margin: 20px 0;
+          }
+          a.button {
+            color: #ffffff !important;
           }
           .button:hover {
             background-color: #4338CA;
