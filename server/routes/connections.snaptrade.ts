@@ -28,7 +28,7 @@ r.post('/connections/snaptrade/register', async (req, res) => {
         const created = await registerUser(userId); // version-safe wrapper
         if (!created?.data?.userSecret) throw new Error('SnapTrade did not return userSecret');
         rec = { userId: created.data.userId as string, userSecret: created.data.userSecret as string };
-        await saveSnapUser(rec);
+        await saveSnapUser({ ...rec, flintUserId: userId }); // Pass both Flint user ID and SnapTrade user ID
         console.log('[SnapTrade] Registered & stored userSecret len:', rec.userSecret.length, 'userId:', rec.userId);
       } catch (registerError: any) {
         // Handle "User already exists" error - delete and recreate
@@ -46,7 +46,7 @@ r.post('/connections/snaptrade/register', async (req, res) => {
             const created = await registerUser(userId);
             if (!created?.data?.userSecret) throw new Error('SnapTrade did not return userSecret after recreation');
             rec = { userId: created.data.userId as string, userSecret: created.data.userSecret as string };
-            await saveSnapUser(rec);
+            await saveSnapUser({ ...rec, flintUserId: userId }); // Pass both Flint user ID and SnapTrade user ID
             console.log('[SnapTrade] Successfully recreated user with userSecret len:', rec.userSecret.length);
           } catch (deleteError: any) {
             console.error('[SnapTrade] Failed to delete and recreate user:', deleteError?.message || deleteError);

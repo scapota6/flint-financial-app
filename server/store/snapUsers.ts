@@ -27,9 +27,9 @@ export async function getSnapUser(flintUserId: string): Promise<Rec | null> {
       return null;
     }
 
-    // Return in the format expected by existing code
+    // Return the actual SnapTrade user ID from the database
     return {
-      userId: flintUserId, // SnapTrade userId equals flintUserId in our system
+      userId: user.snaptradeUserId, // Use the actual SnapTrade user ID (may be versioned like 45137738-v2)
       userSecret: user.userSecret
     };
   } catch (error) {
@@ -41,10 +41,15 @@ export async function getSnapUser(flintUserId: string): Promise<Rec | null> {
 /**
  * Save SnapTrade user credentials
  * Primary key constraint on flintUserId prevents duplicates
+ * 
+ * @param rec - Object containing snaptradeUserId (userId) and userSecret
+ * @param rec.flintUserId - Optional: The Flint user ID. If not provided, uses userId as both flint and snaptrade ID
  */
 export async function saveSnapUser(rec: Rec & { flintUserId?: string }): Promise<void> {
   try {
+    // Determine the IDs
     const flintUserId = rec.flintUserId || rec.userId;
+    const snaptradeUserId = rec.userId; // This is the actual SnapTrade user ID from registration
 
     // Check if user already exists
     const existing = await getSnapUser(flintUserId);
@@ -54,7 +59,7 @@ export async function saveSnapUser(rec: Rec & { flintUserId?: string }): Promise
       await db
         .update(snaptradeUsers)
         .set({
-          snaptradeUserId: flintUserId,
+          snaptradeUserId: snaptradeUserId,
           userSecret: rec.userSecret,
           rotatedAt: new Date()
         })
@@ -63,7 +68,7 @@ export async function saveSnapUser(rec: Rec & { flintUserId?: string }): Promise
       // Insert new user
       await db.insert(snaptradeUsers).values({
         flintUserId: flintUserId,
-        snaptradeUserId: flintUserId,
+        snaptradeUserId: snaptradeUserId,
         userSecret: rec.userSecret,
         createdAt: new Date(),
         rotatedAt: null
