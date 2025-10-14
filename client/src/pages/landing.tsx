@@ -936,7 +936,7 @@ function Landing() {
       </main>
 
       {/* Legal Footer */}
-      <footer className="mt-20 bg-gray-900 border-t border-gray-800">
+      <footer className="mt-20 bg-black/80 border-t border-gray-700 relative z-10">
         <div className="mx-auto max-w-7xl px-4 py-12 lg:px-8">
           <div className="grid md:grid-cols-2 gap-8">
             <div className="space-y-4">
@@ -946,7 +946,7 @@ function Landing() {
                 </div>
                 <span className="text-white font-bold text-xl">Flint</span>
               </div>
-              <p className="text-gray-400 text-sm max-w-md">
+              <p className="text-gray-300 text-sm max-w-md">
                 Connect all your financial accounts in one secure platform. 
                 Take control of your money with bank-grade security.
               </p>
@@ -955,15 +955,15 @@ function Landing() {
             <div className="space-y-4">
               <h4 className="text-white font-semibold">Legal</h4>
               <div className="flex flex-wrap gap-6 text-sm">
-                <a href="/tos" className="text-gray-400 hover:text-white">Terms of Service</a>
-                <a href="/privacy-policy" className="text-gray-400 hover:text-white">Privacy Policy</a>
-                <span className="text-gray-400">contact us at <a href="mailto:support@flint-investing.com" className="hover:text-white">support@flint-investing.com</a></span>
+                <a href="/tos" className="text-gray-300 hover:text-purple-400 transition-colors">Terms of Service</a>
+                <a href="/privacy-policy" className="text-gray-300 hover:text-purple-400 transition-colors">Privacy Policy</a>
+                <span className="text-gray-300">contact us at <a href="mailto:support@flint-investing.com" className="text-purple-400 hover:text-purple-300 transition-colors">support@flint-investing.com</a></span>
               </div>
             </div>
           </div>
           
-          <div className="border-t border-gray-800 pt-8 mt-8">
-            <p className="text-xs text-gray-400 text-center">
+          <div className="border-t border-gray-700 pt-8 mt-8">
+            <p className="text-sm text-gray-300 text-center">
               &copy; 2025 Flint Financial Management Platform. All rights reserved.
             </p>
           </div>
