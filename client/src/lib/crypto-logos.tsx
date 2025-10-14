@@ -1,73 +1,70 @@
 import React from 'react';
 import { Coins } from 'lucide-react';
 
-// Map common crypto symbols to CoinGecko IDs
-const CRYPTO_ID_MAP: Record<string, string> = {
-  'BTC': 'bitcoin',
-  'ETH': 'ethereum',
-  'USDT': 'tether',
-  'BNB': 'binancecoin',
-  'SOL': 'solana',
-  'XRP': 'ripple',
-  'USDC': 'usd-coin',
-  'ADA': 'cardano',
-  'DOGE': 'dogecoin',
-  'TRX': 'tron',
-  'TON': 'the-open-network',
-  'LINK': 'chainlink',
-  'MATIC': 'matic-network',
-  'DOT': 'polkadot',
-  'DAI': 'dai',
-  'SHIB': 'shiba-inu',
-  'AVAX': 'avalanche-2',
-  'UNI': 'uniswap',
-  'ATOM': 'cosmos',
-  'XLM': 'stellar',
-  'LTC': 'litecoin',
-  'BCH': 'bitcoin-cash',
-  'XMR': 'monero',
-  'ETC': 'ethereum-classic',
-  'FIL': 'filecoin',
-  'APT': 'aptos',
-  'ARB': 'arbitrum',
-  'OP': 'optimism',
-  'NEAR': 'near',
-  'VET': 'vechain',
-  'ALGO': 'algorand',
-  'ICP': 'internet-computer',
-  'GRT': 'the-graph',
-  'AAVE': 'aave',
-  'MKR': 'maker',
-  'SNX': 'havven',
-  'CRV': 'curve-dao-token',
-  'SAND': 'the-sandbox',
-  'MANA': 'decentraland',
-  'AXS': 'axie-infinity',
-  'FTM': 'fantom',
-  'THETA': 'theta-token',
-  'EOS': 'eos',
-  'XTZ': 'tezos',
-  'HBAR': 'hedera-hashgraph',
-  'QNT': 'quant-network',
-  'FLOW': 'flow',
-  'CHZ': 'chiliz',
-  'EGLD': 'elrond-erd-2',
-  'RUNE': 'thorchain',
-  'KLAY': 'klay-token',
-  'ZEC': 'zcash',
-  'DASH': 'dash',
-  'COMP': 'compound-governance-token',
-  'CRO': 'crypto-com-chain',
-  'NEO': 'neo',
-  'YFI': 'yearn-finance',
-  'ENJ': 'enjincoin',
-  'BAT': 'basic-attention-token',
-  'ZIL': 'zilliqa',
-  'WAVES': 'waves',
-  '1INCH': '1inch',
-  'LRC': 'loopring',
-  'CRT': 'carrot', // Assuming CRT is Carrot
-  'AMP': 'amp-token',
+// Map crypto symbols to their official domains for Brandfetch
+const CRYPTO_TO_DOMAIN: Record<string, string> = {
+  'BTC': 'bitcoin.org',
+  'ETH': 'ethereum.org',
+  'USDT': 'tether.to',
+  'BNB': 'bnbchain.org',
+  'SOL': 'solana.com',
+  'XRP': 'ripple.com',
+  'USDC': 'circle.com',
+  'ADA': 'cardano.org',
+  'DOGE': 'dogecoin.com',
+  'TRX': 'tron.network',
+  'TON': 'ton.org',
+  'LINK': 'chain.link',
+  'MATIC': 'polygon.technology',
+  'DOT': 'polkadot.network',
+  'DAI': 'makerdao.com',
+  'AVAX': 'avax.network',
+  'UNI': 'uniswap.org',
+  'ATOM': 'cosmos.network',
+  'XLM': 'stellar.org',
+  'LTC': 'litecoin.org',
+  'BCH': 'bitcoincash.org',
+  'XMR': 'getmonero.org',
+  'ETC': 'ethereumclassic.org',
+  'FIL': 'filecoin.io',
+  'APT': 'aptoslabs.com',
+  'ARB': 'arbitrum.io',
+  'OP': 'optimism.io',
+  'NEAR': 'near.org',
+  'VET': 'vechain.org',
+  'ALGO': 'algorand.com',
+  'ICP': 'dfinity.org',
+  'GRT': 'thegraph.com',
+  'AAVE': 'aave.com',
+  'MKR': 'makerdao.com',
+  'SNX': 'synthetix.io',
+  'CRV': 'curve.fi',
+  'SAND': 'sandbox.game',
+  'MANA': 'decentraland.org',
+  'AXS': 'axieinfinity.com',
+  'FTM': 'fantom.foundation',
+  'THETA': 'thetatoken.org',
+  'EOS': 'eos.io',
+  'XTZ': 'tezos.com',
+  'HBAR': 'hedera.com',
+  'QNT': 'quant.network',
+  'FLOW': 'flow.com',
+  'CHZ': 'chiliz.com',
+  'EGLD': 'multiversx.com',
+  'RUNE': 'thorchain.org',
+  'ZEC': 'z.cash',
+  'DASH': 'dash.org',
+  'COMP': 'compound.finance',
+  'CRO': 'crypto.com',
+  'NEO': 'neo.org',
+  'YFI': 'yearn.finance',
+  'ENJ': 'enjin.io',
+  'BAT': 'basicattentiontoken.org',
+  'ZIL': 'zilliqa.com',
+  'WAVES': 'waves.tech',
+  '1INCH': '1inch.io',
+  'LRC': 'loopring.org',
+  'AMP': 'amptoken.org',
 };
 
 // Color mapping for different crypto types
@@ -99,19 +96,21 @@ export function getCryptoLogo(symbol: string, name?: string) {
     };
   }
 
+  const BRANDFETCH_CLIENT_ID = import.meta.env.VITE_BRANDFETCH_CLIENT_ID || '';
   const upperSymbol = symbol.toUpperCase();
-  const cryptoId = CRYPTO_ID_MAP[upperSymbol];
+  const domain = CRYPTO_TO_DOMAIN[upperSymbol];
   const colors = CRYPTO_COLORS[upperSymbol] || CRYPTO_COLORS.default;
 
-  // If we have a CoinGecko ID, use their CDN for the logo
-  if (cryptoId) {
+  // If we have a domain mapping, use Brandfetch
+  if (domain && BRANDFETCH_CLIENT_ID) {
     return {
       logo: (
         <CryptoLogoImage 
-          cryptoId={cryptoId}
+          domain={domain}
           symbol={symbol}
           name={name}
           colors={colors}
+          brandfetchClientId={BRANDFETCH_CLIENT_ID}
         />
       ),
       ...colors
@@ -126,86 +125,21 @@ export function getCryptoLogo(symbol: string, name?: string) {
 }
 
 // Separate component to handle image loading with state
-function CryptoLogoImage({ cryptoId, symbol, name, colors }: { cryptoId: string; symbol: string; name?: string; colors: { textClass: string } }) {
+function CryptoLogoImage({ domain, symbol, name, colors, brandfetchClientId }: { domain: string; symbol: string; name?: string; colors: { textClass: string }; brandfetchClientId: string }) {
   const [hasError, setHasError] = React.useState(false);
 
   if (hasError) {
-    return (
-      <svg className={`h-10 w-10 ${colors.textClass}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <circle cx="12" cy="12" r="9" strokeWidth="2"/>
-        <path d="M12 6v6l4 2" strokeWidth="2"/>
-      </svg>
-    );
+    return <Coins className={`h-10 w-10 ${colors.textClass}`} />;
   }
 
   return (
     <img 
-      src={`https://assets.coingecko.com/coins/images/${getCoinGeckoImageId(cryptoId)}/large/${cryptoId}.png`}
+      src={`https://cdn.brandfetch.io/${domain}?c=${brandfetchClientId}`}
       alt={name || symbol}
       className="h-10 w-10 object-contain p-1"
       onError={() => setHasError(true)}
     />
   );
-}
-
-// Helper to get CoinGecko image ID (most cryptos have sequential IDs)
-function getCoinGeckoImageId(cryptoId: string): number {
-  const idMap: Record<string, number> = {
-    'bitcoin': 1,
-    'ethereum': 279,
-    'tether': 325,
-    'binancecoin': 825,
-    'solana': 4128,
-    'ripple': 44,
-    'usd-coin': 6319,
-    'cardano': 975,
-    'dogecoin': 5,
-    'matic-network': 4713,
-    'polkadot': 12171,
-    'stellar': 100,
-    'chainlink': 877,
-    'litecoin': 2,
-    'bitcoin-cash': 780,
-    'avalanche-2': 12559,
-    'uniswap': 12504,
-    'cosmos': 6783,
-    'monero': 69,
-    'ethereum-classic': 453,
-    'internet-computer': 14495,
-    'the-graph': 13397,
-    'aave': 12645,
-    'maker': 1364,
-    'curve-dao-token': 12124,
-    'the-sandbox': 12129,
-    'decentraland': 878,
-    'axie-infinity': 17980,
-    'fantom': 4001,
-    'theta-token': 2416,
-    'eos': 1765,
-    'tezos': 3406,
-    'hedera-hashgraph': 3688,
-    'quant-network': 3155,
-    'flow': 13446,
-    'chiliz': 8834,
-    'elrond-erd-2': 12335,
-    'thorchain': 6595,
-    'klay-token': 9672,
-    'zcash': 486,
-    'dash': 19,
-    'compound-governance-token': 10775,
-    'crypto-com-chain': 3635,
-    'neo': 480,
-    'yearn-finance': 11849,
-    'enjincoin': 1102,
-    'basic-attention-token': 677,
-    'zilliqa': 2469,
-    'waves': 307,
-    '1inch': 13469,
-    'loopring': 913,
-    'amp-token': 12409,
-  };
-
-  return idMap[cryptoId] || 1; // Default to bitcoin's ID if not found
 }
 
 export function getCryptoColors(symbol: string) {
