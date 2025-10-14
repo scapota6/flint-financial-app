@@ -500,16 +500,26 @@ function UsersTab() {
   const deleteMutation = useMutation({
     mutationFn: async (userId: string) => {
       const response = await apiRequest(`/api/admin-panel/users/${userId}`, { method: 'DELETE' });
-      if (!response.ok) {
+      if (!response.ok && response.status !== 404) {
         throw new Error('Failed to delete user');
       }
-      return response;
+      return { response, userId };
     },
-    onSuccess: async () => {
+    onSuccess: async ({ userId }) => {
+      // Optimistically remove from cache
+      queryClient.setQueryData(
+        ['/api/admin-panel/users', { page, search, tier: tierFilter }],
+        (old: any) => {
+          if (!old) return old;
+          return {
+            ...old,
+            users: old.users.filter((u: User) => u.id !== userId),
+          };
+        }
+      );
+      
+      // Then refetch to get updated data
       await refetch();
-      await queryClient.invalidateQueries({ 
-        predicate: (query) => query.queryKey[0] === '/api/admin-panel/users'
-      });
       toast({ title: 'User deleted successfully' });
       setActionDialog(null);
     },
