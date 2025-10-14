@@ -36,7 +36,7 @@ const GlobalNavbar = memo(function GlobalNavbar() {
   const handleLogout = async () => {
     try {
       // Use the correct logout endpoint
-      window.location.href = '/api/logout';
+      window.location.href = '/api/auth/logout';
     } catch (error) {
       console.error('Logout failed:', error);
     }

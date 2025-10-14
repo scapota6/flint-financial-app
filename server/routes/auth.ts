@@ -326,6 +326,28 @@ router.post('/logout', async (req, res) => {
   }
 });
 
+// GET /api/auth/logout - Logout user and redirect (for direct browser navigation)
+router.get('/logout', async (req, res) => {
+  try {
+    const refreshToken = req.cookies.refreshToken;
+
+    if (refreshToken) {
+      const { hashRefreshToken, revokeRefreshToken } = await import('../lib/auth-tokens');
+      const hashedToken = hashRefreshToken(refreshToken);
+      await revokeRefreshToken(hashedToken);
+    }
+
+    clearAuthCookies(res);
+
+    // Redirect to home page after logout
+    return res.redirect('/');
+  } catch (error) {
+    console.error('Logout error:', error);
+    clearAuthCookies(res);
+    return res.redirect('/');
+  }
+});
+
 // ========================================
 // SESSION MANAGEMENT ENDPOINTS
 // ========================================
