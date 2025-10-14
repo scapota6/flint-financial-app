@@ -244,7 +244,7 @@ function getApprovalEmailTemplate(firstName: string, passwordSetupLink: string):
               </ul>
             </div>
             
-            <p>If you have any questions or need assistance, our support team is here to help. Just reply to this email.</p>
+            <p>If you have any questions or need assistance, our support team is here to help. Email <a href="mailto:support@flint-investing.com" style="color: #4F46E5;">support@flint-investing.com</a>.</p>
             
             <p>Welcome aboard!</p>
             
@@ -335,7 +335,7 @@ function getRejectionEmailTemplate(firstName: string): string {
               <p style="margin: 10px 0 0 0;">Our review process considers various factors to ensure we can provide the best experience for all our users. While your application wasn't approved this time, we encourage you to reapply in the future as our platform and capacity evolve.</p>
             </div>
             
-            <p>We're constantly working to improve and expand our services. If you have any questions about this decision or would like to provide additional information, please don't hesitate to reach out to our support team by replying to this email.</p>
+            <p>We're constantly working to improve and expand our services. If you have any questions about this decision or would like to provide additional information, please don't hesitate to reach out to our support team at <a href="mailto:support@flint-investing.com" style="color: #4F46E5;">support@flint-investing.com</a>.</p>
             
             <p>We appreciate your understanding and interest in Flint.</p>
             
@@ -465,7 +465,7 @@ function getPasswordResetEmailTemplate(firstName: string, resetLink: string): st
               <li>Enabling two-factor authentication (if available)</li>
             </ul>
             
-            <p>If you continue to have issues accessing your account or if you have any questions, please contact our support team by replying to this email.</p>
+            <p>If you continue to have issues accessing your account or if you have any questions, please contact our support team at <a href="mailto:support@flint-investing.com" style="color: #4F46E5;">support@flint-investing.com</a>.</p>
             
             <p>Best regards,<br>
             The Flint Team</p>
