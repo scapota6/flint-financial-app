@@ -64,7 +64,7 @@ const CRYPTO_TO_DOMAIN: Record<string, string> = {
   'WAVES': 'waves.tech',
   '1INCH': '1inch.io',
   'LRC': 'loopring.org',
-  'AMP': 'amptoken.org',
+  'AMP': 'flexa.network',
 };
 
 // Color mapping for different crypto types
