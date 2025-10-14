@@ -129,15 +129,61 @@ router.post("/snaptrade/register", requireAuth, async (req: any, res) => {
   } catch (error: any) {
     const userId = req.user?.claims?.sub;
     
-    logger.error("SnapTrade registration error", { 
-      error: error.response?.data || error.message,
-      userId
+    // Comprehensive error logging to debug SDK error structure
+    logger.error("SnapTrade registration error - full diagnostic", { 
+      userId,
+      metadata: {
+        errorMessage: error.message,
+        errorResponseData: error.response?.data,
+        errorResponseStatus: error.response?.status,
+        errorBody: error.body,
+        errorResponseBody: error.responseBody,
+        errorData: error.data,
+        errorKeys: Object.keys(error),
+        errorToJSON: error.toJSON ? error.toJSON() : null,
+      }
     });
     
     // Check for error 1010 - user already exists on SnapTrade
-    const errorDetail = error.response?.data?.detail || '';
-    const errorCode = error.response?.data?.code || error.response?.data?.status_code;
-    const isUserAlreadyExists = errorCode === '1010' || errorCode === 1010 || errorDetail.includes('already exist');
+    // The SnapTrade SDK may wrap errors differently, so check all possible locations
+    let errorDetail = '';
+    let errorCode = '';
+    
+    // Try to extract error details from various possible locations
+    if (error.response?.data) {
+      errorDetail = error.response.data.detail || error.response.data.message || '';
+      errorCode = error.response.data.code || error.response.data.status_code || '';
+    } else if (error.body) {
+      // Some SDKs put response in error.body
+      try {
+        const body = typeof error.body === 'string' ? JSON.parse(error.body) : error.body;
+        errorDetail = body.detail || body.message || '';
+        errorCode = body.code || body.status_code || '';
+      } catch (e) {
+        // If JSON parse fails, treat as string
+        errorDetail = String(error.body);
+      }
+    } else if (error.data) {
+      // Or in error.data
+      try {
+        const data = typeof error.data === 'string' ? JSON.parse(error.data) : error.data;
+        errorDetail = data.detail || data.message || '';
+        errorCode = data.code || data.status_code || '';
+      } catch (e) {
+        // If JSON parse fails, treat as string
+        errorDetail = String(error.data);
+      }
+    }
+    
+    // Also check if the error message contains the detail directly
+    const errorMessage = error.message || '';
+    
+    // Check for error 1010 in multiple ways
+    const isUserAlreadyExists = 
+      errorCode === '1010' || 
+      String(errorCode) === '1010' || 
+      errorDetail.toLowerCase().includes('already exist') ||
+      errorMessage.toLowerCase().includes('already exist');
     
     if (isUserAlreadyExists && userId) {
       // Auto-recovery: Log orphaned account and try with new ID
