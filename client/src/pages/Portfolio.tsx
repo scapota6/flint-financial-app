@@ -118,15 +118,15 @@ export default function Portfolio() {
   const hasDisconnectedAccounts = accountsData?.disconnected && accountsData.disconnected.length > 0;
   const isEmptyState = connectedAccounts.length === 0 && !isLoading;
   
-  // Fetch portfolio summary for additional data
-  const { data: summary } = useQuery<PortfolioSummary>({
+  // Fetch portfolio summary for additional data - load in parallel, don't wait for accounts
+  const { data: summary, isLoading: summaryLoading } = useQuery<PortfolioSummary>({
     queryKey: ['/api/portfolio/summary'],
-    enabled: connectedAccounts.length > 0,
-    refetchInterval: 60000 // Refresh every minute
+    refetchInterval: 60000, // Refresh every minute
+    staleTime: 30000 // Data fresh for 30 seconds
   });
 
-  // Fetch portfolio history for chart
-  const { data: history } = useQuery<PortfolioHistory>({
+  // Fetch portfolio history for chart - load in parallel
+  const { data: history, isLoading: historyLoading } = useQuery<PortfolioHistory>({
     queryKey: ['/api/portfolio/history', selectedPeriod],
     queryFn: async () => {
       const response = await fetch(`/api/portfolio/history?period=${selectedPeriod}`, {
@@ -137,7 +137,7 @@ export default function Portfolio() {
       }
       return response.json();
     },
-    enabled: !!summary && connectedAccounts.length > 0
+    staleTime: 30000 // Data fresh for 30 seconds
   });
 
   // Handle refresh
@@ -160,16 +160,22 @@ export default function Portfolio() {
           CHART_COLORS.debt
   })) || [];
 
-  // Loading state
-  if (isLoading) {
+  // Show progressive loading - only show full page loading on initial load
+  const isPageLoading = isLoading && !accountsData;
+  
+  // Initial loading state - only on first load
+  if (isPageLoading) {
     return (
-      <div className="container mx-auto p-6">
-        <div className="animate-pulse space-y-4">
-          <div className="h-8 bg-muted rounded w-1/4"></div>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            {[1, 2, 3, 4].map(i => (
-              <div key={i} className="h-32 bg-muted rounded"></div>
-            ))}
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900/20 to-slate-900">
+        <div className="container mx-auto px-4 pt-24 pb-12 max-w-7xl">
+          <div className="animate-pulse space-y-6">
+            <div className="h-10 bg-slate-800/50 rounded w-1/3"></div>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+              {[1, 2, 3, 4].map(i => (
+                <div key={i} className="h-32 bg-slate-800/50 rounded"></div>
+              ))}
+            </div>
+            <div className="h-96 bg-slate-800/50 rounded"></div>
           </div>
         </div>
       </div>

@@ -1,11 +1,11 @@
 import { Router } from "express";
-import { isAuthenticated } from "../replitAuth";
+import { requireAuth } from "../middleware/jwt-auth";
 import { storage } from "../storage";
 
 const router = Router();
 
 // Main endpoint that matches frontend expectations
-router.get("/", isAuthenticated, async (req: any, res) => {
+router.get("/", requireAuth, async (req: any, res) => {
   try {
     const userId = req.user.claims.sub;
     
@@ -92,7 +92,7 @@ router.get("/", isAuthenticated, async (req: any, res) => {
 });
 
 // Get bank account transactions
-router.get("/transactions/:accountId", isAuthenticated, async (req: any, res) => {
+router.get("/transactions/:accountId", requireAuth, async (req: any, res) => {
   try {
     const { accountId } = req.params;
     const userEmail = req.user.claims.email;
@@ -114,7 +114,7 @@ router.get("/transactions/:accountId", isAuthenticated, async (req: any, res) =>
 });
 
 // Get all connected bank accounts AND brokerage accounts
-router.get("/accounts", isAuthenticated, async (req: any, res) => {
+router.get("/accounts", requireAuth, async (req: any, res) => {
   try {
     const userId = req.user.claims.sub;
     const userEmail = req.user.claims.email;
@@ -173,7 +173,7 @@ router.get("/accounts", isAuthenticated, async (req: any, res) => {
 });
 
 // Disconnect bank account
-router.delete("/accounts/:accountId/disconnect", isAuthenticated, async (req: any, res) => {
+router.delete("/accounts/:accountId/disconnect", requireAuth, async (req: any, res) => {
   try {
     const { accountId } = req.params;
     const userEmail = req.user.claims.email;
@@ -236,7 +236,7 @@ router.delete("/accounts/:accountId/disconnect", isAuthenticated, async (req: an
 });
 
 // Get specific account details
-router.get("/accounts/:accountId", isAuthenticated, async (req: any, res) => {
+router.get("/accounts/:accountId", requireAuth, async (req: any, res) => {
   try {
     const { accountId } = req.params;
     const userEmail = req.user.claims.email;
