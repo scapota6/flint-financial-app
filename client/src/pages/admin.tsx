@@ -498,11 +498,26 @@ function UsersTab() {
   });
 
   const deleteMutation = useMutation({
-    mutationFn: (userId: string) => apiRequest(`/api/admin-panel/users/${userId}`, { method: 'DELETE' }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/admin-panel/users'], refetchType: 'all' });
+    mutationFn: async (userId: string) => {
+      const response = await apiRequest(`/api/admin-panel/users/${userId}`, { method: 'DELETE' });
+      if (!response.ok) {
+        throw new Error('Failed to delete user');
+      }
+      return response;
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ 
+        predicate: (query) => query.queryKey[0] === '/api/admin-panel/users'
+      });
       toast({ title: 'User deleted successfully' });
       setActionDialog(null);
+    },
+    onError: (error: any) => {
+      toast({ 
+        title: 'Error deleting user', 
+        description: error.message,
+        variant: 'destructive'
+      });
     },
   });
 
