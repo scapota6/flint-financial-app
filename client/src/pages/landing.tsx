@@ -229,7 +229,9 @@ function Landing() {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="min-h-screen bg-black text-white relative">
+      {/* Global gradient background */}
+      <div className="fixed inset-0 bg-gradient-to-br from-purple-900/20 via-black to-blue-900/20 pointer-events-none" />
       {/* Sticky Header */}
       <header className="sticky top-0 z-50 px-4 lg:px-8 py-4 bg-black/80 backdrop-blur-md border-b border-gray-800">
         <nav className="mx-auto flex max-w-7xl items-center justify-between">
@@ -265,12 +267,9 @@ function Landing() {
       </header>
 
       {/* Value Proposition Section */}
-      <main className="mx-auto max-w-7xl px-4 lg:px-8">
-        <section className="py-20 text-center space-y-8 relative overflow-hidden">
-          {/* Background gradient */}
-          <div className="absolute inset-0 bg-gradient-to-br from-purple-900/20 via-transparent to-blue-900/20 pointer-events-none" />
-          
-          <div className="relative z-10 space-y-6">
+      <main className="mx-auto max-w-7xl px-4 lg:px-8 relative z-10">
+        <section className="py-20 text-center space-y-8">
+          <div className="space-y-6">
             <h2 className="text-5xl lg:text-6xl font-bold tracking-tight">
               Feel confident with your{' '}
               <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 bg-clip-text text-transparent">
