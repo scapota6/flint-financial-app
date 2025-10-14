@@ -37,7 +37,11 @@ router.get("/", isAuthenticated, async (req: any, res) => {
         if (response.ok) {
           const accountInfo = await response.json();
           // Update stored balance with live data
-          account.balance = parseFloat(accountInfo.balance?.available || accountInfo.balance?.ledger || '0');
+          // For credit cards (type='card' or 'credit'), use ledger (debt amount), for bank accounts use available
+          const balanceValue = (accountInfo.type === 'card' || accountInfo.type === 'credit')
+            ? (accountInfo.balance?.ledger || 0)
+            : (accountInfo.balance?.available || 0);
+          account.balance = parseFloat(String(balanceValue));
           validatedAccounts.push(account);
         }
       } catch (error) {
