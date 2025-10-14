@@ -1,40 +1,33 @@
 import React from "react";
-import { Building2, TrendingUp, Zap, Users, Cpu, Car, ShoppingCart, Smartphone } from "lucide-react";
+import { getCryptoLogo } from "@/lib/crypto-logos";
+import { getStockLogo } from "@/lib/stock-logos";
 
 interface StockIconProps {
   symbol: string;
   className?: string;
+  name?: string;
+  type?: string;
 }
 
-export function StockIcon({ symbol, className = "w-6 h-6" }: StockIconProps) {
-  const getIconForSymbol = (symbol: string) => {
-    const upperSymbol = symbol.toUpperCase();
-    
-    // Map common stock symbols to appropriate icons
-    switch (upperSymbol) {
-      case 'AAPL':
-        return <Smartphone className={`${className} text-gray-300`} />;
-      case 'GOOGL':
-      case 'GOOG':
-        return <Users className={`${className} text-blue-400`} />;
-      case 'MSFT':
-        return <Cpu className={`${className} text-blue-500`} />;
-      case 'TSLA':
-        return <Car className={`${className} text-red-500`} />;
-      case 'AMZN':
-        return <ShoppingCart className={`${className} text-orange-400`} />;
-      case 'NVDA':
-        return <Zap className={`${className} text-green-500`} />;
-      case 'META':
-        return <Users className={`${className} text-blue-600`} />;
-      default:
-        return <TrendingUp className={`${className} text-purple-400`} />;
-    }
-  };
+export function StockIcon({ symbol, className = "w-6 h-6", name, type }: StockIconProps) {
+  // Clean symbol for crypto (remove -USD suffix)
+  const cleanSymbol = symbol.replace('-USD', '').replace('-USDT', '');
+  
+  // Determine if it's crypto or stock
+  const isCrypto = type?.toLowerCase().includes('crypto') || 
+                   symbol.includes('-USD') || 
+                   symbol.includes('-USDT') ||
+                   ['BTC', 'ETH', 'USDT', 'BNB', 'SOL', 'XRP', 'DOGE', 'MATIC', 'XLM'].includes(cleanSymbol.toUpperCase());
+  
+  const logoData = isCrypto 
+    ? getCryptoLogo(cleanSymbol, name)
+    : getStockLogo(symbol, name);
 
   return (
-    <div className="flex items-center justify-center w-8 h-8 bg-gray-800 rounded-full">
-      {getIconForSymbol(symbol)}
+    <div className={`flex items-center justify-center rounded-lg ${logoData.bgClass} ${className}`}>
+      <div className="w-full h-full flex items-center justify-center">
+        {logoData.logo}
+      </div>
     </div>
   );
 }

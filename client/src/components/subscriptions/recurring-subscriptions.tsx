@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { apiRequest } from '@/lib/queryClient';
 import { useAuth } from '@/hooks/useAuth';
 import { Link } from 'wouter';
+import { getMerchantLogo } from '@/lib/merchant-logos';
 import { 
   Calendar, 
   DollarSign, 
@@ -220,8 +221,8 @@ export default function RecurringSubscriptions() {
                   data-testid={`subscription-item-${subscription.id}`}
                 >
                   <div className="flex items-center space-x-3">
-                    <div className={`p-2 rounded-lg border ${getCategoryColor(subscription.category)}`}>
-                      {getCategoryIcon(subscription.category)}
+                    <div className={`flex items-center justify-center w-12 h-12 rounded-lg ${getMerchantLogo(subscription.merchantName).bgClass}`}>
+                      {getMerchantLogo(subscription.merchantName).logo}
                     </div>
                     <div>
                       <div className="font-semibold text-white">{subscription.merchantName}</div>

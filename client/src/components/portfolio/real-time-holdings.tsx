@@ -5,6 +5,8 @@ import { apiRequest } from '@/lib/queryClient';
 import { getUserEmailOptional } from '@/lib/userEmail';
 import { TrendingUp, TrendingDown, DollarSign, Activity } from 'lucide-react';
 import { useState, useEffect, memo } from 'react';
+import { getCryptoLogo } from '@/lib/crypto-logos';
+import { getStockLogo, isStockSymbol } from '@/lib/stock-logos';
 
 interface Holding {
   accountId: string;
@@ -96,26 +98,21 @@ const RealTimeHoldings = memo(function RealTimeHoldings({
     return `${sign}${percent.toFixed(2)}%`;
   };
 
-  const getHoldingIcon = (symbol: string, type: string) => {
-    // Icon mapping based on symbol and type
-    const iconMap: { [key: string]: string } = {
-      'AAPL': '🍎',
-      'GOOGL': '🔍', 
-      'TSLA': '🚗',
-      'MSFT': '🖥️',
-      'AMZN': '📦',
-      'META': '📘',
-      'NVDA': '🎮',
-      'BTC-USD': '₿',
-      'ETH-USD': 'Ξ',
-      'SPY': '📊',
-      'QQQ': '📈'
-    };
+  const getHoldingLogo = (symbol: string, name: string, type: string) => {
+    // Clean symbol for crypto (remove -USD suffix)
+    const cleanSymbol = symbol.replace('-USD', '').replace('-USDT', '');
     
-    if (iconMap[symbol]) return iconMap[symbol];
-    if (type === 'crypto') return '🪙';
-    if (type === 'etf') return '📊';
-    return '📈';
+    // Determine if it's crypto or stock
+    const isCrypto = type?.toLowerCase().includes('crypto') || 
+                     symbol.includes('-USD') || 
+                     symbol.includes('-USDT') ||
+                     ['BTC', 'ETH', 'USDT', 'BNB', 'SOL', 'XRP', 'DOGE', 'MATIC', 'XLM'].includes(cleanSymbol.toUpperCase());
+    
+    if (isCrypto) {
+      return getCryptoLogo(cleanSymbol, name);
+    } else {
+      return getStockLogo(symbol, name);
+    }
   };
 
   const sortedHoldings = [...holdings].sort((a, b) => {
@@ -272,8 +269,8 @@ const RealTimeHoldings = memo(function RealTimeHoldings({
               onClick={() => onHoldingClick?.(holding.symbol, holding.name)}
             >
               <div className="flex items-center space-x-3">
-                <div className="text-2xl">
-                  {getHoldingIcon(holding.symbol, holding.type)}
+                <div className={`flex items-center justify-center w-12 h-12 rounded-lg ${getHoldingLogo(holding.symbol, holding.name, holding.type).bgClass}`}>
+                  {getHoldingLogo(holding.symbol, holding.name, holding.type).logo}
                 </div>
                 <div>
                   <div className="font-semibold text-white flex items-center space-x-2">
