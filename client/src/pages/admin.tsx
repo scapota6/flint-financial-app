@@ -500,7 +500,7 @@ function UsersTab() {
   const deleteMutation = useMutation({
     mutationFn: (userId: string) => apiRequest(`/api/admin-panel/users/${userId}`, { method: 'DELETE' }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/admin-panel/users'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/admin-panel/users'], refetchType: 'all' });
       toast({ title: 'User deleted successfully' });
       setActionDialog(null);
     },
@@ -528,7 +528,7 @@ function UsersTab() {
         body: JSON.stringify({ tier }),
       }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/admin-panel/users'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/admin-panel/users'], refetchType: 'all' });
       toast({ title: 'User tier updated' });
       setActionDialog(null);
     },
@@ -541,7 +541,7 @@ function UsersTab() {
         body: JSON.stringify({ banned }),
       }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/admin-panel/users'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/admin-panel/users'], refetchType: 'all' });
       toast({ title: 'User ban status updated' });
       setActionDialog(null);
     },
