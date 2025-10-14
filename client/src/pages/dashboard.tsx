@@ -13,6 +13,7 @@ import { isUnauthorizedError } from "@/lib/authUtils";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import RealTimeHoldings from '@/components/portfolio/real-time-holdings';
 import RecurringSubscriptions from '@/components/subscriptions/recurring-subscriptions';
+import MoneyMovement from '@/components/money/money-movement';
 
 // import TransactionHistory from '@/components/activity/transaction-history';
 
@@ -23,6 +24,8 @@ type DashboardResponse = {
   // make arrays optional to avoid runtime errors:
   positions?: any[];
   accounts?: any[];
+  subscriptionTier?: string;
+  isAdmin?: boolean;
 };
 
 export default function Dashboard() {
@@ -163,6 +166,10 @@ export default function Dashboard() {
           <RecurringSubscriptions />
         </div>
 
+        {/* Money Movement Section */}
+        <div className="mt-12">
+          <MoneyMovement />
+        </div>
 
         {/* Connection Options */}
         <div className="mt-12">

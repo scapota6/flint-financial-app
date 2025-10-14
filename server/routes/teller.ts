@@ -1424,6 +1424,146 @@ router.post("/init-update", requireAuth, async (req: any, res) => {
   }
 });
 
+/**
+ * GET /api/teller/money-movement
+ * Get money in/out analysis for a specific month
+ */
+router.get("/money-movement", requireAuth, async (req: any, res) => {
+  try {
+    const userId = req.user.claims.sub;
+    const { year, month } = req.query;
+    
+    // Default to current month if not specified
+    const targetDate = new Date(year || new Date().getFullYear(), (month ? parseInt(month) - 1 : new Date().getMonth()), 1);
+    const startDate = new Date(targetDate.getFullYear(), targetDate.getMonth(), 1);
+    const endDate = new Date(targetDate.getFullYear(), targetDate.getMonth() + 1, 0);
+    
+    // Get all Teller accounts for this user
+    const tellerAccounts = await storage.getConnectedAccounts(userId);
+    const accounts = tellerAccounts.filter(acc => acc.provider === 'teller');
+    
+    let moneyIn = 0;
+    let moneyOut = 0;
+    const sources: { [key: string]: number } = {};
+    const spend: { [key: string]: number } = {};
+    
+    // Fetch transactions from all accounts
+    for (const account of accounts) {
+      if (!account.accessToken) continue;
+      
+      try {
+        const authHeader = `Basic ${Buffer.from(account.accessToken + ":").toString("base64")}`;
+        const response = await fetch(
+          `https://api.teller.io/accounts/${account.externalAccountId}/transactions`,
+          {
+            headers: {
+              'Authorization': authHeader,
+              'Accept': 'application/json'
+            }
+          }
+        );
+        
+        if (!response.ok) continue;
+        
+        const transactions = await response.json();
+        
+        // Filter transactions for the target month
+        transactions.forEach((tx: any) => {
+          const txDate = new Date(tx.date);
+          if (txDate < startDate || txDate > endDate) return;
+          
+          const amount = parseFloat(tx.amount || '0');
+          const merchant = tx.description || tx.counterparty?.name || 'Unknown';
+          
+          if (amount > 0) {
+            // Money in (deposits)
+            moneyIn += amount;
+            sources[merchant] = (sources[merchant] || 0) + amount;
+          } else if (amount < 0) {
+            // Money out (payments)
+            moneyOut += Math.abs(amount);
+            spend[merchant] = (spend[merchant] || 0) + Math.abs(amount);
+          }
+        });
+      } catch (error) {
+        console.error(`Error fetching transactions for account ${account.id}:`, error);
+      }
+    }
+    
+    // Calculate top sources and top spend (top 4)
+    const topSources = Object.entries(sources)
+      .sort(([, a], [, b]) => b - a)
+      .slice(0, 4)
+      .map(([name, amount]) => ({ name, amount }));
+    
+    const topSpend = Object.entries(spend)
+      .sort(([, a], [, b]) => b - a)
+      .slice(0, 4)
+      .map(([name, amount]) => ({ name, amount }));
+    
+    // Calculate real 3-month averages
+    const threeMonthTotals = { moneyIn: 0, moneyOut: 0 };
+    for (let i = 1; i <= 3; i++) {
+      const monthStart = new Date(targetDate.getFullYear(), targetDate.getMonth() - i, 1);
+      const monthEnd = new Date(targetDate.getFullYear(), targetDate.getMonth() - i + 1, 0);
+      
+      for (const account of accounts) {
+        if (!account.accessToken) continue;
+        
+        try {
+          const authHeader = `Basic ${Buffer.from(account.accessToken + ":").toString("base64")}`;
+          const response = await fetch(
+            `https://api.teller.io/accounts/${account.externalAccountId}/transactions`,
+            {
+              headers: {
+                'Authorization': authHeader,
+                'Accept': 'application/json'
+              }
+            }
+          );
+          
+          if (!response.ok) continue;
+          
+          const transactions = await response.json();
+          
+          transactions.forEach((tx: any) => {
+            const txDate = new Date(tx.date);
+            if (txDate < monthStart || txDate > monthEnd) return;
+            
+            const amount = parseFloat(tx.amount || '0');
+            if (amount > 0) {
+              threeMonthTotals.moneyIn += amount;
+            } else if (amount < 0) {
+              threeMonthTotals.moneyOut += Math.abs(amount);
+            }
+          });
+        } catch (error) {
+          // Skip failed accounts
+        }
+      }
+    }
+    
+    res.json({
+      month: targetDate.toISOString().slice(0, 7), // YYYY-MM format
+      moneyIn,
+      moneyOut,
+      topSources,
+      topSpend,
+      threeMonthAverage: {
+        moneyIn: threeMonthTotals.moneyIn / 3,
+        moneyOut: threeMonthTotals.moneyOut / 3
+      }
+    });
+    
+  } catch (error: any) {
+    logger.error("Failed to fetch money movement data", { error: error.message });
+    res.status(500).json({ 
+      message: "Failed to fetch money movement data",
+      error: error.message 
+    });
+  }
+});
+
 // Mount payments sub-router
 router.use("/payments", tellerPaymentsRouter);
 

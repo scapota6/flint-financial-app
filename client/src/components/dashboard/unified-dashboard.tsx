@@ -42,6 +42,7 @@ const COLORS = {
   bank: '#10b981', // green
   investment: '#8b5cf6', // purple
   crypto: '#f59e0b', // orange
+  debt: '#ef4444', // red
 };
 
 
@@ -133,6 +134,7 @@ export default function UnifiedDashboard() {
   // Prepare data for charts - only use connected accounts
   const typeBreakdown = [
     { name: 'Banking', value: totals.bankBalance, color: COLORS.bank },
+    { name: 'Debt', value: totals.debtBalance, color: COLORS.debt },
     { name: 'Investments', value: totals.investmentValue, color: COLORS.investment },
     { name: 'Crypto', value: totals.cryptoValue, color: COLORS.crypto },
   ].filter(item => item.value > 0);
@@ -226,6 +228,11 @@ export default function UnifiedDashboard() {
                           <stop offset="50%" stopColor="#f59e0b" stopOpacity={1}/>
                           <stop offset="100%" stopColor="#d97706" stopOpacity={0.9}/>
                         </radialGradient>
+                        <radialGradient id="debtGradient3D" cx="30%" cy="30%">
+                          <stop offset="0%" stopColor="#f87171" stopOpacity={1}/>
+                          <stop offset="50%" stopColor="#ef4444" stopOpacity={1}/>
+                          <stop offset="100%" stopColor="#dc2626" stopOpacity={0.9}/>
+                        </radialGradient>
                       </defs>
                       <Pie
                         data={typeBreakdown}
@@ -246,6 +253,7 @@ export default function UnifiedDashboard() {
                             key={`cell-${index}`} 
                             fill={
                               entry.name === 'Banking' ? 'url(#bankingGradient3D)' :
+                              entry.name === 'Debt' ? 'url(#debtGradient3D)' :
                               entry.name === 'Investments' ? 'url(#investmentGradient3D)' :
                               'url(#cryptoGradient3D)'
                             }

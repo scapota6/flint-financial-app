@@ -31,6 +31,11 @@ export interface AccountsResponse {
     status: string;
     lastCheckedAt: string;
   }>;
+  // Backend-calculated totals (correct net worth accounting)
+  totalBalance?: number;
+  bankBalance?: number;
+  investmentBalance?: number;
+  cryptoBalance?: number;
 }
 
 /**
@@ -81,7 +86,12 @@ export function useAccounts() {
 
       return {
         accounts: allAccounts,
-        disconnected: undefined // Dashboard only returns working accounts
+        disconnected: undefined, // Dashboard only returns working accounts
+        // Extract backend-calculated totals (correctly handles debt)
+        totalBalance: dashboardData.totalBalance,
+        bankBalance: dashboardData.bankBalance,
+        investmentBalance: dashboardData.investmentBalance || dashboardData.investmentValue,
+        cryptoBalance: dashboardData.cryptoBalance || dashboardData.cryptoValue,
       };
     },
     staleTime: 12 * 60 * 60 * 1000, // 12 hours - same as dashboard
@@ -104,6 +114,7 @@ export function useAccountHealth() {
 
 /**
  * Computed portfolio totals from connected accounts only
+ * Uses backend-calculated totals (which correctly handle debt) + calculates debtBalance separately
  */
 export function usePortfolioTotals() {
   const { data: accountsData } = useAccounts();
@@ -112,6 +123,7 @@ export function usePortfolioTotals() {
     return {
       totalBalance: 0,
       bankBalance: 0,
+      debtBalance: 0,
       investmentValue: 0,
       cryptoValue: 0,
       accountCount: 0
@@ -120,33 +132,19 @@ export function usePortfolioTotals() {
 
   const connected = accountsData.accounts; // Only connected accounts are returned
 
-  const totals = connected.reduce((acc, account) => {
-    const balance = account.balance || 0;
-    acc.totalBalance += balance;
-    
-    switch (account.type) {
-      case 'bank':
-      case 'credit':
-        acc.bankBalance += balance;
-        break;
-      case 'investment':
-        acc.investmentValue += balance;
-        break;
-      case 'crypto':
-        acc.cryptoValue += balance;
-        break;
-    }
-    
-    return acc;
-  }, {
-    totalBalance: 0,
-    bankBalance: 0,
-    investmentValue: 0,
-    cryptoValue: 0
-  });
+  // Calculate debt balance from credit accounts (ensure positive for chart display)
+  const debtBalance = connected
+    .filter(account => account.type === 'credit')
+    .reduce((sum, account) => sum + Math.abs(account.balance || 0), 0);
 
   return {
-    ...totals,
+    // Use backend-calculated totals (correctly accounts for debt as negative)
+    totalBalance: accountsData.totalBalance || 0,
+    bankBalance: accountsData.bankBalance || 0,
+    investmentValue: accountsData.investmentBalance || 0,
+    cryptoValue: accountsData.cryptoBalance || 0,
+    // Frontend-calculated debt for chart display
+    debtBalance,
     accountCount: connected.length
   };
 }
