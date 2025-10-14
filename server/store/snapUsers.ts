@@ -54,6 +54,7 @@ export async function saveSnapUser(rec: Rec & { flintUserId?: string }): Promise
       await db
         .update(snaptradeUsers)
         .set({
+          snaptradeUserId: flintUserId,
           userSecret: rec.userSecret,
           rotatedAt: new Date()
         })
@@ -62,6 +63,7 @@ export async function saveSnapUser(rec: Rec & { flintUserId?: string }): Promise
       // Insert new user
       await db.insert(snaptradeUsers).values({
         flintUserId: flintUserId,
+        snaptradeUserId: flintUserId,
         userSecret: rec.userSecret,
         createdAt: new Date(),
         rotatedAt: null

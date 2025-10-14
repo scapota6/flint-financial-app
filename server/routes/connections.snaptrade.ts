@@ -31,13 +31,27 @@ r.post('/connections/snaptrade/register', async (req, res) => {
         await saveSnapUser(rec);
         console.log('[SnapTrade] Registered & stored userSecret len:', rec.userSecret.length, 'userId:', rec.userId);
       } catch (registerError: any) {
-        // Handle "User already exists" error like official CLI
+        // Handle "User already exists" error - delete and recreate
         if (registerError?.responseBody?.code === '1010') {
-          console.log('[SnapTrade] User already exists, attempting to delete and recreate...');
-          // For now, just use the existing userId with a generated secret
-          // In production, you might want to call deleteSnapTradeUser first
-          rec = { userId: userId, userSecret: 'temp-secret-to-be-updated' };
-          await saveSnapUser(rec);
+          console.log('[SnapTrade] User already exists (orphaned account), deleting and recreating...');
+          try {
+            // Import delete function
+            const { deleteSnapTradeUser } = await import('../lib/snaptrade');
+            
+            // Delete the existing user from SnapTrade
+            await deleteSnapTradeUser(userId);
+            console.log('[SnapTrade] Successfully deleted orphaned user:', userId);
+            
+            // Retry registration
+            const created = await registerUser(userId);
+            if (!created?.data?.userSecret) throw new Error('SnapTrade did not return userSecret after recreation');
+            rec = { userId: created.data.userId as string, userSecret: created.data.userSecret as string };
+            await saveSnapUser(rec);
+            console.log('[SnapTrade] Successfully recreated user with userSecret len:', rec.userSecret.length);
+          } catch (deleteError: any) {
+            console.error('[SnapTrade] Failed to delete and recreate user:', deleteError?.message || deleteError);
+            throw new Error(`Failed to recover from orphaned account: ${deleteError?.message || 'Unknown error'}`);
+          }
         } else {
           throw registerError;
         }
@@ -57,7 +71,19 @@ r.post('/connections/snaptrade/register', async (req, res) => {
     return res.status(200).json({ connect: { url } });
   } catch (e: any) {
     console.error('SnapTrade registration error:', e?.responseBody || e?.message || e);
-    return res.status(500).json({ message: 'Failed to register with SnapTrade', error: e?.message || 'Unknown error' });
+    
+    // Provide specific error messages for common issues
+    if (e?.message?.includes('orphaned account')) {
+      return res.status(503).json({ 
+        message: 'Brokerage connection temporarily unavailable. An orphaned account was detected and cleanup failed. Please try again in a few minutes.', 
+        error: e?.message 
+      });
+    }
+    
+    return res.status(500).json({ 
+      message: 'Failed to register with SnapTrade', 
+      error: e?.message || 'Unknown error' 
+    });
   }
 });
 
