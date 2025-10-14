@@ -214,7 +214,7 @@ router.get("/summary", requireAuth, async (req: any, res) => {
  * GET /api/portfolio/history
  * Returns historical portfolio values for charting (query parameter version)
  */
-router.get("/history", async (req: any, res) => {
+router.get("/history", requireAuth, async (req: any, res) => {
   try {
     const userId = req.user?.claims?.sub;
     
@@ -284,7 +284,7 @@ router.get("/history", async (req: any, res) => {
  * GET /api/portfolio/history/:period
  * Returns historical portfolio values for charting (path parameter version)
  */
-router.get("/history/:period", async (req: any, res) => {
+router.get("/history/:period", requireAuth, async (req: any, res) => {
   try {
     const userId = req.user?.claims?.sub;
     
