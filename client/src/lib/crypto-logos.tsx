@@ -140,7 +140,7 @@ function CryptoLogoImage({ cryptoId, symbol, name, colors }: { cryptoId: string;
 
   return (
     <img 
-      src={`https://coin-images.coingecko.com/coins/images/${getCoinGeckoImageId(cryptoId)}/large/${cryptoId}.png`}
+      src={`https://assets.coingecko.com/coins/images/${getCoinGeckoImageId(cryptoId)}/large/${cryptoId}.png`}
       alt={name || symbol}
       className="h-10 w-10 object-contain p-1"
       onError={() => setHasError(true)}
