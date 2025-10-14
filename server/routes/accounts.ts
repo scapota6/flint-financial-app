@@ -6,7 +6,7 @@
 import { Router } from "express";
 import { authApi, accountsApi, snaptradeClient } from "../lib/snaptrade";
 import crypto from "crypto";
-import { isAuthenticated } from "../replitAuth";
+import { requireAuth } from "../middleware/jwt-auth";
 import { storage } from "../storage";
 import { logger } from "@shared/logger";
 
@@ -17,7 +17,7 @@ const router = Router();
  * Returns all connected accounts (banks + brokerages) for the authenticated user
  * This is the unified endpoint that combines bank and brokerage data
  */
-router.get("/", isAuthenticated, async (req: any, res) => {
+router.get("/", requireAuth, async (req: any, res) => {
   try {
     const userId = req.user.claims.sub;
     
@@ -101,7 +101,7 @@ router.get("/", isAuthenticated, async (req: any, res) => {
  * GET /api/accounts/health
  * Returns connection health status for all user accounts
  */
-router.get("/health", isAuthenticated, async (req: any, res) => {
+router.get("/health", requireAuth, async (req: any, res) => {
   try {
     const userId = req.user.claims.sub;
     
@@ -178,7 +178,7 @@ router.get("/health", isAuthenticated, async (req: any, res) => {
  * GET /api/brokerages
  * Returns all brokerage accounts for the authenticated user
  */
-router.get("/brokerages", isAuthenticated, async (req: any, res) => {
+router.get("/brokerages", requireAuth, async (req: any, res) => {
   try {
     const userId = req.user.claims.sub;
     
@@ -293,7 +293,7 @@ router.get("/brokerages", isAuthenticated, async (req: any, res) => {
  * GET /api/brokerages/:id/holdings
  * Returns holdings for a specific brokerage account
  */
-router.get("/brokerages/:id/holdings", isAuthenticated, async (req: any, res) => {
+router.get("/brokerages/:id/holdings", requireAuth, async (req: any, res) => {
   try {
     const userId = req.user.claims.sub;
     const accountId = parseInt(req.params.id);
@@ -362,7 +362,7 @@ router.get("/brokerages/:id/holdings", isAuthenticated, async (req: any, res) =>
  * GET /api/brokerages/:id/transactions
  * Returns transactions for a specific brokerage account
  */
-router.get("/brokerages/:id/transactions", isAuthenticated, async (req: any, res) => {
+router.get("/brokerages/:id/transactions", requireAuth, async (req: any, res) => {
   try {
     const userId = req.user.claims.sub;
     const accountId = parseInt(req.params.id);
@@ -433,7 +433,7 @@ router.get("/brokerages/:id/transactions", isAuthenticated, async (req: any, res
  * GET /api/banks
  * Returns all bank and card accounts for the authenticated user
  */
-router.get("/banks", isAuthenticated, async (req: any, res) => {
+router.get("/banks", requireAuth, async (req: any, res) => {
   try {
     const userId = req.user.claims.sub;
     
@@ -540,7 +540,7 @@ router.get("/banks", isAuthenticated, async (req: any, res) => {
  * GET /api/banks/:id/transactions
  * Returns transactions for a specific bank/card account
  */
-router.get("/banks/:id/transactions", isAuthenticated, async (req: any, res) => {
+router.get("/banks/:id/transactions", requireAuth, async (req: any, res) => {
   try {
     const userId = req.user.claims.sub;
     const accountId = parseInt(req.params.id);
@@ -609,7 +609,7 @@ router.get("/banks/:id/transactions", isAuthenticated, async (req: any, res) => 
 });
 
 // Add /api/accounts/banks route for compatibility  
-router.get("/banks", isAuthenticated, async (req: any, res) => {
+router.get("/banks", requireAuth, async (req: any, res) => {
   try {
     const userId = req.user.claims.sub;
     
@@ -664,7 +664,7 @@ router.get("/banks", isAuthenticated, async (req: any, res) => {
 });
 
 // Add /api/accounts/brokerages route for compatibility
-router.get("/brokerages", isAuthenticated, async (req: any, res) => {
+router.get("/brokerages", requireAuth, async (req: any, res) => {
   try {
     const userId = req.user.claims.sub;
     

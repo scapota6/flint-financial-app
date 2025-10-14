@@ -11,7 +11,6 @@ import {
   DollarSign,
   Wallet,
   CreditCard,
-  RefreshCw,
   Info,
   ArrowUpRight,
   ArrowDownRight,
@@ -107,7 +106,6 @@ const CustomTooltip = ({ active, payload }: any) => {
 
 export default function Portfolio() {
   const [selectedPeriod, setSelectedPeriod] = useState('1D');
-  const [isRefreshing, setIsRefreshing] = useState(false);
 
   // Use unified accounts and portfolio totals
   const { data: accountsData, isLoading, error } = useAccounts();
@@ -140,14 +138,6 @@ export default function Portfolio() {
     staleTime: 30000 // Data fresh for 30 seconds
   });
 
-  // Handle refresh
-  const handleRefresh = async () => {
-    setIsRefreshing(true);
-    await queryClient.invalidateQueries({ queryKey: ['/api/accounts'] });
-    await queryClient.invalidateQueries({ queryKey: ['/api/portfolio/summary'] });
-    await queryClient.invalidateQueries({ queryKey: ['/api/portfolio/history'] });
-    setTimeout(() => setIsRefreshing(false), 1000);
-  };
 
   // Prepare donut chart data
   const chartData = summary?.breakdown?.map((item: any) => ({
@@ -244,17 +234,6 @@ export default function Portfolio() {
               <p className="text-slate-400 mt-2">
                 Your complete financial picture across {totals.accountCount} connected accounts
               </p>
-            </div>
-            <div className="flex items-center gap-3">
-              <Button 
-                variant="outline" 
-                onClick={handleRefresh}
-                disabled={isRefreshing}
-                className="border-purple-500/50 bg-purple-500/10 hover:bg-purple-500/20"
-              >
-                <RefreshCw className={`h-4 w-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />
-                Refresh
-              </Button>
             </div>
           </div>
         </div>
