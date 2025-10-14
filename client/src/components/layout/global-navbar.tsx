@@ -12,6 +12,11 @@ import {
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { useQuery } from '@tanstack/react-query';
 
+interface AuthUser {
+  id: string;
+  email: string;
+}
+
 const navLinks = [
   { href: '/', label: 'Dashboard', comingSoon: false },
   { href: '/portfolio', label: 'Portfolio', comingSoon: false },
@@ -24,7 +29,7 @@ const GlobalNavbar = memo(function GlobalNavbar() {
   const [location] = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   
-  const { data: user } = useQuery({
+  const { data: user } = useQuery<AuthUser>({
     queryKey: ['/api/auth/user'],
   });
 

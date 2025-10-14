@@ -160,6 +160,7 @@ export function categorizeSnapTradeError(error: any): {
     case 500:
     case 502:
     case 503:
+    case 504:
       return {
         category: 'server',
         message: 'SnapTrade server error - please try again later',
