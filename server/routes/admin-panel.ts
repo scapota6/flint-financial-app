@@ -14,6 +14,7 @@ import {
   passwordResetTokens,
   emailLogs,
   sessions,
+  orphanedSnaptradeAccounts,
 } from '@shared/schema';
 import { eq, desc, and, sql, count, gte, lte, inArray } from 'drizzle-orm';
 import { sendApprovalEmail, sendRejectionEmail, sendPasswordResetEmail } from '../services/email';
@@ -1659,6 +1660,110 @@ router.delete('/snaptrade/connections/:connectionId', requireAuth, requireAdmin(
   } catch (error) {
     console.error('Error deleting SnapTrade connection:', error);
     res.status(500).json({ message: 'Failed to delete SnapTrade connection' });
+  }
+});
+
+// GET /api/admin-panel/snaptrade/orphaned-accounts - Get all orphaned SnapTrade accounts
+router.get('/snaptrade/orphaned-accounts', requireAuth, requireAdmin(), async (req: any, res) => {
+  try {
+    const orphanedAccounts = await db
+      .select({
+        id: orphanedSnaptradeAccounts.id,
+        flintUserId: orphanedSnaptradeAccounts.flintUserId,
+        orphanedSnaptradeId: orphanedSnaptradeAccounts.orphanedSnaptradeId,
+        newSnaptradeId: orphanedSnaptradeAccounts.newSnaptradeId,
+        userEmail: orphanedSnaptradeAccounts.userEmail,
+        errorCode: orphanedSnaptradeAccounts.errorCode,
+        errorMessage: orphanedSnaptradeAccounts.errorMessage,
+        resolved: orphanedSnaptradeAccounts.resolved,
+        resolvedAt: orphanedSnaptradeAccounts.resolvedAt,
+        createdAt: orphanedSnaptradeAccounts.createdAt,
+        firstName: users.firstName,
+        lastName: users.lastName,
+      })
+      .from(orphanedSnaptradeAccounts)
+      .leftJoin(users, eq(orphanedSnaptradeAccounts.flintUserId, users.id))
+      .orderBy(desc(orphanedSnaptradeAccounts.createdAt));
+
+    // Transform to match frontend interface
+    const accounts = orphanedAccounts.map(account => ({
+      id: account.id,
+      userEmail: account.userEmail,
+      userName: `${account.firstName || ''} ${account.lastName || ''}`.trim() || 'Unknown User',
+      orphanedSnaptradeId: account.orphanedSnaptradeId,
+      newSnaptradeId: account.newSnaptradeId,
+      errorMessage: account.errorMessage,
+      isResolved: account.resolved,
+      createdAt: account.createdAt
+    }));
+
+    await logAdminAction(
+      req.adminEmail,
+      'view_orphaned_snaptrade_accounts',
+      { count: accounts.length }
+    );
+
+    res.json({ 
+      accounts,
+      stats: {
+        total: accounts.length,
+        unresolved: accounts.filter(a => !a.isResolved).length,
+        resolved: accounts.filter(a => a.isResolved).length
+      }
+    });
+  } catch (error) {
+    console.error('Error fetching orphaned SnapTrade accounts:', error);
+    res.status(500).json({ message: 'Failed to fetch orphaned SnapTrade accounts' });
+  }
+});
+
+// POST /api/admin-panel/snaptrade/orphaned-accounts/:id/resolve - Mark orphaned account as resolved
+router.post('/snaptrade/orphaned-accounts/:id/resolve', requireAuth, requireAdmin(), async (req: any, res) => {
+  try {
+    const { id } = req.params;
+    const parsedId = parseInt(id, 10);
+
+    if (!Number.isInteger(parsedId) || parsedId <= 0) {
+      return res.status(400).json({ message: 'Invalid orphaned account ID' });
+    }
+
+    // Get the orphaned account
+    const [orphaned] = await db
+      .select()
+      .from(orphanedSnaptradeAccounts)
+      .where(eq(orphanedSnaptradeAccounts.id, parsedId));
+
+    if (!orphaned) {
+      return res.status(404).json({ message: 'Orphaned account not found' });
+    }
+
+    // Mark as resolved
+    await db
+      .update(orphanedSnaptradeAccounts)
+      .set({ resolved: true, resolvedAt: new Date() })
+      .where(eq(orphanedSnaptradeAccounts.id, parsedId));
+
+    await logAdminAction(
+      req.adminEmail,
+      'resolve_orphaned_snaptrade_account',
+      { 
+        orphanedAccountId: parsedId,
+        flintUserId: orphaned.flintUserId,
+        orphanedSnaptradeId: orphaned.orphanedSnaptradeId
+      }
+    );
+
+    res.json({ 
+      message: 'Orphaned account marked as resolved',
+      orphanedAccount: {
+        id: parsedId,
+        flintUserId: orphaned.flintUserId,
+        orphanedSnaptradeId: orphaned.orphanedSnaptradeId
+      }
+    });
+  } catch (error) {
+    console.error('Error resolving orphaned account:', error);
+    res.status(500).json({ message: 'Failed to resolve orphaned account' });
   }
 });
 

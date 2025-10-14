@@ -74,6 +74,7 @@ router.post("/snaptrade/register", requireAuth, async (req: any, res) => {
       .limit(1);
     
     let userSecret: string;
+    let snaptradeUserId: string;
     
     if (!existingUser) {
       // Step 2: Register new user with SnapTrade using Flint user ID
@@ -84,28 +85,31 @@ router.post("/snaptrade/register", requireAuth, async (req: any, res) => {
       });
       
       userSecret = registerData.userSecret!;
+      snaptradeUserId = userId; // Initially use Flint user ID
       
       // Step 3: Save userSecret to snaptrade_users table
       await db
         .insert(snaptradeUsers)
         .values({
           flintUserId: userId,
+          snaptradeUserId: snaptradeUserId,
           userSecret: userSecret,
         });
       
       logger.info("SnapTrade user registered and saved to database", { userId });
     } else {
       userSecret = existingUser.userSecret;
+      snaptradeUserId = existingUser.snaptradeUserId;
       logger.info("Using existing SnapTrade user", { userId });
     }
     
     // Step 4: Call loginSnapTradeUser with dynamic redirect URL
     const redirectUrl = `${req.protocol}://${req.get('host')}/snaptrade/callback`;
     
-    logger.info("Generating SnapTrade portal URL", { userId, redirectUrl });
+    logger.info("Generating SnapTrade portal URL", { userId, metadata: { redirectUrl } });
     
     const { data: loginData } = await authApi.loginSnapTradeUser({
-      userId: userId,
+      userId: snaptradeUserId, // Use the actual SnapTrade user ID (original or versioned)
       userSecret: userSecret,
       immediateRedirect: true,
       customRedirect: redirectUrl,
@@ -113,9 +117,9 @@ router.post("/snaptrade/register", requireAuth, async (req: any, res) => {
     });
     
     // Step 5: Return the portal URL
-    const portalUrl = loginData.redirectURI || loginData.redirectUrl;
+    const portalUrl = (loginData as any).redirectURI;
     
-    logger.info("SnapTrade portal URL generated", { userId, hasPortalUrl: !!portalUrl });
+    logger.info("SnapTrade portal URL generated", { userId, metadata: { hasPortalUrl: !!portalUrl } });
     
     res.json({ 
       redirectUrl: portalUrl,
@@ -123,10 +127,114 @@ router.post("/snaptrade/register", requireAuth, async (req: any, res) => {
     });
     
   } catch (error: any) {
+    const userId = req.user?.claims?.sub;
+    
     logger.error("SnapTrade registration error", { 
       error: error.response?.data || error.message,
-      userId: req.user?.claims?.sub
+      userId
     });
+    
+    // Check for error 1010 - user already exists on SnapTrade
+    const errorDetail = error.response?.data?.detail || '';
+    const errorCode = error.response?.data?.code || error.response?.data?.status_code;
+    const isUserAlreadyExists = errorCode === '1010' || errorCode === 1010 || errorDetail.includes('already exist');
+    
+    if (isUserAlreadyExists && userId) {
+      // Auto-recovery: Log orphaned account and try with new ID
+      logger.warn("SnapTrade user already exists - attempting auto-recovery", { userId });
+      
+      try {
+        const { db } = await import('../db');
+        const { orphanedSnaptradeAccounts, users } = await import('@shared/schema');
+        const { eq } = await import('drizzle-orm');
+        
+        // Get user email for logging
+        const [user] = await db.select().from(users).where(eq(users.id, userId)).limit(1);
+        const userEmail = user?.email || 'unknown';
+        
+        // Check if we already logged this orphan
+        const [existingOrphan] = await db
+          .select()
+          .from(orphanedSnaptradeAccounts)
+          .where(eq(orphanedSnaptradeAccounts.flintUserId, userId))
+          .limit(1);
+        
+        // Generate new ID with version suffix
+        let newId = userId;
+        let attempt = 2;
+        
+        if (existingOrphan?.newSnaptradeId) {
+          // Extract version number and increment
+          const match = existingOrphan.newSnaptradeId.match(/-v(\d+)$/);
+          attempt = match ? parseInt(match[1]) + 1 : 2;
+        }
+        
+        newId = `${userId}-v${attempt}`;
+        
+        // Log the orphaned account
+        if (!existingOrphan) {
+          await db.insert(orphanedSnaptradeAccounts).values({
+            flintUserId: userId,
+            orphanedSnaptradeId: userId,
+            newSnaptradeId: newId,
+            userEmail,
+            errorCode: '1010',
+            errorMessage: errorDetail,
+          });
+        } else {
+          // Update existing orphan record with new recovery attempt
+          await db
+            .update(orphanedSnaptradeAccounts)
+            .set({ newSnaptradeId: newId })
+            .where(eq(orphanedSnaptradeAccounts.id, existingOrphan.id));
+        }
+        
+        logger.info("Attempting SnapTrade registration with recovery ID", { userId, metadata: { newId } });
+        
+        // Try registering with new ID
+        const { data: registerData } = await authApi.registerSnapTradeUser({
+          userId: newId,
+        });
+        
+        const userSecret = registerData.userSecret!;
+        
+        // Save to database with recovery ID
+        const { snaptradeUsers } = await import('@shared/schema');
+        await db.insert(snaptradeUsers).values({
+          flintUserId: userId,
+          snaptradeUserId: newId, // Store the versioned ID
+          userSecret: userSecret,
+        });
+        
+        // Generate login URL with recovery ID
+        const redirectUrl = `${req.protocol}://${req.get('host')}/snaptrade/callback`;
+        const { data: loginData } = await authApi.loginSnapTradeUser({
+          userId: newId,
+          userSecret: userSecret,
+          immediateRedirect: true,
+          customRedirect: redirectUrl,
+          connectionType: "trade",
+        });
+        
+        const portalUrl = (loginData as any).redirectURI;
+        
+        logger.info("Auto-recovery successful", { userId, metadata: { newId, hasPortalUrl: !!portalUrl } });
+        
+        return res.json({ 
+          redirectUrl: portalUrl,
+          message: "Redirect user to SnapTrade connection portal",
+          recovered: true
+        });
+        
+      } catch (recoveryError: any) {
+        logger.error("Auto-recovery failed", { 
+          userId, 
+          error: recoveryError.response?.data || recoveryError.message 
+        });
+        
+        // Fall through to original error handling
+      }
+    }
     
     // Handle SnapTrade API specific errors with user-friendly messages
     let statusCode = 500;
@@ -164,69 +272,8 @@ router.post("/snaptrade/register", requireAuth, async (req: any, res) => {
  * which receives userId/userSecret from SnapTrade in the query params
  */
 router.get("/snaptrade/callback", async (req: any, res) => {
-  try {
-    // This route is legacy - redirect to main callback
-    return res.redirect("/snaptrade/callback?" + new URLSearchParams(req.query).toString());
-    
-    const userId = req.user?.claims?.sub;
-    const { status, message } = req.query;
-    
-    if (status === 'error') {
-      logger.error("SnapTrade connection failed", { 
-        userId, 
-        message 
-      });
-      return res.redirect(`/?error=${encodeURIComponent(message || 'Connection failed')}`);
-    }
-    
-    // Get user's SnapTrade credentials
-    const snaptradeUser = await storage.getSnapTradeUser(userId);
-    
-    if (!snaptradeUser || !snaptradeClient) {
-      return res.redirect("/?error=SnapTrade+not+configured");
-    }
-    
-    // Fetch connected accounts from SnapTrade
-    const { data: accounts } = await accountsApi.listUserAccounts({
-      userId: snaptradeUser.userId!,
-      userSecret: snaptradeUser.userSecret
-    });
-    
-    // Store connected accounts in database
-    for (const account of accounts) {
-      await storage.createConnectedAccount({
-        userId,
-        accountType: 'brokerage',
-        provider: 'snaptrade',
-        institutionName: account.institution_name || 'Unknown Institution',
-        accountName: account.name || account.number || 'Brokerage Account',
-        accountNumber: account.number,
-        balance: String(account.balance?.total?.amount || 0),
-        currency: account.balance?.total?.currency || 'USD',
-        isActive: true,
-        externalAccountId: account.id,
-        connectionId: account.id,
-        institutionId: account.brokerage_authorization,
-        accessToken: snaptradeUser.userSecret,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      });
-    }
-    
-    logger.info("SnapTrade accounts connected", { 
-      userId, 
-      count: accounts.length 
-    });
-    
-    // Redirect back to connections page
-    res.redirect("/connections?success=true");
-    
-  } catch (error: any) {
-    logger.error("SnapTrade callback error", { 
-      error: error.response?.data || error.message 
-    });
-    res.redirect("/?error=Connection+failed");
-  }
+  // This route is legacy - redirect to main callback
+  return res.redirect("/snaptrade/callback?" + new URLSearchParams(req.query).toString());
 });
 
 /**
@@ -281,7 +328,7 @@ router.post("/teller/exchange", requireAuth, async (req: any, res) => {
     
     logger.info("Teller accounts connected", { 
       userId, 
-      count: accounts.length 
+      metadata: { count: accounts.length }
     });
     
     res.json({ 
@@ -322,8 +369,7 @@ router.delete("/:id", requireAuth, async (req: any, res) => {
     
     logger.info("Connection deleted", { 
       userId, 
-      connectionId,
-      provider: account.provider 
+      metadata: { connectionId, provider: account.provider }
     });
     
     res.json({ 
@@ -332,7 +378,7 @@ router.delete("/:id", requireAuth, async (req: any, res) => {
     });
     
   } catch (error) {
-    logger.error("Error deleting connection", { error });
+    logger.error("Error deleting connection", { error: error as Error });
     res.status(500).json({ 
       message: "Failed to delete connection" 
     });

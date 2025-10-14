@@ -40,7 +40,7 @@ Preferred communication style: Simple, everyday language.
 - **Settings Management**: Profile management with password change functionality, connected accounts management, and data export.
 - **Password Reset System**: Public `/reset-password` flow with secure SHA-256 hashed tokens and email enumeration prevention.
 - **Teller Balance Mapping System**: Utility for accurately mapping Teller.io account balances to Flint's internal format, ensuring correct net worth calculations.
-- **SnapTrade Integration**: Stores user credentials and brokerage authorizations in the database. Features a consolidated registration flow and server-side auto-sync for authorizations, ensuring connection persistence. Account display names are normalized for consistency.
+- **SnapTrade Integration**: Stores user credentials and brokerage authorizations in the database. Features a consolidated registration flow and server-side auto-sync for authorizations, ensuring connection persistence. Account display names are normalized for consistency. Includes auto-recovery system for error 1010 (user already exists) that logs orphaned accounts and retries with versioned IDs (userId-v2 pattern). Admin panel tracks all orphaned accounts with CSV export and support email generator for cleanup requests.
 
 ### Production Infrastructure
 - **Database Backup & Recovery**: Neon Database provides continuous data protection with automatic point-in-time recovery (PITR) within a 7-day window.

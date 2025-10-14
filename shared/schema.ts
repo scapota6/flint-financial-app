@@ -66,6 +66,7 @@ export const users = pgTable("users", {
 // SnapTrade users table per specification: snaptrade_users(flint_user_id PK, user_secret, created_at, rotated_at)
 export const snaptradeUsers = pgTable('snaptrade_users', {
   flintUserId: varchar('flint_user_id').primaryKey().references(() => users.id), // Changed to PK as per spec
+  snaptradeUserId: varchar('snaptrade_user_id').notNull(), // The actual SnapTrade user ID (original or versioned)
   userSecret: varchar('user_secret').notNull(), // Simplified name as per spec
   createdAt: timestamp('created_at').defaultNow(),
   rotatedAt: timestamp('rotated_at'),
@@ -553,6 +554,23 @@ export const refreshTokens = pgTable("refresh_tokens", {
   index("refresh_tokens_token_idx").on(table.token),
 ]);
 
+// Orphaned SnapTrade accounts tracking (for error 1010 - user already exists on SnapTrade but not in our DB)
+export const orphanedSnaptradeAccounts = pgTable("orphaned_snaptrade_accounts", {
+  id: serial("id").primaryKey(),
+  flintUserId: varchar("flint_user_id").references(() => users.id).notNull(),
+  orphanedSnaptradeId: varchar("orphaned_snaptrade_id").notNull(), // The ID that's stuck on SnapTrade
+  newSnaptradeId: varchar("new_snaptrade_id"), // The recovery ID we used (e.g., userId-v2)
+  userEmail: varchar("user_email").notNull(),
+  errorCode: varchar("error_code").default("1010"),
+  errorMessage: text("error_message"),
+  resolved: boolean("resolved").default(false),
+  resolvedAt: timestamp("resolved_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+}, (table) => [
+  index("orphaned_snaptrade_user_idx").on(table.flintUserId),
+  index("orphaned_snaptrade_resolved_idx").on(table.resolved),
+]);
+
 // Insert schemas for new tables
 export const insertAccountApplicationSchema = createInsertSchema(accountApplications).omit({
   id: true,
@@ -602,3 +620,11 @@ export type InsertPasswordResetToken = z.infer<typeof insertPasswordResetTokenSc
 
 export type RefreshToken = typeof refreshTokens.$inferSelect;
 export type InsertRefreshToken = z.infer<typeof insertRefreshTokenSchema>;
+
+export const insertOrphanedSnaptradeAccountSchema = createInsertSchema(orphanedSnaptradeAccounts).omit({
+  id: true,
+  createdAt: true,
+});
+
+export type OrphanedSnaptradeAccount = typeof orphanedSnaptradeAccounts.$inferSelect;
+export type InsertOrphanedSnaptradeAccount = z.infer<typeof insertOrphanedSnaptradeAccountSchema>;

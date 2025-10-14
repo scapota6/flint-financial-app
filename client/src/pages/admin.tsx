@@ -34,8 +34,10 @@ import {
   Flag,
   ChevronDown,
   ChevronRight,
-  TrendingUp
+  TrendingUp,
+  UserX
 } from 'lucide-react';
+import OrphanedAccountsTab from '@/components/admin/OrphanedAccountsTab';
 
 // Type definitions for API responses
 interface OverviewData {
@@ -198,6 +200,10 @@ export default function AdminDashboard() {
               <TrendingUp className="h-4 w-4 mr-2" />
               SnapTrade
             </TabsTrigger>
+            <TabsTrigger value="orphaned-accounts" data-testid="tab-orphaned-accounts">
+              <UserX className="h-4 w-4 mr-2" />
+              Orphaned Accounts
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="overview">
@@ -218,6 +224,10 @@ export default function AdminDashboard() {
 
           <TabsContent value="snaptrade">
             <SnapTradeTab />
+          </TabsContent>
+
+          <TabsContent value="orphaned-accounts">
+            <OrphanedAccountsTab />
           </TabsContent>
 
           <TabsContent value="analytics">
