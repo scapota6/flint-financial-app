@@ -108,12 +108,13 @@ export const connectedAccounts = pgTable("connected_accounts", {
   institutionId: varchar("institution_id"), // provider's institution ID
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
-}, (table) => [
-  index("connected_accounts_user_idx").on(table.userId),
-  index("connected_accounts_type_idx").on(table.accountType),
-  index("connected_accounts_active_idx").on(table.isActive),
-  index("connected_accounts_user_type_idx").on(table.userId, table.accountType),
-]);
+}, (table) => ({
+  userIdx: index("connected_accounts_user_idx").on(table.userId),
+  typeIdx: index("connected_accounts_type_idx").on(table.accountType),
+  activeIdx: index("connected_accounts_active_idx").on(table.isActive),
+  userTypeIdx: index("connected_accounts_user_type_idx").on(table.userId, table.accountType),
+  uniqueAccountConstraint: unique("connected_accounts_user_provider_external_unique").on(table.userId, table.provider, table.externalAccountId),
+}));
 
 // SnapTrade accounts table per specification: snaptrade_accounts(id PK, connection_id, institution, name, number_masked, raw_type, status, currency, total_balance_amount, last_holdings_sync_at)
 export const snaptradeAccounts = pgTable('snaptrade_accounts', {

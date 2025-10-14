@@ -105,7 +105,7 @@ export interface IStorage {
   getBankTransactions(userEmail: string, accountId: string): Promise<any[]>;
   
   // Additional connected account methods
-  getConnectedAccountByExternalId(externalAccountId: string): Promise<ConnectedAccount | undefined>;
+  getConnectedAccountByExternalId(userId: string, provider: string, externalAccountId: string): Promise<ConnectedAccount | undefined>;
   getConnectedAccountsByProvider(userId: string, provider: string): Promise<ConnectedAccount[]>;
   
   // Activity logging
@@ -505,7 +505,7 @@ export class DatabaseStorage implements IStorage {
     const result = await db.select({
       userId: snaptradeUsers.flintUserId,
       snaptradeUserId: snaptradeUsers.snaptradeUserId,
-      snaptradeUserSecret: snaptradeUsers.snaptradeUserSecret
+      snaptradeUserSecret: snaptradeUsers.userSecret
     }).from(snaptradeUsers);
     
     return result;
@@ -580,19 +580,7 @@ export class DatabaseStorage implements IStorage {
     // In a real implementation, this would update payments table
   }
 
-  // Additional connected account methods
-  async getConnectedAccountByExternalId(userId: string, provider: string, externalAccountId: string): Promise<ConnectedAccount | undefined> {
-    const [account] = await db
-      .select()
-      .from(connectedAccounts)
-      .where(and(
-        eq(connectedAccounts.userId, userId),
-        eq(connectedAccounts.provider, provider),
-        eq(connectedAccounts.externalAccountId, externalAccountId)
-      ));
-    return account;
-  }
-  
+  // Additional connected account methods - implementations moved earlier in class
   async getConnectedAccountsByProvider(userId: string, provider: string): Promise<ConnectedAccount[]> {
     return db
       .select()
@@ -617,7 +605,6 @@ export class DatabaseStorage implements IStorage {
       .update(connectedAccounts)
       .set({ 
         status: 'disconnected',
-        metadata: { disconnectReason: reason },
         updatedAt: new Date()
       })
       .where(eq(connectedAccounts.connectionId, enrollmentId));
@@ -666,7 +653,7 @@ export class DatabaseStorage implements IStorage {
   async upsertTransaction(transaction: any): Promise<void> {
     // Store transaction data - would need a transactions table
     // For now, just log it
-    logger.info("Transaction received via webhook", { transaction });
+    console.log("Transaction received via webhook", { transaction });
   }
   
   async updateAccountVerificationStatus(accountId: string, status: string): Promise<void> {
@@ -674,7 +661,7 @@ export class DatabaseStorage implements IStorage {
     await db
       .update(connectedAccounts)
       .set({ 
-        metadata: { verificationStatus: status },
+        status,
         updatedAt: new Date()
       })
       .where(eq(connectedAccounts.externalAccountId, accountId));
