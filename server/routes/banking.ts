@@ -38,10 +38,18 @@ router.get("/", isAuthenticated, async (req: any, res) => {
           const accountInfo = await response.json();
           // Update stored balance with live data
           // For credit cards (type='card' or 'credit'), use ledger (debt amount), for bank accounts use available
-          const balanceValue = (accountInfo.type === 'card' || accountInfo.type === 'credit')
+          const isCreditCard = accountInfo.type === 'card' || accountInfo.type === 'credit';
+          const balanceValue = isCreditCard
             ? (accountInfo.balance?.ledger || 0)
             : (accountInfo.balance?.available || 0);
           account.balance = parseFloat(String(balanceValue));
+          
+          // For credit cards, also set amountSpent and availableCredit for frontend display
+          if (isCreditCard) {
+            account.amountSpent = parseFloat(String(accountInfo.balance?.ledger || 0));
+            account.availableCredit = parseFloat(String(accountInfo.balance?.available || 0));
+          }
+          
           validatedAccounts.push(account);
         }
       } catch (error) {
@@ -62,7 +70,10 @@ router.get("/", isAuthenticated, async (req: any, res) => {
       lastUpdated: account.lastSynced || new Date().toISOString(),
       currency: account.currency || 'USD',
       status: account.status,
-      lastCheckedAt: account.lastCheckedAt
+      lastCheckedAt: account.lastCheckedAt,
+      // Credit card specific fields
+      amountSpent: account.amountSpent || null,
+      availableCredit: account.availableCredit || null
     }));
     
     const response = { 

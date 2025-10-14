@@ -145,6 +145,18 @@ export function getInstitutionLogo(accountName: string) {
     };
   }
   
+  if (institutionName.includes('usaa')) {
+    return {
+      logo: <img 
+        src={`https://cdn.brandfetch.io/usaa.com?c=${BRANDFETCH_CLIENT_ID}`}
+        alt={displayName}
+        className="h-10 w-10 object-contain p-1"
+      />,
+      bgClass: 'bg-blue-900/20',
+      textClass: 'text-blue-900'
+    };
+  }
+  
   // Brokerage institutions
   if (institutionName.includes('fidelity')) {
     return {
