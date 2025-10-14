@@ -153,6 +153,10 @@ router.post("/snaptrade/register", requireAuth, async (req: any, res) => {
     if (error.response?.data) {
       errorDetail = error.response.data.detail || error.response.data.message || '';
       errorCode = error.response.data.code || error.response.data.status_code || '';
+    } else if (error.responseBody) {
+      // SnapTrade SDK stores error response in error.responseBody
+      errorDetail = error.responseBody.detail || error.responseBody.message || '';
+      errorCode = error.responseBody.code || error.responseBody.status_code || '';
     } else if (error.body) {
       // Some SDKs put response in error.body
       try {
