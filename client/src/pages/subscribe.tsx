@@ -103,17 +103,20 @@ export default function Subscribe() {
       // Map tier IDs to CTA IDs for the checkout endpoint
       const ctaId = isAnnual ? `${tierId}-yearly` : `${tierId}-monthly`;
       
-      // Get checkout URL from backend (same as landing page)
+      // Get checkout URL from backend (using Whop now)
       const userEmail = (user as any)?.email;
-      const response = await fetch(`/api/lemonsqueezy/checkout/${ctaId}${userEmail ? `?email=${encodeURIComponent(userEmail)}` : ''}`);
+      const response = await fetch(`/api/whop/checkout/${ctaId}${userEmail ? `?email=${encodeURIComponent(userEmail)}` : ''}`);
       const data = await response.json();
       
-      if (data.checkoutUrl && window.LemonSqueezy) {
-        // Open Lemon Squeezy overlay
-        window.LemonSqueezy.Url.Open(data.checkoutUrl);
+      if (data.checkoutUrl) {
+        // Open Whop checkout in new tab (or iframe if implemented)
+        window.open(data.checkoutUrl, '_blank');
       } else {
-        // Fallback to direct URL
-        window.location.href = data.checkoutUrl || `/api/lemonsqueezy/checkout/${ctaId}`;
+        toast({
+          title: "Error",
+          description: "Failed to get checkout URL. Please try again.",
+          variant: "destructive",
+        });
       }
     } catch (error) {
       if (isUnauthorizedError(error as Error)) {
