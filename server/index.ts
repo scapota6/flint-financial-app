@@ -51,14 +51,16 @@ const app = express();
           'https://js.stripe.com',
           'https://replit.com',
           'https://app.lemonsqueezy.com',
-          'https://assets.lemonsqueezy.com'
+          'https://assets.lemonsqueezy.com',
+          'https://js.whop.com',
+          'https://whop.com'
         ],
         // Styles (separate style-src-elem is respected by newer browsers)
         styleSrc: [SELF, UNSAFE_INLINE, 'https://fonts.googleapis.com'],
         styleSrcElem: [SELF, UNSAFE_INLINE, 'https://fonts.googleapis.com'],
         // Fonts
         fontSrc: [SELF, 'https://fonts.gstatic.com', 'data:'],
-        // Frames (Stripe elements, Teller Connect iframed, Lemon Squeezy checkout)
+        // Frames (Stripe elements, Teller Connect iframed, Lemon Squeezy checkout, Whop checkout)
         frameSrc: [
           SELF,
           'https://teller.io',
@@ -66,7 +68,9 @@ const app = express();
           'https://js.stripe.com',
           'https://hooks.stripe.com',
           'https://flint-investing.lemonsqueezy.com',
-          'https://app.lemonsqueezy.com'
+          'https://app.lemonsqueezy.com',
+          'https://whop.com',
+          'https://js.whop.com'
         ],
         // XHR/WebSocket endpoints
         connectSrc: [
@@ -78,6 +82,8 @@ const app = express();
           'https://hooks.stripe.com',
           'https://app.lemonsqueezy.com',
           'https://api.lemonsqueezy.com',
+          'https://api.whop.com',
+          'https://whop.com',
           // add your exact Replit base (scheme+host+port) if you ever call absolute URLs
         ],
         imgSrc: [SELF, 'data:', 'https://cdn.brandfetch.io'],
@@ -90,9 +96,10 @@ const app = express();
     crossOriginEmbedderPolicy: false, // keep false if third-party scripts require it
   }));
   
-  // Raw body middleware for Lemon Squeezy webhook (MUST be before express.json())
+  // Raw body middleware for payment webhooks (MUST be before express.json())
   // Use express.text() to preserve exact body string for signature validation
   app.use('/api/lemonsqueezy/webhook', express.text({ type: 'application/json' }));
+  app.use('/api/whop/webhook', express.text({ type: 'application/json' }));
   
   // Standard JSON parsing for all other routes
   app.use(express.json());

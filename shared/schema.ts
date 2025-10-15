@@ -47,10 +47,14 @@ export const users = pgTable("users", {
   stripeSubscriptionId: varchar("stripe_subscription_id"),
   subscriptionTier: varchar("subscription_tier").default("free"), // free, basic, pro, premium
   subscriptionStatus: varchar("subscription_status").default("active"), // active, cancelled, expired
-  // Lemon Squeezy payment tracking
+  // Lemon Squeezy payment tracking (legacy)
   lemonSqueezyOrderId: varchar("lemonsqueezy_order_id"),
   lemonSqueezyCustomerId: varchar("lemonsqueezy_customer_id"),
   lemonSqueezyVariantId: varchar("lemonsqueezy_variant_id"),
+  // Whop payment tracking
+  whopMembershipId: varchar("whop_membership_id"),
+  whopCustomerId: varchar("whop_customer_id"),
+  whopPlanId: varchar("whop_plan_id"),
   // User metadata
   isAdmin: boolean("is_admin").default(false),
   isBanned: boolean("is_banned").default(false),

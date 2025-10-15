@@ -2153,6 +2153,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.use('/api/user', userPasswordRouter);
   app.use('/api/auth', authRouter);
   app.use('/api/lemonsqueezy', lemonSqueezyRouter);
+  
+  // Mount Whop payment routes
+  const whopRouter = await import('./routes/whop');
+  app.use('/api/whop', whopRouter.default);
 
   
   // Disconnect account endpoint
