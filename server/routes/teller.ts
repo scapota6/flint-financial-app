@@ -1477,6 +1477,11 @@ router.get("/money-movement", requireAuth, async (req: any, res) => {
           const merchantLower = merchant.toLowerCase();
           const provider = account.institutionName || 'Bank';
           
+          // DEBUG: Log transaction details to understand Teller's sign convention
+          if (merchantLower.includes('deposit') || merchantLower.includes('cash')) {
+            console.log(`[DEBUG Transaction] ${merchant}: amount=${amount}, type=${tx.type || 'unknown'}`);
+          }
+          
           // Teller API uses signed amounts:
           // Positive = Debit (money OUT - purchases, ATM, etc.)
           // Negative = Credit (money IN - deposits, refunds)
