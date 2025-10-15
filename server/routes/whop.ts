@@ -81,20 +81,40 @@ router.get('/checkout/:ctaId', async (req, res) => {
   }
 });
 
+// Helper function to convert Express Request to Web API Request
+function expressToWebApiRequest(req: ExpressRequest): Request {
+  // Get raw body string from Express
+  const bodyString = typeof req.body === 'string' ? req.body : JSON.stringify(req.body);
+  
+  // Build full URL
+  const protocol = req.protocol || 'https';
+  const host = req.get('host') || '';
+  const url = `${protocol}://${host}${req.originalUrl || req.url}`;
+  
+  // Convert Express headers to Headers object
+  const headers = new Headers();
+  Object.entries(req.headers).forEach(([key, value]) => {
+    if (value) {
+      const headerValue = Array.isArray(value) ? value.join(', ') : String(value);
+      headers.set(key, headerValue);
+    }
+  });
+  
+  // Create Web API Request
+  return new Request(url, {
+    method: req.method,
+    headers,
+    body: bodyString,
+  });
+}
+
 // Webhook endpoint for Whop events
 // NOTE: This route receives raw body for signature verification
 router.post('/webhook', async (req, res) => {
   try {
-    if (!webhookSecret) {
+    if (!validateWhopWebhook) {
       logger.error('WHOP_WEBHOOK_SECRET not configured');
       return res.status(500).json({ error: 'Webhook secret not configured' });
-    }
-
-    // Get signature from header (Whop uses X-Whop-Signature)
-    const signature = req.headers['x-whop-signature'] as string;
-    if (!signature) {
-      logger.warn('Webhook received without signature');
-      return res.status(401).json({ error: 'Missing signature' });
     }
 
     // Get raw body - should be a string from express.text() middleware
@@ -105,55 +125,45 @@ router.post('/webhook', async (req, res) => {
       return res.status(500).json({ error: 'Server configuration error' });
     }
 
-    // Verify signature using raw body with timing-safe comparison
-    const computedHmac = crypto
-      .createHmac('sha256', webhookSecret)
-      .update(bodyString)
-      .digest('hex');
-
-    // Convert both to Buffers for timing-safe comparison
-    const expectedSig = Buffer.from(computedHmac, 'utf8');
-    const receivedSig = Buffer.from(signature, 'utf8');
-
-    // Use timing-safe comparison to prevent timing attacks
-    if (expectedSig.length !== receivedSig.length || 
-        !crypto.timingSafeEqual(expectedSig, receivedSig)) {
+    // Convert Express request to Web API Request for validator
+    const webApiRequest = expressToWebApiRequest(req);
+    
+    // Validate webhook signature and parse payload using official Whop SDK
+    let webhook;
+    try {
+      webhook = await validateWhopWebhook(webApiRequest);
+    } catch (error: any) {
       logger.warn('Invalid webhook signature', { 
         metadata: { 
-          error: 'Signature mismatch',
-          received: signature.substring(0, 10) + '...', 
-          computed: computedHmac.substring(0, 10) + '...',
+          error: error.message,
+          signature: req.headers['x-whop-signature']?.toString().substring(0, 10) + '...',
         }
       });
       return res.status(401).json({ error: 'Invalid signature' });
     }
 
-    // Parse webhook payload only after signature verification
-    const payload = JSON.parse(bodyString);
-    const eventType = payload.action || payload.type;
-    const eventData = payload.data;
+    // Extract event type and data from validated webhook
+    const eventType = webhook.action;
+    const eventData = webhook.data;
 
     logger.info('Whop webhook received', { 
       metadata: {
         eventType,
         id: eventData?.id,
-        planId: eventData?.plan || eventData?.plan_id 
+        planId: (eventData as any)?.plan || (eventData as any)?.plan_id 
       }
     });
 
     // Handle different Whop webhook events
     switch (eventType) {
       case 'payment.succeeded':
-        await handlePaymentSucceeded(eventData);
+        await handlePaymentSucceeded(eventData as any);
         break;
       case 'membership.went_valid':
-        await handleMembershipWentValid(eventData);
+        await handleMembershipWentValid(eventData as any);
         break;
       case 'membership.went_invalid':
-        await handleMembershipWentInvalid(eventData);
-        break;
-      case 'membership.cancelled':
-        await handleMembershipCancelled(eventData);
+        await handleMembershipWentInvalid(eventData as any);
         break;
       default:
         logger.info('Unhandled webhook event type', { metadata: { eventType } });
