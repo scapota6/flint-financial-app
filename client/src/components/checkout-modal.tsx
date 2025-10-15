@@ -21,8 +21,12 @@ export function CheckoutModal({ checkoutUrl, onClose }: CheckoutModalProps) {
   // Listen for messages from the Whop checkout iframe
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
-      // Verify origin is from Whop
-      if (event.origin === 'https://whop.com' || event.origin.includes('whop.com')) {
+      // Verify origin is from Whop (strict validation)
+      const isWhopOrigin = event.origin === 'https://whop.com' || 
+                          event.origin === 'https://www.whop.com' ||
+                          /^https:\/\/[a-z0-9-]+\.whop\.com$/.test(event.origin);
+      
+      if (isWhopOrigin) {
         // Handle checkout completion
         if (event.data?.type === 'checkout:completed' || event.data?.success) {
           handleClose();

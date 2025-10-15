@@ -9,14 +9,14 @@ import { isUnauthorizedError } from "@/lib/authUtils";
 import { SUBSCRIPTION_TIERS } from "@/lib/stripe";
 import { Check, Crown, Star, Zap } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
-
-// Removed Lemon Squeezy types - now using Whop for payment processing
+import { CheckoutModal } from "@/components/checkout-modal";
 
 export default function Subscribe() {
   const { user } = useAuth();
   const { toast } = useToast();
   const [isProcessing, setIsProcessing] = useState(false);
   const [isAnnual, setIsAnnual] = useState(false);
+  const [checkoutUrl, setCheckoutUrl] = useState<string | null>(null);
 
   // Fetch user data to check current subscription
   const { data: userData, error } = useQuery<{ subscriptionTier?: string; subscriptionStatus?: string }>({
@@ -53,28 +53,8 @@ export default function Subscribe() {
       const data = await response.json();
       
       if (data.checkoutUrl) {
-        // Open Whop checkout modal (embedded widget)
-        if (window.Whop && window.Whop.checkout) {
-          window.Whop.checkout({
-            checkoutUrl: data.checkoutUrl,
-            onSuccess: () => {
-              // Redirect to payment success page
-              window.location.href = '/payment-success';
-            },
-            onError: (error) => {
-              console.error('Whop checkout error:', error);
-              toast({
-                title: "Checkout Error",
-                description: "There was an issue with the checkout. Please try again.",
-                variant: "destructive",
-              });
-            }
-          });
-        } else {
-          // Fallback to opening in new tab if SDK not loaded
-          console.warn('Whop SDK not loaded, falling back to window.open');
-          window.open(data.checkoutUrl, '_blank');
-        }
+        // Open checkout in modal
+        setCheckoutUrl(data.checkoutUrl);
       } else {
         toast({
           title: "Error",
@@ -332,6 +312,12 @@ export default function Subscribe() {
           </Card>
         </div>
       </main>
+      
+      {/* Checkout Modal */}
+      <CheckoutModal 
+        checkoutUrl={checkoutUrl} 
+        onClose={() => setCheckoutUrl(null)} 
+      />
     </div>
   );
 }
