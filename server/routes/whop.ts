@@ -39,17 +39,25 @@ router.get('/checkout/:ctaId', async (req, res) => {
       });
     }
 
+    // Build checkout URL with email parameter if provided
+    let checkoutUrl = product.url;
+    if (email && typeof email === 'string') {
+      const url = new URL(product.url);
+      url.searchParams.set('email', email);
+      checkoutUrl = url.toString();
+    }
+
     logger.info('Checkout URL generated', { 
       metadata: {
         ctaId, 
-        url: product.url,
+        url: checkoutUrl,
         email: email || 'none'
       }
     });
 
-    // Return the direct Whop product URL
+    // Return the Whop product URL with email parameter
     res.json({ 
-      checkoutUrl: product.url,
+      checkoutUrl,
       product: {
         name: product.name,
         price: product.price,
