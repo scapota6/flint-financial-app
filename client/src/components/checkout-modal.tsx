@@ -1,5 +1,4 @@
-import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 interface CheckoutModalProps {
   checkoutUrl: string | null;
@@ -7,51 +6,21 @@ interface CheckoutModalProps {
 }
 
 export function CheckoutModal({ checkoutUrl, onClose }: CheckoutModalProps) {
-  const [isOpen, setIsOpen] = useState(false);
-
   useEffect(() => {
-    setIsOpen(!!checkoutUrl);
-  }, [checkoutUrl]);
-
-  const handleClose = () => {
-    setIsOpen(false);
-    onClose();
-  };
-
-  // Listen for messages from the Whop checkout iframe
-  useEffect(() => {
-    const handleMessage = (event: MessageEvent) => {
-      // Verify origin is from Whop (strict validation)
-      const isWhopOrigin = event.origin === 'https://whop.com' || 
-                          event.origin === 'https://www.whop.com' ||
-                          /^https:\/\/[a-z0-9-]+\.whop\.com$/.test(event.origin);
+    if (checkoutUrl) {
+      // Open checkout in new tab (Whop blocks iframe embedding)
+      const checkoutWindow = window.open(checkoutUrl, '_blank', 'noopener,noreferrer');
       
-      if (isWhopOrigin) {
-        // Handle checkout completion
-        if (event.data?.type === 'checkout:completed' || event.data?.success) {
-          handleClose();
-          window.location.href = '/payment-success';
-        }
+      if (!checkoutWindow) {
+        // Popup blocked - fallback to same window
+        window.location.href = checkoutUrl;
       }
-    };
+      
+      // Close the modal state after opening
+      onClose();
+    }
+  }, [checkoutUrl, onClose]);
 
-    window.addEventListener('message', handleMessage);
-    return () => window.removeEventListener('message', handleMessage);
-  }, []);
-
-  return (
-    <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="max-w-[95vw] w-full max-h-[95vh] h-full md:max-w-4xl md:h-[90vh] p-0 bg-transparent border-0">
-        {checkoutUrl && (
-          <iframe
-            src={checkoutUrl}
-            className="w-full h-full rounded-lg"
-            style={{ border: 'none', minHeight: '600px' }}
-            allow="payment"
-            sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox"
-          />
-        )}
-      </DialogContent>
-    </Dialog>
-  );
+  // This component doesn't render anything - it just handles the checkout flow
+  return null;
 }
