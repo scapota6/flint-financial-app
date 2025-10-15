@@ -10,20 +10,7 @@ import { SUBSCRIPTION_TIERS } from "@/lib/stripe";
 import { Check, Crown, Star, Zap } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 
-// Declare Lemon Squeezy types
-declare global {
-  interface Window {
-    createLemonSqueezy: () => void;
-    LemonSqueezy: {
-      Url: {
-        Open: (url: string) => void;
-      };
-      Setup: (config: {
-        eventHandler: (event: { event: string; data: any }) => void;
-      }) => void;
-    };
-  }
-}
+// Removed Lemon Squeezy types - now using Whop for payment processing
 
 export default function Subscribe() {
   const { user } = useAuth();
@@ -37,50 +24,7 @@ export default function Subscribe() {
     retry: false,
   });
 
-  // Initialize Lemon Squeezy
-  useEffect(() => {
-    let setupComplete = false;
-    
-    const setupEventHandler = () => {
-      if (setupComplete) return;
-      setupComplete = true;
-      
-      if (window.createLemonSqueezy) {
-        window.createLemonSqueezy();
-      }
-      
-      if (window.LemonSqueezy) {
-        window.LemonSqueezy.Setup({
-          eventHandler: (event) => {
-            if (event.event === 'Checkout.Success') {
-              // Redirect to dashboard since user is already logged in
-              setTimeout(() => {
-                window.location.href = '/dashboard';
-              }, 500);
-            }
-          }
-        });
-      }
-    };
-
-    const existingScript = document.querySelector('script[src="https://app.lemonsqueezy.com/js/lemon.js"]') as HTMLScriptElement;
-    if (existingScript) {
-      if (existingScript.dataset.loaded === 'true') {
-        setupEventHandler();
-      } else {
-        existingScript.addEventListener('load', setupEventHandler);
-      }
-    } else {
-      const script = document.createElement('script');
-      script.src = 'https://app.lemonsqueezy.com/js/lemon.js';
-      script.defer = true;
-      script.addEventListener('load', () => {
-        script.dataset.loaded = 'true';
-        setupEventHandler();
-      });
-      document.head.appendChild(script);
-    }
-  }, []);
+  // Note: Whop checkout opens in new tab - no script initialization needed
 
   // Handle unauthorized errors
   useEffect(() => {
