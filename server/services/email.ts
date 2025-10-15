@@ -601,6 +601,135 @@ function getVerificationEmailTemplate(firstName: string, verificationLink: strin
   `;
 }
 
+function getWelcomeEmailTemplate(firstName: string): string {
+  return `
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Welcome to Flint!</title>
+        <style>
+          body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+          }
+          .container {
+            background-color: #ffffff;
+            border-radius: 8px;
+            padding: 40px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+          }
+          .header {
+            text-align: center;
+            margin-bottom: 30px;
+          }
+          .logo {
+            font-size: 32px;
+            font-weight: bold;
+            color: #4F46E5;
+            margin-bottom: 10px;
+          }
+          .content {
+            margin-bottom: 30px;
+          }
+          .button {
+            display: inline-block;
+            background-color: #4F46E5;
+            color: #ffffff !important;
+            padding: 14px 28px;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            margin: 20px 0;
+          }
+          a.button {
+            color: #ffffff !important;
+          }
+          .button:hover {
+            background-color: #4338CA;
+          }
+          .button-container {
+            text-align: center;
+          }
+          .features {
+            background-color: #F9FAFB;
+            padding: 20px;
+            border-radius: 6px;
+            margin-top: 20px;
+          }
+          .features h3 {
+            margin-top: 0;
+            color: #4F46E5;
+          }
+          .features ul {
+            margin: 10px 0;
+            padding-left: 20px;
+          }
+          .features li {
+            margin: 8px 0;
+          }
+          .footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #E5E7EB;
+            font-size: 14px;
+            color: #6B7280;
+            text-align: center;
+          }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header">
+            <div class="logo">Flint</div>
+            <h1>🎉 You're All Set!</h1>
+          </div>
+          
+          <div class="content">
+            <p>Hi ${firstName},</p>
+            
+            <p>Congratulations! You've successfully created your Flint account and you're ready to take control of your financial future.</p>
+            
+            <div class="button-container">
+              <a href="https://www.flint-investing.com" class="button">Go to Dashboard</a>
+            </div>
+            
+            <div class="features">
+              <h3>Here's what you can do now:</h3>
+              <ul>
+                <li><strong>Connect Your Accounts</strong> - Securely link your bank accounts and brokerage accounts in one place</li>
+                <li><strong>Track Your Portfolio</strong> - Get a unified view of all your investments and balances</li>
+                <li><strong>Execute Trades</strong> - Buy and sell stocks across all your connected brokerage accounts</li>
+                <li><strong>Set Up Alerts</strong> - Get notified when stocks hit your target prices</li>
+                <li><strong>Monitor Spending</strong> - Track your transactions and spending patterns</li>
+              </ul>
+            </div>
+            
+            <p style="margin-top: 30px;">We're here to help you every step of the way. If you have any questions or need assistance, don't hesitate to reach out to our support team.</p>
+            
+            <p>Ready to get started? Log in to your dashboard and connect your first account!</p>
+            
+            <p>Welcome to Flint!</p>
+            
+            <p>Best regards,<br>
+            The Flint Team</p>
+          </div>
+          
+          <div class="footer">
+            <p><strong>Questions or need help?</strong> Email <a href="mailto:support@flint-investing.com" style="color: #4F46E5;">support@flint-investing.com</a></p>
+            <p>© ${new Date().getFullYear()} Flint. All rights reserved.</p>
+          </div>
+        </div>
+      </body>
+    </html>
+  `;
+}
+
 function getTestEmailTemplate(recipientName: string): string {
   return `
     <!DOCTYPE html>
@@ -757,6 +886,17 @@ export async function sendVerificationEmail(
   
   console.log(`Sending verification email to ${email}`);
   return await sendEmail(email, subject, html, 'email_verification');
+}
+
+export async function sendWelcomeEmail(
+  email: string,
+  firstName: string
+): Promise<{ success: boolean; error?: string }> {
+  const subject = '🎉 Welcome to Flint - You\'re All Set!';
+  const html = getWelcomeEmailTemplate(firstName);
+  
+  console.log(`Sending welcome email to ${email}`);
+  return await sendEmail(email, subject, html, 'welcome');
 }
 
 function getApplicationNotificationTemplate(

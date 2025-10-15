@@ -13,7 +13,7 @@ import {
   verifyPassword
 } from '../lib/argon2-utils';
 import { hashToken, verifyToken, generateSecureToken } from '../lib/token-utils';
-import { sendPasswordResetEmail, sendApprovalEmail } from '../services/email';
+import { sendPasswordResetEmail, sendApprovalEmail, sendWelcomeEmail } from '../services/email';
 import {
   generateAccessToken,
   generateRefreshToken,
@@ -811,6 +811,17 @@ router.post('/setup-password', async (req, res) => {
         })
         .where(eq(passwordResetTokens.id, resetToken.id));
     });
+
+    // Send welcome email to the new user
+    const welcomeEmailResult = await sendWelcomeEmail(
+      user.email || '',
+      user.firstName || 'User'
+    );
+
+    if (!welcomeEmailResult.success) {
+      console.error('Failed to send welcome email:', welcomeEmailResult.error);
+      // Don't fail the request if email fails - password is already set
+    }
 
     return res.status(200).json({
       message: 'Password set successfully',
