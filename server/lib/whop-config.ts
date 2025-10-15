@@ -30,6 +30,7 @@ export const WHOP_PRODUCTS: Record<string, WhopProductConfig> = {
     price: '$79.99',
     ctaId: 'fast-track',
     isOneTime: true,
+    planId: 'plan_LoIr4OqtbFsGf',
   },
   
   // Basic Monthly
@@ -39,15 +40,27 @@ export const WHOP_PRODUCTS: Record<string, WhopProductConfig> = {
     tier: 'basic',
     price: '$19.99',
     ctaId: 'basic-monthly',
+    planId: 'plan_VLgIrzlR2KDI0',
   },
   
-  // Basic Yearly (renamed from "plus")
+  // Basic Yearly (Plus Year Special)
   'basic-yearly': {
     url: 'https://whop.com/flint-2289/flint-basic-copy/',
     name: 'Flint Basic Year Special',
     tier: 'basic',
     price: '$199.99',
     ctaId: 'basic-yearly',
+    planId: 'plan_e3uHPGOF9BxLL',
+  },
+  
+  // Basic 6-Month Special (Plus 6 Month Special)
+  'basic-6mo': {
+    url: 'https://whop.com/flint-2289/flint-basic-6month/',
+    name: 'Flint Basic 6 Month Special',
+    tier: 'basic',
+    price: '$99.99',
+    ctaId: 'basic-6mo',
+    planId: 'plan_gTe1wqkhsxMl6',
   },
   
   // Pro Monthly
@@ -57,6 +70,7 @@ export const WHOP_PRODUCTS: Record<string, WhopProductConfig> = {
     tier: 'pro',
     price: '$39.99',
     ctaId: 'pro-monthly',
+    planId: 'plan_A5pqK3NW80scw',
   },
   
   // Pro Yearly
@@ -75,6 +89,7 @@ export const WHOP_PRODUCTS: Record<string, WhopProductConfig> = {
     tier: 'premium',
     price: '$49.99',
     ctaId: 'unlimited-monthly',
+    planId: 'plan_iBNFQGQBLHWAh',
   },
   
   // Unlimited 6 Months Special
@@ -84,6 +99,7 @@ export const WHOP_PRODUCTS: Record<string, WhopProductConfig> = {
     tier: 'premium',
     price: '$249.99',
     ctaId: 'unlimited-6mo',
+    planId: 'plan_a0r9AOKL1qJ6H',
   },
   
   // Unlimited Yearly
@@ -93,6 +109,7 @@ export const WHOP_PRODUCTS: Record<string, WhopProductConfig> = {
     tier: 'premium',
     price: '$499.99',
     ctaId: 'unlimited-yearly',
+    planId: 'plan_eyVOdb1vQIUg9',
   },
 };
 
@@ -109,24 +126,23 @@ export function getProductByCTA(ctaId: string): WhopProductConfig | null {
   return WHOP_PRODUCTS[resolvedCTA] || null;
 }
 
-// Plan ID to Tier mapping - to be populated from webhook data
-// Update this map after receiving your first webhook to map Whop plan IDs to subscription tiers
+// Plan ID to Tier mapping - Actual Whop plan IDs from dashboard
 export const PLAN_ID_TO_TIER: Record<string, 'free' | 'basic' | 'pro' | 'premium'> = {
-  // Fast Track - One-time (these might use product IDs instead of plan IDs)
-  // 'prod_xxxxx': 'free',
+  // Fast Track - One-time payment (bypasses waitlist)
+  'plan_LoIr4OqtbFsGf': 'free',
   
-  // Basic Plans
-  // 'plan_xxxxx': 'basic', // Basic Monthly
-  // 'plan_xxxxx': 'basic', // Basic Yearly
+  // Basic/Plus Plans
+  'plan_VLgIrzlR2KDI0': 'basic', // Basic Monthly
+  'plan_e3uHPGOF9BxLL': 'basic', // Plus Year Special (Basic Yearly)
+  'plan_gTe1wqkhsxMl6': 'basic', // Plus 6 Month Special
   
   // Pro Plans
-  // 'plan_xxxxx': 'pro', // Pro Monthly
-  // 'plan_xxxxx': 'pro', // Pro Yearly
+  'plan_A5pqK3NW80scw': 'pro', // Pro Monthly
   
-  // Premium Plans
-  // 'plan_xxxxx': 'premium', // Unlimited Monthly
-  // 'plan_xxxxx': 'premium', // Unlimited 6 Months
-  // 'plan_xxxxx': 'premium', // Unlimited Yearly
+  // Premium/Unlimited Plans
+  'plan_iBNFQGQBLHWAh': 'premium', // Unlimited Monthly
+  'plan_a0r9AOKL1qJ6H': 'premium', // Unlimited 6 Months
+  'plan_eyVOdb1vQIUg9': 'premium', // Year Unlimited Special (Unlimited Yearly)
 };
 
 // Helper function to get tier by plan ID (from webhook)
