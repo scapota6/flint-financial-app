@@ -4,7 +4,7 @@ import { db } from '../db';
 import { users, passwordResetTokens } from '@shared/schema';
 import { eq } from 'drizzle-orm';
 import { logger } from '@shared/logger';
-import { WHOP_CONFIG, WHOP_PRODUCTS, getProductByCTA } from '../lib/whop-config';
+import { WHOP_CONFIG, WHOP_PRODUCTS, getProductByCTA, getTierByPlanId } from '../lib/whop-config';
 import { sendApprovalEmail } from '../services/email';
 import { generateSecureToken, hashToken } from '../lib/token-utils';
 import { whopSdk } from '../lib/whop-sdk';
@@ -210,11 +210,16 @@ export async function handleWhopWebhook(req: ExpressRequest, res: any) {
 // Register webhook route (for compatibility if accessed via router)
 router.post('/webhook', handleWhopWebhook);
 
-// Map Whop plan ID to subscription tier
-// This will need to be updated once we receive actual plan IDs from webhooks
+// Map Whop plan ID to subscription tier using the configuration mapping
 function mapPlanIdToTier(planId: string): 'free' | 'basic' | 'pro' | 'premium' {
-  // Extract tier from plan internal notes or metadata
-  // For now, default to basic until we see actual webhook data
+  // Use the centralized plan ID to tier mapping from whop-config
+  const tier = getTierByPlanId(planId);
+  
+  if (tier) {
+    return tier;
+  }
+  
+  // Fallback to inferring from plan ID string if not in mapping
   const planIdLower = planId.toLowerCase();
   
   if (planIdLower.includes('unlimited') || planIdLower.includes('premium')) {
@@ -225,6 +230,7 @@ function mapPlanIdToTier(planId: string): 'free' | 'basic' | 'pro' | 'premium' {
     return 'basic';
   }
   
+  logger.warn('Unknown plan ID, defaulting to basic tier', { metadata: { planId } });
   return 'basic'; // Default fallback
 }
 
