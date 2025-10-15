@@ -1477,52 +1477,25 @@ router.get("/money-movement", requireAuth, async (req: any, res) => {
           const merchantLower = merchant.toLowerCase();
           const provider = account.institutionName || 'Bank';
           
-          // Check if this is a fee/charge (always treat as money out)
-          const isFee = merchantLower.includes('fee') || 
-                        merchantLower.includes('charge') || 
-                        merchantLower.includes('penalty') ||
-                        merchantLower.includes('overdraft');
+          // Teller API uses signed amounts:
+          // Positive = Debit (money OUT - purchases, ATM, etc.)
+          // Negative = Credit (money IN - deposits, refunds)
           
-          // Check if this is a withdrawal (always treat as money out)
-          const isWithdrawal = merchantLower.includes('withdrawal') ||
-                               merchantLower.includes('atm');
-          
-          // Check if this is likely a purchase/expense (should be money out)
-          const isPurchase = merchantLower.includes('purchase') ||
-                            merchantLower.includes('payment to') ||
-                            merchantLower.includes('pos') ||
-                            merchantLower.includes('debit card');
-          
-          if (isFee) {
-            // Fees are always money out, regardless of sign
-            const feeAmount = Math.abs(amount);
-            moneyOut += feeAmount;
+          if (amount > 0) {
+            // Positive amount = Debit = Money OUT (purchases, withdrawals, fees, etc.)
+            moneyOut += amount;
             if (!spend[merchant]) {
               spend[merchant] = { amount: 0, provider };
             }
-            spend[merchant].amount += feeAmount;
-          } else if (isWithdrawal || isPurchase) {
-            // Withdrawals and purchases are always money out
-            const outAmount = Math.abs(amount);
-            moneyOut += outAmount;
-            if (!spend[merchant]) {
-              spend[merchant] = { amount: 0, provider };
-            }
-            spend[merchant].amount += outAmount;
-          } else if (amount > 0) {
-            // Money in (deposits)
-            moneyIn += amount;
+            spend[merchant].amount += amount;
+          } else if (amount < 0) {
+            // Negative amount = Credit = Money IN (deposits, refunds, etc.)
+            const inAmount = Math.abs(amount);
+            moneyIn += inAmount;
             if (!sources[merchant]) {
               sources[merchant] = { amount: 0, provider };
             }
-            sources[merchant].amount += amount;
-          } else if (amount < 0) {
-            // Money out (payments)
-            moneyOut += Math.abs(amount);
-            if (!spend[merchant]) {
-              spend[merchant] = { amount: 0, provider };
-            }
-            spend[merchant].amount += Math.abs(amount);
+            sources[merchant].amount += inAmount;
           }
         });
       } catch (error) {
@@ -1571,10 +1544,11 @@ router.get("/money-movement", requireAuth, async (req: any, res) => {
             if (txDate < monthStart || txDate > monthEnd) return;
             
             const amount = parseFloat(tx.amount || '0');
+            // Teller API: Positive = Debit (OUT), Negative = Credit (IN)
             if (amount > 0) {
-              threeMonthTotals.moneyIn += amount;
+              threeMonthTotals.moneyOut += amount;
             } else if (amount < 0) {
-              threeMonthTotals.moneyOut += Math.abs(amount);
+              threeMonthTotals.moneyIn += Math.abs(amount);
             }
           });
         } catch (error) {
