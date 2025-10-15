@@ -108,9 +108,8 @@ function expressToWebApiRequest(req: ExpressRequest): Request {
   });
 }
 
-// Webhook endpoint for Whop events
-// NOTE: This route receives raw body for signature verification
-router.post('/webhook', async (req, res) => {
+// Webhook handler function (can be called directly or through router)
+export async function handleWhopWebhook(req: ExpressRequest, res: any) {
   try {
     if (!validateWhopWebhook) {
       logger.error('WHOP_WEBHOOK_SECRET not configured');
@@ -166,8 +165,7 @@ router.post('/webhook', async (req, res) => {
         await handleMembershipWentInvalid(eventData as any);
         break;
       case 'membership.cancel_at_period_end_changed':
-      case 'membership.cancelled':
-        // Handle membership cancellation
+        // Handle membership cancellation (when user cancels, membership stays active until period ends)
         await handleMembershipCancelled(eventData as any);
         break;
       default:
@@ -180,7 +178,10 @@ router.post('/webhook', async (req, res) => {
     logger.error('Webhook processing failed', { error: error.message });
     res.status(500).json({ error: 'Webhook processing failed' });
   }
-});
+}
+
+// Register webhook route (for compatibility if accessed via router)
+router.post('/webhook', handleWhopWebhook);
 
 // Map Whop plan ID to subscription tier
 // This will need to be updated once we receive actual plan IDs from webhooks
@@ -349,7 +350,7 @@ async function handlePaymentSucceeded(paymentData: any) {
         });
       } else {
         // Create new user account
-        await createUserFromWhopPayment(userEmail, userName, tier, membershipId, userId, planId);
+        await createUserFromWhopPayment(userEmail, userName ?? undefined, tier, membershipId, userId, planId);
       }
     }
   } catch (error: any) {

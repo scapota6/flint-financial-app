@@ -99,7 +99,7 @@ const app = express();
   // Raw body middleware for payment webhooks (MUST be before express.json())
   // Use express.text() to preserve exact body string for signature validation
   app.use('/api/lemonsqueezy/webhook', express.text({ type: 'application/json' }));
-  app.use('/api/whop/webhook', express.text({ type: 'application/json' }));
+  app.use('/api/webhook/whop', express.text({ type: 'application/json' }));
   
   // Standard JSON parsing for all other routes
   app.use(express.json());
@@ -183,6 +183,21 @@ const app = express();
           message: 'Webhook processing failed',
           requestId: req.headers['x-request-id'] as string || 'unknown'
         } 
+      });
+    }
+  });
+
+  // Whop webhook route
+  app.post('/api/webhook/whop', async (req: Request, res: Response) => {
+    try {
+      // Import webhook handler dynamically
+      const { handleWhopWebhook } = await import('./routes/whop');
+      await handleWhopWebhook(req, res);
+    } catch (error: any) {
+      console.error('[Whop Webhook] Error:', error);
+      res.status(500).json({ 
+        error: 'Webhook processing failed',
+        message: error.message 
       });
     }
   });
