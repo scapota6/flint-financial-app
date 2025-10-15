@@ -8,6 +8,7 @@ import { logger } from '@shared/logger';
 import { WHOP_CONFIG, WHOP_PRODUCTS, getProductByCTA } from '../lib/whop-config';
 import { sendApprovalEmail } from '../services/email';
 import { generateSecureToken, hashToken } from '../lib/token-utils';
+import { whopSdk } from '../lib/whop-sdk';
 
 const router = Router();
 
@@ -176,6 +177,44 @@ function mapPlanIdToTier(planId: string): 'free' | 'basic' | 'pro' | 'premium' {
   return 'basic'; // Default fallback
 }
 
+// Helper function to extract email from webhook payload
+function extractEmailFromPayload(data: any): string | null {
+  // Try multiple possible locations for email in webhook payload
+  const possibleEmailFields = [
+    data.email,
+    data.user?.email,
+    data.customer?.email,
+    data.metadata?.email,
+    data.billing?.email,
+  ];
+
+  for (const email of possibleEmailFields) {
+    if (email && typeof email === 'string' && email.includes('@')) {
+      return email;
+    }
+  }
+
+  return null;
+}
+
+// Helper function to extract username from webhook payload
+function extractUsernameFromPayload(data: any): string | null {
+  const possibleUsernameFields = [
+    data.username,
+    data.user?.username,
+    data.customer?.username,
+    data.metadata?.username,
+  ];
+
+  for (const username of possibleUsernameFields) {
+    if (username && typeof username === 'string') {
+      return username;
+    }
+  }
+
+  return null;
+}
+
 // Handle payment.succeeded event
 async function handlePaymentSucceeded(paymentData: any) {
   try {
@@ -189,16 +228,31 @@ async function handlePaymentSucceeded(paymentData: any) {
         paymentId,
         userId,
         membershipId,
-        planId
+        planId,
+        payloadKeys: Object.keys(paymentData)
       }
     });
 
     // Map plan ID to tier
     const tier = mapPlanIdToTier(planId);
 
-    // Try to fetch user info from Whop if available
-    let userEmail = paymentData.user?.email || paymentData.email;
-    let userName = paymentData.user?.username || paymentData.username;
+    // Extract email and username from payload
+    let userEmail = extractEmailFromPayload(paymentData);
+    let userName = extractUsernameFromPayload(paymentData);
+
+    // If email is missing, log payload structure for debugging
+    if (!userEmail) {
+      logger.warn('Email not found in payment.succeeded webhook payload', {
+        metadata: {
+          paymentId,
+          userId,
+          payloadStructure: JSON.stringify(paymentData, null, 2).substring(0, 500)
+        }
+      });
+      
+      // Cannot proceed without email
+      return;
+    }
 
     // Check if user already exists in our system
     if (userEmail) {
@@ -315,18 +369,24 @@ async function handleMembershipWentValid(membershipData: any) {
   try {
     const membershipId = membershipData.id;
     const planId = membershipData.plan_id || membershipData.plan;
-    const userEmail = membershipData.email || membershipData.user?.email;
+    const userEmail = extractEmailFromPayload(membershipData);
 
     logger.info('Processing membership.went_valid event', { 
       metadata: {
         membershipId,
         planId,
-        email: userEmail 
+        email: userEmail,
+        payloadKeys: Object.keys(membershipData)
       }
     });
 
     if (!userEmail) {
-      logger.warn('No email in membership.went_valid event');
+      logger.warn('Email not found in membership.went_valid webhook payload', {
+        metadata: {
+          membershipId,
+          payloadStructure: JSON.stringify(membershipData, null, 2).substring(0, 500)
+        }
+      });
       return;
     }
 
@@ -370,17 +430,23 @@ async function handleMembershipWentValid(membershipData: any) {
 async function handleMembershipWentInvalid(membershipData: any) {
   try {
     const membershipId = membershipData.id;
-    const userEmail = membershipData.email || membershipData.user?.email;
+    const userEmail = extractEmailFromPayload(membershipData);
 
     logger.info('Processing membership.went_invalid event', { 
       metadata: {
         membershipId,
-        email: userEmail 
+        email: userEmail,
+        payloadKeys: Object.keys(membershipData)
       }
     });
 
     if (!userEmail) {
-      logger.warn('No email in membership.went_invalid event');
+      logger.warn('Email not found in membership.went_invalid webhook payload', {
+        metadata: {
+          membershipId,
+          payloadStructure: JSON.stringify(membershipData, null, 2).substring(0, 500)
+        }
+      });
       return;
     }
 
@@ -418,17 +484,23 @@ async function handleMembershipWentInvalid(membershipData: any) {
 async function handleMembershipCancelled(membershipData: any) {
   try {
     const membershipId = membershipData.id;
-    const userEmail = membershipData.email || membershipData.user?.email;
+    const userEmail = extractEmailFromPayload(membershipData);
 
     logger.info('Processing membership.cancelled event', { 
       metadata: {
         membershipId,
-        email: userEmail 
+        email: userEmail,
+        payloadKeys: Object.keys(membershipData)
       }
     });
 
     if (!userEmail) {
-      logger.warn('No email in membership.cancelled event');
+      logger.warn('Email not found in membership.cancelled webhook payload', {
+        metadata: {
+          membershipId,
+          payloadStructure: JSON.stringify(membershipData, null, 2).substring(0, 500)
+        }
+      });
       return;
     }
 
