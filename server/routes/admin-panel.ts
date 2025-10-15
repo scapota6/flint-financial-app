@@ -173,11 +173,7 @@ router.post('/applications/:id/approve', requireAuth, requireAdmin(), async (req
 
     // Send approval email with password setup link
     // IMPORTANT: Send the UNHASHED token to the user
-    const replitDomain = process.env.REPLIT_DOMAINS?.split(',')[0];
-    const baseUrl = process.env.BASE_URL 
-      || (process.env.REPLIT_DEPLOYMENT ? `https://${process.env.REPLIT_DEPLOYMENT}` : '')
-      || (replitDomain ? `https://${replitDomain}` : '')
-      || `${req.protocol}://${req.get('host')}`;
+    const baseUrl = 'https://www.flint-investing.com';
     const passwordSetupLink = `${baseUrl}/setup-password?token=${resetToken}`;
     
     const emailResult = await sendApprovalEmail(

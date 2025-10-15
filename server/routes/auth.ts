@@ -883,10 +883,7 @@ router.post('/request-reset', async (req, res) => {
     });
 
     // Build reset link
-    const baseUrl = process.env.BASE_URL 
-      || (process.env.REPL_SLUG && process.env.REPLIT_DOMAINS
-        ? `https://${process.env.REPL_SLUG}.${process.env.REPLIT_DOMAINS.split(',')[0]}`
-        : req.protocol + '://' + req.get('host'));
+    const baseUrl = 'https://www.flint-investing.com';
     const resetLink = `${baseUrl}/setup-password?token=${plainToken}`;
 
     // Send password reset email
@@ -1096,12 +1093,7 @@ router.post('/resend-setup-email', async (req, res) => {
     });
 
     // Generate password setup link
-    const baseUrl = process.env.REPLIT_DEPLOYMENT 
-      ? `https://${process.env.REPLIT_DEPLOYMENT}` 
-      : process.env.BASE_URL 
-      || (process.env.REPL_SLUG && process.env.REPLIT_DOMAINS
-        ? `https://${process.env.REPL_SLUG}.${process.env.REPLIT_DOMAINS.split(',')[0]}`
-        : req.protocol + '://' + req.get('host'));
+    const baseUrl = 'https://www.flint-investing.com';
     const passwordSetupLink = `${baseUrl}/setup-password?token=${plainToken}`;
 
     // Send approval email with password setup link
