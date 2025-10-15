@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight, TrendingUp, TrendingDown, Info } from 'lucide-react';
 import { useState } from 'react';
 import { apiGet } from '@/lib/queryClient';
+import { getMerchantLogo } from '@/lib/merchant-logos';
 
 interface MoneySource {
   name: string;
@@ -135,25 +136,28 @@ export default function MoneyMovement() {
               {formatCurrency(data?.moneyIn || 0)}
             </div>
 
-            <div className="space-y-3 mb-6">
-              <p className="text-sm text-gray-400">Top sources</p>
-              {data?.topSources && data.topSources.length > 0 ? (
-                data.topSources.map((source, index) => (
-                  <div key={index} className="flex items-center justify-between" data-testid={`source-${index}`}>
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-green-500/20 to-emerald-500/20 flex items-center justify-center">
-                        <span className="text-sm font-medium text-green-400">
-                          {source.name.charAt(0).toUpperCase()}
-                        </span>
+            <div className="mb-6">
+              <p className="text-sm text-gray-400 mb-3">Top sources</p>
+              <div className="space-y-3 max-h-[280px] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-transparent">
+                {data?.topSources && data.topSources.length > 0 ? (
+                  data.topSources.map((source, index) => {
+                    const { logo, bgClass } = getMerchantLogo(source.name);
+                    return (
+                      <div key={index} className="flex items-center justify-between" data-testid={`source-${index}`}>
+                        <div className="flex items-center gap-3">
+                          <div className={`w-10 h-10 rounded-full ${bgClass} flex items-center justify-center`}>
+                            {logo}
+                          </div>
+                          <span className="text-white">{source.name}</span>
+                        </div>
+                        <span className="text-white font-medium">{formatCurrency(source.amount)}</span>
                       </div>
-                      <span className="text-white">{source.name}</span>
-                    </div>
-                    <span className="text-white font-medium">{formatCurrency(source.amount)}</span>
-                  </div>
-                ))
-              ) : (
-                <p className="text-gray-500 text-sm">No sources for this month</p>
-              )}
+                    );
+                  })
+                ) : (
+                  <p className="text-gray-500 text-sm">No sources for this month</p>
+                )}
+              </div>
             </div>
 
             <div className="pt-4 border-t border-gray-800">
@@ -176,25 +180,28 @@ export default function MoneyMovement() {
               −{formatCurrency(data?.moneyOut || 0)}
             </div>
 
-            <div className="space-y-3 mb-6">
-              <p className="text-sm text-gray-400">Top spend</p>
-              {data?.topSpend && data.topSpend.length > 0 ? (
-                data.topSpend.map((spend, index) => (
-                  <div key={index} className="flex items-center justify-between" data-testid={`spend-${index}`}>
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-red-500/20 to-rose-500/20 flex items-center justify-center">
-                        <span className="text-sm font-medium text-red-400">
-                          {spend.name.charAt(0).toUpperCase()}
-                        </span>
+            <div className="mb-6">
+              <p className="text-sm text-gray-400 mb-3">Top spend</p>
+              <div className="space-y-3 max-h-[280px] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-transparent">
+                {data?.topSpend && data.topSpend.length > 0 ? (
+                  data.topSpend.map((spend, index) => {
+                    const { logo, bgClass } = getMerchantLogo(spend.name);
+                    return (
+                      <div key={index} className="flex items-center justify-between" data-testid={`spend-${index}`}>
+                        <div className="flex items-center gap-3">
+                          <div className={`w-10 h-10 rounded-full ${bgClass} flex items-center justify-center`}>
+                            {logo}
+                          </div>
+                          <span className="text-white">{spend.name}</span>
+                        </div>
+                        <span className="text-white font-medium">−{formatCurrency(spend.amount)}</span>
                       </div>
-                      <span className="text-white">{spend.name}</span>
-                    </div>
-                    <span className="text-white font-medium">−{formatCurrency(spend.amount)}</span>
-                  </div>
-                ))
-              ) : (
-                <p className="text-gray-500 text-sm">No spending for this month</p>
-              )}
+                    );
+                  })
+                ) : (
+                  <p className="text-gray-500 text-sm">No spending for this month</p>
+                )}
+              </div>
             </div>
 
             <div className="pt-4 border-t border-gray-800">

@@ -97,6 +97,18 @@ const MERCHANT_TO_DOMAIN: Record<string, string> = {
   'ikea': 'ikea.com',
   'home depot': 'homedepot.com',
   'lowes': 'lowes.com',
+  
+  // Payment Services
+  'paypal': 'paypal.com',
+  'venmo': 'venmo.com',
+  'zelle': 'zellepay.com',
+  'cash app': 'cash.app',
+  'square': 'squareup.com',
+  
+  // Utilities
+  'water': 'water.com',
+  'electric': 'utility.com',
+  'gas': 'gasutility.com',
 };
 
 // Merchant category color schemes
@@ -116,6 +128,15 @@ const MERCHANT_COLORS: Record<string, { bgClass: string; textClass: string }> = 
   'spotify': { bgClass: 'bg-green-500/20', textClass: 'text-green-500' },
   'hulu': { bgClass: 'bg-green-400/20', textClass: 'text-green-400' },
   'disney': { bgClass: 'bg-blue-600/20', textClass: 'text-blue-600' },
+  
+  // Payment Services
+  'paypal': { bgClass: 'bg-blue-500/20', textClass: 'text-blue-500' },
+  'venmo': { bgClass: 'bg-blue-400/20', textClass: 'text-blue-400' },
+  'zelle': { bgClass: 'bg-purple-500/20', textClass: 'text-purple-500' },
+  'cash app': { bgClass: 'bg-green-600/20', textClass: 'text-green-600' },
+  
+  // Gas stations
+  'shell': { bgClass: 'bg-yellow-500/20', textClass: 'text-yellow-500' },
   
   // Default
   'default': { bgClass: 'bg-indigo-500/20', textClass: 'text-indigo-500' },

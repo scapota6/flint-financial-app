@@ -1490,15 +1490,15 @@ router.get("/money-movement", requireAuth, async (req: any, res) => {
       }
     }
     
-    // Calculate top sources and top spend (top 4)
+    // Calculate top sources and top spend (top 10 for scrollable list)
     const topSources = Object.entries(sources)
       .sort(([, a], [, b]) => b - a)
-      .slice(0, 4)
+      .slice(0, 10)
       .map(([name, amount]) => ({ name, amount }));
     
     const topSpend = Object.entries(spend)
       .sort(([, a], [, b]) => b - a)
-      .slice(0, 4)
+      .slice(0, 10)
       .map(([name, amount]) => ({ name, amount }));
     
     // Calculate real 3-month averages
