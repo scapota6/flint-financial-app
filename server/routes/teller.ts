@@ -1444,8 +1444,8 @@ router.get("/money-movement", requireAuth, async (req: any, res) => {
     
     let moneyIn = 0;
     let moneyOut = 0;
-    const sources: { [key: string]: number } = {};
-    const spend: { [key: string]: number } = {};
+    const sources: { [key: string]: { amount: number; provider: string } } = {};
+    const spend: { [key: string]: { amount: number; provider: string } } = {};
     
     // Fetch transactions from all accounts
     for (const account of accounts) {
@@ -1474,15 +1474,37 @@ router.get("/money-movement", requireAuth, async (req: any, res) => {
           
           const amount = parseFloat(tx.amount || '0');
           const merchant = tx.description || tx.counterparty?.name || 'Unknown';
+          const merchantLower = merchant.toLowerCase();
+          const provider = account.institutionName || 'Bank';
           
-          if (amount > 0) {
+          // Check if this is a fee/charge (always treat as money out)
+          const isFee = merchantLower.includes('fee') || 
+                        merchantLower.includes('charge') || 
+                        merchantLower.includes('penalty') ||
+                        merchantLower.includes('overdraft');
+          
+          if (isFee) {
+            // Fees are always money out, regardless of sign
+            const feeAmount = Math.abs(amount);
+            moneyOut += feeAmount;
+            if (!spend[merchant]) {
+              spend[merchant] = { amount: 0, provider };
+            }
+            spend[merchant].amount += feeAmount;
+          } else if (amount > 0) {
             // Money in (deposits)
             moneyIn += amount;
-            sources[merchant] = (sources[merchant] || 0) + amount;
+            if (!sources[merchant]) {
+              sources[merchant] = { amount: 0, provider };
+            }
+            sources[merchant].amount += amount;
           } else if (amount < 0) {
             // Money out (payments)
             moneyOut += Math.abs(amount);
-            spend[merchant] = (spend[merchant] || 0) + Math.abs(amount);
+            if (!spend[merchant]) {
+              spend[merchant] = { amount: 0, provider };
+            }
+            spend[merchant].amount += Math.abs(amount);
           }
         });
       } catch (error) {
@@ -1492,14 +1514,14 @@ router.get("/money-movement", requireAuth, async (req: any, res) => {
     
     // Calculate top sources and top spend (top 10 for scrollable list)
     const topSources = Object.entries(sources)
-      .sort(([, a], [, b]) => b - a)
+      .sort(([, a], [, b]) => b.amount - a.amount)
       .slice(0, 10)
-      .map(([name, amount]) => ({ name, amount }));
+      .map(([name, data]) => ({ name, amount: data.amount, provider: data.provider }));
     
     const topSpend = Object.entries(spend)
-      .sort(([, a], [, b]) => b - a)
+      .sort(([, a], [, b]) => b.amount - a.amount)
       .slice(0, 10)
-      .map(([name, amount]) => ({ name, amount }));
+      .map(([name, data]) => ({ name, amount: data.amount, provider: data.provider }));
     
     // Calculate real 3-month averages
     const threeMonthTotals = { moneyIn: 0, moneyOut: 0 };

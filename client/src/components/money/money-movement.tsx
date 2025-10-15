@@ -9,6 +9,7 @@ import { getMerchantLogo } from '@/lib/merchant-logos';
 interface MoneySource {
   name: string;
   amount: number;
+  provider: string;
 }
 
 interface MoneyMovementData {
@@ -144,7 +145,7 @@ export default function MoneyMovement() {
               }}>
                 {data?.topSources && data.topSources.length > 0 ? (
                   data.topSources.map((source, index) => {
-                    const { logo, bgClass } = getMerchantLogo(source.name);
+                    const { logo, bgClass } = getMerchantLogo(source.name, source.provider);
                     return (
                       <div key={index} className="flex items-center justify-between" data-testid={`source-${index}`}>
                         <div className="flex items-center gap-3">
@@ -191,7 +192,7 @@ export default function MoneyMovement() {
               }}>
                 {data?.topSpend && data.topSpend.length > 0 ? (
                   data.topSpend.map((spend, index) => {
-                    const { logo, bgClass } = getMerchantLogo(spend.name);
+                    const { logo, bgClass } = getMerchantLogo(spend.name, spend.provider);
                     return (
                       <div key={index} className="flex items-center justify-between" data-testid={`spend-${index}`}>
                         <div className="flex items-center gap-3">

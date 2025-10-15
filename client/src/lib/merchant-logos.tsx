@@ -142,7 +142,7 @@ const MERCHANT_COLORS: Record<string, { bgClass: string; textClass: string }> = 
   'default': { bgClass: 'bg-indigo-500/20', textClass: 'text-indigo-500' },
 };
 
-export function getMerchantLogo(merchantName: string) {
+export function getMerchantLogo(merchantName: string, accountProvider?: string) {
   if (!merchantName) {
     return {
       logo: <Package className="h-10 w-10 text-indigo-500" />,
@@ -154,12 +154,29 @@ export function getMerchantLogo(merchantName: string) {
   const BRANDFETCH_CLIENT_ID = import.meta.env.VITE_BRANDFETCH_CLIENT_ID || '';
   const lowerMerchant = merchantName.toLowerCase();
   
+  // Check if this is a generic banking transaction (deposit, check, transfer, etc.)
+  const isGenericBanking = lowerMerchant.includes('deposit') ||
+                          lowerMerchant.includes('check') ||
+                          lowerMerchant.includes('transfer') ||
+                          lowerMerchant.includes('withdrawal') ||
+                          lowerMerchant.includes('atm') ||
+                          lowerMerchant.includes('fee') ||
+                          lowerMerchant.includes('insufficient');
+  
   // Find domain by checking if merchant name includes key
   let domain: string | undefined;
   for (const [key, value] of Object.entries(MERCHANT_TO_DOMAIN)) {
     if (lowerMerchant.includes(key)) {
       domain = value;
       break;
+    }
+  }
+  
+  // If generic banking transaction and no specific merchant match, try to use bank logo
+  if (isGenericBanking && !domain && accountProvider) {
+    const bankDomain = getBankDomain(accountProvider);
+    if (bankDomain) {
+      domain = bankDomain;
     }
   }
   
@@ -192,6 +209,35 @@ export function getMerchantLogo(merchantName: string) {
     logo: <Package className={`h-10 w-10 ${colors.textClass}`} />,
     ...colors
   };
+}
+
+// Helper function to get bank domain from account provider name
+function getBankDomain(provider: string): string | undefined {
+  const lowerProvider = provider.toLowerCase();
+  
+  const bankDomains: Record<string, string> = {
+    'chase': 'chase.com',
+    'bank of america': 'bankofamerica.com',
+    'wells fargo': 'wellsfargo.com',
+    'citibank': 'citibank.com',
+    'citi': 'citibank.com',
+    'us bank': 'usbank.com',
+    'pnc': 'pnc.com',
+    'capital one': 'capitalone.com',
+    'td bank': 'td.com',
+    'truist': 'truist.com',
+    'american express': 'americanexpress.com',
+    'amex': 'americanexpress.com',
+    'discover': 'discover.com',
+  };
+  
+  for (const [key, value] of Object.entries(bankDomains)) {
+    if (lowerProvider.includes(key)) {
+      return value;
+    }
+  }
+  
+  return undefined;
 }
 
 // Separate component to handle image loading with state
