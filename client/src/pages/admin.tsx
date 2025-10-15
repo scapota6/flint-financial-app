@@ -947,12 +947,25 @@ function UsersTab() {
 function ConnectionsTab() {
   const { toast } = useToast();
   const [connectionFilter, setConnectionFilter] = useState<string>('all');
+  const [page, setPage] = useState(1);
   
-  const { data, isLoading } = useQuery<{ connections: Connection[] }>({
-    queryKey: ['/api/admin-panel/connections', connectionFilter],
+  const { data, isLoading } = useQuery<{ 
+    connections: Connection[];
+    pagination: {
+      page: number;
+      limit: number;
+      total: number;
+      totalPages: number;
+    }
+  }>({
+    queryKey: ['/api/admin-panel/connections', connectionFilter, page],
     queryFn: async () => {
-      const filterParam = connectionFilter !== 'all' ? `?filter=${connectionFilter}` : '';
-      const response = await fetch(`/api/admin-panel/connections${filterParam}`);
+      const params = new URLSearchParams();
+      if (connectionFilter !== 'all') params.set('filter', connectionFilter);
+      params.set('page', page.toString());
+      params.set('limit', '50');
+      
+      const response = await fetch(`/api/admin-panel/connections?${params}`);
       if (!response.ok) throw new Error('Failed to fetch connections');
       return response.json();
     },
@@ -1024,7 +1037,10 @@ function ConnectionsTab() {
             <Button
               variant={connectionFilter === 'all' ? 'default' : 'outline'}
               size="sm"
-              onClick={() => setConnectionFilter('all')}
+              onClick={() => {
+                setConnectionFilter('all');
+                setPage(1);
+              }}
               className={connectionFilter === 'all' ? 'bg-purple-600 hover:bg-purple-700' : ''}
               data-testid="button-filter-all"
             >
@@ -1033,7 +1049,10 @@ function ConnectionsTab() {
             <Button
               variant={connectionFilter === 'over_limit' ? 'default' : 'outline'}
               size="sm"
-              onClick={() => setConnectionFilter('over_limit')}
+              onClick={() => {
+                setConnectionFilter('over_limit');
+                setPage(1);
+              }}
               className={connectionFilter === 'over_limit' ? 'bg-purple-600 hover:bg-purple-700' : ''}
               data-testid="button-filter-over-limit"
             >
@@ -1043,7 +1062,10 @@ function ConnectionsTab() {
             <Button
               variant={connectionFilter === 'within_limit' ? 'default' : 'outline'}
               size="sm"
-              onClick={() => setConnectionFilter('within_limit')}
+              onClick={() => {
+                setConnectionFilter('within_limit');
+                setPage(1);
+              }}
               className={connectionFilter === 'within_limit' ? 'bg-purple-600 hover:bg-purple-700' : ''}
               data-testid="button-filter-within-limit"
             >
@@ -1052,7 +1074,10 @@ function ConnectionsTab() {
             <Button
               variant={connectionFilter === 'zero_connections' ? 'default' : 'outline'}
               size="sm"
-              onClick={() => setConnectionFilter('zero_connections')}
+              onClick={() => {
+                setConnectionFilter('zero_connections');
+                setPage(1);
+              }}
               className={connectionFilter === 'zero_connections' ? 'bg-purple-600 hover:bg-purple-700' : ''}
               data-testid="button-filter-zero-connections"
             >
@@ -1148,6 +1173,35 @@ function ConnectionsTab() {
             })
           )}
           </div>
+
+          {/* Pagination Controls */}
+          {data?.pagination && data.pagination.totalPages > 1 && (
+            <div className="flex items-center justify-between pt-4 border-t border-gray-800" data-testid="pagination-controls">
+              <div className="text-sm text-gray-400" data-testid="text-pagination-info">
+                Page {data.pagination.page} of {data.pagination.totalPages} ({data.pagination.total} total)
+              </div>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setPage(p => Math.max(1, p - 1))}
+                  disabled={page === 1}
+                  data-testid="button-prev-page"
+                >
+                  Previous
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setPage(p => Math.min(data.pagination.totalPages, p + 1))}
+                  disabled={page === data.pagination.totalPages}
+                  data-testid="button-next-page"
+                >
+                  Next
+                </Button>
+              </div>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>
