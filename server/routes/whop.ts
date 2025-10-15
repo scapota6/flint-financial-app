@@ -240,18 +240,60 @@ async function handlePaymentSucceeded(paymentData: any) {
     let userEmail = extractEmailFromPayload(paymentData);
     let userName = extractUsernameFromPayload(paymentData);
 
-    // If email is missing, log payload structure for debugging
+    // If email is missing from payload, try to find user by membership ID or customer ID
     if (!userEmail) {
-      logger.warn('Email not found in payment.succeeded webhook payload', {
+      logger.warn('Email not found in payment.succeeded webhook payload, attempting user lookup', {
         metadata: {
           paymentId,
           userId,
+          membershipId,
           payloadStructure: JSON.stringify(paymentData, null, 2).substring(0, 500)
         }
       });
       
-      // Cannot proceed without email
-      return;
+      // Try to find existing user by Whop membership ID or customer ID
+      if (membershipId) {
+        const existingUser = await db
+          .select()
+          .from(users)
+          .where(eq(users.whopMembershipId, membershipId))
+          .limit(1);
+        
+        if (existingUser.length > 0) {
+          userEmail = existingUser[0].email;
+          logger.info('Found user by membership ID', {
+            metadata: { userId: existingUser[0].id, membershipId }
+          });
+        }
+      }
+      
+      // If still no email and we have a customer ID, try that
+      if (!userEmail && userId) {
+        const existingUser = await db
+          .select()
+          .from(users)
+          .where(eq(users.whopCustomerId, userId))
+          .limit(1);
+        
+        if (existingUser.length > 0) {
+          userEmail = existingUser[0].email;
+          logger.info('Found user by customer ID', {
+            metadata: { userId: existingUser[0].id, whopCustomerId: userId }
+          });
+        }
+      }
+      
+      // If we still don't have an email, we cannot proceed
+      if (!userEmail) {
+        logger.error('Unable to process payment: no email in payload and no existing user found', {
+          metadata: {
+            paymentId,
+            userId,
+            membershipId
+          }
+        });
+        return;
+      }
     }
 
     // Check if user already exists in our system
@@ -369,7 +411,7 @@ async function handleMembershipWentValid(membershipData: any) {
   try {
     const membershipId = membershipData.id;
     const planId = membershipData.plan_id || membershipData.plan;
-    const userEmail = extractEmailFromPayload(membershipData);
+    let userEmail = extractEmailFromPayload(membershipData);
 
     logger.info('Processing membership.went_valid event', { 
       metadata: {
@@ -380,8 +422,24 @@ async function handleMembershipWentValid(membershipData: any) {
       }
     });
 
+    // If email is missing, try to find user by membership ID
+    if (!userEmail && membershipId) {
+      const existingUser = await db
+        .select()
+        .from(users)
+        .where(eq(users.whopMembershipId, membershipId))
+        .limit(1);
+      
+      if (existingUser.length > 0) {
+        userEmail = existingUser[0].email;
+        logger.info('Found user by membership ID for went_valid event', {
+          metadata: { userId: existingUser[0].id, membershipId }
+        });
+      }
+    }
+
     if (!userEmail) {
-      logger.warn('Email not found in membership.went_valid webhook payload', {
+      logger.warn('Unable to process membership.went_valid: no email and no user found', {
         metadata: {
           membershipId,
           payloadStructure: JSON.stringify(membershipData, null, 2).substring(0, 500)
@@ -430,7 +488,7 @@ async function handleMembershipWentValid(membershipData: any) {
 async function handleMembershipWentInvalid(membershipData: any) {
   try {
     const membershipId = membershipData.id;
-    const userEmail = extractEmailFromPayload(membershipData);
+    let userEmail = extractEmailFromPayload(membershipData);
 
     logger.info('Processing membership.went_invalid event', { 
       metadata: {
@@ -440,8 +498,24 @@ async function handleMembershipWentInvalid(membershipData: any) {
       }
     });
 
+    // If email is missing, try to find user by membership ID
+    if (!userEmail && membershipId) {
+      const existingUser = await db
+        .select()
+        .from(users)
+        .where(eq(users.whopMembershipId, membershipId))
+        .limit(1);
+      
+      if (existingUser.length > 0) {
+        userEmail = existingUser[0].email;
+        logger.info('Found user by membership ID for went_invalid event', {
+          metadata: { userId: existingUser[0].id, membershipId }
+        });
+      }
+    }
+
     if (!userEmail) {
-      logger.warn('Email not found in membership.went_invalid webhook payload', {
+      logger.warn('Unable to process membership.went_invalid: no email and no user found', {
         metadata: {
           membershipId,
           payloadStructure: JSON.stringify(membershipData, null, 2).substring(0, 500)
@@ -484,7 +558,7 @@ async function handleMembershipWentInvalid(membershipData: any) {
 async function handleMembershipCancelled(membershipData: any) {
   try {
     const membershipId = membershipData.id;
-    const userEmail = extractEmailFromPayload(membershipData);
+    let userEmail = extractEmailFromPayload(membershipData);
 
     logger.info('Processing membership.cancelled event', { 
       metadata: {
@@ -494,8 +568,24 @@ async function handleMembershipCancelled(membershipData: any) {
       }
     });
 
+    // If email is missing, try to find user by membership ID
+    if (!userEmail && membershipId) {
+      const existingUser = await db
+        .select()
+        .from(users)
+        .where(eq(users.whopMembershipId, membershipId))
+        .limit(1);
+      
+      if (existingUser.length > 0) {
+        userEmail = existingUser[0].email;
+        logger.info('Found user by membership ID for cancelled event', {
+          metadata: { userId: existingUser[0].id, membershipId }
+        });
+      }
+    }
+
     if (!userEmail) {
-      logger.warn('Email not found in membership.cancelled webhook payload', {
+      logger.warn('Unable to process membership.cancelled: no email and no user found', {
         metadata: {
           membershipId,
           payloadStructure: JSON.stringify(membershipData, null, 2).substring(0, 500)
