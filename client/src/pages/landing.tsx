@@ -19,6 +19,7 @@ import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { ArrowRight, Shield, TrendingUp, Zap, CheckCircle, Star, Users, DollarSign, Lock, Building, CreditCard, Check, X } from "lucide-react";
 import { Link } from "wouter";
 import { useToast } from "@/hooks/use-toast";
+import { CheckoutModal } from "@/components/checkout-modal";
 import flintLogo from "@assets/flint-logo.png";
 import dashboardPreview from "@assets/dashboard-preview.png";
 
@@ -70,9 +71,8 @@ function Landing() {
   });
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [dashboardPreviewOpen, setDashboardPreviewOpen] = useState(false);
+  const [checkoutUrl, setCheckoutUrl] = useState<string | null>(null);
   const { toast } = useToast();
-
-  // Note: Whop SDK loaded via script tag in index.html
 
   // Track section views
   useIntersectionObserver((entries) => {
@@ -84,7 +84,7 @@ function Landing() {
     });
   });
 
-  // Handle CTA clicks - now opens Whop checkout
+  // Handle CTA clicks - opens Whop checkout in modal
   const handleCTAClick = async (ctaId: string, price: string) => {
     trackEvent('click_cta', { cta_id: ctaId, price });
     
@@ -94,28 +94,8 @@ function Landing() {
       const data = await response.json();
       
       if (data.checkoutUrl) {
-        // Open Whop checkout modal (embedded widget)
-        if (window.Whop && window.Whop.checkout) {
-          window.Whop.checkout({
-            checkoutUrl: data.checkoutUrl,
-            onSuccess: () => {
-              // Redirect to payment success page
-              window.location.href = '/payment-success';
-            },
-            onError: (error) => {
-              console.error('Whop checkout error:', error);
-              toast({
-                title: "Checkout Error",
-                description: "There was an issue with the checkout. Please try again.",
-                variant: "destructive"
-              });
-            }
-          });
-        } else {
-          // Fallback to opening in new tab if SDK not loaded
-          console.warn('Whop SDK not loaded, falling back to window.open');
-          window.open(data.checkoutUrl, '_blank');
-        }
+        // Open checkout in modal
+        setCheckoutUrl(data.checkoutUrl);
       } else {
         toast({
           title: "Error",
@@ -948,6 +928,12 @@ function Landing() {
           </div>
         </div>
       </footer>
+      
+      {/* Checkout Modal */}
+      <CheckoutModal 
+        checkoutUrl={checkoutUrl} 
+        onClose={() => setCheckoutUrl(null)} 
+      />
       
       {/* JSON-LD Schema */}
       <script type="application/ld+json" dangerouslySetInnerHTML={{
