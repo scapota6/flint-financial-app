@@ -156,12 +156,19 @@ export async function handleWhopWebhook(req: ExpressRequest, res: any) {
     }
 
     // Extract event type and data from validated webhook
-    const eventType = webhook.action;
+    const rawEventType = webhook.action;
     const eventData = webhook.data;
+
+    // Normalize event type - strip 'app_' prefix if present
+    // Whop sends events like 'app_payment.succeeded' but we handle 'payment.succeeded'
+    const eventType = rawEventType.startsWith('app_') 
+      ? rawEventType.substring(4) // Remove 'app_' prefix
+      : rawEventType;
 
     logger.info('Whop webhook received', { 
       metadata: {
-        eventType,
+        rawEventType,
+        normalizedEventType: eventType,
         id: eventData?.id,
         planId: (eventData as any)?.plan || (eventData as any)?.plan_id 
       }
@@ -171,6 +178,12 @@ export async function handleWhopWebhook(req: ExpressRequest, res: any) {
     switch (eventType) {
       case 'payment.succeeded':
         await handlePaymentSucceeded(eventData as any);
+        break;
+      case 'payment.failed':
+        logger.info('Payment failed event received', { metadata: { paymentId: (eventData as any)?.id } });
+        break;
+      case 'payment.pending':
+        logger.info('Payment pending event received', { metadata: { paymentId: (eventData as any)?.id } });
         break;
       case 'membership.went_valid':
         await handleMembershipWentValid(eventData as any);
@@ -183,7 +196,7 @@ export async function handleWhopWebhook(req: ExpressRequest, res: any) {
         await handleMembershipCancelled(eventData as any);
         break;
       default:
-        logger.info('Unhandled webhook event type', { metadata: { eventType } });
+        logger.info('Unhandled webhook event type', { metadata: { rawEventType, normalizedEventType: eventType } });
     }
 
     // Respond with 200 to acknowledge receipt
