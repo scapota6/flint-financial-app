@@ -165,6 +165,11 @@ router.post('/webhook', async (req, res) => {
       case 'membership.went_invalid':
         await handleMembershipWentInvalid(eventData as any);
         break;
+      case 'membership.cancel_at_period_end_changed':
+      case 'membership.cancelled':
+        // Handle membership cancellation
+        await handleMembershipCancelled(eventData as any);
+        break;
       default:
         logger.info('Unhandled webhook event type', { metadata: { eventType } });
     }
@@ -572,13 +577,13 @@ async function handleMembershipWentInvalid(membershipData: any) {
   }
 }
 
-// Handle membership.cancelled event
+// Handle membership cancellation (membership.cancelled or membership.cancel_at_period_end_changed)
 async function handleMembershipCancelled(membershipData: any) {
   try {
     const membershipId = membershipData.id;
     let userEmail = extractEmailFromPayload(membershipData);
 
-    logger.info('Processing membership.cancelled event', { 
+    logger.info('Processing membership cancellation event', { 
       metadata: {
         membershipId,
         email: userEmail,
