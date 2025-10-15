@@ -72,7 +72,7 @@ function Landing() {
   const [dashboardPreviewOpen, setDashboardPreviewOpen] = useState(false);
   const { toast } = useToast();
 
-  // Note: Whop checkout opens in new tab - no script initialization needed
+  // Note: Whop SDK loaded via script tag in index.html
 
   // Track section views
   useIntersectionObserver((entries) => {
@@ -94,8 +94,28 @@ function Landing() {
       const data = await response.json();
       
       if (data.checkoutUrl) {
-        // Open Whop checkout in new tab
-        window.open(data.checkoutUrl, '_blank');
+        // Open Whop checkout modal (embedded widget)
+        if (window.Whop && window.Whop.checkout) {
+          window.Whop.checkout({
+            checkoutUrl: data.checkoutUrl,
+            onSuccess: () => {
+              // Redirect to payment success page
+              window.location.href = '/payment-success';
+            },
+            onError: (error) => {
+              console.error('Whop checkout error:', error);
+              toast({
+                title: "Checkout Error",
+                description: "There was an issue with the checkout. Please try again.",
+                variant: "destructive"
+              });
+            }
+          });
+        } else {
+          // Fallback to opening in new tab if SDK not loaded
+          console.warn('Whop SDK not loaded, falling back to window.open');
+          window.open(data.checkoutUrl, '_blank');
+        }
       } else {
         toast({
           title: "Error",
