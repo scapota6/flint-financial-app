@@ -71,7 +71,7 @@ function Landing() {
   });
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [dashboardPreviewOpen, setDashboardPreviewOpen] = useState(false);
-  const [checkoutUrl, setCheckoutUrl] = useState<string | null>(null);
+  const [checkoutPlanId, setCheckoutPlanId] = useState<string | null>(null);
   const { toast } = useToast();
 
   // Track section views
@@ -89,13 +89,13 @@ function Landing() {
     trackEvent('click_cta', { cta_id: ctaId, price });
     
     try {
-      // Get checkout URL from backend (Whop)
+      // Get checkout plan ID from backend (Whop)
       const response = await fetch(`/api/whop/checkout/${ctaId}${formData.email ? `?email=${encodeURIComponent(formData.email)}` : ''}`);
       const data = await response.json();
       
-      if (data.checkoutUrl) {
-        // Open checkout in modal
-        setCheckoutUrl(data.checkoutUrl);
+      if (data.planId) {
+        // Open checkout in modal with Whop embed
+        setCheckoutPlanId(data.planId);
       } else {
         toast({
           title: "Error",
@@ -931,8 +931,8 @@ function Landing() {
       
       {/* Checkout Modal */}
       <CheckoutModal 
-        checkoutUrl={checkoutUrl} 
-        onClose={() => setCheckoutUrl(null)} 
+        planId={checkoutPlanId} 
+        onClose={() => setCheckoutPlanId(null)} 
       />
       
       {/* JSON-LD Schema */}

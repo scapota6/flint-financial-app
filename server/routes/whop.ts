@@ -65,13 +65,15 @@ router.get('/checkout/:ctaId', async (req, res) => {
       metadata: {
         ctaId, 
         url: checkoutUrl,
-        email: email || 'none'
+        email: email || 'none',
+        planId: product.planId || 'none'
       }
     });
 
-    // Return the Whop product URL with email parameter
+    // Return the plan ID for Whop embed component and URL as fallback
     res.json({ 
       checkoutUrl,
+      planId: product.planId,
       product: {
         name: product.name,
         price: product.price,

@@ -16,7 +16,7 @@ export default function Subscribe() {
   const { toast } = useToast();
   const [isProcessing, setIsProcessing] = useState(false);
   const [isAnnual, setIsAnnual] = useState(false);
-  const [checkoutUrl, setCheckoutUrl] = useState<string | null>(null);
+  const [checkoutPlanId, setCheckoutPlanId] = useState<string | null>(null);
 
   // Fetch user data to check current subscription
   const { data: userData, error } = useQuery<{ subscriptionTier?: string; subscriptionStatus?: string }>({
@@ -52,13 +52,13 @@ export default function Subscribe() {
       const response = await fetch(`/api/whop/checkout/${ctaId}${userEmail ? `?email=${encodeURIComponent(userEmail)}` : ''}`);
       const data = await response.json();
       
-      if (data.checkoutUrl) {
-        // Open checkout in modal
-        setCheckoutUrl(data.checkoutUrl);
+      if (data.planId) {
+        // Open checkout in modal with Whop embed
+        setCheckoutPlanId(data.planId);
       } else {
         toast({
           title: "Error",
-          description: "Failed to get checkout URL. Please try again.",
+          description: "Failed to get checkout. Please try again.",
           variant: "destructive",
         });
       }
@@ -315,8 +315,8 @@ export default function Subscribe() {
       
       {/* Checkout Modal */}
       <CheckoutModal 
-        checkoutUrl={checkoutUrl} 
-        onClose={() => setCheckoutUrl(null)} 
+        planId={checkoutPlanId} 
+        onClose={() => setCheckoutPlanId(null)} 
       />
     </div>
   );
