@@ -97,6 +97,10 @@ const MERCHANT_TO_DOMAIN: Record<string, string> = {
   'ikea': 'ikea.com',
   'home depot': 'homedepot.com',
   'lowes': 'lowes.com',
+  'williams-sonoma': 'williams-sonoma.com',
+  'williams sonoma': 'williams-sonoma.com',
+  'pottery barn': 'potterybarn.com',
+  'west elm': 'westelm.com',
   
   // Payment Services
   'paypal': 'paypal.com',
@@ -137,6 +141,8 @@ const MERCHANT_TO_DOMAIN: Record<string, string> = {
   'outback': 'outback.com',
   'cheesecake factory': 'thecheesecakefactory.com',
   'sonic': 'sonicdrivein.com',
+  'mission ceviche': 'missionceviche.com',
+  'misson ceviche': 'missionceviche.com',
   
   // More Gas Stations
   'circle k': 'circlek.com',
@@ -205,14 +211,12 @@ const MERCHANT_TO_DOMAIN: Record<string, string> = {
   'fortnite': 'epicgames.com',
   
   // Home Services
-  'att': 'att.com',
   'frontier': 'frontier.com',
   'cox': 'cox.com',
   'centurylink': 'centurylink.com',
   'directv': 'directv.com',
   'dish': 'dish.com',
   'sling': 'sling.com',
-  'hulu': 'hulu.com',
   
   // Financial Services
   'credit karma': 'creditkarma.com',
@@ -321,12 +325,15 @@ export function getMerchantLogo(merchantName: string, accountProvider?: string) 
   
   // Check if this is a generic banking transaction (deposit, check, transfer, etc.)
   const isGenericBanking = lowerMerchant.includes('deposit') ||
-                          lowerMerchant.includes('check') ||
+                          lowerMerchant.includes('check #') ||
+                          lowerMerchant.includes('check#') ||
                           lowerMerchant.includes('transfer') ||
                           lowerMerchant.includes('withdrawal') ||
                           lowerMerchant.includes('atm') ||
                           lowerMerchant.includes('fee') ||
-                          lowerMerchant.includes('insufficient');
+                          lowerMerchant.includes('insufficient') ||
+                          lowerMerchant.includes('external atm') ||
+                          lowerMerchant.includes('cash');
   
   // Find domain by checking if merchant name includes key (exact substring match)
   let domain: string | undefined;

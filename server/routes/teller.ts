@@ -1483,6 +1483,16 @@ router.get("/money-movement", requireAuth, async (req: any, res) => {
                         merchantLower.includes('penalty') ||
                         merchantLower.includes('overdraft');
           
+          // Check if this is a withdrawal (always treat as money out)
+          const isWithdrawal = merchantLower.includes('withdrawal') ||
+                               merchantLower.includes('atm');
+          
+          // Check if this is likely a purchase/expense (should be money out)
+          const isPurchase = merchantLower.includes('purchase') ||
+                            merchantLower.includes('payment to') ||
+                            merchantLower.includes('pos') ||
+                            merchantLower.includes('debit card');
+          
           if (isFee) {
             // Fees are always money out, regardless of sign
             const feeAmount = Math.abs(amount);
@@ -1491,6 +1501,14 @@ router.get("/money-movement", requireAuth, async (req: any, res) => {
               spend[merchant] = { amount: 0, provider };
             }
             spend[merchant].amount += feeAmount;
+          } else if (isWithdrawal || isPurchase) {
+            // Withdrawals and purchases are always money out
+            const outAmount = Math.abs(amount);
+            moneyOut += outAmount;
+            if (!spend[merchant]) {
+              spend[merchant] = { amount: 0, provider };
+            }
+            spend[merchant].amount += outAmount;
           } else if (amount > 0) {
             // Money in (deposits)
             moneyIn += amount;
