@@ -9,6 +9,7 @@ import {
   users,
   connectedAccounts,
   snaptradeConnections,
+  snaptradeUsers,
   auditLogs,
   featureFlags,
   passwordResetTokens,
@@ -1910,6 +1911,104 @@ router.post('/snaptrade/orphaned-accounts/:id/resolve', requireAuth, requireAdmi
   } catch (error) {
     console.error('Error resolving orphaned account:', error);
     res.status(500).json({ message: 'Failed to resolve orphaned account' });
+  }
+});
+
+// GET /api/admin-panel/users/:userId/dashboard-view - Get user's full dashboard view
+router.get('/users/:userId/dashboard-view', requireAuth, requireAdmin(), async (req: any, res) => {
+  try {
+    const { userId } = req.params;
+
+    // Get user info
+    const [user] = await db
+      .select({
+        id: users.id,
+        email: users.email,
+        firstName: users.firstName,
+        lastName: users.lastName,
+        subscriptionTier: users.subscriptionTier,
+        subscriptionStatus: users.subscriptionStatus
+      })
+      .from(users)
+      .where(eq(users.id, userId));
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Get Teller connections
+    const tellerConnections = await db
+      .select()
+      .from(connectedAccounts)
+      .where(eq(connectedAccounts.userId, userId));
+
+    // Get SnapTrade connections
+    const snapConnections = await db
+      .select()
+      .from(snaptradeConnections)
+      .where(eq(snaptradeConnections.flintUserId, userId));
+
+    // Get SnapTrade user info
+    const [snapUser] = await db
+      .select({
+        snaptradeUserId: snaptradeUsers.snaptradeUserId,
+        createdAt: snaptradeUsers.createdAt
+      })
+      .from(snaptradeUsers)
+      .where(eq(snaptradeUsers.flintUserId, userId));
+
+    await logAdminAction(
+      req.adminEmail,
+      'view_user_dashboard',
+      { 
+        userId,
+        userEmail: user.email,
+        tellerConnectionCount: tellerConnections.length,
+        snaptradeConnectionCount: snapConnections.length
+      },
+      userId
+    );
+
+    res.json({
+      user: {
+        id: user.id,
+        email: user.email,
+        name: `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'Unknown',
+        subscriptionTier: user.subscriptionTier,
+        subscriptionStatus: user.subscriptionStatus
+      },
+      tellerConnections: tellerConnections.map(conn => ({
+        id: conn.id,
+        institutionName: conn.institutionName,
+        enrollmentId: conn.enrollmentId,
+        status: conn.status,
+        lastFourDigits: conn.lastFourDigits,
+        accountType: conn.accountType,
+        balance: conn.balance,
+        createdAt: conn.createdAt,
+        updatedAt: conn.updatedAt
+      })),
+      snaptradeConnections: snapConnections.map(conn => ({
+        id: conn.id,
+        brokerageAuthorizationId: conn.brokerageAuthorizationId,
+        brokerageName: conn.brokerageName,
+        disabled: conn.disabled,
+        lastSyncAt: conn.lastSyncAt,
+        updatedAt: conn.updatedAt
+      })),
+      snaptradeUser: snapUser ? {
+        snaptradeUserId: snapUser.snaptradeUserId,
+        registeredAt: snapUser.createdAt
+      } : null,
+      stats: {
+        totalConnections: tellerConnections.length + snapConnections.length,
+        tellerCount: tellerConnections.length,
+        snaptradeCount: snapConnections.length
+      }
+    });
+  } catch (error) {
+    console.error('Error fetching user dashboard view:', error);
+    res.status(500).json({ message: 'Failed to fetch user dashboard view' });
   }
 });
 
