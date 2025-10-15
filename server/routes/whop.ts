@@ -48,13 +48,18 @@ router.get('/checkout/:ctaId', async (req, res) => {
       });
     }
 
-    // Build checkout URL with email parameter if provided
-    let checkoutUrl = product.url;
+    // Build checkout URL with email parameter and iframe mode
+    const url = new URL(product.url);
+    
+    // Enable iframe embedding mode
+    url.searchParams.set('iframe', 'true');
+    
+    // Add email parameter if provided
     if (email && typeof email === 'string') {
-      const url = new URL(product.url);
       url.searchParams.set('email', email);
-      checkoutUrl = url.toString();
     }
+    
+    const checkoutUrl = url.toString();
 
     logger.info('Checkout URL generated', { 
       metadata: {
