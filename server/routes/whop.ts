@@ -124,6 +124,19 @@ export async function handleWhopWebhook(req: ExpressRequest, res: any) {
       return res.status(500).json({ error: 'Server configuration error' });
     }
 
+    // Debug logging - check what headers we're receiving
+    logger.info('Whop webhook request received', {
+      metadata: {
+        bodyLength: bodyString.length,
+        headers: {
+          'x-whop-signature': req.headers['x-whop-signature'],
+          'content-type': req.headers['content-type'],
+        },
+        url: req.url,
+        method: req.method
+      }
+    });
+
     // Convert Express request to Web API Request for validator
     const webApiRequest = expressToWebApiRequest(req);
     
@@ -132,10 +145,11 @@ export async function handleWhopWebhook(req: ExpressRequest, res: any) {
     try {
       webhook = await validateWhopWebhook(webApiRequest);
     } catch (error: any) {
-      logger.warn('Invalid webhook signature', { 
+      logger.error('Webhook validation failed', { 
         metadata: { 
           error: error.message,
-          signature: req.headers['x-whop-signature']?.toString().substring(0, 10) + '...',
+          signature: req.headers['x-whop-signature']?.toString(),
+          bodyPreview: bodyString.substring(0, 100)
         }
       });
       return res.status(401).json({ error: 'Invalid signature' });
