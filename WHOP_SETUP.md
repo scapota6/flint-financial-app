@@ -77,18 +77,31 @@ In Whop Dashboard > Developer Settings > Webhooks:
 ### 2. Webhook Secret
 After creating the webhook, Whop will generate a webhook secret. Save this as `WHOP_WEBHOOK_SECRET` in your environment variables.
 
-## Plan ID Mapping (Post-Setup)
+## Plan ID Mapping (Configured)
 
-After receiving your first webhook, you'll see plan IDs in the webhook payload. Update `server/lib/whop-config.ts` with the actual plan IDs:
+The following Whop plan IDs have been configured in `server/lib/whop-config.ts`:
 
 ```typescript
 export const PLAN_ID_TO_TIER: Record<string, 'free' | 'basic' | 'pro' | 'premium'> = {
-  'plan_xxxxx': 'basic',   // Basic Monthly
-  'plan_yyyyy': 'basic',   // Basic Yearly
-  'plan_zzzzz': 'pro',     // Pro Monthly
-  // ... etc
+  // Fast Track - One-time payment (bypasses waitlist)
+  'plan_LoIr4OqtbFsGf': 'free',
+  
+  // Basic/Plus Plans
+  'plan_VLgIrzlR2KDI0': 'basic',  // Basic Monthly
+  'plan_e3uHPGOF9BxLL': 'basic',  // Plus Year Special (Basic Yearly)
+  'plan_gTe1wqkhsxMl6': 'basic',  // Plus 6 Month Special
+  
+  // Pro Plans
+  'plan_A5pqK3NW80scw': 'pro',    // Pro Monthly
+  
+  // Premium/Unlimited Plans
+  'plan_iBNFQGQBLHWAh': 'premium', // Unlimited Monthly
+  'plan_a0r9AOKL1qJ6H': 'premium', // Unlimited 6 Months
+  'plan_eyVOdb1vQIUg9': 'premium', // Year Unlimited Special (Unlimited Yearly)
 };
 ```
+
+**Note**: Pro Yearly plan ID not yet available. Add it to this mapping when received from Whop dashboard.
 
 ## Testing Webhooks
 
