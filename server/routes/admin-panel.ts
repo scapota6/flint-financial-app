@@ -1611,7 +1611,12 @@ router.delete('/snaptrade/connections/:connectionId', requireAuth, requireAdmin(
 
     // Get connection details before deletion
     const [connection] = await db
-      .select()
+      .select({
+        id: snaptradeConnections.id,
+        flintUserId: snaptradeConnections.flintUserId,
+        brokerageAuthorizationId: snaptradeConnections.brokerageAuthorizationId,
+        brokerageName: snaptradeConnections.brokerageName,
+      })
       .from(snaptradeConnections)
       .where(eq(snaptradeConnections.id, parsedId));
 
@@ -1619,7 +1624,43 @@ router.delete('/snaptrade/connections/:connectionId', requireAuth, requireAdmin(
       return res.status(404).json({ message: 'SnapTrade connection not found' });
     }
 
-    // Delete the individual brokerage connection
+    // Get SnapTrade user credentials to call API
+    const [snapUser] = await db
+      .select()
+      .from(snaptradeUsers)
+      .where(eq(snaptradeUsers.flintUserId, connection.flintUserId));
+
+    // Try to delete from SnapTrade API first (if we have credentials)
+    if (snapUser) {
+      try {
+        const { Snaptrade } = await import('snaptrade-typescript-sdk');
+        const snaptrade = new Snaptrade({
+          clientId: process.env.SNAPTRADE_CLIENT_ID!,
+          consumerKey: process.env.SNAPTRADE_CONSUMER_KEY!,
+        });
+        
+        await snaptrade.connections.removeBrokerageAuthorization({
+          authorizationId: connection.brokerageAuthorizationId,
+          userId: snapUser.snaptradeUserId,
+          userSecret: snapUser.userSecret
+        });
+        
+        console.log('Successfully disconnected from SnapTrade API', {
+          authorizationId: connection.brokerageAuthorizationId,
+          brokerageName: connection.brokerageName
+        });
+      } catch (snapError: any) {
+        // If 404, connection already removed from SnapTrade - that's OK
+        if (snapError.status === 404 || snapError.responseBody?.code === '1004') {
+          console.log('SnapTrade connection already removed', { authorizationId: connection.brokerageAuthorizationId });
+        } else {
+          // For any other error, abort to prevent orphaning
+          throw new Error(`Failed to disconnect from SnapTrade: ${snapError.message}`);
+        }
+      }
+    }
+
+    // Delete the individual brokerage connection from our database
     await db
       .delete(snaptradeConnections)
       .where(eq(snaptradeConnections.id, parsedId));
@@ -1631,7 +1672,31 @@ router.delete('/snaptrade/connections/:connectionId', requireAuth, requireAdmin(
       .where(eq(snaptradeConnections.flintUserId, connection.flintUserId));
 
     // If no more connections, delete the SnapTrade user record as well
-    if (remainingConnections.length === 0) {
+    if (remainingConnections.length === 0 && snapUser) {
+      try {
+        // Try to delete the entire SnapTrade user
+        const { Snaptrade } = await import('snaptrade-typescript-sdk');
+        const snaptrade = new Snaptrade({
+          clientId: process.env.SNAPTRADE_CLIENT_ID!,
+          consumerKey: process.env.SNAPTRADE_CONSUMER_KEY!,
+        });
+        
+        await snaptrade.authentication.deleteSnapTradeUser({
+          userId: snapUser.snaptradeUserId,
+          userSecret: snapUser.userSecret
+        });
+        
+        console.log('Successfully deleted SnapTrade user', { userId: snapUser.snaptradeUserId });
+      } catch (snapError: any) {
+        // If 404, user already deleted - that's OK
+        if (snapError.status === 404 || snapError.responseBody?.code === '1004') {
+          console.log('SnapTrade user already deleted', { userId: snapUser.snaptradeUserId });
+        } else {
+          // For any other error, abort to prevent orphaning
+          throw new Error(`Failed to delete SnapTrade user: ${snapError.message}`);
+        }
+      }
+      
       await db
         .delete(snaptradeUsers)
         .where(eq(snaptradeUsers.flintUserId, connection.flintUserId));
@@ -1715,6 +1780,86 @@ router.get('/snaptrade/orphaned-accounts', requireAuth, requireAdmin(), async (r
   } catch (error) {
     console.error('Error fetching orphaned SnapTrade accounts:', error);
     res.status(500).json({ message: 'Failed to fetch orphaned SnapTrade accounts' });
+  }
+});
+
+// POST /api/admin-panel/snaptrade/sync-user/:userId - Force sync SnapTrade connections for a user
+router.post('/snaptrade/sync-user/:userId', requireAuth, requireAdmin(), async (req: any, res) => {
+  try {
+    const { userId } = req.params;
+    const { snaptradeUsers, snaptradeConnections } = await import('@shared/schema');
+    
+    // Get SnapTrade user credentials
+    const [snapUser] = await db
+      .select()
+      .from(snaptradeUsers)
+      .where(eq(snaptradeUsers.flintUserId, userId));
+    
+    if (!snapUser) {
+      return res.status(404).json({ message: 'User not registered with SnapTrade' });
+    }
+    
+    // Fetch connections from SnapTrade API
+    const { Snaptrade } = await import('snaptrade-typescript-sdk');
+    const snaptrade = new Snaptrade({
+      clientId: process.env.SNAPTRADE_CLIENT_ID!,
+      consumerKey: process.env.SNAPTRADE_CONSUMER_KEY!,
+    });
+    
+    const connectionsResponse = await snaptrade.connections.listBrokerageAuthorizations({
+      userId: snapUser.snaptradeUserId,
+      userSecret: snapUser.userSecret
+    });
+    
+    const connections = connectionsResponse.data || [];
+    
+    // Sync connections to database
+    for (const connection of connections) {
+      await db
+        .insert(snaptradeConnections)
+        .values({
+          flintUserId: userId,
+          brokerageAuthorizationId: connection.id!,
+          brokerageName: connection.name || 'Unknown',
+          disabled: !!connection.disabled,
+          updatedAt: new Date(),
+          lastSyncAt: new Date()
+        })
+        .onConflictDoUpdate({
+          target: snaptradeConnections.brokerageAuthorizationId,
+          set: {
+            brokerageName: connection.name || 'Unknown',
+            disabled: !!connection.disabled,
+            updatedAt: new Date(),
+            lastSyncAt: new Date()
+          }
+        });
+    }
+    
+    await logAdminAction(
+      req.adminEmail,
+      'force_sync_snaptrade_connections',
+      { 
+        userId,
+        connectionCount: connections.length
+      },
+      userId
+    );
+    
+    res.json({
+      message: `Successfully synced ${connections.length} connections`,
+      connections: connections.map(c => ({
+        id: c.id,
+        name: c.name,
+        disabled: c.disabled
+      }))
+    });
+  } catch (error: any) {
+    console.error('Error syncing SnapTrade connections:', error);
+    res.status(500).json({ 
+      message: 'Failed to sync connections',
+      error: error.message 
+    });
   }
 });
 
