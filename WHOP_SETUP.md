@@ -93,15 +93,13 @@ export const PLAN_ID_TO_TIER: Record<string, 'free' | 'basic' | 'pro' | 'premium
   
   // Pro Plans
   'plan_A5pqK3NW80scw': 'pro',    // Pro Monthly
+  'plan_eyVOdb1vQIUg9': 'pro',    // Pro Yearly
   
   // Premium/Unlimited Plans
   'plan_iBNFQGQBLHWAh': 'premium', // Unlimited Monthly
   'plan_a0r9AOKL1qJ6H': 'premium', // Unlimited 6 Months
-  'plan_eyVOdb1vQIUg9': 'premium', // Year Unlimited Special (Unlimited Yearly)
 };
 ```
-
-**Note**: Pro Yearly plan ID not yet available. Add it to this mapping when received from Whop dashboard.
 
 ## Testing Webhooks
 
@@ -123,15 +121,17 @@ export const PLAN_ID_TO_TIER: Record<string, 'free' | 'basic' | 'pro' | 'premium
 
 ## Checkout Flow
 
-The system uses a **direct product URL approach** (not iFrame SDK):
+The system uses a **new tab checkout approach** (Whop blocks iframe embedding):
 
-1. **User clicks pricing button** on landing page
+1. **User clicks pricing button** on landing page or subscribe page
 2. **Frontend calls**: `GET /api/whop/checkout/:ctaId?email=user@example.com`
 3. **Backend returns**: Whop product URL with email parameter
-4. **Checkout opens**: In new tab, prefilled with user's email
-5. **After payment**: User redirected to `/payment-success`
+4. **Checkout opens**: In new browser tab (or same window if popup blocked), prefilled with user's email
+5. **After payment**: User redirected to `/payment-success` (configured in Whop dashboard)
 6. **Webhook fires**: `payment.succeeded` event creates user account
 7. **Email sent**: Welcome email with password setup link
+
+**Note**: Whop prevents iframe embedding with X-Frame-Options headers, so checkout must open in a new tab.
 
 ## User Account Creation Flow
 
