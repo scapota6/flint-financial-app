@@ -1,14 +1,15 @@
 /**
  * Whop Configuration
- * Maps Whop plan IDs to subscription tiers and pricing
+ * Maps Whop product URLs to subscription tiers
  */
 
-export interface WhopPlanConfig {
-  planId: string;
+export interface WhopProductConfig {
+  url: string;
   name: string;
   tier: 'free' | 'basic' | 'pro' | 'premium';
   price: string;
   ctaId: string;
+  isOneTime?: boolean;
 }
 
 // Whop App Configuration
@@ -18,38 +19,39 @@ export const WHOP_CONFIG = {
   agentUserId: process.env.NEXT_PUBLIC_WHOP_AGENT_USER_ID || 'user_aD8lrpjVu92mY',
 };
 
-// Whop plan mapping - Update these with your actual Whop plan IDs
-export const WHOP_PLANS: Record<string, WhopPlanConfig> = {
-  // Fast Track - One-time payment (unlocks free tier)
-  'plan_fast_track': {
-    planId: 'plan_fast_track',
+// Whop product mapping - Using direct Whop product URLs
+export const WHOP_PRODUCTS: Record<string, WhopProductConfig> = {
+  // Fast Track - One-time payment (unlocks free tier, bypasses waitlist)
+  'fast-track': {
+    url: 'https://whop.com/flint-2289/flint-fast-track/',
     name: 'Fast Track Pass',
     tier: 'free',
     price: '$79.99',
     ctaId: 'fast-track',
+    isOneTime: true,
   },
   
-  // Plus Monthly
-  'plan_plus_monthly': {
-    planId: 'plan_plus_monthly',
-    name: 'Flint Plus Monthly',
+  // Basic Monthly
+  'basic-monthly': {
+    url: 'https://whop.com/flint-2289/flint-basic-7f/',
+    name: 'Flint Basic Monthly',
     tier: 'basic',
     price: '$19.99',
-    ctaId: 'plus-monthly',
+    ctaId: 'basic-monthly',
   },
   
-  // Plus Yearly
-  'plan_plus_yearly': {
-    planId: 'plan_plus_yearly',
-    name: 'Flint Plus Yearly',
+  // Basic Yearly (renamed from "plus")
+  'basic-yearly': {
+    url: 'https://whop.com/flint-2289/flint-basic-copy/',
+    name: 'Flint Basic Year Special',
     tier: 'basic',
     price: '$199.99',
-    ctaId: 'plus-yearly',
+    ctaId: 'basic-yearly',
   },
   
   // Pro Monthly
-  'plan_pro_monthly': {
-    planId: 'plan_pro_monthly',
+  'pro-monthly': {
+    url: 'https://whop.com/flint-2289/flint-pro-monthly/',
     name: 'Flint Pro Monthly',
     tier: 'pro',
     price: '$39.99',
@@ -57,64 +59,58 @@ export const WHOP_PLANS: Record<string, WhopPlanConfig> = {
   },
   
   // Pro Yearly
-  'plan_pro_yearly': {
-    planId: 'plan_pro_yearly',
-    name: 'Flint Pro Yearly',
+  'pro-yearly': {
+    url: 'https://whop.com/flint-2289/flint-pro-monthly-copy/',
+    name: 'Flint Pro Year Special',
     tier: 'pro',
     price: '$399.99',
     ctaId: 'pro-yearly',
   },
   
   // Unlimited Monthly
-  'plan_unlimited_monthly': {
-    planId: 'plan_unlimited_monthly',
+  'unlimited-monthly': {
+    url: 'https://whop.com/flint-2289/flint-unlimited-monthly/',
     name: 'Flint Unlimited Monthly',
     tier: 'premium',
     price: '$49.99',
     ctaId: 'unlimited-monthly',
   },
   
-  // Unlimited 6 Months
-  'plan_unlimited_6mo': {
-    planId: 'plan_unlimited_6mo',
-    name: 'Flint Unlimited 6 Months',
+  // Unlimited 6 Months Special
+  'unlimited-6mo': {
+    url: 'https://whop.com/flint-2289/flint-unlimited-year-copy/',
+    name: 'Flint Unlimited 6 Month Special',
     tier: 'premium',
     price: '$249.99',
     ctaId: 'unlimited-6mo',
   },
   
   // Unlimited Yearly
-  'plan_unlimited_yearly': {
-    planId: 'plan_unlimited_yearly',
-    name: 'Flint Unlimited Yearly',
+  'unlimited-yearly': {
+    url: 'https://whop.com/flint-2289/flint-unlimited-monthly-copy/',
+    name: 'Flint Unlimited Year Special',
     tier: 'premium',
     price: '$499.99',
     ctaId: 'unlimited-yearly',
   },
 };
 
-// Reverse mapping: CTA ID to plan ID
-export const CTA_TO_PLAN: Record<string, string> = {
-  'fast-track': 'plan_fast_track',
-  'plus-monthly': 'plan_plus_monthly',
-  'plus-yearly': 'plan_plus_yearly',
-  'plus-annual': 'plan_plus_yearly', // Alias
-  'pro-monthly': 'plan_pro_monthly',
-  'pro-yearly': 'plan_pro_yearly',
-  'unlimited-monthly': 'plan_unlimited_monthly',
-  'unlimited-6mo': 'plan_unlimited_6mo',
-  'unlimited-yearly': 'plan_unlimited_yearly',
-  'annual-unlimited': 'plan_unlimited_yearly', // Alias
+// Alias mappings for frontend compatibility
+export const CTA_ALIASES: Record<string, string> = {
+  'plus-monthly': 'basic-monthly',
+  'plus-yearly': 'basic-yearly',
 };
 
-// Helper function to get plan config by CTA ID
-export function getPlanByCTA(ctaId: string): WhopPlanConfig | null {
-  const planId = CTA_TO_PLAN[ctaId];
-  if (!planId) return null;
-  return WHOP_PLANS[planId] || null;
+// Helper function to get product config by CTA ID
+export function getProductByCTA(ctaId: string): WhopProductConfig | null {
+  // Check for alias first
+  const resolvedCTA = CTA_ALIASES[ctaId] || ctaId;
+  return WHOP_PRODUCTS[resolvedCTA] || null;
 }
 
-// Helper function to get plan config by plan ID
-export function getPlanById(planId: string): WhopPlanConfig | null {
-  return WHOP_PLANS[planId] || null;
+// Helper function to get tier by plan ID (from webhook)
+export function getTierByPlanId(planId: string): 'free' | 'basic' | 'pro' | 'premium' | null {
+  // This will be populated once we get the actual plan IDs from Whop webhooks
+  // For now, we'll extract the tier from the plan metadata
+  return null;
 }

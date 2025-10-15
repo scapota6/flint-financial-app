@@ -5,7 +5,7 @@ import { db } from '../db';
 import { users, passwordResetTokens } from '@shared/schema';
 import { eq } from 'drizzle-orm';
 import { logger } from '@shared/logger';
-import { WHOP_CONFIG, WHOP_PLANS, getPlanByCTA, getPlanById } from '../lib/whop-config';
+import { WHOP_CONFIG, WHOP_PRODUCTS, getProductByCTA } from '../lib/whop-config';
 import { sendApprovalEmail } from '../services/email';
 import { generateSecureToken, hashToken } from '../lib/token-utils';
 
@@ -13,8 +13,14 @@ const router = Router();
 
 // Whop API configuration
 const whopApiKey = process.env.WHOP_API_KEY;
+const webhookSecret = process.env.WHOP_WEBHOOK_SECRET;
+
 if (!whopApiKey) {
   logger.error('WHOP_API_KEY not configured');
+}
+
+if (!webhookSecret) {
+  logger.error('WHOP_WEBHOOK_SECRET not configured');
 }
 
 // Get checkout URL for a specific plan
@@ -23,41 +29,31 @@ router.get('/checkout/:ctaId', async (req, res) => {
     const { ctaId } = req.params;
     const { email } = req.query;
 
-    // Get plan config by CTA ID
-    const plan = getPlanByCTA(ctaId);
+    // Get product config by CTA ID
+    const product = getProductByCTA(ctaId);
     
-    if (!plan) {
+    if (!product) {
       logger.warn('Invalid CTA ID requested', { metadata: { ctaId } });
       return res.status(400).json({ 
         error: 'Invalid pricing option' 
       });
     }
 
-    if (!whopApiKey) {
-      logger.error('Whop API key not configured');
-      return res.status(500).json({ 
-        error: 'Payment system not configured' 
-      });
-    }
-
-    // For Whop, we'll return the checkout iframe URL
-    // The frontend will embed this in an iframe
-    const checkoutUrl = `https://whop.com/checkout/${plan.planId}`;
-    
     logger.info('Checkout URL generated', { 
       metadata: {
         ctaId, 
-        planId: plan.planId,
+        url: product.url,
         email: email || 'none'
       }
     });
 
+    // Return the direct Whop product URL
     res.json({ 
-      checkoutUrl,
-      plan: {
-        name: plan.name,
-        price: plan.price,
-        tier: plan.tier
+      checkoutUrl: product.url,
+      product: {
+        name: product.name,
+        price: product.price,
+        tier: product.tier
       }
     });
   } catch (error: any) {
@@ -72,8 +68,6 @@ router.get('/checkout/:ctaId', async (req, res) => {
 // NOTE: This route receives raw body for signature verification
 router.post('/webhook', async (req, res) => {
   try {
-    const webhookSecret = process.env.WHOP_WEBHOOK_SECRET;
-    
     if (!webhookSecret) {
       logger.error('WHOP_WEBHOOK_SECRET not configured');
       return res.status(500).json({ error: 'Webhook secret not configured' });
@@ -125,7 +119,8 @@ router.post('/webhook', async (req, res) => {
     logger.info('Whop webhook received', { 
       metadata: {
         eventType,
-        id: eventData?.id 
+        id: eventData?.id,
+        planId: eventData?.plan || eventData?.plan_id 
       }
     });
 
@@ -155,13 +150,31 @@ router.post('/webhook', async (req, res) => {
   }
 });
 
+// Map Whop plan ID to subscription tier
+// This will need to be updated once we receive actual plan IDs from webhooks
+function mapPlanIdToTier(planId: string): 'free' | 'basic' | 'pro' | 'premium' {
+  // Extract tier from plan internal notes or metadata
+  // For now, default to basic until we see actual webhook data
+  const planIdLower = planId.toLowerCase();
+  
+  if (planIdLower.includes('unlimited') || planIdLower.includes('premium')) {
+    return 'premium';
+  } else if (planIdLower.includes('pro')) {
+    return 'pro';
+  } else if (planIdLower.includes('basic') || planIdLower.includes('plus')) {
+    return 'basic';
+  }
+  
+  return 'basic'; // Default fallback
+}
+
 // Handle payment.succeeded event
 async function handlePaymentSucceeded(paymentData: any) {
   try {
     const paymentId = paymentData.id;
-    const userId = paymentData.user_id;
-    const membershipId = paymentData.membership_id;
-    const planId = paymentData.plan_id;
+    const userId = paymentData.user_id || paymentData.user;
+    const membershipId = paymentData.membership_id || paymentData.membership;
+    const planId = paymentData.plan_id || paymentData.plan;
 
     logger.info('Processing payment.succeeded event', { 
       metadata: {
@@ -172,16 +185,12 @@ async function handlePaymentSucceeded(paymentData: any) {
       }
     });
 
-    // Get plan configuration
-    const plan = getPlanById(planId);
-    if (!plan) {
-      logger.error('Unknown plan ID in payment', { metadata: { paymentId, planId } });
-      return;
-    }
+    // Map plan ID to tier
+    const tier = mapPlanIdToTier(planId);
 
     // Try to fetch user info from Whop if available
-    let userEmail = paymentData.user?.email;
-    let userName = paymentData.user?.username;
+    let userEmail = paymentData.user?.email || paymentData.email;
+    let userName = paymentData.user?.username || paymentData.username;
 
     // Check if user already exists in our system
     if (userEmail) {
@@ -196,7 +205,7 @@ async function handlePaymentSucceeded(paymentData: any) {
         await db
           .update(users)
           .set({
-            subscriptionTier: plan.tier,
+            subscriptionTier: tier,
             subscriptionStatus: 'active',
             whopMembershipId: membershipId,
             whopCustomerId: userId,
@@ -208,12 +217,12 @@ async function handlePaymentSucceeded(paymentData: any) {
         logger.info('Updated existing user subscription', { 
           metadata: {
             userId: existingUser[0].id,
-            tier: plan.tier 
+            tier 
           }
         });
       } else {
         // Create new user account
-        await createUserFromWhopPayment(userEmail, userName, plan, membershipId, userId, planId);
+        await createUserFromWhopPayment(userEmail, userName, tier, membershipId, userId, planId);
       }
     }
   } catch (error: any) {
@@ -225,73 +234,127 @@ async function handlePaymentSucceeded(paymentData: any) {
   }
 }
 
+// Create new user from Whop payment
+async function createUserFromWhopPayment(
+  email: string, 
+  username: string | undefined, 
+  tier: 'free' | 'basic' | 'pro' | 'premium',
+  membershipId: string,
+  customerId: string,
+  planId: string
+) {
+  try {
+    // Generate secure password and tokens
+    const tempPassword = generateSecureToken(16);
+    const passwordResetToken = generateSecureToken(32);
+    const hashedResetToken = hashToken(passwordResetToken);
+
+    // Create user (id is auto-generated as varchar with UUID)
+    await db.insert(users).values({
+      id: uuidv4(),
+      email,
+      passwordHash: '', // Will be set when user resets password
+      subscriptionTier: tier,
+      subscriptionStatus: 'active',
+      whopMembershipId: membershipId,
+      whopCustomerId: customerId,
+      whopPlanId: planId,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    });
+
+    // Get newly created user to get their ID
+    const newUser = await db
+      .select()
+      .from(users)
+      .where(eq(users.email, email))
+      .limit(1);
+    
+    if (newUser.length === 0) {
+      throw new Error('Failed to create user');
+    }
+
+    // Create password reset token
+    await db.insert(passwordResetTokens).values({
+      userId: newUser[0].id,
+      token: hashedResetToken,
+      expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
+      createdAt: new Date(),
+    });
+
+    // Send welcome email with password reset link
+    const firstName = username || email.split('@')[0];
+    const passwordSetupLink = `${process.env.APP_URL || 'https://flint-investing.com'}/reset-password?token=${passwordResetToken}`;
+    await sendApprovalEmail(email, firstName, passwordSetupLink);
+
+    logger.info('Created new user from Whop payment', { 
+      metadata: {
+        userId: newUser[0].id,
+        email,
+        tier 
+      }
+    });
+  } catch (error: any) {
+    logger.error('Failed to create user from Whop payment', { 
+      error: error.message 
+    });
+    throw error;
+  }
+}
+
 // Handle membership.went_valid event
 async function handleMembershipWentValid(membershipData: any) {
   try {
     const membershipId = membershipData.id;
-    const userId = membershipData.user_id;
-    const planId = membershipData.plan_id;
-    const userEmail = membershipData.user?.email;
+    const planId = membershipData.plan_id || membershipData.plan;
+    const userEmail = membershipData.email || membershipData.user?.email;
 
     logger.info('Processing membership.went_valid event', { 
       metadata: {
         membershipId,
-        userId,
         planId,
-        userEmail
+        email: userEmail 
       }
     });
 
-    // Get plan configuration
-    const plan = getPlanById(planId);
-    if (!plan) {
-      logger.error('Unknown plan ID in membership', { metadata: { membershipId, planId } });
+    if (!userEmail) {
+      logger.warn('No email in membership.went_valid event');
       return;
     }
 
-    if (userEmail) {
-      const existingUser = await db
-        .select()
-        .from(users)
-        .where(eq(users.email, userEmail))
-        .limit(1);
+    // Find user and update subscription status
+    const user = await db
+      .select()
+      .from(users)
+      .where(eq(users.email, userEmail))
+      .limit(1);
 
-      if (existingUser.length > 0) {
-        // Update user subscription status
-        await db
-          .update(users)
-          .set({
-            subscriptionTier: plan.tier,
-            subscriptionStatus: 'active',
-            whopMembershipId: membershipId,
-            whopCustomerId: userId,
-            whopPlanId: planId,
-            updatedAt: new Date(),
-          })
-          .where(eq(users.id, existingUser[0].id));
+    if (user.length > 0) {
+      const tier = mapPlanIdToTier(planId);
+      
+      await db
+        .update(users)
+        .set({
+          subscriptionStatus: 'active',
+          subscriptionTier: tier,
+          whopMembershipId: membershipId,
+          whopPlanId: planId,
+          updatedAt: new Date(),
+        })
+        .where(eq(users.id, user[0].id));
 
-        logger.info('Updated user subscription from membership.went_valid', { 
-          metadata: {
-            email: userEmail,
-            tier: plan.tier 
-          }
-        });
-      } else {
-        // Create new user if doesn't exist
-        await createUserFromWhopPayment(
-          userEmail, 
-          membershipData.user?.username, 
-          plan, 
-          membershipId, 
-          userId, 
-          planId
-        );
-      }
+      logger.info('Activated membership', { 
+        metadata: {
+          userId: user[0].id,
+          tier 
+        }
+      });
     }
   } catch (error: any) {
     logger.error('Failed to process membership.went_valid event', { 
       error: error.message 
     });
+    throw error;
   }
 }
 
@@ -299,32 +362,47 @@ async function handleMembershipWentValid(membershipData: any) {
 async function handleMembershipWentInvalid(membershipData: any) {
   try {
     const membershipId = membershipData.id;
-    const userEmail = membershipData.user?.email;
+    const userEmail = membershipData.email || membershipData.user?.email;
 
     logger.info('Processing membership.went_invalid event', { 
       metadata: {
         membershipId,
-        userEmail 
+        email: userEmail 
       }
     });
 
-    if (userEmail) {
+    if (!userEmail) {
+      logger.warn('No email in membership.went_invalid event');
+      return;
+    }
+
+    // Find user and update subscription status
+    const user = await db
+      .select()
+      .from(users)
+      .where(eq(users.email, userEmail))
+      .limit(1);
+
+    if (user.length > 0) {
       await db
         .update(users)
         .set({
-          subscriptionStatus: 'expired',
+          subscriptionStatus: 'inactive',
           updatedAt: new Date(),
         })
-        .where(eq(users.email, userEmail));
+        .where(eq(users.id, user[0].id));
 
-      logger.info('Marked user subscription as expired', { 
-        metadata: { email: userEmail }
+      logger.info('Deactivated membership', { 
+        metadata: {
+          userId: user[0].id 
+        }
       });
     }
   } catch (error: any) {
     logger.error('Failed to process membership.went_invalid event', { 
       error: error.message 
     });
+    throw error;
   }
 }
 
@@ -332,101 +410,47 @@ async function handleMembershipWentInvalid(membershipData: any) {
 async function handleMembershipCancelled(membershipData: any) {
   try {
     const membershipId = membershipData.id;
-    const userEmail = membershipData.user?.email;
+    const userEmail = membershipData.email || membershipData.user?.email;
 
     logger.info('Processing membership.cancelled event', { 
       metadata: {
         membershipId,
-        userEmail 
+        email: userEmail 
       }
     });
 
-    if (userEmail) {
+    if (!userEmail) {
+      logger.warn('No email in membership.cancelled event');
+      return;
+    }
+
+    // Find user and update subscription status
+    const user = await db
+      .select()
+      .from(users)
+      .where(eq(users.email, userEmail))
+      .limit(1);
+
+    if (user.length > 0) {
       await db
         .update(users)
         .set({
           subscriptionStatus: 'cancelled',
           updatedAt: new Date(),
         })
-        .where(eq(users.email, userEmail));
+        .where(eq(users.id, user[0].id));
 
-      logger.info('Cancelled user subscription', { 
-        metadata: { email: userEmail }
+      logger.info('Cancelled membership', { 
+        metadata: {
+          userId: user[0].id 
+        }
       });
     }
   } catch (error: any) {
     logger.error('Failed to process membership.cancelled event', { 
       error: error.message 
     });
-  }
-}
-
-// Helper function to create a new user from Whop payment
-async function createUserFromWhopPayment(
-  email: string,
-  username: string | undefined,
-  plan: any,
-  membershipId: string,
-  customerId: string,
-  planId: string
-) {
-  const userId = uuidv4();
-  const firstName = username || email.split('@')[0] || 'User';
-
-  await db.insert(users).values({
-    id: userId,
-    email,
-    firstName,
-    subscriptionTier: plan.tier,
-    subscriptionStatus: 'active',
-    whopMembershipId: membershipId,
-    whopCustomerId: customerId,
-    whopPlanId: planId,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  });
-
-  logger.info('Created new user from Whop payment', { 
-    metadata: {
-      userId,
-      email,
-      tier: plan.tier 
-    }
-  });
-
-  // Generate password setup token and link
-  try {
-    const plainToken = generateSecureToken();
-    const tokenHash = hashToken(plainToken);
-    const expiresAt = new Date();
-    expiresAt.setHours(expiresAt.getHours() + 24); // 24 hour expiry
-
-    // Save token to database
-    await db.insert(passwordResetTokens).values({
-      userId,
-      token: tokenHash,
-      tokenType: 'password_reset',
-      expiresAt,
-      used: false,
-    });
-
-    // Generate password setup link
-    const replitDomain = process.env.REPLIT_DOMAINS?.split(',')[0];
-    const baseUrl = process.env.REPLIT_DEPLOYMENT 
-      ? `https://${process.env.REPLIT_DEPLOYMENT}`
-      : replitDomain
-        ? `https://${replitDomain}`
-        : 'http://localhost:5000';
-    const passwordSetupLink = `${baseUrl}/setup-password?token=${plainToken}`;
-
-    // Send approval email with password setup link
-    await sendApprovalEmail(email, firstName, passwordSetupLink);
-    logger.info('Password setup email sent', { metadata: { email } });
-  } catch (emailError: any) {
-    logger.error('Failed to send password setup email', { 
-      error: emailError.message,
-      metadata: { email }
-    });
+    throw error;
   }
 }
 
