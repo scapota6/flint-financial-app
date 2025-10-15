@@ -1,5 +1,4 @@
-import { Router } from 'express';
-import crypto from 'crypto';
+import { Router, Request as ExpressRequest } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import { db } from '../db';
 import { users, passwordResetTokens } from '@shared/schema';
@@ -9,6 +8,7 @@ import { WHOP_CONFIG, WHOP_PRODUCTS, getProductByCTA } from '../lib/whop-config'
 import { sendApprovalEmail } from '../services/email';
 import { generateSecureToken, hashToken } from '../lib/token-utils';
 import { whopSdk } from '../lib/whop-sdk';
+import { makeWebhookValidator } from '@whop/api';
 
 const router = Router();
 
@@ -23,6 +23,14 @@ if (!whopApiKey) {
 if (!webhookSecret) {
   logger.error('WHOP_WEBHOOK_SECRET not configured');
 }
+
+// Create Whop webhook validator
+const validateWhopWebhook = webhookSecret 
+  ? makeWebhookValidator({ 
+      webhookSecret,
+      signatureHeaderName: 'x-whop-signature'
+    }) 
+  : null;
 
 // Get checkout URL for a specific plan
 router.get('/checkout/:ctaId', async (req, res) => {
