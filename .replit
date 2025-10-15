@@ -76,6 +76,10 @@ externalPort = 3003
 localPort = 42473
 
 [[ports]]
+localPort = 43419
+externalPort = 5173
+
+[[ports]]
 localPort = 43741
 
 [[ports]]
@@ -84,6 +88,10 @@ externalPort = 3000
 
 [[ports]]
 localPort = 45589
+
+[[ports]]
+localPort = 46099
+externalPort = 4200
 
 [agent]
 integrations = ["resend:1.0.0"]

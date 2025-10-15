@@ -759,10 +759,196 @@ export async function sendVerificationEmail(
   return await sendEmail(email, subject, html, 'email_verification');
 }
 
+function getApplicationNotificationTemplate(
+  applicantName: string,
+  applicantEmail: string,
+  accountCount: string,
+  connectType: string,
+  timestamp: string
+): string {
+  return `
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>New Application Received</title>
+        <style>
+          body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+          }
+          .container {
+            background-color: #ffffff;
+            border-radius: 8px;
+            padding: 40px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+          }
+          .header {
+            text-align: center;
+            margin-bottom: 30px;
+            background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%);
+            color: white;
+            padding: 30px;
+            margin: -40px -40px 30px -40px;
+            border-radius: 8px 8px 0 0;
+          }
+          .logo {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 10px;
+          }
+          .content {
+            margin-bottom: 30px;
+          }
+          .info-grid {
+            background-color: #F9FAFB;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+          }
+          .info-row {
+            display: flex;
+            padding: 12px 0;
+            border-bottom: 1px solid #E5E7EB;
+          }
+          .info-row:last-child {
+            border-bottom: none;
+          }
+          .info-label {
+            font-weight: 600;
+            color: #6B7280;
+            min-width: 140px;
+          }
+          .info-value {
+            color: #111827;
+            font-weight: 500;
+          }
+          .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+          }
+          .badge-banking {
+            background-color: #DBEAFE;
+            color: #1E40AF;
+          }
+          .badge-brokerage {
+            background-color: #D1FAE5;
+            color: #065F46;
+          }
+          .badge-both {
+            background-color: #F3E8FF;
+            color: #6B21A8;
+          }
+          .alert {
+            background-color: #DBEAFE;
+            border-left: 4px solid #3B82F6;
+            padding: 15px;
+            border-radius: 4px;
+            margin-top: 20px;
+          }
+          .footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #E5E7EB;
+            font-size: 14px;
+            color: #6B7280;
+            text-align: center;
+          }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header">
+            <div class="logo">🔔 Flint</div>
+            <h1 style="margin: 0; font-size: 24px;">New Application Received</h1>
+          </div>
+          
+          <div class="content">
+            <p style="font-size: 16px; margin-bottom: 20px;">A new account application has been submitted through the landing page.</p>
+            
+            <div class="info-grid">
+              <div class="info-row">
+                <div class="info-label">👤 Applicant Name:</div>
+                <div class="info-value">${applicantName}</div>
+              </div>
+              <div class="info-row">
+                <div class="info-label">📧 Email Address:</div>
+                <div class="info-value"><a href="mailto:${applicantEmail}" style="color: #4F46E5; text-decoration: none;">${applicantEmail}</a></div>
+              </div>
+              <div class="info-row">
+                <div class="info-label">🔗 Accounts Needed:</div>
+                <div class="info-value">${accountCount}</div>
+              </div>
+              <div class="info-row">
+                <div class="info-label">📊 Connection Type:</div>
+                <div class="info-value">
+                  ${connectType === 'banking' ? '<span class="badge badge-banking">Banking Only</span>' : 
+                    connectType === 'brokerage' ? '<span class="badge badge-brokerage">Brokerage Only</span>' : 
+                    '<span class="badge badge-both">Banking + Brokerage</span>'}
+                </div>
+              </div>
+              <div class="info-row">
+                <div class="info-label">⏰ Submitted At:</div>
+                <div class="info-value">${timestamp}</div>
+              </div>
+            </div>
+            
+            <div class="alert">
+              <strong>🎯 Action Required:</strong>
+              <p style="margin: 10px 0 0 0;">Review this application in the admin panel and approve or reject the request. The applicant will be notified via email once you make a decision.</p>
+            </div>
+            
+            <p style="margin-top: 30px; color: #6B7280;">This is an automated notification sent from your Flint application form. Log in to the admin panel to review and process this application.</p>
+          </div>
+          
+          <div class="footer">
+            <p>Automated notification from Flint Application System</p>
+            <p>© ${new Date().getFullYear()} Flint. All rights reserved.</p>
+          </div>
+        </div>
+      </body>
+    </html>
+  `;
+}
+
+export async function sendApplicationNotificationEmail(
+  applicantName: string,
+  applicantEmail: string,
+  accountCount: string,
+  connectType: string
+): Promise<{ success: boolean; error?: string }> {
+  const subject = `🔔 New Application: ${applicantName}`;
+  const timestamp = new Date().toLocaleString('en-US', {
+    dateStyle: 'full',
+    timeStyle: 'short',
+    timeZone: 'America/New_York'
+  });
+  
+  const html = getApplicationNotificationTemplate(
+    applicantName,
+    applicantEmail,
+    accountCount,
+    connectType,
+    timestamp
+  );
+  
+  console.log(`Sending application notification to support@flint-investing.com for ${applicantName} (${applicantEmail})`);
+  return await sendEmail('support@flint-investing.com', subject, html, 'application_notification');
+}
+
 export const emailService = {
   sendApprovalEmail,
   sendRejectionEmail,
   sendPasswordResetEmail,
   sendTestEmail,
   sendVerificationEmail,
+  sendApplicationNotificationEmail,
 };

@@ -17,6 +17,7 @@ import { alertMonitor } from "./services/alert-monitor";
 import { getServerFeatureFlags } from "@shared/feature-flags";
 import { logger } from "@shared/logger";
 import { demoMode } from "@shared/demo-mode";
+import { sendApplicationNotificationEmail } from "./services/email";
 import { 
   insertConnectedAccountSchema,
   insertWatchlistItemSchema,
@@ -101,6 +102,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
           email: application.email 
         }
       });
+
+      // Send notification email to support@flint-investing.com
+      try {
+        await sendApplicationNotificationEmail(
+          firstName,
+          email,
+          accountCount,
+          connectType
+        );
+        logger.info('Application notification email sent to support@flint-investing.com', {
+          metadata: { applicationId: application.id }
+        });
+      } catch (emailError: any) {
+        // Log error but don't fail the application submission
+        logger.error('Failed to send application notification email', { 
+          error: emailError.message,
+          applicationId: application.id 
+        });
+      }
 
       res.json({ 
         success: true,
