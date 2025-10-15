@@ -35,9 +35,11 @@ import {
   ChevronDown,
   ChevronRight,
   TrendingUp,
-  UserX
+  UserX,
+  Eye
 } from 'lucide-react';
 import OrphanedAccountsTab from '@/components/admin/OrphanedAccountsTab';
+import UserDashboardModal from '@/components/admin/UserDashboardModal';
 
 // Type definitions for API responses
 interface OverviewData {
@@ -491,6 +493,8 @@ function UsersTab() {
   const [actionDialog, setActionDialog] = useState<'delete' | 'reset' | 'tier' | 'ban' | 'setPassword' | null>(null);
   const [newTier, setNewTier] = useState('');
   const [newPassword, setNewPassword] = useState('');
+  const [dashboardModalOpen, setDashboardModalOpen] = useState(false);
+  const [dashboardUser, setDashboardUser] = useState<{ id: string; name: string } | null>(null);
   const { toast } = useToast();
 
   const { data, isLoading, refetch } = useQuery<{ users: User[]; pagination: Pagination }>({
@@ -655,6 +659,21 @@ function UsersTab() {
                   </TableCell>
                   <TableCell>
                     <div className="flex flex-wrap gap-2">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="border-gray-700"
+                        onClick={() => {
+                          setDashboardUser({ 
+                            id: user.id, 
+                            name: `${user.firstName} ${user.lastName}` 
+                          });
+                          setDashboardModalOpen(true);
+                        }}
+                        data-testid={`button-view-dashboard-${user.id}`}
+                      >
+                        <Eye className="h-4 w-4" />
+                      </Button>
                       <Button
                         size="sm"
                         variant="outline"
@@ -939,6 +958,16 @@ function UsersTab() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* User Dashboard Modal */}
+      {dashboardUser && (
+        <UserDashboardModal
+          open={dashboardModalOpen}
+          onOpenChange={setDashboardModalOpen}
+          userId={dashboardUser.id}
+          userName={dashboardUser.name}
+        />
+      )}
     </div>
   );
 }
@@ -948,6 +977,8 @@ function ConnectionsTab() {
   const { toast } = useToast();
   const [connectionFilter, setConnectionFilter] = useState<string>('all');
   const [page, setPage] = useState(1);
+  const [dashboardModalOpen, setDashboardModalOpen] = useState(false);
+  const [dashboardUser, setDashboardUser] = useState<{ id: string; name: string } | null>(null);
   
   const { data, isLoading } = useQuery<{ 
     connections: Connection[];
@@ -1115,6 +1146,23 @@ function ConnectionsTab() {
                         </p>
                       </div>
                     </div>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="border-gray-700"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setDashboardUser({ 
+                          id: group.userId, 
+                          name: group.email 
+                        });
+                        setDashboardModalOpen(true);
+                      }}
+                      data-testid={`button-view-dashboard-${group.userId}`}
+                    >
+                      <Eye className="h-4 w-4 mr-1" />
+                      View Dashboard
+                    </Button>
                   </CollapsibleTrigger>
                 
                 <CollapsibleContent className="px-4 pb-4" data-testid={`content-user-${group.userId}`}>
@@ -1204,6 +1252,16 @@ function ConnectionsTab() {
           )}
         </CardContent>
       </Card>
+
+      {/* User Dashboard Modal */}
+      {dashboardUser && (
+        <UserDashboardModal
+          open={dashboardModalOpen}
+          onOpenChange={setDashboardModalOpen}
+          userId={dashboardUser.id}
+          userName={dashboardUser.name}
+        />
+      )}
     </div>
   );
 }
