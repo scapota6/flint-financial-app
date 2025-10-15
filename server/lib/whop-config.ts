@@ -10,6 +10,7 @@ export interface WhopProductConfig {
   price: string;
   ctaId: string;
   isOneTime?: boolean;
+  planId?: string; // Whop plan ID (to be filled from webhook)
 }
 
 // Whop App Configuration
@@ -108,9 +109,34 @@ export function getProductByCTA(ctaId: string): WhopProductConfig | null {
   return WHOP_PRODUCTS[resolvedCTA] || null;
 }
 
+// Plan ID to Tier mapping - to be populated from webhook data
+// Update this map after receiving your first webhook to map Whop plan IDs to subscription tiers
+export const PLAN_ID_TO_TIER: Record<string, 'free' | 'basic' | 'pro' | 'premium'> = {
+  // Fast Track - One-time (these might use product IDs instead of plan IDs)
+  // 'prod_xxxxx': 'free',
+  
+  // Basic Plans
+  // 'plan_xxxxx': 'basic', // Basic Monthly
+  // 'plan_xxxxx': 'basic', // Basic Yearly
+  
+  // Pro Plans
+  // 'plan_xxxxx': 'pro', // Pro Monthly
+  // 'plan_xxxxx': 'pro', // Pro Yearly
+  
+  // Premium Plans
+  // 'plan_xxxxx': 'premium', // Unlimited Monthly
+  // 'plan_xxxxx': 'premium', // Unlimited 6 Months
+  // 'plan_xxxxx': 'premium', // Unlimited Yearly
+};
+
 // Helper function to get tier by plan ID (from webhook)
 export function getTierByPlanId(planId: string): 'free' | 'basic' | 'pro' | 'premium' | null {
-  // This will be populated once we get the actual plan IDs from Whop webhooks
-  // For now, we'll extract the tier from the plan metadata
+  return PLAN_ID_TO_TIER[planId] || null;
+}
+
+// Helper function to get tier by product ID (for one-time purchases)
+export function getTierByProductId(productId: string): 'free' | 'basic' | 'pro' | 'premium' | null {
+  // For one-time purchases like Fast Track, we might get a product ID instead of plan ID
+  // Map product IDs to tiers here
   return null;
 }
