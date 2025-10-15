@@ -104,11 +104,146 @@ const MERCHANT_TO_DOMAIN: Record<string, string> = {
   'zelle': 'zellepay.com',
   'cash app': 'cash.app',
   'square': 'squareup.com',
+  'stripe': 'stripe.com',
   
   // Utilities
   'water': 'water.com',
   'electric': 'utility.com',
   'gas': 'gasutility.com',
+  'pg&e': 'pge.com',
+  'duke energy': 'duke-energy.com',
+  'southern california edison': 'sce.com',
+  'con edison': 'coned.com',
+  'national grid': 'nationalgrid.com',
+  
+  // More Restaurants & Food Delivery
+  'uber eats': 'ubereats.com',
+  'doordash': 'doordash.com',
+  'grubhub': 'grubhub.com',
+  'postmates': 'postmates.com',
+  'instacart': 'instacart.com',
+  'seamless': 'seamless.com',
+  'little caesars': 'littlecaesars.com',
+  'jimmy johns': 'jimmyjohns.com',
+  'popeyes': 'popeyes.com',
+  'arbys': 'arbys.com',
+  'kfc': 'kfc.com',
+  'panda express': 'pandaexpress.com',
+  'olive garden': 'olivegarden.com',
+  'red lobster': 'redlobster.com',
+  'applebees': 'applebees.com',
+  'chilis': 'chilis.com',
+  'buffalo wild wings': 'buffalowildwings.com',
+  'outback': 'outback.com',
+  'cheesecake factory': 'thecheesecakefactory.com',
+  'sonic': 'sonicdrivein.com',
+  
+  // More Gas Stations
+  'circle k': 'circlek.com',
+  'wawa': 'wawa.com',
+  'speedway': 'speedway.com',
+  '7-eleven': '7-eleven.com',
+  'marathon': 'marathon.com',
+  'sunoco': 'sunoco.com',
+  'valero': 'valero.com',
+  
+  // E-commerce & Online
+  'shopify': 'shopify.com',
+  'wish': 'wish.com',
+  'aliexpress': 'aliexpress.com',
+  'mercado': 'mercadolibre.com',
+  'overstock': 'overstock.com',
+  'newegg': 'newegg.com',
+  'best buy': 'bestbuy.com',
+  'zappos': 'zappos.com',
+  
+  // Transportation
+  'uber': 'uber.com',
+  'lyft': 'lyft.com',
+  'delta': 'delta.com',
+  'american airlines': 'aa.com',
+  'united': 'united.com',
+  'southwest': 'southwest.com',
+  'jetblue': 'jetblue.com',
+  'spirit': 'spirit.com',
+  'amtrak': 'amtrak.com',
+  'greyhound': 'greyhound.com',
+  'enterprise': 'enterprise.com',
+  'hertz': 'hertz.com',
+  'budget': 'budget.com',
+  'avis': 'avis.com',
+  
+  // Pharmacies & Health
+  'cvs': 'cvs.com',
+  'walgreens': 'walgreens.com',
+  'rite aid': 'riteaid.com',
+  'kaiser': 'kp.org',
+  'bluecross': 'bcbs.com',
+  'humana': 'humana.com',
+  'united healthcare': 'uhc.com',
+  'aetna': 'aetna.com',
+  'cigna': 'cigna.com',
+  
+  // More Streaming Services
+  'max': 'max.com',
+  'showtime': 'showtime.com',
+  'starz': 'starz.com',
+  'crunchyroll': 'crunchyroll.com',
+  'funimation': 'funimation.com',
+  'twitch': 'twitch.tv',
+  'discord': 'discord.com',
+  'patreon': 'patreon.com',
+  
+  // Gaming
+  'playstation': 'playstation.com',
+  'xbox': 'xbox.com',
+  'nintendo': 'nintendo.com',
+  'steam': 'steampowered.com',
+  'epic games': 'epicgames.com',
+  'blizzard': 'blizzard.com',
+  'roblox': 'roblox.com',
+  'fortnite': 'epicgames.com',
+  
+  // Home Services
+  'att': 'att.com',
+  'frontier': 'frontier.com',
+  'cox': 'cox.com',
+  'centurylink': 'centurylink.com',
+  'directv': 'directv.com',
+  'dish': 'dish.com',
+  'sling': 'sling.com',
+  'hulu': 'hulu.com',
+  
+  // Financial Services
+  'credit karma': 'creditkarma.com',
+  'mint': 'mint.com',
+  'turbotax': 'turbotax.com',
+  'h&r block': 'hrblock.com',
+  'quickbooks': 'quickbooks.com',
+  'coinbase': 'coinbase.com',
+  'robinhood': 'robinhood.com',
+  'webull': 'webull.com',
+  'acorns': 'acorns.com',
+  'betterment': 'betterment.com',
+  'wealthfront': 'wealthfront.com',
+  
+  // Education
+  'udemy': 'udemy.com',
+  'coursera': 'coursera.com',
+  'skillshare': 'skillshare.com',
+  'masterclass': 'masterclass.com',
+  'linkedin learning': 'linkedin.com',
+  'duolingo': 'duolingo.com',
+  
+  // Social & Communication
+  'linkedin': 'linkedin.com',
+  'twitter': 'twitter.com',
+  'meta': 'meta.com',
+  'facebook': 'facebook.com',
+  'instagram': 'instagram.com',
+  'tiktok': 'tiktok.com',
+  'whatsapp': 'whatsapp.com',
+  'telegram': 'telegram.org',
 };
 
 // Merchant category color schemes
@@ -138,6 +273,20 @@ const MERCHANT_COLORS: Record<string, { bgClass: string; textClass: string }> = 
   // Gas stations
   'shell': { bgClass: 'bg-yellow-500/20', textClass: 'text-yellow-500' },
   
+  // Transportation
+  'uber': { bgClass: 'bg-black/20', textClass: 'text-white' },
+  'lyft': { bgClass: 'bg-pink-500/20', textClass: 'text-pink-500' },
+  
+  // Food Delivery
+  'doordash': { bgClass: 'bg-red-500/20', textClass: 'text-red-500' },
+  'grubhub': { bgClass: 'bg-orange-500/20', textClass: 'text-orange-500' },
+  'instacart': { bgClass: 'bg-green-500/20', textClass: 'text-green-500' },
+  
+  // Gaming
+  'playstation': { bgClass: 'bg-blue-600/20', textClass: 'text-blue-600' },
+  'xbox': { bgClass: 'bg-green-600/20', textClass: 'text-green-600' },
+  'nintendo': { bgClass: 'bg-red-600/20', textClass: 'text-red-600' },
+  
   // Default
   'default': { bgClass: 'bg-indigo-500/20', textClass: 'text-indigo-500' },
 };
@@ -152,7 +301,23 @@ export function getMerchantLogo(merchantName: string, accountProvider?: string) 
   }
 
   const BRANDFETCH_CLIENT_ID = import.meta.env.VITE_BRANDFETCH_CLIENT_ID || '';
-  const lowerMerchant = merchantName.toLowerCase();
+  
+  // Clean and normalize merchant name
+  let cleanedMerchant = merchantName.toLowerCase()
+    .replace(/[*#]/g, '') // Remove special chars
+    .replace(/\s+/g, ' ') // Normalize spaces
+    .trim();
+  
+  // Remove common prefixes that don't help with matching
+  const prefixes = ['sq ', 'tst* ', 'sp * ', 'uber *', 'lyft *', 'doordash *', 'dd *'];
+  for (const prefix of prefixes) {
+    if (cleanedMerchant.startsWith(prefix)) {
+      cleanedMerchant = cleanedMerchant.substring(prefix.length).trim();
+      break;
+    }
+  }
+  
+  const lowerMerchant = cleanedMerchant;
   
   // Check if this is a generic banking transaction (deposit, check, transfer, etc.)
   const isGenericBanking = lowerMerchant.includes('deposit') ||
@@ -163,12 +328,30 @@ export function getMerchantLogo(merchantName: string, accountProvider?: string) 
                           lowerMerchant.includes('fee') ||
                           lowerMerchant.includes('insufficient');
   
-  // Find domain by checking if merchant name includes key
+  // Find domain by checking if merchant name includes key (exact substring match)
   let domain: string | undefined;
+  let matchedKey: string | undefined;
   for (const [key, value] of Object.entries(MERCHANT_TO_DOMAIN)) {
     if (lowerMerchant.includes(key)) {
       domain = value;
+      matchedKey = key;
       break;
+    }
+  }
+  
+  // If no exact match, try word-based partial matching
+  if (!domain) {
+    const words = lowerMerchant.split(' ').filter(w => w.length > 2); // Only words longer than 2 chars
+    for (const word of words) {
+      for (const [key, value] of Object.entries(MERCHANT_TO_DOMAIN)) {
+        // Check if the word matches the key or contains the key
+        if (word === key || word.includes(key) || (key.length > 3 && key.includes(word))) {
+          domain = value;
+          matchedKey = key;
+          break;
+        }
+      }
+      if (domain) break;
     }
   }
   
@@ -177,15 +360,20 @@ export function getMerchantLogo(merchantName: string, accountProvider?: string) 
     const bankDomain = getBankDomain(accountProvider);
     if (bankDomain) {
       domain = bankDomain;
+      matchedKey = accountProvider.toLowerCase();
     }
   }
   
-  // Find color scheme
+  // Find color scheme using matchedKey if available, otherwise scan
   let colors = MERCHANT_COLORS.default;
-  for (const [key, value] of Object.entries(MERCHANT_COLORS)) {
-    if (lowerMerchant.includes(key)) {
-      colors = value;
-      break;
+  if (matchedKey && MERCHANT_COLORS[matchedKey]) {
+    colors = MERCHANT_COLORS[matchedKey];
+  } else {
+    for (const [key, value] of Object.entries(MERCHANT_COLORS)) {
+      if (lowerMerchant.includes(key)) {
+        colors = value;
+        break;
+      }
     }
   }
 
