@@ -110,6 +110,7 @@ export const WHOP_PRODUCTS: Record<string, WhopProductConfig> = {
     tier: 'premium',
     price: '$499.99',
     ctaId: 'unlimited-yearly',
+    planId: 'plan_1wX9H3yX224ed',
   },
 };
 
@@ -143,6 +144,7 @@ export const PLAN_ID_TO_TIER: Record<string, 'free' | 'basic' | 'pro' | 'premium
   // Premium/Unlimited Plans
   'plan_iBNFQGQBLHWAh': 'premium', // Unlimited Monthly
   'plan_a0r9AOKL1qJ6H': 'premium', // Unlimited 6 Months
+  'plan_1wX9H3yX224ed': 'premium', // Unlimited Yearly
 };
 
 // Helper function to get tier by plan ID (from webhook)
