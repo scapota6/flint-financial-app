@@ -138,14 +138,17 @@ export default function MoneyMovement() {
 
             <div className="mb-6">
               <p className="text-sm text-gray-400 mb-3">Top sources</p>
-              <div className="space-y-3 max-h-[280px] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-transparent">
+              <div className="space-y-3 max-h-[280px] overflow-y-auto pr-2" style={{ 
+                scrollbarWidth: 'thin',
+                scrollbarColor: '#374151 transparent'
+              }}>
                 {data?.topSources && data.topSources.length > 0 ? (
                   data.topSources.map((source, index) => {
                     const { logo, bgClass } = getMerchantLogo(source.name);
                     return (
                       <div key={index} className="flex items-center justify-between" data-testid={`source-${index}`}>
                         <div className="flex items-center gap-3">
-                          <div className={`w-10 h-10 rounded-full ${bgClass} flex items-center justify-center`}>
+                          <div className={`w-10 h-10 rounded-full ${bgClass} flex items-center justify-center flex-shrink-0`}>
                             {logo}
                           </div>
                           <span className="text-white">{source.name}</span>
@@ -182,14 +185,17 @@ export default function MoneyMovement() {
 
             <div className="mb-6">
               <p className="text-sm text-gray-400 mb-3">Top spend</p>
-              <div className="space-y-3 max-h-[280px] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-transparent">
+              <div className="space-y-3 max-h-[280px] overflow-y-auto pr-2" style={{ 
+                scrollbarWidth: 'thin',
+                scrollbarColor: '#374151 transparent'
+              }}>
                 {data?.topSpend && data.topSpend.length > 0 ? (
                   data.topSpend.map((spend, index) => {
                     const { logo, bgClass } = getMerchantLogo(spend.name);
                     return (
                       <div key={index} className="flex items-center justify-between" data-testid={`spend-${index}`}>
                         <div className="flex items-center gap-3">
-                          <div className={`w-10 h-10 rounded-full ${bgClass} flex items-center justify-center`}>
+                          <div className={`w-10 h-10 rounded-full ${bgClass} flex items-center justify-center flex-shrink-0`}>
                             {logo}
                           </div>
                           <span className="text-white">{spend.name}</span>
