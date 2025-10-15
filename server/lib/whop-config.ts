@@ -102,6 +102,15 @@ export const WHOP_PRODUCTS: Record<string, WhopProductConfig> = {
     ctaId: 'unlimited-6mo',
     planId: 'plan_a0r9AOKL1qJ6H',
   },
+  
+  // Unlimited Yearly
+  'unlimited-yearly': {
+    url: 'https://whop.com/flint-2289/flint-unlimited-yearly/',
+    name: 'Flint Unlimited Yearly',
+    tier: 'premium',
+    price: '$499.99',
+    ctaId: 'unlimited-yearly',
+  },
 };
 
 // Alias mappings for frontend compatibility
