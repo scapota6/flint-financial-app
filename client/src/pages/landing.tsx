@@ -22,20 +22,7 @@ import { useToast } from "@/hooks/use-toast";
 import flintLogo from "@assets/flint-logo.png";
 import dashboardPreview from "@assets/dashboard-preview.png";
 
-// Declare Lemon Squeezy types
-declare global {
-  interface Window {
-    createLemonSqueezy: () => void;
-    LemonSqueezy: {
-      Url: {
-        Open: (url: string) => void;
-      };
-      Setup: (config: {
-        eventHandler: (event: { event: string; data: any }) => void;
-      }) => void;
-    };
-  }
-}
+// Removed Lemon Squeezy - now using Whop for payment processing
 
 // Analytics tracking
 const trackEvent = (eventName: string, properties: Record<string, any> = {}) => {
@@ -85,64 +72,7 @@ function Landing() {
   const [dashboardPreviewOpen, setDashboardPreviewOpen] = useState(false);
   const { toast } = useToast();
 
-  // Initialize Lemon Squeezy (load once, keep for session)
-  useEffect(() => {
-    let setupComplete = false;
-    
-    const setupEventHandler = () => {
-      // Prevent duplicate setup
-      if (setupComplete) return;
-      setupComplete = true;
-      
-      if (window.createLemonSqueezy) {
-        window.createLemonSqueezy();
-      }
-      
-      if (window.LemonSqueezy) {
-        window.LemonSqueezy.Setup({
-          eventHandler: (event) => {
-            if (event.event === 'Checkout.Success') {
-              const email = event.data?.checkout_data?.email;
-              const successUrl = email 
-                ? `/payment-success?email=${encodeURIComponent(email)}`
-                : '/payment-success';
-              
-              // Allow overlay to close gracefully before redirecting
-              setTimeout(() => {
-                window.location.href = successUrl;
-              }, 500);
-            }
-          }
-        });
-      }
-    };
-
-    // Check if script already loaded
-    const existingScript = document.querySelector('script[src="https://app.lemonsqueezy.com/js/lemon.js"]') as HTMLScriptElement;
-    if (existingScript) {
-      // Script exists - set up handler (either immediately or when loaded)
-      if (window.LemonSqueezy) {
-        setupEventHandler();
-      } else {
-        // Wait for script to load
-        const loadHandler = () => {
-          setupEventHandler();
-          existingScript.removeEventListener('load', loadHandler);
-        };
-        existingScript.addEventListener('load', loadHandler);
-      }
-      return;
-    }
-
-    // Load Lemon.js script
-    const script = document.createElement('script');
-    script.src = 'https://app.lemonsqueezy.com/js/lemon.js';
-    script.defer = true;
-    script.onload = setupEventHandler;
-    document.head.appendChild(script);
-
-    // No cleanup - keep Lemon.js loaded for the session
-  }, []);
+  // Note: Whop checkout opens in new tab - no script initialization needed
 
   // Track section views
   useIntersectionObserver((entries) => {
@@ -154,21 +84,24 @@ function Landing() {
     });
   });
 
-  // Handle CTA clicks - now opens Lemon Squeezy checkout
+  // Handle CTA clicks - now opens Whop checkout
   const handleCTAClick = async (ctaId: string, price: string) => {
     trackEvent('click_cta', { cta_id: ctaId, price });
     
     try {
-      // Get checkout URL from backend
-      const response = await fetch(`/api/lemonsqueezy/checkout/${ctaId}${formData.email ? `?email=${encodeURIComponent(formData.email)}` : ''}`);
+      // Get checkout URL from backend (Whop)
+      const response = await fetch(`/api/whop/checkout/${ctaId}${formData.email ? `?email=${encodeURIComponent(formData.email)}` : ''}`);
       const data = await response.json();
       
-      if (data.checkoutUrl && window.LemonSqueezy) {
-        // Open Lemon Squeezy overlay
-        window.LemonSqueezy.Url.Open(data.checkoutUrl);
+      if (data.checkoutUrl) {
+        // Open Whop checkout in new tab
+        window.open(data.checkoutUrl, '_blank');
       } else {
-        // Fallback to direct URL
-        window.location.href = data.checkoutUrl || `/api/lemonsqueezy/checkout/${ctaId}`;
+        toast({
+          title: "Error",
+          description: "Unable to open checkout. Please try again.",
+          variant: "destructive"
+        });
       }
     } catch (error) {
       console.error('Checkout error:', error);
@@ -357,7 +290,7 @@ function Landing() {
                 className="w-full lg:w-auto bg-purple-600 hover:bg-purple-700 text-white px-8 py-4 text-lg"
                 data-cta="annual-unlimited"
                 data-testid="button-cta-annual-unlimited"
-                onClick={() => handleCTAClick('annual-unlimited', '$499.99')}
+                onClick={() => handleCTAClick('unlimited-yearly', '$499.99')}
               >
                 Start with Unlimited Annual – $499.99
               </Button>
@@ -522,8 +455,8 @@ function Landing() {
               <Button 
                 size="lg" 
                 className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-4 text-lg"
-                data-cta="plus-annual"
-                onClick={() => handleCTAClick('plus-annual', '$199.99')}
+                data-cta="basic-yearly"
+                onClick={() => handleCTAClick('basic-yearly', '$199.99')}
               >
                 Start with Plus Annual – $199.99
               </Button>
