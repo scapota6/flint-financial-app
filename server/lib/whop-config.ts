@@ -80,6 +80,7 @@ export const WHOP_PRODUCTS: Record<string, WhopProductConfig> = {
     tier: 'pro',
     price: '$399.99',
     ctaId: 'pro-yearly',
+    planId: 'plan_eyVOdb1vQIUg9',
   },
   
   // Unlimited Monthly
@@ -100,16 +101,6 @@ export const WHOP_PRODUCTS: Record<string, WhopProductConfig> = {
     price: '$249.99',
     ctaId: 'unlimited-6mo',
     planId: 'plan_a0r9AOKL1qJ6H',
-  },
-  
-  // Unlimited Yearly
-  'unlimited-yearly': {
-    url: 'https://whop.com/flint-2289/flint-unlimited-monthly-copy/',
-    name: 'Flint Unlimited Year Special',
-    tier: 'premium',
-    price: '$499.99',
-    ctaId: 'unlimited-yearly',
-    planId: 'plan_eyVOdb1vQIUg9',
   },
 };
 
@@ -138,11 +129,11 @@ export const PLAN_ID_TO_TIER: Record<string, 'free' | 'basic' | 'pro' | 'premium
   
   // Pro Plans
   'plan_A5pqK3NW80scw': 'pro', // Pro Monthly
+  'plan_eyVOdb1vQIUg9': 'pro',    // Pro Yearly
   
   // Premium/Unlimited Plans
   'plan_iBNFQGQBLHWAh': 'premium', // Unlimited Monthly
   'plan_a0r9AOKL1qJ6H': 'premium', // Unlimited 6 Months
-  'plan_eyVOdb1vQIUg9': 'premium', // Year Unlimited Special (Unlimited Yearly)
 };
 
 // Helper function to get tier by plan ID (from webhook)
