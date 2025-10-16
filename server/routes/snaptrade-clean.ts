@@ -35,16 +35,16 @@ async function saveSnaptradeCredentials(flintUserId: string, snaptradeUserId: st
     .values({
       flintUserId,
       snaptradeUserId,
-      snaptradeUserSecret,
-      connectedAt: new Date(),
-      lastSyncAt: new Date()
+      userSecret: snaptradeUserSecret,
+      createdAt: new Date(),
+      rotatedAt: null
     })
     .onConflictDoUpdate({
       target: snaptradeUsers.flintUserId,
       set: {
         snaptradeUserId,
-        snaptradeUserSecret,
-        lastSyncAt: new Date()
+        userSecret: snaptradeUserSecret,
+        rotatedAt: new Date()
       }
     });
 }
@@ -74,7 +74,7 @@ router.post("/register", isAuthenticated, async (req: any, res) => {
     try {
       console.log('SnapTrade Register: Calling registerSnapTradeUser...');
       
-      const { data } = await snaptrade.authentication.registerSnapTradeUser({
+      const { data } = await authApi.registerSnapTradeUser({
         userId: snaptradeUserId
       });
       
@@ -92,7 +92,7 @@ router.post("/register", isAuthenticated, async (req: any, res) => {
         userSecret: data.userSecret!,
       };
       
-      const { data: portal } = await snaptrade.authentication.loginSnapTradeUser(loginPayload);
+      const { data: portal } = await authApi.loginSnapTradeUser(loginPayload);
       
       console.log('SnapTrade Register: Portal response received:', {
         hasRedirectURI: !!(portal as any).redirectURI
@@ -110,7 +110,7 @@ router.post("/register", isAuthenticated, async (req: any, res) => {
         
         // Return a success response - the connection flow can proceed
         return res.json({ 
-          url: `https://connect.snaptrade.com/portal?clientId=${clientId}&userId=${encodeURIComponent(snaptradeUserId)}`,
+          url: `https://connect.snaptrade.com/portal?clientId=${process.env.SNAPTRADE_CLIENT_ID}&userId=${encodeURIComponent(snaptradeUserId)}`,
           message: "User already registered" 
         });
       } else {
