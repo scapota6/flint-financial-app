@@ -62,27 +62,30 @@ export function useAccounts() {
 
       const dashboardData = await dashboardResponse.json();
 
-      // Extract all accounts including disconnected ones
-      const allAccounts = (dashboardData.accounts || []).map((account: any) => ({
-        id: account.id,
-        provider: account.provider,
-        accountName: account.accountName,
-        accountNumber: account.accountNumber,
-        balance: account.balance,
-        type: account.type,
-        institution: account.institution || account.provider,
-        lastUpdated: account.lastUpdated,
-        currency: account.currency || 'USD',
-        status: account.needsReconnection ? 'disconnected' : 'connected',
-        // Extended fields for UI
-        holdings: account.holdings,
-        cash: account.cash,
-        buyingPower: account.buyingPower,
-        percentOfTotal: account.percentOfTotal,
-        availableCredit: account.availableCredit,
-        amountSpent: account.amountSpent,
-        needsReconnection: account.needsReconnection || false
-      }));
+      // Extract all accounts and filter out disconnected ones
+      const allAccounts = (dashboardData.accounts || [])
+        .map((account: any) => ({
+          id: account.id,
+          provider: account.provider,
+          accountName: account.accountName,
+          accountNumber: account.accountNumber,
+          balance: account.balance,
+          type: account.type,
+          institution: account.institution || account.provider,
+          lastUpdated: account.lastUpdated,
+          currency: account.currency || 'USD',
+          status: account.needsReconnection ? 'disconnected' : 'connected',
+          // Extended fields for UI
+          holdings: account.holdings,
+          cash: account.cash,
+          buyingPower: account.buyingPower,
+          percentOfTotal: account.percentOfTotal,
+          availableCredit: account.availableCredit,
+          amountSpent: account.amountSpent,
+          needsReconnection: account.needsReconnection || false
+        }))
+        // Filter out disconnected accounts (they show as $0 and clutter the UI)
+        .filter((account: any) => !account.needsReconnection);
 
       return {
         accounts: allAccounts,
