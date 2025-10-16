@@ -86,6 +86,7 @@ const app = express();
           'https://api.whop.com',
           'https://whop.com',
           'https://us.i.posthog.com',
+          'https://us-assets.i.posthog.com',
           // add your exact Replit base (scheme+host+port) if you ever call absolute URLs
         ],
         imgSrc: [SELF, 'data:', 'https://cdn.brandfetch.io'],
