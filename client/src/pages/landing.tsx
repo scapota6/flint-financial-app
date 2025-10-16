@@ -269,6 +269,82 @@ function Landing() {
           </div>
         </section>
 
+        {/* The Problem Section */}
+        <section className="py-20 bg-gradient-to-b from-red-950/20 to-transparent border-y border-red-900/30" data-section="problem">
+          <div className="max-w-6xl mx-auto space-y-12">
+            <div className="text-center space-y-4">
+              <h2 className="text-4xl lg:text-5xl font-bold tracking-tight text-white">
+                The hidden cost of scattered finances
+              </h2>
+              <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+                Every day, millions waste time and money juggling disconnected financial apps
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-3 gap-8">
+              {/* Time Wasted */}
+              <Card className="bg-gray-900/80 border-red-900/50">
+                <CardContent className="p-8 text-center space-y-4">
+                  <div className="flex justify-center">
+                    <div className="h-16 w-16 rounded-full bg-gradient-to-br from-red-500 to-red-700 flex items-center justify-center">
+                      <Users className="h-8 w-8 text-white" />
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <div className="text-5xl font-bold text-red-400">3+ hours</div>
+                    <div className="text-gray-400 text-lg">wasted every week</div>
+                  </div>
+                  <p className="text-gray-300">
+                    Switching between 5-8 different banking apps, brokerages, and spreadsheets just to check your finances
+                  </p>
+                </CardContent>
+              </Card>
+
+              {/* Money Lost */}
+              <Card className="bg-gray-900/80 border-red-900/50">
+                <CardContent className="p-8 text-center space-y-4">
+                  <div className="flex justify-center">
+                    <div className="h-16 w-16 rounded-full bg-gradient-to-br from-orange-500 to-orange-700 flex items-center justify-center">
+                      <DollarSign className="h-8 w-8 text-white" />
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <div className="text-5xl font-bold text-orange-400">$1,847</div>
+                    <div className="text-gray-400 text-lg">lost per year</div>
+                  </div>
+                  <p className="text-gray-300">
+                    Hidden fees, forgotten subscriptions, and missed opportunities across disconnected accounts
+                  </p>
+                </CardContent>
+              </Card>
+
+              {/* Financial Confusion */}
+              <Card className="bg-gray-900/80 border-red-900/50">
+                <CardContent className="p-8 text-center space-y-4">
+                  <div className="flex justify-center">
+                    <div className="h-16 w-16 rounded-full bg-gradient-to-br from-yellow-500 to-yellow-700 flex items-center justify-center">
+                      <Shield className="h-8 w-8 text-white" />
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <div className="text-5xl font-bold text-yellow-400">68%</div>
+                    <div className="text-gray-400 text-lg">don't know their net worth</div>
+                  </div>
+                  <p className="text-gray-300">
+                    Because their money is too scattered across banks, brokerages, and crypto wallets to track
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
+
+            <div className="text-center pt-8">
+              <p className="text-2xl text-gray-200 font-semibold">
+                There's a <span className="text-purple-400">better way</span>
+              </p>
+            </div>
+          </div>
+        </section>
+
         {/* Features Section */}
         <section className="py-20" data-section="features">
           <div className="max-w-6xl mx-auto space-y-12">
