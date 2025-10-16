@@ -1,43 +1,56 @@
-// Analytics tracking for connection health events
-interface AnalyticsEvent {
-  event: string;
-  properties?: Record<string, any>;
-}
 
-/**
- * Track analytics events for connection health monitoring
- */
+import { usePostHog } from 'posthog-js/react';
+
+// Export hook for components to use PostHog
+export { usePostHog };
+
+// Helper function for non-hook contexts
 export function trackEvent(eventName: string, properties: Record<string, any> = {}) {
   if (typeof window === 'undefined') return;
 
-  // In production, this would integrate with your analytics provider
-  // For now, we'll log to console in development and prepare for production
-  const event: AnalyticsEvent = {
-    event: eventName,
-    properties: {
-      ...properties,
-      timestamp: new Date().toISOString(),
-      url: window.location.pathname,
-      userAgent: navigator.userAgent
-    }
+  const event = {
+    ...properties,
+    timestamp: new Date().toISOString(),
+    path: window.location.pathname,
   };
 
-  if (process.env.NODE_ENV === 'development') {
-    console.log('📊 Analytics:', event);
+  if (import.meta.env.DEV) {
+    console.log('📊 Analytics:', eventName, event);
   }
 
-  // TODO: Replace with your analytics provider (Mixpanel, Segment, etc.)
   try {
-    // Example for Mixpanel:
-    // window.mixpanel?.track(eventName, event.properties);
-    
-    // Example for Segment:
-    // window.analytics?.track(eventName, event.properties);
-
-    // Example for Google Analytics:
-    // window.gtag?.('event', eventName, event.properties);
+    // PostHog is available globally after provider initialization
+    if (window.posthog) {
+      window.posthog.capture(eventName, event);
+    }
   } catch (error) {
     console.warn('Analytics tracking failed:', error);
+  }
+}
+
+// Identify user for PostHog
+export function identifyUser(userId: string, traits?: Record<string, any>) {
+  if (typeof window === 'undefined') return;
+  
+  try {
+    if (window.posthog) {
+      window.posthog.identify(userId, traits);
+    }
+  } catch (error) {
+    console.warn('User identification failed:', error);
+  }
+}
+
+// Reset user identity (for logout)
+export function resetUser() {
+  if (typeof window === 'undefined') return;
+  
+  try {
+    if (window.posthog) {
+      window.posthog.reset();
+    }
+  } catch (error) {
+    console.warn('User reset failed:', error);
   }
 }
 
@@ -76,4 +89,11 @@ export function trackReconnectFailed(accountId: string, provider: string, error:
     provider,
     error
   });
+}
+
+// Declare global type for PostHog
+declare global {
+  interface Window {
+    posthog?: any;
+  }
 }
