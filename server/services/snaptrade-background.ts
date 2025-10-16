@@ -1,37 +1,33 @@
 /**
  * Background services for SnapTrade data synchronization
- * Handles nightly data refresh and market data caching
+ * Handles nightly data refresh for connected accounts
  */
 
 import { CronJob } from 'cron';
 import { db } from '../db';
-import { snaptradeUsers, connectedAccounts, marketData } from '../../shared/schema';
-import { eq, and, isNull, lt } from 'drizzle-orm';
+import { snaptradeUsers, connectedAccounts } from '../../shared/schema';
+import { eq, and, isNull } from 'drizzle-orm';
 import { 
   listAccounts, 
   getPositions, 
-  getAccountBalances,
-  searchSymbols 
+  getAccountBalances
 } from '../lib/snaptrade';
 import { normalizeSnapTradeError } from '../lib/normalize-snaptrade-error';
 
 interface BackgroundServiceOptions {
   enableScheduledJobs?: boolean;
   enableDataRefresh?: boolean;
-  enableMarketDataCache?: boolean;
   refreshInterval?: string; // Cron pattern
 }
 
 export class SnapTradeBackgroundService {
   private refreshJob?: CronJob;
-  private marketDataJob?: CronJob;
   private isRunning = false;
   
   constructor(private options: BackgroundServiceOptions = {}) {
     this.options = {
       enableScheduledJobs: true,
       enableDataRefresh: true,
-      enableMarketDataCache: true,
       refreshInterval: '0 2 * * *', // 2 AM daily
       ...options
     };
@@ -68,11 +64,6 @@ export class SnapTradeBackgroundService {
       this.refreshJob.stop();
       this.refreshJob = undefined;
     }
-    
-    if (this.marketDataJob) {
-      this.marketDataJob.stop();
-      this.marketDataJob = undefined;
-    }
 
     this.isRunning = false;
     console.log('[SnapTrade Background] Background services stopped');
@@ -93,18 +84,6 @@ export class SnapTradeBackgroundService {
       );
       console.log(`[SnapTrade Background] Scheduled nightly refresh at: ${this.options.refreshInterval}`);
     }
-
-    // Market data caching job (every 4 hours during market hours)
-    if (this.options.enableMarketDataCache) {
-      this.marketDataJob = new CronJob(
-        '0 */4 * * 1-5', // Every 4 hours on weekdays
-        () => this.cacheMarketData(),
-        null,
-        true,
-        'America/New_York'
-      );
-      console.log('[SnapTrade Background] Scheduled market data caching every 4 hours on weekdays');
-    }
   }
 
   /**
@@ -119,10 +98,7 @@ export class SnapTradeBackgroundService {
       const activeUsers = await db
         .select()
         .from(snaptradeUsers)
-        .where(and(
-          isNull(snaptradeUsers.rotatedAt), // Not rotated (still active)
-          isNull(snaptradeUsers.deletedAt)  // Not deleted
-        ));
+        .where(isNull(snaptradeUsers.rotatedAt)); // Not rotated (still active)
 
       console.log(`[SnapTrade Background] Found ${activeUsers.length} active users`);
 
@@ -225,74 +201,6 @@ export class SnapTradeBackgroundService {
   }
 
   /**
-   * Cache market data for commonly requested instruments
-   */
-  async cacheMarketData(): Promise<void> {
-    console.log('[SnapTrade Background] Starting market data caching...');
-
-    try {
-      // Cache popular symbols
-      const popularSymbols = [
-        'AAPL', 'MSFT', 'GOOGL', 'AMZN', 'NVDA', 'TSLA', 'META', 'BRK.B',
-        'SPY', 'QQQ', 'IWM', 'VTI', 'VXUS', 'BND', 'GLD', 'ARKK'
-      ];
-
-      // Search and cache each symbol
-      for (const symbol of popularSymbols) {
-        try {
-          const results = await searchSymbols(symbol);
-          
-          if (results && results.length > 0) {
-            const instrument = results[0];
-            
-            // Store in market data cache
-            await db
-              .insert(marketData)
-              .values({
-                symbol: instrument.symbol,
-                name: instrument.description,
-                type: 'equity',
-                exchange: instrument.exchange || 'US',
-                currency: instrument.currency || 'USD',
-                data: {
-                  ...instrument,
-                  cachedAt: new Date().toISOString()
-                },
-                expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000) // 24 hours
-              })
-              .onConflictDoUpdate({
-                target: [marketData.symbol],
-                set: {
-                  data: {
-                    ...instrument,
-                    cachedAt: new Date().toISOString()
-                  },
-                  expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000)
-                }
-              });
-          }
-
-          // Rate limiting delay
-          await new Promise(resolve => setTimeout(resolve, 500));
-
-        } catch (error) {
-          console.error(`[SnapTrade Background] Error caching symbol ${symbol}:`, error);
-        }
-      }
-
-      // Clean up expired market data
-      await db
-        .delete(marketData)
-        .where(lt(marketData.expiresAt, new Date()));
-
-      console.log('[SnapTrade Background] Market data caching completed');
-
-    } catch (error) {
-      console.error('[SnapTrade Background] Error during market data caching:', error);
-    }
-  }
-
-  /**
    * Manual trigger for data refresh (admin endpoint)
    */
   async triggerDataRefresh(userId?: string): Promise<{ success: boolean; message: string }> {
@@ -329,8 +237,7 @@ export class SnapTradeBackgroundService {
     return {
       running: this.isRunning,
       jobs: {
-        dataRefresh: !!this.refreshJob && this.refreshJob.running,
-        marketDataCache: !!this.marketDataJob && this.marketDataJob.running
+        dataRefresh: !!this.refreshJob && this.refreshJob.running
       }
     };
   }
