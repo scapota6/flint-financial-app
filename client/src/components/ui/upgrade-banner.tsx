@@ -22,7 +22,7 @@ export function UpgradeBanner() {
   });
 
   useEffect(() => {
-    const dismissed = localStorage.getItem(BANNER_DISMISS_KEY);
+    const dismissed = sessionStorage.getItem(BANNER_DISMISS_KEY);
     if (dismissed === 'true') {
       setIsDismissed(true);
     }
@@ -50,7 +50,7 @@ export function UpgradeBanner() {
     dismissTimeoutRef.current = setTimeout(() => {
       document.documentElement.classList.remove('has-upgrade-banner');
       setIsDismissed(true);
-      localStorage.setItem(BANNER_DISMISS_KEY, 'true');
+      sessionStorage.setItem(BANNER_DISMISS_KEY, 'true');
     }, 300);
   };
 
