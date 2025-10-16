@@ -5,6 +5,8 @@
 
 import { Router } from 'express';
 import { isAuthenticated } from '../replitAuth';
+import { requireAuth } from '../middleware/jwt-auth';
+import { requireAdmin } from '../middleware/admin';
 import { authApi } from '../lib/snaptrade';
 import { extractSnapTradeRequestId, createApiError } from '../lib/validation';
 import type { ErrorResponse } from '@shared/types';
@@ -15,23 +17,9 @@ const router = Router();
  * GET /api/snaptrade/admin/users
  * List all SnapTrade users (Admin operation)
  */
-router.get('/admin/users', isAuthenticated, async (req: any, res) => {
+router.get('/admin/users', requireAuth, requireAdmin(), async (req: any, res) => {
   try {
     console.log('[SnapTrade Auth] Listing all SnapTrade users (admin operation)');
-    
-    // This is an admin operation - verify user has admin privileges
-    const user = req.user;
-    const isAdmin = user?.claims?.email === 'scapota@flint-investing.com'; // Admin check
-    
-    if (!isAdmin) {
-      return res.status(403).json({
-        error: {
-          code: 'ACCESS_DENIED',
-          message: 'Admin access required',
-          requestId: null
-        }
-      });
-    }
     
     // List all SnapTrade users
     const response = await authApi.listSnapTradeUsers();
@@ -94,25 +82,11 @@ router.get('/admin/users', isAuthenticated, async (req: any, res) => {
  * DELETE /api/snaptrade/admin/users/:userId
  * Delete a SnapTrade user (Danger operation)
  */
-router.delete('/admin/users/:userId', isAuthenticated, async (req: any, res) => {
+router.delete('/admin/users/:userId', requireAuth, requireAdmin(), async (req: any, res) => {
   try {
     const { userId } = req.params;
     
     console.log('[SnapTrade Auth] Deleting SnapTrade user (danger operation):', { userId });
-    
-    // This is a danger operation - verify user has admin privileges
-    const user = req.user;
-    const isAdmin = user?.claims?.email === 'scapota@flint-investing.com'; // Admin check
-    
-    if (!isAdmin) {
-      return res.status(403).json({
-        error: {
-          code: 'ACCESS_DENIED',
-          message: 'Admin access required for user deletion',
-          requestId: null
-        }
-      });
-    }
     
     if (!userId) {
       return res.status(400).json({
@@ -174,25 +148,11 @@ router.delete('/admin/users/:userId', isAuthenticated, async (req: any, res) => 
  * POST /api/snaptrade/admin/users/:userId/reset-secret
  * Reset a SnapTrade user's secret (Fix broken user)
  */
-router.post('/admin/users/:userId/reset-secret', isAuthenticated, async (req: any, res) => {
+router.post('/admin/users/:userId/reset-secret', requireAuth, requireAdmin(), async (req: any, res) => {
   try {
     const { userId } = req.params;
     
     console.log('[SnapTrade Auth] Resetting SnapTrade user secret:', { userId });
-    
-    // This is an admin operation - verify user has admin privileges
-    const user = req.user;
-    const isAdmin = user?.claims?.email === 'scapota@flint-investing.com'; // Admin check
-    
-    if (!isAdmin) {
-      return res.status(403).json({
-        error: {
-          code: 'ACCESS_DENIED',
-          message: 'Admin access required for secret reset',
-          requestId: null
-        }
-      });
-    }
     
     if (!userId) {
       return res.status(400).json({
