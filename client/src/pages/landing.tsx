@@ -264,6 +264,103 @@ function Landing() {
           </div>
         </section>
 
+        {/* Features Section */}
+        <section className="py-20" data-section="features">
+          <div className="max-w-6xl mx-auto space-y-12">
+            <div className="text-center space-y-4">
+              <h2 className="text-4xl lg:text-5xl font-bold tracking-tight">
+                Everything you need in{' '}
+                <span className="bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
+                  one place
+                </span>
+              </h2>
+              <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+                Stop juggling multiple apps and spreadsheets. Flint gives you the complete picture of your finances.
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {/* Unified Dashboard */}
+              <Card className="bg-gray-900/80 border-gray-700 hover:border-purple-500/50 transition-all duration-300">
+                <CardHeader>
+                  <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-purple-500 to-purple-700 flex items-center justify-center mb-4">
+                    <Building className="h-6 w-6 text-white" />
+                  </div>
+                  <CardTitle className="text-white">Unified Dashboard</CardTitle>
+                  <CardDescription className="text-gray-400">
+                    All your bank accounts, credit cards, and brokerage accounts in one comprehensive view
+                  </CardDescription>
+                </CardHeader>
+              </Card>
+
+              {/* Account Syncing */}
+              <Card className="bg-gray-900/80 border-gray-700 hover:border-purple-500/50 transition-all duration-300">
+                <CardHeader>
+                  <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center mb-4">
+                    <Zap className="h-6 w-6 text-white" />
+                  </div>
+                  <CardTitle className="text-white">Synced Balances</CardTitle>
+                  <CardDescription className="text-gray-400">
+                    Your account balances and portfolio values stay up-to-date with regular automatic syncing
+                  </CardDescription>
+                </CardHeader>
+              </Card>
+
+              {/* Trading */}
+              <Card className="bg-gray-900/80 border-gray-700 hover:border-purple-500/50 transition-all duration-300">
+                <CardHeader>
+                  <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-green-500 to-green-700 flex items-center justify-center mb-4">
+                    <TrendingUp className="h-6 w-6 text-white" />
+                  </div>
+                  <CardTitle className="text-white">Active Trading</CardTitle>
+                  <CardDescription className="text-gray-400">
+                    Send buy and sell requests to your brokerages for stocks and crypto directly from Flint
+                  </CardDescription>
+                </CardHeader>
+              </Card>
+
+              {/* Money Movement */}
+              <Card className="bg-gray-900/80 border-gray-700 hover:border-purple-500/50 transition-all duration-300">
+                <CardHeader>
+                  <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-pink-500 to-pink-700 flex items-center justify-center mb-4">
+                    <DollarSign className="h-6 w-6 text-white" />
+                  </div>
+                  <CardTitle className="text-white">Money Movement</CardTitle>
+                  <CardDescription className="text-gray-400">
+                    Track spending patterns, analyze merchants, and transfer money between your accounts
+                  </CardDescription>
+                </CardHeader>
+              </Card>
+
+              {/* Portfolio Analytics */}
+              <Card className="bg-gray-900/80 border-gray-700 hover:border-purple-500/50 transition-all duration-300">
+                <CardHeader>
+                  <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-cyan-500 to-cyan-700 flex items-center justify-center mb-4">
+                    <Star className="h-6 w-6 text-white" />
+                  </div>
+                  <CardTitle className="text-white">Portfolio Analytics</CardTitle>
+                  <CardDescription className="text-gray-400">
+                    Monitor your investment performance, track growth, and understand your financial picture
+                  </CardDescription>
+                </CardHeader>
+              </Card>
+
+              {/* Security */}
+              <Card className="bg-gray-900/80 border-gray-700 hover:border-purple-500/50 transition-all duration-300">
+                <CardHeader>
+                  <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-orange-500 to-orange-700 flex items-center justify-center mb-4">
+                    <Shield className="h-6 w-6 text-white" />
+                  </div>
+                  <CardTitle className="text-white">Bank-Grade Security</CardTitle>
+                  <CardDescription className="text-gray-400">
+                    Your data is encrypted and protected with the same security standards as major banks
+                  </CardDescription>
+                </CardHeader>
+              </Card>
+            </div>
+          </div>
+        </section>
+
         {/* Hero Section - CTA 1: Unlimited Annual */}
         <section id="annual" data-section="annual" className="grid lg:grid-cols-2 gap-12 py-20 items-center">
           <div className="space-y-8">
