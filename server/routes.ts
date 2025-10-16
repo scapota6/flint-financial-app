@@ -171,6 +171,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
             try {
               console.log('🔄 Syncing SnapTrade authorizations to database...');
               
+              // CRITICAL FIX: Look up Flint user ID from SnapTrade user ID
+              const [snapUser] = await db
+                .select()
+                .from(snaptradeUsers)
+                .where(eq(snaptradeUsers.snaptradeUserId, userId as string))
+                .limit(1);
+              
+              if (!snapUser) {
+                console.error('❌ Cannot sync: SnapTrade user not found in database:', userId);
+                throw new Error('SnapTrade user not registered in Flint database');
+              }
+              
+              const flintUserId = snapUser.flintUserId;
+              console.log(`📝 Resolved Flint user ID: ${flintUserId} for SnapTrade ID: ${userId}`);
+              
               // Fetch authorizations from SnapTrade API
               const authorizationsResponse = await listBrokerageAuthorizations(
                 userId as string,
@@ -186,10 +201,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
                 await db
                   .insert(snaptradeConnections)
                   .values({
-                    flintUserId: userId as string,
+                    flintUserId: flintUserId,
                     brokerageAuthorizationId: auth.id,
                     brokerageName: auth.brokerage?.name || 'Unknown',
                     disabled: auth.disabled || false,
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
                     lastSyncAt: new Date(),
                   })
                   .onConflictDoUpdate({
@@ -206,7 +223,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
               }
               
               logger.info('SnapTrade authorizations synced successfully', {
-                userId: userId as string,
+                flintUserId: flintUserId,
+                snaptradeUserId: userId as string,
                 count: authorizations.length
               });
             } catch (syncError) {
