@@ -3,10 +3,17 @@ import { getQueryFn } from "@/lib/queryClient";
 import { usePostHog } from 'posthog-js/react';
 import { useEffect } from 'react';
 
+interface AuthUser {
+  id: string;
+  email: string;
+  subscriptionTier?: string;
+  subscriptionStatus?: string;
+}
+
 export function useAuth() {
   const posthog = usePostHog();
   
-  const { data: user, isLoading } = useQuery({
+  const { data: user, isLoading } = useQuery<AuthUser>({
     queryKey: ["/api/auth/user"],
     queryFn: getQueryFn({ on401: "returnNull" }),
     retry: false,

@@ -9,6 +9,7 @@ import { ThemeProvider } from "@/contexts/ThemeContext";
 import { ActivityProvider } from "@/contexts/ActivityContext";
 import { ActivityTimeoutModal } from "@/components/ActivityTimeoutModal";
 import GlobalNavbar from "@/components/layout/global-navbar";
+import { UpgradeBanner } from "@/components/ui/upgrade-banner";
 import { useAuth } from "@/hooks/useAuth";
 
 // Code-split all page components for optimal bundle size
@@ -75,8 +76,9 @@ function Router() {
   return (
     <>
       {isAuthenticated && <GlobalNavbar />}
+      {isAuthenticated && <UpgradeBanner />}
       {isAuthenticated && <ActivityTimeoutModal />}
-      <div className={isAuthenticated ? "pt-16" : ""}>
+      <div className={isAuthenticated ? "pt-16 authenticated-content" : ""}>
         <AnimatePresence mode="wait">
           <Suspense fallback={<PageLoader />}>
             <Switch>

@@ -7,6 +7,17 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Conditional padding for upgrade banner */
+.has-upgrade-banner .authenticated-content {
+  padding-top: 7rem; /* 112px - pt-28 */
+}
+
+@media (min-width: 640px) {
+  .has-upgrade-banner .authenticated-content {
+    padding-top: 7.5rem; /* 120px - pt-30 */
+  }
+}
+
 /* 3D Chart Animations */
 @keyframes floatingOrb {
   0%, 100% {
