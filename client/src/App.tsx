@@ -125,6 +125,10 @@ function Router() {
                 <Route path="/subscribe">
                   {() => { window.location.href = '/api/login'; return null; }}
                 </Route>
+                {/* Catch-all: redirect any other route to landing page for unauthenticated users */}
+                <Route path="/:rest*">
+                  {() => { window.location.href = '/'; return null; }}
+                </Route>
               </>
             ) : (
               <>
@@ -155,9 +159,10 @@ function Router() {
                 <Route path="/landing">
                   {() => { window.location.href = '/dashboard'; return null; }}
                 </Route>
+                {/* 404 for authenticated users only */}
+                <Route component={NotFound} />
               </>
             )}
-            <Route component={NotFound} />
           </Switch>
           </Suspense>
         </AnimatePresence>
