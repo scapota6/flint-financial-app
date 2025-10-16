@@ -68,6 +68,24 @@ export default function UserDashboardModal({
     enabled: open && !!userId,
   });
 
+  // Debug logging to see what the API is returning
+  if (data) {
+    console.log('[UserDashboardModal] API Response:', data);
+    console.log('[UserDashboardModal] Data checks:', {
+      hasUser: !!data.user,
+      hasStats: !!data.stats,
+      hasTellerConnections: !!data.tellerConnections,
+      hasSnaptradeConnections: !!data.snaptradeConnections,
+    });
+  }
+
+  if (error) {
+    console.error('[UserDashboardModal] API Error:', error);
+  }
+
+  // Check if we have missing critical data
+  const hasMissingData = data && !data.user;
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="bg-gray-900 border-gray-800 max-w-4xl max-h-[90vh]" data-testid="modal-user-dashboard">
@@ -93,7 +111,13 @@ export default function UserDashboardModal({
           </div>
         )}
 
-        {data && (
+        {hasMissingData && (
+          <div className="text-center py-8 text-yellow-400" data-testid="error-missing-user">
+            User data is missing or incomplete. Please try refreshing.
+          </div>
+        )}
+
+        {data && data.user && (
           <ScrollArea className="max-h-[70vh] pr-4">
             <div className="space-y-6" data-testid="content-dashboard">
               {/* User Info Card */}
@@ -105,27 +129,27 @@ export default function UserDashboardModal({
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <p className="text-sm text-gray-400">Name</p>
-                      <p className="font-medium" data-testid="text-user-name">{data.user.name}</p>
+                      <p className="font-medium" data-testid="text-user-name">{data.user?.name || 'N/A'}</p>
                     </div>
                     <div>
                       <p className="text-sm text-gray-400">Email</p>
-                      <p className="font-medium" data-testid="text-user-email">{data.user.email}</p>
+                      <p className="font-medium" data-testid="text-user-email">{data.user?.email || 'N/A'}</p>
                     </div>
                     <div>
                       <p className="text-sm text-gray-400">Subscription Tier</p>
                       <Badge className="bg-purple-600 mt-1" data-testid="badge-subscription-tier">
-                        {data.user.subscriptionTier}
+                        {data.user?.subscriptionTier || 'Unknown'}
                       </Badge>
                     </div>
                     <div>
                       <p className="text-sm text-gray-400">Subscription Status</p>
                       <Badge 
                         className={`mt-1 ${
-                          data.user.subscriptionStatus === 'active' ? 'bg-green-600' : 'bg-gray-600'
+                          data.user?.subscriptionStatus === 'active' ? 'bg-green-600' : 'bg-gray-600'
                         }`}
                         data-testid="badge-subscription-status"
                       >
-                        {data.user.subscriptionStatus}
+                        {data.user?.subscriptionStatus || 'Unknown'}
                       </Badge>
                     </div>
                   </div>
@@ -133,49 +157,51 @@ export default function UserDashboardModal({
               </Card>
 
               {/* Connection Stats */}
-              <div className="grid grid-cols-3 gap-4" data-testid="section-connection-stats">
-                <Card className="bg-gray-800 border-gray-700" data-testid="card-total-connections">
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-sm text-gray-400 flex items-center gap-2">
-                      <Activity className="h-4 w-4" />
-                      Total Connections
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-2xl font-bold" data-testid="text-total-connections">
-                      {data.stats.totalConnections}
-                    </p>
-                  </CardContent>
-                </Card>
+              {data.stats && (
+                <div className="grid grid-cols-3 gap-4" data-testid="section-connection-stats">
+                  <Card className="bg-gray-800 border-gray-700" data-testid="card-total-connections">
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-sm text-gray-400 flex items-center gap-2">
+                        <Activity className="h-4 w-4" />
+                        Total Connections
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-2xl font-bold" data-testid="text-total-connections">
+                        {data.stats?.totalConnections ?? 0}
+                      </p>
+                    </CardContent>
+                  </Card>
 
-                <Card className="bg-gray-800 border-gray-700" data-testid="card-teller-count">
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-sm text-gray-400">Teller Accounts</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-2xl font-bold" data-testid="text-teller-count">
-                      {data.stats.tellerCount}
-                    </p>
-                  </CardContent>
-                </Card>
+                  <Card className="bg-gray-800 border-gray-700" data-testid="card-teller-count">
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-sm text-gray-400">Teller Accounts</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-2xl font-bold" data-testid="text-teller-count">
+                        {data.stats?.tellerCount ?? 0}
+                      </p>
+                    </CardContent>
+                  </Card>
 
-                <Card className="bg-gray-800 border-gray-700" data-testid="card-snaptrade-count">
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-sm text-gray-400 flex items-center gap-2">
-                      <TrendingUp className="h-4 w-4" />
-                      SnapTrade
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-2xl font-bold" data-testid="text-snaptrade-count">
-                      {data.stats.snaptradeCount}
-                    </p>
-                  </CardContent>
-                </Card>
-              </div>
+                  <Card className="bg-gray-800 border-gray-700" data-testid="card-snaptrade-count">
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-sm text-gray-400 flex items-center gap-2">
+                        <TrendingUp className="h-4 w-4" />
+                        SnapTrade
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-2xl font-bold" data-testid="text-snaptrade-count">
+                        {data.stats?.snaptradeCount ?? 0}
+                      </p>
+                    </CardContent>
+                  </Card>
+                </div>
+              )}
 
               {/* Teller Connections */}
-              {data.tellerConnections.length > 0 && (
+              {data.tellerConnections && data.tellerConnections.length > 0 && (
                 <Card className="bg-gray-800 border-gray-700" data-testid="card-teller-connections">
                   <CardHeader>
                     <CardTitle className="text-sm" data-testid="title-teller-connections">
@@ -226,7 +252,7 @@ export default function UserDashboardModal({
               )}
 
               {/* SnapTrade Connections */}
-              {data.snaptradeConnections.length > 0 && (
+              {data.snaptradeConnections && data.snaptradeConnections.length > 0 && (
                 <Card className="bg-gray-800 border-gray-700" data-testid="card-snaptrade-connections">
                   <CardHeader>
                     <CardTitle className="text-sm flex items-center gap-2" data-testid="title-snaptrade-connections">
@@ -309,7 +335,7 @@ export default function UserDashboardModal({
               )}
 
               {/* No Connections Message */}
-              {data.stats.totalConnections === 0 && (
+              {data.stats && data.stats.totalConnections === 0 && (
                 <div className="text-center py-8 text-gray-400" data-testid="text-no-connections">
                   This user has no connected accounts
                 </div>

@@ -23,17 +23,7 @@ export function requireAdmin() {
       const userId = req.user.claims.sub;
       const userEmail = req.user.claims.email?.toLowerCase();
 
-      // Layer 2: Verify email is admin email
-      const ADMIN_EMAIL = 'scapota@flint-investing.com';
-      if (userEmail !== ADMIN_EMAIL) {
-        console.warn(`[ADMIN ACCESS DENIED] User ${userEmail} attempted to access admin area`);
-        return res.status(403).json({ 
-          code: 'FORBIDDEN',
-          message: 'Access denied: Admin privileges required' 
-        });
-      }
-
-      // Layer 3: Verify isAdmin flag in database
+      // Layer 2: Verify isAdmin flag in database
       const [user] = await db
         .select()
         .from(users)
@@ -47,10 +37,10 @@ export function requireAdmin() {
       }
 
       if (!user.isAdmin) {
-        console.warn(`[ADMIN ACCESS DENIED] User ${userEmail} has correct email but isAdmin=false`);
+        console.warn(`[ADMIN ACCESS DENIED] User ${userEmail} attempted to access admin area (isAdmin=false)`);
         return res.status(403).json({ 
           code: 'FORBIDDEN',
-          message: 'Access denied: Admin flag not set' 
+          message: 'Access denied: Admin privileges required' 
         });
       }
 

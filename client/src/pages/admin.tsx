@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { queryClient, apiRequest } from '@/lib/queryClient';
 import { useAuth } from '@/hooks/useAuth';
@@ -112,12 +112,13 @@ function useAdminCheck() {
   const { user } = useAuth();
   const [, setLocation] = useLocation();
 
-  const isAdmin = (user as any)?.email?.toLowerCase() === 'scapota@flint-investing.com';
+  const isAdmin = (user as any)?.isAdmin === true;
 
-  if (user && !isAdmin) {
-    setLocation('/dashboard');
-    return { isAdmin: false, isLoading: false };
-  }
+  useEffect(() => {
+    if (user && !isAdmin) {
+      setLocation('/dashboard');
+    }
+  }, [user, isAdmin, setLocation]);
 
   return { isAdmin, isLoading: !user };
 }

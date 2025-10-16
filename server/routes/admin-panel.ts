@@ -1683,8 +1683,7 @@ router.delete('/snaptrade/connections/:connectionId', requireAuth, requireAdmin(
         });
         
         await snaptrade.authentication.deleteSnapTradeUser({
-          userId: snapUser.snaptradeUserId,
-          userSecret: snapUser.userSecret
+          userId: snapUser.snaptradeUserId
         });
         
         console.log('Successfully deleted SnapTrade user', { userId: snapUser.snaptradeUserId });
@@ -1980,9 +1979,9 @@ router.get('/users/:userId/dashboard-view', requireAuth, requireAdmin(), async (
       tellerConnections: tellerConnections.map(conn => ({
         id: conn.id,
         institutionName: conn.institutionName,
-        enrollmentId: conn.enrollmentId,
+        connectionId: conn.connectionId,
         status: conn.status,
-        lastFourDigits: conn.lastFourDigits,
+        accountNumber: conn.accountNumber,
         accountType: conn.accountType,
         balance: conn.balance,
         createdAt: conn.createdAt,
