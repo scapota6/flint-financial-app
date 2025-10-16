@@ -166,7 +166,7 @@ export class SnapTradeBackgroundService {
           await db
             .update(connectedAccounts)
             .set({
-              lastSyncAt: new Date(),
+              lastSynced: new Date(),
               balance: balances?.total?.amount || 0,
               currency: balances?.total?.currency || 'USD',
               metadata: {
@@ -237,7 +237,7 @@ export class SnapTradeBackgroundService {
     return {
       running: this.isRunning,
       jobs: {
-        dataRefresh: !!this.refreshJob && this.refreshJob.running
+        dataRefresh: !!this.refreshJob
       }
     };
   }
