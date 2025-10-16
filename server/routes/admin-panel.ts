@@ -1579,6 +1579,7 @@ router.get('/snaptrade/connections', requireAuth, requireAdmin(), async (req: an
         userEmail: users.email,
         firstName: users.firstName,
         lastName: users.lastName,
+        snaptradeUserId: snaptradeUsers.snaptradeUserId,
       })
       .from(snaptradeConnections)
       .leftJoin(users, eq(snaptradeConnections.flintUserId, users.id))

@@ -1542,6 +1542,9 @@ function AuditTrailTab() {
 // SnapTrade Tab
 function SnapTradeTab() {
   const { toast } = useToast();
+  const [deleteUserDialogOpen, setDeleteUserDialogOpen] = useState(false);
+  const [userToDelete, setUserToDelete] = useState<{ snaptradeUserId: string; email: string } | null>(null);
+  
   const { data, isLoading, refetch } = useQuery<{ connections: any[] }>({
     queryKey: ['/api/admin-panel/snaptrade/connections'],
   });
@@ -1571,6 +1574,36 @@ function SnapTradeTab() {
     },
   });
 
+  const deleteUserMutation = useMutation({
+    mutationFn: async (snaptradeUserId: string) => {
+      const resp = await apiRequest(`/api/snaptrade/admin/users/${snaptradeUserId}`, {
+        method: 'DELETE',
+      });
+      if (!resp.ok) {
+        const error = await resp.json();
+        throw new Error(error.error?.message || 'Failed to delete SnapTrade user');
+      }
+      return resp.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "SnapTrade User Deleted",
+        description: "User has been completely removed from SnapTrade.",
+      });
+      queryClient.invalidateQueries({ queryKey: ['/api/admin-panel/snaptrade/connections'] });
+      refetch();
+      setDeleteUserDialogOpen(false);
+      setUserToDelete(null);
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Delete Failed",
+        description: error.message || "Failed to delete SnapTrade user",
+        variant: "destructive",
+      });
+    },
+  });
+
   if (isLoading) {
     return <div className="text-center py-8" data-testid="loading-snaptrade">Loading SnapTrade connections...</div>;
   }
@@ -1590,7 +1623,7 @@ function SnapTradeTab() {
             <TableHeader>
               <TableRow className="border-gray-800">
                 <TableHead>User Email</TableHead>
-                <TableHead>Flint User ID</TableHead>
+                <TableHead>SnapTrade User ID</TableHead>
                 <TableHead>Brokerage</TableHead>
                 <TableHead>Connected</TableHead>
                 <TableHead>Last Sync</TableHead>
@@ -1603,8 +1636,8 @@ function SnapTradeTab() {
                   <TableCell className="font-medium" data-testid={`text-email-${conn.connectionId}`}>
                     {conn.userEmail || 'Unknown'}
                   </TableCell>
-                  <TableCell data-testid={`text-flint-id-${conn.connectionId}`}>
-                    {conn.flintUserId}
+                  <TableCell className="font-mono text-xs" data-testid={`text-snaptrade-id-${conn.connectionId}`}>
+                    {conn.snaptradeUserId || '-'}
                   </TableCell>
                   <TableCell data-testid={`text-brokerage-${conn.connectionId}`}>
                     {conn.brokerageName}
@@ -1616,16 +1649,36 @@ function SnapTradeTab() {
                     {conn.lastSyncAt ? new Date(conn.lastSyncAt).toLocaleDateString() : '-'}
                   </TableCell>
                   <TableCell>
-                    <Button
-                      variant="destructive"
-                      size="sm"
-                      onClick={() => deleteMutation.mutate(conn.connectionId)}
-                      disabled={deleteMutation.isPending}
-                      data-testid={`button-delete-${conn.connectionId}`}
-                    >
-                      <Trash2 className="h-4 w-4 mr-1" />
-                      Disconnect
-                    </Button>
+                    <div className="flex gap-2">
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        onClick={() => deleteMutation.mutate(conn.connectionId)}
+                        disabled={deleteMutation.isPending}
+                        data-testid={`button-disconnect-${conn.connectionId}`}
+                      >
+                        <Trash2 className="h-4 w-4 mr-1" />
+                        Disconnect
+                      </Button>
+                      {conn.snaptradeUserId && (
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          onClick={() => {
+                            setUserToDelete({
+                              snaptradeUserId: conn.snaptradeUserId,
+                              email: conn.userEmail || 'Unknown'
+                            });
+                            setDeleteUserDialogOpen(true);
+                          }}
+                          disabled={deleteUserMutation.isPending}
+                          data-testid={`button-delete-user-${conn.connectionId}`}
+                        >
+                          <UserX className="h-4 w-4 mr-1" />
+                          Delete User
+                        </Button>
+                      )}
+                    </div>
                   </TableCell>
                 </TableRow>
               ))}
@@ -1640,6 +1693,67 @@ function SnapTradeTab() {
           </Table>
         </CardContent>
       </Card>
+
+      {/* Delete User Confirmation Dialog */}
+      <Dialog open={deleteUserDialogOpen} onOpenChange={setDeleteUserDialogOpen}>
+        <DialogContent className="bg-gray-900 border-gray-800 text-white">
+          <DialogHeader>
+            <DialogTitle className="text-red-500">Delete SnapTrade User</DialogTitle>
+            <DialogDescription className="text-gray-400">
+              This will permanently delete the SnapTrade user and all associated connections. This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          {userToDelete && (
+            <div className="space-y-4">
+              <div className="bg-red-950/30 border border-red-900 rounded-lg p-4">
+                <p className="text-sm text-gray-300">
+                  <strong>User Email:</strong> {userToDelete.email}
+                </p>
+                <p className="text-sm text-gray-300 font-mono">
+                  <strong>SnapTrade ID:</strong> {userToDelete.snaptradeUserId}
+                </p>
+              </div>
+              <p className="text-sm text-yellow-500">
+                ⚠️ This will delete the user from SnapTrade's system and remove all local records.
+              </p>
+            </div>
+          )}
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setDeleteUserDialogOpen(false);
+                setUserToDelete(null);
+              }}
+              disabled={deleteUserMutation.isPending}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={() => {
+                if (userToDelete) {
+                  deleteUserMutation.mutate(userToDelete.snaptradeUserId);
+                }
+              }}
+              disabled={deleteUserMutation.isPending}
+              data-testid="button-confirm-delete-user"
+            >
+              {deleteUserMutation.isPending ? (
+                <>
+                  <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                  Deleting...
+                </>
+              ) : (
+                <>
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  Delete User
+                </>
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
