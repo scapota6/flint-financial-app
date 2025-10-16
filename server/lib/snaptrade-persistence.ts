@@ -20,7 +20,7 @@ import { nanoid } from 'nanoid';
 /**
  * User Management
  */
-export async function ensureSnapTradeUser(flintUserId: string, userSecret: string) {
+export async function ensureSnapTradeUser(flintUserId: string, snaptradeUserId: string, userSecret: string) {
   try {
     // Check if user exists
     const existing = await db
@@ -30,7 +30,17 @@ export async function ensureSnapTradeUser(flintUserId: string, userSecret: strin
       .limit(1);
 
     if (existing.length > 0) {
-      return existing[0];
+      // Update with latest SnapTrade user ID (handles versioned IDs)
+      const [updated] = await db
+        .update(snaptradeUsers)
+        .set({
+          snaptradeUserId,
+          userSecret,
+          updatedAt: new Date()
+        })
+        .where(eq(snaptradeUsers.flintUserId, flintUserId))
+        .returning();
+      return updated;
     }
 
     // Create new user
@@ -38,7 +48,7 @@ export async function ensureSnapTradeUser(flintUserId: string, userSecret: strin
       .insert(snaptradeUsers)
       .values({
         flintUserId,
-        snaptradeUserId: flintUserId,
+        snaptradeUserId,
         userSecret,
         createdAt: new Date()
       })

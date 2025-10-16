@@ -131,8 +131,12 @@ router.post('/register', async (req, res) => {
       requestId
     );
 
-    // Store in database
-    await ensureSnapTradeUser(flintUserId, registration.data.userSecret!);
+    // Store in database with actual userId from SnapTrade (handles versioned IDs)
+    await ensureSnapTradeUser(
+      flintUserId,
+      registration.data.userId!,
+      registration.data.userSecret!
+    );
 
     res.json({
       success: true,
