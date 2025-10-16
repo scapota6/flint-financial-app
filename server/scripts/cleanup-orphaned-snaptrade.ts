@@ -11,8 +11,8 @@
  *   npm run cleanup:snaptrade                 # Actually delete orphaned records
  */
 
-import { db } from '../db';
-import { snaptradeUsers, snaptradeConnections, users } from '../db/schema';
+import { db } from '../db/index.js';
+import { snaptradeUsers, snaptradeConnections, users } from '../db/schema.js';
 import { eq, sql } from 'drizzle-orm';
 
 interface OrphanedUser {
