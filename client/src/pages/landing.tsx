@@ -361,6 +361,71 @@ function Landing() {
           </div>
         </section>
 
+        {/* How It Works Section */}
+        <section className="py-20 bg-gray-900/30" data-section="how-it-works">
+          <div className="max-w-6xl mx-auto space-y-12">
+            <div className="text-center space-y-4">
+              <h2 className="text-4xl lg:text-5xl font-bold tracking-tight text-white">
+                How it works
+              </h2>
+              <p className="text-xl text-gray-300 max-w-2xl mx-auto">
+                Get started in minutes and take control of your financial life
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-3 gap-8 lg:gap-12">
+              {/* Step 1 */}
+              <div className="relative space-y-4 text-center">
+                <div className="flex items-center justify-center mb-6">
+                  <div className="h-20 w-20 rounded-full bg-gradient-to-br from-purple-500 to-purple-700 flex items-center justify-center">
+                    <span className="text-3xl font-bold text-white">1</span>
+                  </div>
+                </div>
+                <h3 className="text-2xl font-bold text-white">Connect Your Accounts</h3>
+                <p className="text-gray-400">
+                  Securely link your bank and brokerage accounts in just a few clicks
+                </p>
+              </div>
+
+              {/* Arrow */}
+              <div className="hidden md:flex items-center justify-center">
+                <ArrowRight className="h-8 w-8 text-purple-400" />
+              </div>
+
+              {/* Step 2 */}
+              <div className="relative space-y-4 text-center">
+                <div className="flex items-center justify-center mb-6">
+                  <div className="h-20 w-20 rounded-full bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center">
+                    <span className="text-3xl font-bold text-white">2</span>
+                  </div>
+                </div>
+                <h3 className="text-2xl font-bold text-white">See Everything Unified</h3>
+                <p className="text-gray-400">
+                  View all your accounts, balances, and investments in one dashboard
+                </p>
+              </div>
+
+              {/* Arrow */}
+              <div className="hidden md:flex items-center justify-center">
+                <ArrowRight className="h-8 w-8 text-purple-400" />
+              </div>
+
+              {/* Step 3 */}
+              <div className="relative space-y-4 text-center">
+                <div className="flex items-center justify-center mb-6">
+                  <div className="h-20 w-20 rounded-full bg-gradient-to-br from-green-500 to-green-700 flex items-center justify-center">
+                    <span className="text-3xl font-bold text-white">3</span>
+                  </div>
+                </div>
+                <h3 className="text-2xl font-bold text-white">Trade, Transfer, Analyze</h3>
+                <p className="text-gray-400">
+                  Manage your finances, execute trades, and track your progress—all in one place
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* Hero Section - CTA 1: Unlimited Annual */}
         <section id="annual" data-section="annual" className="grid lg:grid-cols-2 gap-12 py-20 items-center">
           <div className="space-y-8">
