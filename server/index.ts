@@ -205,6 +205,10 @@ const app = express();
   // 4) CSRF setup (must come BEFORE protected routes)
   installCsrf(app);
 
+  // Initialize PostHog for server-side analytics
+  const { posthog } = await import('./lib/posthog');
+  console.log('[PostHog] Server-side analytics initialized');
+
   // Start background services
   const { snaptradeBackgroundService } = await import('./services/snaptrade-background');
   await snaptradeBackgroundService.start();
@@ -255,6 +259,14 @@ const app = express();
       await logger.flush();
     } catch (error) {
       console.error('Error flushing logs:', error);
+    }
+    
+    // Flush PostHog events before exit
+    try {
+      const { shutdownPostHog } = await import('./lib/posthog');
+      await shutdownPostHog();
+    } catch (error) {
+      console.error('Error shutting down PostHog:', error);
     }
     
     process.exit(0);
