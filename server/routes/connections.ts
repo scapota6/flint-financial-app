@@ -106,7 +106,10 @@ router.post("/snaptrade/register", requireAuth, async (req: any, res) => {
     // Step 4: Call loginSnapTradeUser with dynamic redirect URL
     const redirectUrl = `${req.protocol}://${req.get('host')}/snaptrade/callback`;
     
-    logger.info("Generating SnapTrade portal URL", { userId, metadata: { redirectUrl } });
+    logger.info("Generating SnapTrade portal URL", { userId, metadata: { redirectUrl, snaptradeUserId, hasUserSecret: !!userSecret } });
+    
+    // Add small delay to allow SnapTrade's eventual consistency (registration -> login)
+    await new Promise(resolve => setTimeout(resolve, 500));
     
     const { data: loginData } = await authApi.loginSnapTradeUser({
       userId: snaptradeUserId, // Use the actual SnapTrade user ID (original or versioned)
@@ -258,6 +261,10 @@ router.post("/snaptrade/register", requireAuth, async (req: any, res) => {
         
         // Generate login URL with recovery ID
         const redirectUrl = `${req.protocol}://${req.get('host')}/snaptrade/callback`;
+        
+        // Add delay to allow SnapTrade's eventual consistency
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
         const { data: loginData } = await authApi.loginSnapTradeUser({
           userId: newId,
           userSecret: userSecret,
