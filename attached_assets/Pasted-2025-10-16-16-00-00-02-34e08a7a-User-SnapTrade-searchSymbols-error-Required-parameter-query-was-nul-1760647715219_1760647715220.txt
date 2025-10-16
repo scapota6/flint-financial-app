@@ -1,0 +1,152 @@
+2025-10-16 16:00:00.02
+34e08a7a
+User
+SnapTrade searchSymbols error: Required parameter query was null or undefined when calling getSymbolsByTicker.
+2025-10-16 16:00:00.53
+34e08a7a
+User
+SnapTrade searchSymbols error: Required parameter query was null or undefined when calling getSymbolsByTicker.
+2025-10-16 16:00:01.03
+34e08a7a
+User
+SnapTrade searchSymbols error: Required parameter query was null or undefined when calling getSymbolsByTicker.
+2025-10-16 16:00:01.53
+34e08a7a
+User
+SnapTrade searchSymbols error: Required parameter query was null or undefined when calling getSymbolsByTicker.
+2025-10-16 16:00:02.03
+34e08a7a
+User
+SnapTrade searchSymbols error: Required parameter query was null or undefined when calling getSymbolsByTicker.
+2025-10-16 16:00:02.53
+34e08a7a
+User
+SnapTrade searchSymbols error: Required parameter query was null or undefined when calling getSymbolsByTicker.
+2025-10-16 16:00:03.03
+34e08a7a
+User
+SnapTrade searchSymbols error: Required parameter query was null or undefined when calling getSymbolsByTicker.
+2025-10-16 16:00:03.53
+34e08a7a
+User
+SnapTrade searchSymbols error: Required parameter query was null or undefined when calling getSymbolsByTicker.
+2025-10-16 16:00:04.03
+34e08a7a
+User
+SnapTrade searchSymbols error: Required parameter query was null or undefined when calling getSymbolsByTicker.
+2025-10-16 16:00:04.54
+34e08a7a
+User
+SnapTrade searchSymbols error: Required parameter query was null or undefined when calling getSymbolsByTicker.
+2025-10-16 16:00:05.04
+34e08a7a
+User
+SnapTrade searchSymbols error: Required parameter query was null or undefined when calling getSymbolsByTicker.
+2025-10-16 16:00:05.54
+34e08a7a
+User
+SnapTrade searchSymbols error: Required parameter query was null or undefined when calling getSymbolsByTicker.
+2025-10-16 16:00:06.04
+34e08a7a
+User
+SnapTrade searchSymbols error: Required parameter query was null or undefined when calling getSymbolsByTicker.
+2025-10-16 16:00:06.54
+34e08a7a
+User
+SnapTrade searchSymbols error: Required parameter query was null or undefined when calling getSymbolsByTicker.
+2025-10-16 16:00:07.04
+34e08a7a
+User
+SnapTrade searchSymbols error: Required parameter query was null or undefined when calling getSymbolsByTicker.
+2025-10-16 16:00:07.54
+34e08a7a
+User
+SnapTrade searchSymbols error: Required parameter query was null or undefined when calling getSymbolsByTicker.
+2025-10-16 16:00:08.07
+34e08a7a
+User
+[SnapTrade Background] Error during market data caching: error: syntax error at or near "<"
+2025-10-16 16:00:08.07
+34e08a7a
+User
+at file:///home/runner/workspace/node_modules/@neondatabase/serverless/index.mjs:1345:74
+2025-10-16 16:00:08.07
+34e08a7a
+User
+at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+2025-10-16 16:00:08.07
+34e08a7a
+User
+at async SnapTradeBackgroundService.cacheMarketData (file:///home/runner/workspace/dist/index.js:20155:11) {
+2025-10-16 16:00:08.07
+34e08a7a
+User
+length: 90,
+2025-10-16 16:00:08.07
+34e08a7a
+User
+severity: 'ERROR',
+2025-10-16 16:00:08.07
+34e08a7a
+User
+code: '42601',
+2025-10-16 16:00:08.07
+34e08a7a
+User
+detail: undefined,
+2025-10-16 16:00:08.07
+34e08a7a
+User
+hint: undefined,
+2025-10-16 16:00:08.07
+34e08a7a
+User
+position: '34',
+2025-10-16 16:00:08.07
+34e08a7a
+User
+internalPosition: undefined,
+2025-10-16 16:00:08.07
+34e08a7a
+User
+internalQuery: undefined,
+2025-10-16 16:00:08.07
+34e08a7a
+User
+where: undefined,
+2025-10-16 16:00:08.07
+34e08a7a
+User
+schema: undefined,
+2025-10-16 16:00:08.07
+34e08a7a
+User
+table: undefined,
+2025-10-16 16:00:08.07
+34e08a7a
+User
+column: undefined,
+2025-10-16 16:00:08.07
+34e08a7a
+User
+dataType: undefined,
+2025-10-16 16:00:08.07
+34e08a7a
+User
+constraint: undefined,
+2025-10-16 16:00:08.07
+34e08a7a
+User
+file: 'scan.l',
+2025-10-16 16:00:08.07
+34e08a7a
+User
+line: '1244',
+2025-10-16 16:00:08.07
+34e08a7a
+User
+routine: 'scanner_yyerror'
+2025-10-16 16:00:08.07
+34e08a7a
+User
+}
