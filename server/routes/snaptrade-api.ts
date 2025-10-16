@@ -185,11 +185,27 @@ router.get('/accounts', async (req, res) => {
     }
 
     // Get fresh accounts from SnapTrade API
-    const accounts = await snaptradeApiCall(
-      () => listAccounts(flintUserId, snaptradeUser.userSecret),
-      'list-accounts',
-      requestId
-    );
+    let accounts;
+    try {
+      accounts = await snaptradeApiCall(
+        () => listAccounts(flintUserId, snaptradeUser.userSecret),
+        'list-accounts',
+        requestId
+      );
+    } catch (error: any) {
+      // Handle stale database record - user was registered but no longer exists on SnapTrade
+      if (error.message?.includes('User not registered') || error.message?.includes('not found')) {
+        console.log('[SnapTrade] Stale user record detected, returning not-registered status');
+        return res.status(428).json(createErrorResponse(
+          'SNAPTRADE_NOT_REGISTERED',
+          'User not registered with SnapTrade. Please complete registration first.',
+          requestId,
+          428
+        ));
+      }
+      // Re-throw other errors
+      throw error;
+    }
 
     // Update database with fresh data
     for (const account of accounts as any[]) {
