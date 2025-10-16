@@ -7,7 +7,6 @@ import "./index.css";
 
 const posthogOptions = {
   api_host: import.meta.env.VITE_PUBLIC_POSTHOG_HOST || 'https://us.i.posthog.com',
-  defaults: '2025-05-24',
   capture_pageview: true,
   capture_pageleave: true,
   autocapture: true,

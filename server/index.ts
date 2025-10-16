@@ -206,8 +206,15 @@ const app = express();
   installCsrf(app);
 
   // Initialize PostHog for server-side analytics
-  const { posthog } = await import('./lib/posthog');
+  const { posthog, captureEvent } = await import('./lib/posthog');
   console.log('[PostHog] Server-side analytics initialized');
+  
+  // Send test event to verify PostHog integration
+  captureEvent('server', 'server_started', {
+    environment: process.env.NODE_ENV,
+    timestamp: new Date().toISOString()
+  });
+  console.log('[PostHog] Test event sent: server_started');
 
   // Start background services
   const { snaptradeBackgroundService } = await import('./services/snaptrade-background');
@@ -336,6 +343,10 @@ const app = express();
   
   // Mount Watchlist API router
   app.use("/api/watchlist", watchlistRouter);
+  
+  // Mount PostHog test endpoint (development/testing only)
+  const posthogTestRouter = (await import("./routes/posthog-test")).default;
+  app.use("/api/posthog", posthogTestRouter);
 
   // Development-only repair endpoint for 409 SNAPTRADE_USER_MISMATCH
   if (process.env.NODE_ENV === 'development') {
