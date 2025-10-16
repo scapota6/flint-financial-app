@@ -576,6 +576,27 @@ export const orphanedSnaptradeAccounts = pgTable("orphaned_snaptrade_accounts", 
   index("orphaned_snaptrade_resolved_idx").on(table.resolved),
 ]);
 
+// Error logs table for per-user error tracking
+export const errorLogs = pgTable("error_logs", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id").references(() => users.id),
+  errorType: varchar("error_type").notNull(), // e.g., 'SnapTrade', 'Teller', 'Database', 'Auth', 'API'
+  errorMessage: text("error_message").notNull(),
+  stackTrace: text("stack_trace"),
+  endpoint: varchar("endpoint"), // API endpoint where error occurred
+  method: varchar("method"), // HTTP method (GET, POST, etc.)
+  statusCode: integer("status_code"), // HTTP status code
+  userAgent: varchar("user_agent"),
+  ipAddress: varchar("ip_address"),
+  metadata: jsonb("metadata"), // Additional context (request body, query params, etc.)
+  timestamp: timestamp("timestamp").defaultNow().notNull(),
+}, (table) => [
+  index("error_logs_user_idx").on(table.userId),
+  index("error_logs_timestamp_idx").on(table.timestamp),
+  index("error_logs_error_type_idx").on(table.errorType),
+  index("error_logs_user_timestamp_idx").on(table.userId, table.timestamp),
+]);
+
 // Insert schemas for new tables
 export const insertAccountApplicationSchema = createInsertSchema(accountApplications).omit({
   id: true,
@@ -633,3 +654,11 @@ export const insertOrphanedSnaptradeAccountSchema = createInsertSchema(orphanedS
 
 export type OrphanedSnaptradeAccount = typeof orphanedSnaptradeAccounts.$inferSelect;
 export type InsertOrphanedSnaptradeAccount = z.infer<typeof insertOrphanedSnaptradeAccountSchema>;
+
+export const insertErrorLogSchema = createInsertSchema(errorLogs).omit({
+  id: true,
+  timestamp: true,
+});
+
+export type ErrorLog = typeof errorLogs.$inferSelect;
+export type InsertErrorLog = z.infer<typeof insertErrorLogSchema>;

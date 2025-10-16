@@ -12,6 +12,7 @@ import ordersRouter from "./routes/orders";
 import orderPreviewRouter from "./routes/order-preview";
 import watchlistRouter from "./routes/watchlist";
 import quotesRouter from "./routes/quotes";
+import { errorLoggerMiddleware } from "./middleware/error-logger";
 
 const app = express();
 
@@ -445,6 +446,9 @@ const app = express();
   } else {
     serveStatic(app);
   }
+  
+  // Error logging middleware (logs errors to database before sending response)
+  app.use(errorLoggerMiddleware);
   
   // Global error handler (ensures API routes always return JSON)
   app.use((err: any, req: Request, res: Response, _next: NextFunction) => {

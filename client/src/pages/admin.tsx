@@ -199,6 +199,10 @@ export default function AdminDashboard() {
               <Shield className="h-4 w-4 mr-2" />
               Audit Trail
             </TabsTrigger>
+            <TabsTrigger value="error-tracking" data-testid="tab-error-tracking">
+              <AlertTriangle className="h-4 w-4 mr-2" />
+              Error Tracking
+            </TabsTrigger>
             <TabsTrigger value="snaptrade" data-testid="tab-snaptrade">
               <TrendingUp className="h-4 w-4 mr-2" />
               SnapTrade
@@ -247,6 +251,10 @@ export default function AdminDashboard() {
 
           <TabsContent value="audit">
             <AuditTrailTab />
+          </TabsContent>
+
+          <TabsContent value="error-tracking">
+            <ErrorTrackingTab />
           </TabsContent>
         </Tabs>
       </div>
@@ -1750,6 +1758,249 @@ function SnapTradeTab() {
                   Delete User
                 </>
               )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}
+
+// Error Tracking Tab - Per-User Error Logs
+function ErrorTrackingTab() {
+  const [searchEmail, setSearchEmail] = useState('');
+  const [selectedError, setSelectedError] = useState<any>(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const { toast } = useToast();
+
+  const { data: searchResults, isLoading: searchLoading, refetch } = useQuery<any>({
+    queryKey: ['/api/admin-panel/error-tracking/search', { email: searchEmail }],
+    enabled: false,
+  });
+
+  const handleSearch = () => {
+    if (!searchEmail.trim()) {
+      toast({
+        title: "Email Required",
+        description: "Please enter a user email to search for errors",
+        variant: "destructive",
+      });
+      return;
+    }
+    refetch();
+  };
+
+  const openErrorDetails = (error: any) => {
+    setSelectedError(error);
+    setDialogOpen(true);
+  };
+
+  return (
+    <div className="space-y-4" data-testid="section-error-tracking">
+      <Card className="bg-gray-900 border-gray-800">
+        <CardHeader>
+          <CardTitle>Search User Errors</CardTitle>
+          <CardDescription>Search for errors by user email to debug account issues</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex gap-2">
+            <Input
+              placeholder="Enter user email..."
+              value={searchEmail}
+              onChange={(e) => setSearchEmail(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+              className="bg-gray-800 border-gray-700"
+              data-testid="input-search-email"
+            />
+            <Button onClick={handleSearch} disabled={searchLoading} data-testid="button-search">
+              {searchLoading ? (
+                <>
+                  <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                  Searching...
+                </>
+              ) : (
+                <>
+                  <Search className="h-4 w-4 mr-2" />
+                  Search
+                </>
+              )}
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      {searchResults && (
+        <Card className="bg-gray-900 border-gray-800">
+          <CardHeader>
+            <CardTitle>
+              {searchResults.user ? (
+                <>
+                  Errors for {searchResults.user.email}
+                  {searchResults.user.firstName && ` (${searchResults.user.firstName} ${searchResults.user.lastName})`}
+                </>
+              ) : (
+                'No user found'
+              )}
+            </CardTitle>
+            <CardDescription>
+              {searchResults.errors?.length > 0 ? (
+                `Found ${searchResults.errors.length} error(s)`
+              ) : (
+                'No errors found for this user'
+              )}
+            </CardDescription>
+          </CardHeader>
+          {searchResults.errors?.length > 0 && (
+            <CardContent className="p-0">
+              <Table>
+                <TableHeader>
+                  <TableRow className="border-gray-800">
+                    <TableHead>Timestamp</TableHead>
+                    <TableHead>Type</TableHead>
+                    <TableHead>Endpoint</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead>Error Message</TableHead>
+                    <TableHead>Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {searchResults.errors.map((error: any) => (
+                    <TableRow key={error.id} className="border-gray-800" data-testid={`row-error-${error.id}`}>
+                      <TableCell data-testid={`text-timestamp-${error.id}`}>
+                        {new Date(error.timestamp).toLocaleString()}
+                      </TableCell>
+                      <TableCell>
+                        <Badge 
+                          className={
+                            error.errorType === 'SnapTrade' ? 'bg-blue-600' :
+                            error.errorType === 'Teller' ? 'bg-green-600' :
+                            error.errorType === 'Database' ? 'bg-red-600' :
+                            error.errorType === 'Auth' ? 'bg-yellow-600' :
+                            'bg-gray-600'
+                          }
+                          data-testid={`badge-type-${error.id}`}
+                        >
+                          {error.errorType}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="font-mono text-sm" data-testid={`text-endpoint-${error.id}`}>
+                        {error.method} {error.endpoint}
+                      </TableCell>
+                      <TableCell>
+                        <Badge 
+                          variant={error.statusCode >= 500 ? "destructive" : "secondary"}
+                          data-testid={`badge-status-${error.id}`}
+                        >
+                          {error.statusCode}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="max-w-md truncate" data-testid={`text-message-${error.id}`}>
+                        {error.errorMessage}
+                      </TableCell>
+                      <TableCell>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => openErrorDetails(error)}
+                          data-testid={`button-details-${error.id}`}
+                        >
+                          <Eye className="h-4 w-4 mr-1" />
+                          Details
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          )}
+        </Card>
+      )}
+
+      {/* Error Details Dialog */}
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <DialogContent className="bg-gray-900 border-gray-800 max-w-3xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Error Details</DialogTitle>
+            <DialogDescription>
+              Complete error information for debugging
+            </DialogDescription>
+          </DialogHeader>
+          {selectedError && (
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label className="text-gray-400">Timestamp</Label>
+                  <p className="text-sm" data-testid="detail-timestamp">
+                    {new Date(selectedError.timestamp).toLocaleString()}
+                  </p>
+                </div>
+                <div>
+                  <Label className="text-gray-400">Error Type</Label>
+                  <p className="text-sm" data-testid="detail-type">{selectedError.errorType}</p>
+                </div>
+                <div>
+                  <Label className="text-gray-400">HTTP Method</Label>
+                  <p className="text-sm font-mono" data-testid="detail-method">{selectedError.method}</p>
+                </div>
+                <div>
+                  <Label className="text-gray-400">Status Code</Label>
+                  <p className="text-sm" data-testid="detail-status">{selectedError.statusCode}</p>
+                </div>
+              </div>
+
+              <div>
+                <Label className="text-gray-400">Endpoint</Label>
+                <p className="text-sm font-mono bg-gray-800 p-2 rounded" data-testid="detail-endpoint">
+                  {selectedError.endpoint}
+                </p>
+              </div>
+
+              <div>
+                <Label className="text-gray-400">Error Message</Label>
+                <p className="text-sm bg-gray-800 p-2 rounded" data-testid="detail-message">
+                  {selectedError.errorMessage}
+                </p>
+              </div>
+
+              {selectedError.stackTrace && (
+                <div>
+                  <Label className="text-gray-400">Stack Trace</Label>
+                  <pre className="text-xs bg-gray-800 p-3 rounded overflow-x-auto" data-testid="detail-stack">
+                    {selectedError.stackTrace}
+                  </pre>
+                </div>
+              )}
+
+              {selectedError.userAgent && (
+                <div>
+                  <Label className="text-gray-400">User Agent</Label>
+                  <p className="text-xs bg-gray-800 p-2 rounded truncate" data-testid="detail-useragent">
+                    {selectedError.userAgent}
+                  </p>
+                </div>
+              )}
+
+              {selectedError.ipAddress && (
+                <div>
+                  <Label className="text-gray-400">IP Address</Label>
+                  <p className="text-sm font-mono" data-testid="detail-ip">{selectedError.ipAddress}</p>
+                </div>
+              )}
+
+              {selectedError.metadata && (
+                <div>
+                  <Label className="text-gray-400">Additional Metadata</Label>
+                  <pre className="text-xs bg-gray-800 p-3 rounded overflow-x-auto" data-testid="detail-metadata">
+                    {JSON.stringify(selectedError.metadata, null, 2)}
+                  </pre>
+                </div>
+              )}
+            </div>
+          )}
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDialogOpen(false)} data-testid="button-close-details">
+              Close
             </Button>
           </DialogFooter>
         </DialogContent>

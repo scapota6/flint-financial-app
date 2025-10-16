@@ -16,6 +16,7 @@ import {
   emailLogs,
   sessions,
   orphanedSnaptradeAccounts,
+  errorLogs,
 } from '@shared/schema';
 import { eq, desc, and, sql, count, gte, lte, inArray } from 'drizzle-orm';
 import { sendApprovalEmail, sendRejectionEmail, sendPasswordResetEmail } from '../services/email';
@@ -914,6 +915,164 @@ router.get('/analytics/errors', requireAuth, requireAdmin(), async (req: any, re
   } catch (error) {
     console.error('Error fetching error analytics:', error);
     res.status(500).json({ message: 'Failed to fetch error analytics' });
+  }
+});
+
+// ============================================================================
+// ERROR TRACKING (Per-User Error Logs)
+// ============================================================================
+
+// GET /api/admin/error-tracking/user/:userId - Get errors for specific user
+router.get('/error-tracking/user/:userId', requireAuth, requireAdmin(), async (req: any, res) => {
+  try {
+    const { userId } = req.params;
+    const { limit = '50', days } = req.query;
+    const limitNum = parseInt(limit as string);
+
+    let query = db
+      .select()
+      .from(errorLogs)
+      .where(eq(errorLogs.userId, userId))
+      .orderBy(desc(errorLogs.timestamp))
+      .limit(limitNum);
+
+    // Filter by date range if provided
+    if (days) {
+      const daysNum = parseInt(days as string);
+      const startDate = new Date(Date.now() - daysNum * 24 * 60 * 60 * 1000);
+      query = db
+        .select()
+        .from(errorLogs)
+        .where(and(
+          eq(errorLogs.userId, userId),
+          gte(errorLogs.timestamp, startDate)
+        ))
+        .orderBy(desc(errorLogs.timestamp))
+        .limit(limitNum) as any;
+    }
+
+    const errors = await query;
+
+    await logAdminAction(req.adminEmail, 'view_user_errors', { userId, count: errors.length });
+
+    res.json({ errors });
+  } catch (error) {
+    console.error('Error fetching user errors:', error);
+    res.status(500).json({ message: 'Failed to fetch user errors' });
+  }
+});
+
+// GET /api/admin/error-tracking/search - Search errors by user email
+router.get('/error-tracking/search', requireAuth, requireAdmin(), async (req: any, res) => {
+  try {
+    const { email } = req.query;
+
+    if (!email) {
+      return res.status(400).json({ message: 'Email parameter is required' });
+    }
+
+    // Find user by email
+    const [user] = await db
+      .select()
+      .from(users)
+      .where(eq(users.email, email as string));
+
+    if (!user) {
+      return res.json({ errors: [], user: null });
+    }
+
+    // Get errors for that user
+    const errors = await db
+      .select()
+      .from(errorLogs)
+      .where(eq(errorLogs.userId, user.id))
+      .orderBy(desc(errorLogs.timestamp))
+      .limit(50);
+
+    await logAdminAction(req.adminEmail, 'search_user_errors', { email, userId: user.id });
+
+    res.json({ 
+      errors,
+      user: {
+        id: user.id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+      }
+    });
+  } catch (error) {
+    console.error('Error searching user errors:', error);
+    res.status(500).json({ message: 'Failed to search user errors' });
+  }
+});
+
+// GET /api/admin/error-tracking/all - Get all recent errors with pagination
+router.get('/error-tracking/all', requireAuth, requireAdmin(), async (req: any, res) => {
+  try {
+    const { page = '1', limit = '100', errorType } = req.query;
+    const pageNum = parseInt(page as string);
+    const limitNum = parseInt(limit as string);
+    const offset = (pageNum - 1) * limitNum;
+
+    let query = db
+      .select({
+        error: errorLogs,
+        user: {
+          id: users.id,
+          email: users.email,
+          firstName: users.firstName,
+          lastName: users.lastName,
+        }
+      })
+      .from(errorLogs)
+      .leftJoin(users, eq(errorLogs.userId, users.id))
+      .orderBy(desc(errorLogs.timestamp))
+      .limit(limitNum)
+      .offset(offset);
+
+    // Filter by error type if provided
+    if (errorType && errorType !== 'all') {
+      query = db
+        .select({
+          error: errorLogs,
+          user: {
+            id: users.id,
+            email: users.email,
+            firstName: users.firstName,
+            lastName: users.lastName,
+          }
+        })
+        .from(errorLogs)
+        .leftJoin(users, eq(errorLogs.userId, users.id))
+        .where(eq(errorLogs.errorType, errorType as string))
+        .orderBy(desc(errorLogs.timestamp))
+        .limit(limitNum)
+        .offset(offset) as any;
+    }
+
+    const results = await query;
+
+    // Get total count
+    const countQuery = errorType && errorType !== 'all'
+      ? db.select({ total: count() }).from(errorLogs).where(eq(errorLogs.errorType, errorType as string))
+      : db.select({ total: count() }).from(errorLogs);
+    
+    const [{ total }] = await countQuery;
+
+    await logAdminAction(req.adminEmail, 'view_all_errors', { page: pageNum, limit: limitNum, errorType });
+
+    res.json({
+      errors: results,
+      pagination: {
+        page: pageNum,
+        limit: limitNum,
+        total: Number(total),
+        totalPages: Math.ceil(Number(total) / limitNum),
+      },
+    });
+  } catch (error) {
+    console.error('Error fetching all errors:', error);
+    res.status(500).json({ message: 'Failed to fetch errors' });
   }
 });
 

@@ -9,6 +9,7 @@ import {
   activityLog,
   marketData,
   accountApplications,
+  errorLogs,
   type User,
   type UpsertUser,
   type ConnectedAccount,
@@ -27,9 +28,11 @@ import {
   type InsertMarketData,
   type AccountApplication,
   type InsertAccountApplication,
+  type ErrorLog,
+  type InsertErrorLog,
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, and, desc, asc, isNotNull } from "drizzle-orm";
+import { eq, and, desc, asc, isNotNull, gte, lte } from "drizzle-orm";
 // Removed encryption import - storing plaintext for debugging
 
 export interface IStorage {
@@ -121,6 +124,13 @@ export interface IStorage {
   
   // Account applications
   createAccountApplication(application: InsertAccountApplication): Promise<AccountApplication>;
+  
+  // Error logging
+  logError(error: InsertErrorLog): Promise<ErrorLog>;
+  getUserErrors(userId: string, limit?: number): Promise<ErrorLog[]>;
+  getErrorsByDateRange(userId: string, startDate: Date, endDate: Date): Promise<ErrorLog[]>;
+  getAllErrors(limit?: number, offset?: number): Promise<ErrorLog[]>;
+  getErrorsByType(errorType: string, limit?: number): Promise<ErrorLog[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -698,6 +708,56 @@ export class DatabaseStorage implements IStorage {
       })
       .returning();
     return newApplication;
+  }
+
+  // Error logging methods
+  async logError(error: InsertErrorLog): Promise<ErrorLog> {
+    const [newError] = await db
+      .insert(errorLogs)
+      .values(error)
+      .returning();
+    return newError;
+  }
+
+  async getUserErrors(userId: string, limit: number = 50): Promise<ErrorLog[]> {
+    return await db
+      .select()
+      .from(errorLogs)
+      .where(eq(errorLogs.userId, userId))
+      .orderBy(desc(errorLogs.timestamp))
+      .limit(limit);
+  }
+
+  async getErrorsByDateRange(userId: string, startDate: Date, endDate: Date): Promise<ErrorLog[]> {
+    return await db
+      .select()
+      .from(errorLogs)
+      .where(
+        and(
+          eq(errorLogs.userId, userId),
+          gte(errorLogs.timestamp, startDate),
+          lte(errorLogs.timestamp, endDate)
+        )
+      )
+      .orderBy(desc(errorLogs.timestamp));
+  }
+
+  async getAllErrors(limit: number = 100, offset: number = 0): Promise<ErrorLog[]> {
+    return await db
+      .select()
+      .from(errorLogs)
+      .orderBy(desc(errorLogs.timestamp))
+      .limit(limit)
+      .offset(offset);
+  }
+
+  async getErrorsByType(errorType: string, limit: number = 50): Promise<ErrorLog[]> {
+    return await db
+      .select()
+      .from(errorLogs)
+      .where(eq(errorLogs.errorType, errorType))
+      .orderBy(desc(errorLogs.timestamp))
+      .limit(limit);
   }
 }
 
