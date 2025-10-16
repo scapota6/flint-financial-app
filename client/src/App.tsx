@@ -125,8 +125,25 @@ function Router() {
                 <Route path="/subscribe">
                   {() => { window.location.href = '/api/login'; return null; }}
                 </Route>
-                {/* Catch-all: redirect any other route to landing page for unauthenticated users */}
-                <Route path="/:rest*">
+                <Route path="/news">
+                  {() => { window.location.href = '/'; return null; }}
+                </Route>
+                <Route path="/stock/:symbol">
+                  {() => { window.location.href = '/'; return null; }}
+                </Route>
+                <Route path="/asset/:symbol">
+                  {() => { window.location.href = '/'; return null; }}
+                </Route>
+                <Route path="/connections">
+                  {() => { window.location.href = '/'; return null; }}
+                </Route>
+                <Route path="/security">
+                  {() => { window.location.href = '/'; return null; }}
+                </Route>
+                <Route path="/monitoring">
+                  {() => { window.location.href = '/'; return null; }}
+                </Route>
+                <Route path="/admin">
                   {() => { window.location.href = '/'; return null; }}
                 </Route>
               </>
@@ -159,10 +176,11 @@ function Router() {
                 <Route path="/landing">
                   {() => { window.location.href = '/dashboard'; return null; }}
                 </Route>
-                {/* 404 for authenticated users only */}
                 <Route component={NotFound} />
               </>
             )}
+            {/* Catch-all 404 for any remaining routes */}
+            <Route component={NotFound} />
           </Switch>
           </Suspense>
         </AnimatePresence>
