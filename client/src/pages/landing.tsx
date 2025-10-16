@@ -22,6 +22,11 @@ import { useToast } from "@/hooks/use-toast";
 import { CheckoutModal } from "@/components/checkout-modal";
 import flintLogo from "@assets/flint-logo.png";
 import dashboardPreview from "@assets/dashboard-preview.png";
+import avatar1 from "@assets/generated_images/Professional_Asian_woman_headshot_526eadc3.png";
+import avatar2 from "@assets/generated_images/Professional_Black_man_headshot_4ca6d178.png";
+import avatar3 from "@assets/generated_images/Professional_Hispanic_woman_headshot_e62bf380.png";
+import avatar4 from "@assets/generated_images/Professional_Caucasian_man_headshot_f922a01f.png";
+import avatar5 from "@assets/generated_images/Professional_Middle_Eastern_woman_headshot_5f778eae.png";
 
 // Removed Lemon Squeezy - now using Whop for payment processing
 
@@ -528,9 +533,11 @@ function Landing() {
           <div className="max-w-4xl mx-auto text-center space-y-6">
             <div className="flex items-center justify-center space-x-2">
               <div className="flex -space-x-2">
-                {[1,2,3,4,5].map(i => (
-                  <div key={i} className="w-8 h-8 rounded-full bg-gradient-to-r from-purple-400 to-blue-400 border-2 border-black" />
-                ))}
+                <img src={avatar1} alt="User avatar" className="w-10 h-10 rounded-full border-2 border-black object-cover" />
+                <img src={avatar2} alt="User avatar" className="w-10 h-10 rounded-full border-2 border-black object-cover" />
+                <img src={avatar3} alt="User avatar" className="w-10 h-10 rounded-full border-2 border-black object-cover" />
+                <img src={avatar4} alt="User avatar" className="w-10 h-10 rounded-full border-2 border-black object-cover" />
+                <img src={avatar5} alt="User avatar" className="w-10 h-10 rounded-full border-2 border-black object-cover" />
               </div>
               <span className="text-lg font-semibold">2,847+ users</span>
             </div>
