@@ -38,6 +38,7 @@ export async function ensureSnapTradeUser(flintUserId: string, userSecret: strin
       .insert(snaptradeUsers)
       .values({
         flintUserId,
+        snaptradeUserId: flintUserId,
         userSecret,
         createdAt: new Date()
       })
