@@ -288,7 +288,7 @@ function Landing() {
                   </div>
                   <CardTitle className="text-white">Unified Dashboard</CardTitle>
                   <CardDescription className="text-gray-400">
-                    All your bank accounts, credit cards, and brokerage accounts in one comprehensive view
+                    All your bank accounts, credit cards, crypto and stock brokerages accounts in one comprehensive view
                   </CardDescription>
                 </CardHeader>
               </Card>
