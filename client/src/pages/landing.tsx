@@ -419,7 +419,7 @@ function Landing() {
                 </div>
                 <h3 className="text-2xl font-bold text-white">Trade, Transfer, Analyze</h3>
                 <p className="text-gray-400">
-                  Manage your finances, execute trades, and track your progress—all in one place
+                  Manage your finances, execute trades, and track your progress all in one place
                 </p>
               </div>
             </div>
