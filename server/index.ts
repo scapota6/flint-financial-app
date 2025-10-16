@@ -53,7 +53,8 @@ const app = express();
           'https://app.lemonsqueezy.com',
           'https://assets.lemonsqueezy.com',
           'https://js.whop.com',
-          'https://whop.com'
+          'https://whop.com',
+          'https://us-assets.i.posthog.com'
         ],
         // Styles (separate style-src-elem is respected by newer browsers)
         styleSrc: [SELF, UNSAFE_INLINE, 'https://fonts.googleapis.com'],
@@ -84,6 +85,7 @@ const app = express();
           'https://api.lemonsqueezy.com',
           'https://api.whop.com',
           'https://whop.com',
+          'https://us.i.posthog.com',
           // add your exact Replit base (scheme+host+port) if you ever call absolute URLs
         ],
         imgSrc: [SELF, 'data:', 'https://cdn.brandfetch.io'],
