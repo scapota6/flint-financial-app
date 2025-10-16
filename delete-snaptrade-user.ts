@@ -32,5 +32,14 @@ async function deleteSnapTradeUser(userId: string) {
   }
 }
 
-// Delete user 45137738-v2
-deleteSnapTradeUser('45137738-v2');
+// Check command line argument for user ID
+const userIdToDelete = process.argv[2];
+
+if (!userIdToDelete) {
+  console.error('\n❌ Error: Please provide a SnapTrade user ID to delete');
+  console.error('Usage: npx tsx delete-snaptrade-user.ts <userId>');
+  console.error('\nExample: npx tsx delete-snaptrade-user.ts 45137738-v2\n');
+  process.exit(1);
+}
+
+deleteSnapTradeUser(userIdToDelete);
