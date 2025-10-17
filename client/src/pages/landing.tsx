@@ -275,31 +275,42 @@ function Landing() {
             <div className="text-center">
               <h3 className="text-sm uppercase tracking-wider text-gray-400 font-semibold mb-8" data-testid="text-as-seen-on">As Seen On</h3>
             </div>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 items-center justify-items-center opacity-60">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 items-center justify-items-center">
               {/* Forbes */}
-              <div className="grayscale hover:grayscale-0 transition-all duration-300">
-                <svg className="h-8 w-auto fill-current text-gray-400 hover:text-white transition-colors" viewBox="0 0 120 30" xmlns="http://www.w3.org/2000/svg">
-                  <text x="0" y="20" fontSize="20" fontWeight="bold" fontFamily="serif">Forbes</text>
-                </svg>
+              <div className="grayscale hover:grayscale-0 transition-all duration-300 opacity-60 hover:opacity-100">
+                <img 
+                  src={`https://cdn.brandfetch.io/forbes.com?c=${import.meta.env.VITE_BRANDFETCH_CLIENT_ID || ''}`}
+                  alt="Forbes"
+                  className="h-8 w-auto object-contain"
+                  data-testid="logo-forbes"
+                />
               </div>
               {/* Wall Street Journal */}
-              <div className="grayscale hover:grayscale-0 transition-all duration-300">
-                <svg className="h-8 w-auto fill-current text-gray-400 hover:text-white transition-colors" viewBox="0 0 180 30" xmlns="http://www.w3.org/2000/svg">
-                  <text x="0" y="12" fontSize="10" fontWeight="300" fontFamily="serif">THE</text>
-                  <text x="0" y="24" fontSize="12" fontWeight="bold" fontFamily="serif">WALL STREET JOURNAL</text>
-                </svg>
+              <div className="grayscale hover:grayscale-0 transition-all duration-300 opacity-60 hover:opacity-100">
+                <img 
+                  src={`https://cdn.brandfetch.io/wsj.com?c=${import.meta.env.VITE_BRANDFETCH_CLIENT_ID || ''}`}
+                  alt="Wall Street Journal"
+                  className="h-8 w-auto object-contain"
+                  data-testid="logo-wsj"
+                />
               </div>
               {/* Entrepreneur */}
-              <div className="grayscale hover:grayscale-0 transition-all duration-300">
-                <svg className="h-8 w-auto fill-current text-gray-400 hover:text-white transition-colors" viewBox="0 0 140 30" xmlns="http://www.w3.org/2000/svg">
-                  <text x="0" y="20" fontSize="16" fontWeight="bold" fontFamily="sans-serif">Entrepreneur</text>
-                </svg>
+              <div className="grayscale hover:grayscale-0 transition-all duration-300 opacity-60 hover:opacity-100">
+                <img 
+                  src={`https://cdn.brandfetch.io/entrepreneur.com?c=${import.meta.env.VITE_BRANDFETCH_CLIENT_ID || ''}`}
+                  alt="Entrepreneur"
+                  className="h-8 w-auto object-contain"
+                  data-testid="logo-entrepreneur"
+                />
               </div>
               {/* Bloomberg */}
-              <div className="grayscale hover:grayscale-0 transition-all duration-300">
-                <svg className="h-8 w-auto fill-current text-gray-400 hover:text-white transition-colors" viewBox="0 0 140 30" xmlns="http://www.w3.org/2000/svg">
-                  <text x="0" y="20" fontSize="18" fontWeight="bold" fontFamily="sans-serif">Bloomberg</text>
-                </svg>
+              <div className="grayscale hover:grayscale-0 transition-all duration-300 opacity-60 hover:opacity-100">
+                <img 
+                  src={`https://cdn.brandfetch.io/bloomberg.com?c=${import.meta.env.VITE_BRANDFETCH_CLIENT_ID || ''}`}
+                  alt="Bloomberg"
+                  className="h-8 w-auto object-contain"
+                  data-testid="logo-bloomberg"
+                />
               </div>
             </div>
           </div>
@@ -319,19 +330,83 @@ function Landing() {
               <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-black to-transparent z-10 pointer-events-none" />
               
               {/* Scrolling track */}
-              <div className="flex gap-8 animate-scroll" style={{
+              <div className="flex gap-6 animate-scroll" style={{
                 animation: 'scroll 60s linear infinite'
               }} data-testid="scrolling-institutions">
                 {/* First set of logos */}
-                {['Chase', 'Fidelity', 'Schwab', 'Robinhood', 'E*TRADE', 'Webull', 'Interactive Brokers', 'Coinbase', 'Bank of America', 'Wells Fargo', 'Citi', 'Capital One', 'Binance', 'Kraken', 'Alpaca', 'Public', 'Vanguard', 'TD Ameritrade', 'AJ Bell', 'CommSec', 'BUX', 'Trading 212', 'Questrade', 'Wealthsimple', 'Tradestation', 'Tradier', 'Empower', 'US Bank', 'PNC', 'Truist'].map((name, idx) => (
-                  <div key={`logo-${idx}`} className="flex-shrink-0 flex items-center justify-center px-6 py-3 bg-gray-800/40 border border-gray-700/50 rounded-lg min-w-[140px]" data-testid={`institution-${name.toLowerCase().replace(/[^a-z0-9]/g, '-')}`}>
-                    <span className="text-gray-300 font-medium text-sm">{name}</span>
+                {[
+                  { name: 'Chase', domain: 'chase.com' },
+                  { name: 'Fidelity', domain: 'fidelity.com' },
+                  { name: 'Schwab', domain: 'schwab.com' },
+                  { name: 'Robinhood', domain: 'robinhood.com' },
+                  { name: 'E*TRADE', domain: 'etrade.com' },
+                  { name: 'Webull', domain: 'webull.com' },
+                  { name: 'Interactive Brokers', domain: 'interactivebrokers.com' },
+                  { name: 'Coinbase', domain: 'coinbase.com' },
+                  { name: 'Bank of America', domain: 'bankofamerica.com' },
+                  { name: 'Wells Fargo', domain: 'wellsfargo.com' },
+                  { name: 'Citi', domain: 'citi.com' },
+                  { name: 'Capital One', domain: 'capitalone.com' },
+                  { name: 'Binance', domain: 'binance.com' },
+                  { name: 'Kraken', domain: 'kraken.com' },
+                  { name: 'Alpaca', domain: 'alpaca.markets' },
+                  { name: 'Public', domain: 'public.com' },
+                  { name: 'Vanguard', domain: 'vanguard.com' },
+                  { name: 'TD Ameritrade', domain: 'tdameritrade.com' },
+                  { name: 'Questrade', domain: 'questrade.com' },
+                  { name: 'Wealthsimple', domain: 'wealthsimple.com' },
+                  { name: 'Tradestation', domain: 'tradestation.com' },
+                  { name: 'US Bank', domain: 'usbank.com' },
+                  { name: 'PNC', domain: 'pnc.com' },
+                  { name: 'Truist', domain: 'truist.com' }
+                ].map((institution, idx) => (
+                  <div key={`logo-${idx}`} className="flex-shrink-0 flex items-center justify-center" data-testid={`institution-${institution.name.toLowerCase().replace(/[^a-z0-9]/g, '-')}`}>
+                    <div className="h-14 w-14 rounded-full bg-gray-800/60 border border-gray-700/50 flex items-center justify-center p-2 hover:border-purple-500/50 transition-all duration-300">
+                      <img 
+                        src={`https://cdn.brandfetch.io/${institution.domain}?c=${import.meta.env.VITE_BRANDFETCH_CLIENT_ID || ''}`}
+                        alt={institution.name}
+                        className="h-full w-full object-contain"
+                        title={institution.name}
+                      />
+                    </div>
                   </div>
                 ))}
                 {/* Duplicate set for seamless loop */}
-                {['Chase', 'Fidelity', 'Schwab', 'Robinhood', 'E*TRADE', 'Webull', 'Interactive Brokers', 'Coinbase', 'Bank of America', 'Wells Fargo', 'Citi', 'Capital One', 'Binance', 'Kraken', 'Alpaca', 'Public', 'Vanguard', 'TD Ameritrade', 'AJ Bell', 'CommSec', 'BUX', 'Trading 212', 'Questrade', 'Wealthsimple', 'Tradestation', 'Tradier', 'Empower', 'US Bank', 'PNC', 'Truist'].map((name, idx) => (
-                  <div key={`logo-dup-${idx}`} className="flex-shrink-0 flex items-center justify-center px-6 py-3 bg-gray-800/40 border border-gray-700/50 rounded-lg min-w-[140px]">
-                    <span className="text-gray-300 font-medium text-sm">{name}</span>
+                {[
+                  { name: 'Chase', domain: 'chase.com' },
+                  { name: 'Fidelity', domain: 'fidelity.com' },
+                  { name: 'Schwab', domain: 'schwab.com' },
+                  { name: 'Robinhood', domain: 'robinhood.com' },
+                  { name: 'E*TRADE', domain: 'etrade.com' },
+                  { name: 'Webull', domain: 'webull.com' },
+                  { name: 'Interactive Brokers', domain: 'interactivebrokers.com' },
+                  { name: 'Coinbase', domain: 'coinbase.com' },
+                  { name: 'Bank of America', domain: 'bankofamerica.com' },
+                  { name: 'Wells Fargo', domain: 'wellsfargo.com' },
+                  { name: 'Citi', domain: 'citi.com' },
+                  { name: 'Capital One', domain: 'capitalone.com' },
+                  { name: 'Binance', domain: 'binance.com' },
+                  { name: 'Kraken', domain: 'kraken.com' },
+                  { name: 'Alpaca', domain: 'alpaca.markets' },
+                  { name: 'Public', domain: 'public.com' },
+                  { name: 'Vanguard', domain: 'vanguard.com' },
+                  { name: 'TD Ameritrade', domain: 'tdameritrade.com' },
+                  { name: 'Questrade', domain: 'questrade.com' },
+                  { name: 'Wealthsimple', domain: 'wealthsimple.com' },
+                  { name: 'Tradestation', domain: 'tradestation.com' },
+                  { name: 'US Bank', domain: 'usbank.com' },
+                  { name: 'PNC', domain: 'pnc.com' },
+                  { name: 'Truist', domain: 'truist.com' }
+                ].map((institution, idx) => (
+                  <div key={`logo-dup-${idx}`} className="flex-shrink-0 flex items-center justify-center">
+                    <div className="h-14 w-14 rounded-full bg-gray-800/60 border border-gray-700/50 flex items-center justify-center p-2 hover:border-purple-500/50 transition-all duration-300">
+                      <img 
+                        src={`https://cdn.brandfetch.io/${institution.domain}?c=${import.meta.env.VITE_BRANDFETCH_CLIENT_ID || ''}`}
+                        alt={institution.name}
+                        className="h-full w-full object-contain"
+                        title={institution.name}
+                      />
+                    </div>
                   </div>
                 ))}
               </div>
