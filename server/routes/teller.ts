@@ -156,7 +156,8 @@ router.post("/save-account", requireAuth, async (req: any, res) => {
     for (const account of accountsToSave) {
       const institutionName = institution || account.institution?.name || 'Unknown Bank';
       const lastFour = account.last_four || account.mask || '';
-      const accountType = account.type === 'credit' ? 'card' : 'bank';
+      // All Teller accounts are bank accounts (checking, savings, or credit cards)
+      const accountType = 'bank';
       
       // Create descriptive account name: "Institution - Account Type (****1234)"
       let accountName = account.name || '';
@@ -171,6 +172,16 @@ router.post("/save-account", requireAuth, async (req: any, res) => {
         ? (account.balance?.ledger || 0)
         : (account.balance?.available || 0);
       
+      // Ensure balance is a valid decimal with 2 decimal places
+      const formattedBalance = Number(balanceValue).toFixed(2);
+      
+      console.log(`[Teller] Saving account: ${account.id}`, {
+        name: accountName,
+        type: accountType,
+        balance: formattedBalance,
+        institution: institutionName
+      });
+      
       await storage.upsertConnectedAccount({
         userId,
         provider: 'teller',
@@ -182,7 +193,7 @@ router.post("/save-account", requireAuth, async (req: any, res) => {
         currency: account.currency || 'USD',
         status: 'connected',
         accountType,
-        balance: String(balanceValue),
+        balance: formattedBalance,
         accessToken: accessToken, // CRITICAL: Store access token for API calls
       });
     }
