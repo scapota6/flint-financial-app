@@ -314,6 +314,7 @@ function Landing() {
                   src={forbesLogo}
                   alt="Forbes"
                   className="h-16 w-auto object-contain"
+                  style={{ mixBlendMode: 'lighten' }}
                   data-testid="logo-forbes"
                 />
               </div>
@@ -323,6 +324,7 @@ function Landing() {
                   src={wsjLogo}
                   alt="Wall Street Journal"
                   className="h-16 w-auto object-contain"
+                  style={{ mixBlendMode: 'lighten' }}
                   data-testid="logo-wsj"
                 />
               </div>
@@ -332,6 +334,7 @@ function Landing() {
                   src={entrepreneurLogo}
                   alt="Entrepreneur"
                   className="h-16 w-auto object-contain"
+                  style={{ mixBlendMode: 'lighten' }}
                   data-testid="logo-entrepreneur"
                 />
               </div>
