@@ -313,7 +313,7 @@ function Landing() {
                 <img 
                   src={forbesLogo}
                   alt="Forbes"
-                  className="h-16 w-auto object-contain invert brightness-0 invert"
+                  className="h-16 w-auto object-contain invert"
                   data-testid="logo-forbes"
                 />
               </div>
@@ -322,7 +322,7 @@ function Landing() {
                 <img 
                   src={wsjLogo}
                   alt="Wall Street Journal"
-                  className="h-16 w-auto object-contain invert brightness-0 invert"
+                  className="h-16 w-auto object-contain invert"
                   data-testid="logo-wsj"
                 />
               </div>
@@ -331,7 +331,7 @@ function Landing() {
                 <img 
                   src={entrepreneurLogo}
                   alt="Entrepreneur"
-                  className="h-16 w-auto object-contain invert brightness-0 invert"
+                  className="h-16 w-auto object-contain invert"
                   data-testid="logo-entrepreneur"
                 />
               </div>
@@ -340,7 +340,7 @@ function Landing() {
                 <img 
                   src={bloombergLogo}
                   alt="Bloomberg"
-                  className="h-16 w-auto object-contain invert brightness-0 invert"
+                  className="h-16 w-auto object-contain invert"
                   data-testid="logo-bloomberg"
                 />
               </div>
