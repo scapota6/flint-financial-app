@@ -408,20 +408,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const connectedAccounts = await storage.getConnectedAccounts(userId);
         const tellerAccounts = connectedAccounts.filter(acc => acc.provider === 'teller');
         
-        // Import resilientTellerFetch for mTLS authentication
+        console.log('[Dashboard] Teller accounts found:', tellerAccounts.length);
+        
+        // Import helpers for mTLS authentication
         const { resilientTellerFetch } = await import('./teller/client');
+        const { getTellerAccessToken } = await import('./store/tellerUsers');
+        
+        // Fetch Teller access token once for all accounts (stored per-user, not per-account)
+        const tellerAccessToken = await getTellerAccessToken(userId);
+        
+        console.log('[Dashboard] Teller access token:', tellerAccessToken ? 'FOUND' : 'NOT FOUND');
         
         for (const account of tellerAccounts) {
+          console.log('[Dashboard] Processing Teller account:', account.id, account.accountName);
           // Always include accounts, validate access for real-time data
-          if (account.accessToken) {
+          if (tellerAccessToken) {
             try {
               // Fetch both account info and balances from Teller with mTLS
+              const authHeader = `Basic ${Buffer.from(tellerAccessToken + ":").toString("base64")}`;
               const [accountResponse, balancesResponse] = await Promise.all([
                 resilientTellerFetch(
                   `https://api.teller.io/accounts/${account.externalAccountId}`,
                   {
                     headers: {
-                      'Authorization': `Basic ${Buffer.from(account.accessToken + ":").toString("base64")}`,
+                      'Authorization': authHeader,
                     },
                   },
                   'Dashboard-Account'
@@ -430,7 +440,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
                   `https://api.teller.io/accounts/${account.externalAccountId}/balances`,
                   {
                     headers: {
-                      'Authorization': `Basic ${Buffer.from(account.accessToken + ":").toString("base64")}`,
+                      'Authorization': authHeader,
                     },
                   },
                   'Dashboard-Balance'
