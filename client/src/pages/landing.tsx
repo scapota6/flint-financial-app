@@ -313,7 +313,7 @@ function Landing() {
                 <img 
                   src={forbesLogo}
                   alt="Forbes"
-                  className="h-16 w-auto object-contain"
+                  className="h-16 w-auto object-contain invert"
                   style={{ mixBlendMode: 'screen' }}
                   data-testid="logo-forbes"
                 />
@@ -323,7 +323,7 @@ function Landing() {
                 <img 
                   src={wsjLogo}
                   alt="Wall Street Journal"
-                  className="h-16 w-auto object-contain"
+                  className="h-16 w-auto object-contain invert"
                   style={{ mixBlendMode: 'screen' }}
                   data-testid="logo-wsj"
                 />
@@ -333,7 +333,7 @@ function Landing() {
                 <img 
                   src={entrepreneurLogo}
                   alt="Entrepreneur"
-                  className="h-16 w-auto object-contain"
+                  className="h-16 w-auto object-contain invert"
                   style={{ mixBlendMode: 'screen' }}
                   data-testid="logo-entrepreneur"
                 />
@@ -343,7 +343,7 @@ function Landing() {
                 <img 
                   src={bloombergLogo}
                   alt="Bloomberg"
-                  className="h-16 w-auto object-contain"
+                  className="h-16 w-auto object-contain invert"
                   style={{ mixBlendMode: 'screen' }}
                   data-testid="logo-bloomberg"
                 />
