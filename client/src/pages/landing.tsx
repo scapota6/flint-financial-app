@@ -6,10 +6,10 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import forbesLogo from '@assets/image_1760730257165.png';
-import wsjLogo from '@assets/image_1760730223928.png';
-import entrepreneurLogo from '@assets/image_1760730243349.png';
-import bloombergLogo from '@assets/image_1760730267086.png';
+import forbesLogo from '@assets/forbes-logo-white_1760732850878.png';
+import wsjLogo from '@assets/12450_65f1b42317bb1_3142_1760732860674.png';
+import entrepreneurLogo from '@assets/images_1760732961328.png';
+import bloombergLogo from '@assets/bloomberg-logo-png-bloomberg-logo-png-transparent-amp-svg-vector-pluspng-2400x665_1760732850877.png';
 
 // Institution list for scrolling banner
 const INSTITUTIONS = [
@@ -313,7 +313,7 @@ function Landing() {
                 <img 
                   src={forbesLogo}
                   alt="Forbes"
-                  className="h-16 w-auto object-contain invert"
+                  className="h-16 w-auto object-contain"
                   data-testid="logo-forbes"
                 />
               </div>
@@ -322,7 +322,7 @@ function Landing() {
                 <img 
                   src={wsjLogo}
                   alt="Wall Street Journal"
-                  className="h-16 w-auto object-contain invert"
+                  className="h-16 w-auto object-contain"
                   data-testid="logo-wsj"
                 />
               </div>
@@ -331,7 +331,7 @@ function Landing() {
                 <img 
                   src={entrepreneurLogo}
                   alt="Entrepreneur"
-                  className="h-16 w-auto object-contain invert"
+                  className="h-16 w-auto object-contain"
                   data-testid="logo-entrepreneur"
                 />
               </div>
@@ -340,7 +340,7 @@ function Landing() {
                 <img 
                   src={bloombergLogo}
                   alt="Bloomberg"
-                  className="h-16 w-auto object-contain invert"
+                  className="h-16 w-auto object-contain"
                   data-testid="logo-bloomberg"
                 />
               </div>
