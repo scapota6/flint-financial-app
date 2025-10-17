@@ -124,7 +124,7 @@ router.post("/save-account", requireAuth, async (req: any, res) => {
       accessToken: accessToken,
       institutionName: institution
     });
-    logger.info("Teller enrollment saved/updated", { userId, enrollmentId: actualEnrollmentId });
+    logger.info("Teller enrollment saved/updated", { userId, metadata: { enrollmentId: actualEnrollmentId } });
     
     // Get user and calculate limits
     const user = await storage.getUser(userId);
@@ -146,13 +146,15 @@ router.post("/save-account", requireAuth, async (req: any, res) => {
     
     logger.info("Teller account limit check", {
       userId,
-      tier: user?.subscriptionTier || 'free',
-      limit: accountLimit,
-      existingCount: existingAccounts.length,
-      availableSlots: isUnlimited ? 'unlimited' : availableSlots,
-      totalFromTeller: accounts.length,
-      newAccounts: newAccounts.length,
-      duplicates: duplicateCount
+      metadata: {
+        tier: user?.subscriptionTier || 'free',
+        limit: accountLimit,
+        existingCount: existingAccounts.length,
+        availableSlots: isUnlimited ? 'unlimited' : availableSlots,
+        totalFromTeller: accounts.length,
+        newAccounts: newAccounts.length,
+        duplicates: duplicateCount
+      }
     });
     
     // If no slots available, reject all new accounts (skip check for unlimited)
@@ -231,9 +233,11 @@ router.post("/save-account", requireAuth, async (req: any, res) => {
     
     logger.info("Teller accounts saved successfully", { 
       userId,
-      accountsSaved: accountsToSave.length,
-      accountsRejected: rejectedCount,
-      duplicates: duplicateCount
+      metadata: {
+        accountsSaved: accountsToSave.length,
+        accountsRejected: rejectedCount,
+        duplicates: duplicateCount
+      }
     });
     
     res.json({
@@ -254,9 +258,11 @@ router.post("/save-account", requireAuth, async (req: any, res) => {
     console.error('[Teller Save Account] Full error:', error);
     console.error('[Teller Save Account] Error stack:', error.stack);
     logger.error("Teller save account error", { 
-      error: error.message,
-      stack: error.stack,
-      name: error.name
+      error: error instanceof Error ? error : new Error(error.message),
+      metadata: {
+        stack: error.stack,
+        name: error.name
+      }
     });
     // Don't expose stack traces to clients for security
     res.status(500).json({ 
@@ -333,13 +339,15 @@ router.post("/exchange-token", requireAuth, async (req: any, res) => {
     
     logger.info("Teller account limit check", {
       userId,
-      tier: user?.subscriptionTier || 'free',
-      limit: accountLimit,
-      existingCount: existingAccounts.length,
-      availableSlots: isUnlimited ? 'unlimited' : availableSlots,
-      totalFromTeller: accounts.length,
-      newAccounts: newAccounts.length,
-      duplicates: duplicateCount
+      metadata: {
+        tier: user?.subscriptionTier || 'free',
+        limit: accountLimit,
+        existingCount: existingAccounts.length,
+        availableSlots: isUnlimited ? 'unlimited' : availableSlots,
+        totalFromTeller: accounts.length,
+        newAccounts: newAccounts.length,
+        duplicates: duplicateCount
+      }
     });
     
     // If no slots available, reject all new accounts (skip check for unlimited)
@@ -387,9 +395,11 @@ router.post("/exchange-token", requireAuth, async (req: any, res) => {
     
     logger.info("Teller accounts connected", { 
       userId,
-      accountsSaved: accountsToSave.length,
-      accountsRejected: rejectedCount,
-      duplicates: duplicateCount
+      metadata: {
+        accountsSaved: accountsToSave.length,
+        accountsRejected: rejectedCount,
+        duplicates: duplicateCount
+      }
     });
     
     res.json({
@@ -507,9 +517,11 @@ router.get("/accounts", requireAuth, async (req: any, res) => {
     
     logger.info("Teller accounts retrieved with connectivity validation", { 
       userId, 
-      totalInDb: dbAccounts.length,
-      validAccounts: validAccounts.length,
-      invalidAccounts: invalidAccountIds.length
+      metadata: {
+        totalInDb: dbAccounts.length,
+        validAccounts: validAccounts.length,
+        invalidAccounts: invalidAccountIds.length
+      }
     });
     
     res.json({ 
@@ -963,7 +975,7 @@ router.post("/webhook", async (req, res) => {
       const rawBody = JSON.stringify(req.body);
       
       if (!verifyTellerWebhook(rawBody, signature, webhookSecret)) {
-        logger.warn("Webhook signature verification failed", { signature });
+        logger.warn("Webhook signature verification failed");
         return res.status(401).json({ message: "Invalid signature" });
       }
       
@@ -975,8 +987,10 @@ router.post("/webhook", async (req, res) => {
     const { id, type, payload, timestamp: eventTime } = req.body;
     
     logger.info(`Processing Teller webhook: ${type}`, { 
-      webhookId: id, 
-      timestamp: eventTime 
+      metadata: {
+        webhookId: id, 
+        timestamp: eventTime
+      }
     });
     
     // Use the comprehensive webhook processor
@@ -1012,8 +1026,10 @@ router.post("/webhook", async (req, res) => {
               await storage.upsertTransaction(transaction);
             } catch (transactionError: any) {
               logger.error("Failed to store transaction", { 
-                transactionId: transaction.id,
-                error: transactionError.message 
+                error: transactionError instanceof Error ? transactionError : new Error(transactionError.message),
+                metadata: {
+                  transactionId: transaction.id
+                }
               });
             }
           }
@@ -1038,8 +1054,10 @@ router.post("/webhook", async (req, res) => {
           }
         } catch (verificationError: any) {
           logger.error("Failed to update verification status", { 
-            accountId: account_id,
-            error: verificationError.message 
+            error: verificationError instanceof Error ? verificationError : new Error(verificationError.message),
+            metadata: {
+              accountId: account_id
+            }
           });
         }
         break;
@@ -1051,8 +1069,10 @@ router.post("/webhook", async (req, res) => {
         
       default:
         logger.warn(`Unknown webhook type received: ${type}`, { 
-          webhookId: id,
-          payloadKeys: Object.keys(payload || {})
+          metadata: {
+            webhookId: id,
+            payloadKeys: Object.keys(payload || {})
+          }
         });
     }
     
@@ -1230,7 +1250,9 @@ router.get("/account/:accountId/details", requireAuth, async (req: any, res) => 
     
     logger.info("Fetching Teller account details", { 
       userId, 
-      accountId 
+      metadata: {
+        accountId
+      }
     });
     
     // Get the connected account to verify ownership
@@ -1269,7 +1291,9 @@ router.get("/account/:accountId/details", requireAuth, async (req: any, res) => 
       const errorText = await accountResponse.text();
       logger.error(`Teller account details API error: ${accountResponse.status}`, { 
         error: new Error(errorText),
-        accountId
+        metadata: {
+          accountId
+        }
       });
       throw new Error(`Failed to fetch account details: ${accountResponse.status}`);
     }
@@ -1294,7 +1318,7 @@ router.get("/account/:accountId/details", requireAuth, async (req: any, res) => 
         balances = await balanceResponse.json();
       }
     } catch (balanceError) {
-      logger.warn("Failed to fetch balances", { error: balanceError });
+      logger.warn("Failed to fetch balances", { error: balanceError instanceof Error ? balanceError : new Error(String(balanceError)) });
     }
 
     // Fetch transactions (last 90 days)
@@ -1315,7 +1339,7 @@ router.get("/account/:accountId/details", requireAuth, async (req: any, res) => 
         transactions = await transactionResponse.json();
       }
     } catch (transactionError) {
-      logger.warn("Failed to fetch transactions", { error: transactionError });
+      logger.warn("Failed to fetch transactions", { error: transactionError instanceof Error ? transactionError : new Error(String(transactionError)) });
     }
 
     // Fetch statements if available
@@ -1336,7 +1360,7 @@ router.get("/account/:accountId/details", requireAuth, async (req: any, res) => 
         statements = await statementResponse.json();
       }
     } catch (statementError) {
-      logger.warn("Failed to fetch statements", { error: statementError });
+      logger.warn("Failed to fetch statements", { error: statementError instanceof Error ? statementError : new Error(String(statementError)) });
     }
 
     // Analyze transactions for recurring patterns (simple implementation)
@@ -1352,8 +1376,10 @@ router.get("/account/:accountId/details", requireAuth, async (req: any, res) => 
     
     logger.info("Teller account details fetched successfully", { 
       userId,
-      accountId,
-      hasBalances: !!balances
+      metadata: {
+        accountId,
+        hasBalances: !!balances
+      }
     });
     
     res.json({ 
@@ -1368,8 +1394,10 @@ router.get("/account/:accountId/details", requireAuth, async (req: any, res) => 
     
   } catch (error: any) {
     logger.error("Teller account details error", { 
-      error: error.message,
-      accountId: req.params.accountId
+      error: error instanceof Error ? error : new Error(error.message),
+      metadata: {
+        accountId: req.params.accountId
+      }
     });
     res.status(500).json({ 
       message: "Failed to fetch account details",
@@ -1478,8 +1506,8 @@ router.post("/init-update", requireAuth, async (req: any, res) => {
     console.log('[Teller Update] Initializing update mode for account:', { userId, accountId });
     
     // Get the Teller account from our database
-    const account = await storage.getConnectedAccount(userId, parseInt(accountId));
-    if (!account || account.provider !== 'teller') {
+    const account = await storage.getConnectedAccount(parseInt(accountId));
+    if (!account || account.provider !== 'teller' || account.userId !== userId) {
       return res.status(404).json({ 
         message: "Teller account not found" 
       });
