@@ -1,6 +1,34 @@
 import { storage } from "../storage";
 import { logger } from "@shared/logger";
 import crypto from 'crypto';
+import https from 'https';
+
+// ===== MTLS CONFIGURATION =====
+
+// Load certificates for mTLS authentication
+function getTellerHttpsAgent(): https.Agent | undefined {
+  const cert = process.env.TELLER_CERT;
+  const key = process.env.TELLER_PRIVATE_KEY;
+  
+  // In sandbox mode, certificates are optional
+  if (!cert || !key) {
+    const env = process.env.TELLER_ENVIRONMENT || 'development';
+    if (env === 'sandbox') {
+      console.warn('[Teller mTLS] Running in sandbox mode without certificates');
+      return undefined;
+    }
+    console.warn('[Teller mTLS] Certificates not found for', env, 'environment');
+    return undefined;
+  }
+  
+  return new https.Agent({
+    cert,
+    key,
+    rejectUnauthorized: true
+  });
+}
+
+const tellerAgent = getTellerHttpsAgent();
 
 // ===== PRODUCTION-GRADE ERROR HANDLING & RESILIENCE =====
 
@@ -33,7 +61,7 @@ function calculateBackoffDelay(attempt: number, config: RetryConfig): number {
   return exponentialDelay + jitter;
 }
 
-// Enhanced fetch with retry logic and request ID tracking
+// Enhanced fetch with retry logic, request ID tracking, and mTLS support
 async function resilientTellerFetch(
   url: string,
   options: RequestInit,
@@ -42,8 +70,8 @@ async function resilientTellerFetch(
 ): Promise<Response> {
   const requestId = generateRequestId();
   
-  // Add request ID to headers for tracking
-  const enhancedOptions = {
+  // Add request ID to headers for tracking and mTLS agent
+  const enhancedOptions: RequestInit & { agent?: https.Agent } = {
     ...options,
     headers: {
       ...options.headers,
@@ -51,6 +79,11 @@ async function resilientTellerFetch(
       'User-Agent': 'Flint/1.0 (Production)'
     }
   };
+  
+  // Add mTLS agent if available
+  if (tellerAgent) {
+    enhancedOptions.agent = tellerAgent;
+  }
 
   let lastError: any;
   
@@ -59,10 +92,11 @@ async function resilientTellerFetch(
       console.log(`[Teller ${context}] Attempt ${attempt}/${config.maxAttempts}`, {
         requestId,
         url: url.replace(/\/accounts\/[^\/]+/, '/accounts/***'),
-        method: enhancedOptions.method || 'GET'
+        method: enhancedOptions.method || 'GET',
+        mtls: !!tellerAgent
       });
 
-      const response = await fetch(url, enhancedOptions);
+      const response = await fetch(url, enhancedOptions as RequestInit);
       
       // Extract Teller's request ID from response headers if available
       const tellerRequestId = response.headers.get('x-request-id') || response.headers.get('request-id');
