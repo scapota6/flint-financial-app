@@ -352,7 +352,7 @@ function Landing() {
         <section className="py-12 bg-gradient-to-b from-gray-900/30 to-transparent overflow-hidden" data-section="institutions">
           <div className="max-w-6xl mx-auto space-y-6">
             <div className="text-center">
-              <h3 className="text-sm uppercase tracking-wider text-gray-400 font-semibold" data-testid="text-connect-accounts">Connected with our partners</h3>
+              <h3 className="text-sm uppercase tracking-wider text-gray-400 font-semibold" data-testid="text-connect-accounts">PARTNERS SUPPORTED</h3>
             </div>
             
             {/* Scrolling container */}
