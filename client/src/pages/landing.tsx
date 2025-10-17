@@ -273,7 +273,7 @@ function Landing() {
         <section className="py-16 border-y border-gray-800/50 bg-gray-900/30" data-section="as-seen-on">
           <div className="max-w-6xl mx-auto space-y-8">
             <div className="text-center">
-              <h3 className="text-sm uppercase tracking-wider text-gray-400 font-semibold mb-8">As Seen On</h3>
+              <h3 className="text-sm uppercase tracking-wider text-gray-400 font-semibold mb-8" data-testid="text-as-seen-on">As Seen On</h3>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8 items-center justify-items-center opacity-60">
               {/* Forbes */}
@@ -309,7 +309,7 @@ function Landing() {
         <section className="py-12 bg-gradient-to-b from-gray-900/30 to-transparent overflow-hidden" data-section="institutions">
           <div className="max-w-6xl mx-auto space-y-6">
             <div className="text-center">
-              <h3 className="text-sm uppercase tracking-wider text-gray-400 font-semibold">Connect Your Accounts From</h3>
+              <h3 className="text-sm uppercase tracking-wider text-gray-400 font-semibold" data-testid="text-connect-accounts">Connect Your Accounts From</h3>
             </div>
             
             {/* Scrolling container */}
@@ -320,16 +320,16 @@ function Landing() {
               
               {/* Scrolling track */}
               <div className="flex gap-8 animate-scroll" style={{
-                animation: 'scroll 40s linear infinite'
-              }}>
+                animation: 'scroll 60s linear infinite'
+              }} data-testid="scrolling-institutions">
                 {/* First set of logos */}
-                {['Chase', 'Fidelity', 'Schwab', 'Robinhood', 'E*TRADE', 'Webull', 'Interactive Brokers', 'Coinbase', 'Bank of America', 'Wells Fargo', 'Citi', 'Capital One', 'Binance', 'Kraken', 'Alpaca', 'Public', 'Vanguard', 'TD Ameritrade'].map((name, idx) => (
-                  <div key={`logo-${idx}`} className="flex-shrink-0 flex items-center justify-center px-6 py-3 bg-gray-800/40 border border-gray-700/50 rounded-lg min-w-[140px]">
+                {['Chase', 'Fidelity', 'Schwab', 'Robinhood', 'E*TRADE', 'Webull', 'Interactive Brokers', 'Coinbase', 'Bank of America', 'Wells Fargo', 'Citi', 'Capital One', 'Binance', 'Kraken', 'Alpaca', 'Public', 'Vanguard', 'TD Ameritrade', 'AJ Bell', 'CommSec', 'BUX', 'Trading 212', 'Questrade', 'Wealthsimple', 'Tradestation', 'Tradier', 'Empower', 'US Bank', 'PNC', 'Truist'].map((name, idx) => (
+                  <div key={`logo-${idx}`} className="flex-shrink-0 flex items-center justify-center px-6 py-3 bg-gray-800/40 border border-gray-700/50 rounded-lg min-w-[140px]" data-testid={`institution-${name.toLowerCase().replace(/[^a-z0-9]/g, '-')}`}>
                     <span className="text-gray-300 font-medium text-sm">{name}</span>
                   </div>
                 ))}
                 {/* Duplicate set for seamless loop */}
-                {['Chase', 'Fidelity', 'Schwab', 'Robinhood', 'E*TRADE', 'Webull', 'Interactive Brokers', 'Coinbase', 'Bank of America', 'Wells Fargo', 'Citi', 'Capital One', 'Binance', 'Kraken', 'Alpaca', 'Public', 'Vanguard', 'TD Ameritrade'].map((name, idx) => (
+                {['Chase', 'Fidelity', 'Schwab', 'Robinhood', 'E*TRADE', 'Webull', 'Interactive Brokers', 'Coinbase', 'Bank of America', 'Wells Fargo', 'Citi', 'Capital One', 'Binance', 'Kraken', 'Alpaca', 'Public', 'Vanguard', 'TD Ameritrade', 'AJ Bell', 'CommSec', 'BUX', 'Trading 212', 'Questrade', 'Wealthsimple', 'Tradestation', 'Tradier', 'Empower', 'US Bank', 'PNC', 'Truist'].map((name, idx) => (
                   <div key={`logo-dup-${idx}`} className="flex-shrink-0 flex items-center justify-center px-6 py-3 bg-gray-800/40 border border-gray-700/50 rounded-lg min-w-[140px]">
                     <span className="text-gray-300 font-medium text-sm">{name}</span>
                   </div>
@@ -337,7 +337,7 @@ function Landing() {
               </div>
             </div>
             
-            <p className="text-center text-xs text-gray-500 mt-4">
+            <p className="text-center text-xs text-gray-500 mt-4" data-testid="text-more-institutions">
               + 5,000 more banks and brokerages
             </p>
           </div>
