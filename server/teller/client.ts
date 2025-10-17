@@ -120,7 +120,7 @@ function calculateBackoffDelay(attempt: number, config: RetryConfig): number {
 }
 
 // Enhanced fetch with retry logic, request ID tracking, and mTLS support
-async function resilientTellerFetch(
+export async function resilientTellerFetch(
   url: string,
   options: RequestInit,
   context: string,
