@@ -22,13 +22,18 @@ function getTellerDispatcher(): Dispatcher | undefined {
   }
   
   // Create undici Agent with mTLS configuration
-  return new Agent({
-    connect: {
-      cert,
-      key,
-      rejectUnauthorized: true
-    }
-  });
+  try {
+    return new Agent({
+      connect: {
+        cert,
+        key,
+        rejectUnauthorized: true
+      }
+    });
+  } catch (error: any) {
+    console.error('[Teller mTLS] Failed to create Agent:', error.message);
+    return undefined;
+  }
 }
 
 const tellerDispatcher = getTellerDispatcher();
