@@ -456,7 +456,7 @@ router.get("/accounts", requireAuth, async (req: any, res) => {
       try {
         // Test connectivity by making a simple API call
         const authHeader = `Basic ${Buffer.from(accessToken + ":").toString("base64")}`;
-        const response = await fetch(`https://api.teller.io/accounts/${dbAccount.externalAccountId}`, {
+        const response = await tellerFetch(`https://api.teller.io/accounts/${dbAccount.externalAccountId}`, {
           headers: {
             'Authorization': authHeader,
             'Accept': 'application/json'
@@ -920,7 +920,7 @@ router.get("/test-connection", requireAuth, async (req: any, res) => {
  */
 router.get("/institutions", async (req, res) => {
   try {
-    const response = await fetch('https://api.teller.io/institutions', {
+    const response = await tellerFetch('https://api.teller.io/institutions', {
       headers: {
         'Accept': 'application/json'
       }
