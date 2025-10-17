@@ -11,6 +11,7 @@ import { v4 as uuidv4 } from 'uuid';
 import tellerPaymentsRouter from './teller.payments';
 import { getAccountLimit } from '../routes';
 import { getTellerUser, saveTellerUser, getTellerAccessToken } from '../store/tellerUsers';
+import { tellerFetch } from '../teller/client';
 
 const router = Router();
 
@@ -92,8 +93,8 @@ router.post("/save-account", requireAuth, async (req: any, res) => {
     // Use access token as Basic Auth (per Teller docs)
     const authHeader = `Basic ${Buffer.from(accessToken + ":").toString("base64")}`;
     
-    // Fetch account details from Teller
-    const tellerResponse = await fetch(
+    // Fetch account details from Teller with mTLS
+    const tellerResponse = await tellerFetch(
       'https://api.teller.io/accounts',
       {
         method: 'GET',

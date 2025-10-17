@@ -1169,3 +1169,27 @@ export function processTellerWebhook(webhook: TellerWebhook) {
 export function generateIdempotencyKey(): string {
   return `pay_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 }
+
+/**
+ * Fetch from Teller API with mTLS authentication
+ * Exported for use in routes that need direct Teller API access
+ */
+export async function tellerFetch(
+  url: string,
+  options: RequestInit
+): Promise<Response> {
+  const enhancedOptions: RequestInit & { agent?: https.Agent } = {
+    ...options,
+    headers: {
+      ...options.headers,
+      'User-Agent': 'Flint/1.0 (Production)'
+    }
+  };
+  
+  // Add mTLS agent if available
+  if (tellerAgent) {
+    enhancedOptions.agent = tellerAgent;
+  }
+  
+  return fetch(url, enhancedOptions as RequestInit);
+}
