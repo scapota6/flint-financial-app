@@ -2423,11 +2423,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
             console.log('[Account Details] Failed to fetch account details:', error);
           }
           
-          // Fetch transactions with pagination (recent 30 days worth) using mTLS
+          // Fetch transactions with pagination (last 500 transactions) using mTLS
           let transactions = [];
           try {
             const transactionsResponse = await resilientTellerFetch(
-              `https://api.teller.io/accounts/${account.externalAccountId}/transactions?count=50`,
+              `https://api.teller.io/accounts/${account.externalAccountId}/transactions?count=500`,
               requestOptions,
               'AccountDetails-Transactions'
             );

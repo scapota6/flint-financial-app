@@ -1,6 +1,8 @@
 import { Router } from 'express';
 import { isAuthenticated } from '../replitAuth';
 import { storage } from '../storage.js';
+import { getTellerAccessToken } from '../store/tellerUsers';
+import { resilientTellerFetch } from '../teller/client';
 
 const router = Router();
 
@@ -37,22 +39,28 @@ router.get('/', isAuthenticated, async (req: any, res) => {
 
     const allTransactions: any[] = [];
     
+    // Get Teller access token from teller_users table
+    const accessToken = await getTellerAccessToken(userId);
+    if (!accessToken) {
+      return res.json({ subscriptions: [] });
+    }
+    
     // Fetch transactions from all Teller accounts (last 12 months)
     for (const account of tellerAccounts) {
-      if (!account.accessToken) continue;
-      
       try {
         const oneYearAgo = new Date();
         oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
         
-        const response = await fetch(
+        const authHeader = `Basic ${Buffer.from(accessToken + ":").toString("base64")}`;
+        const response = await resilientTellerFetch(
           `https://api.teller.io/accounts/${account.externalAccountId}/transactions?count=500`,
           {
             headers: {
-              'Authorization': `Basic ${Buffer.from(account.accessToken + ":").toString("base64")}`,
+              'Authorization': authHeader,
               'Accept': 'application/json'
             }
-          }
+          },
+          'Subscriptions-Transactions'
         );
         
         if (response.ok) {
