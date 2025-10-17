@@ -6,6 +6,10 @@
  */
 
 import React, { useState, useEffect } from 'react';
+import forbesLogo from '@assets/image_1760730257165.png';
+import wsjLogo from '@assets/image_1760730223928.png';
+import entrepreneurLogo from '@assets/image_1760730243349.png';
+import bloombergLogo from '@assets/image_1760730267086.png';
 
 // Institution list for scrolling banner
 const INSTITUTIONS = [
@@ -307,69 +311,37 @@ function Landing() {
               {/* Forbes */}
               <div className="grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100 w-full flex justify-center">
                 <img 
-                  src={`https://cdn.brandfetch.io/forbes.com?c=${import.meta.env.VITE_BRANDFETCH_CLIENT_ID || ''}`}
+                  src={forbesLogo}
                   alt="Forbes"
                   className="h-16 w-auto object-contain"
                   data-testid="logo-forbes"
-                  onError={(e) => {
-                    const target = e.target as HTMLImageElement;
-                    target.style.display = 'none';
-                    const parent = target.parentElement;
-                    if (parent) {
-                      parent.innerHTML = '<div class="text-gray-400 font-bold text-3xl" style="font-family: serif;">Forbes</div>';
-                    }
-                  }}
                 />
               </div>
               {/* Wall Street Journal */}
               <div className="grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100 w-full flex justify-center">
                 <img 
-                  src={`https://cdn.brandfetch.io/wsj.com?c=${import.meta.env.VITE_BRANDFETCH_CLIENT_ID || ''}`}
+                  src={wsjLogo}
                   alt="Wall Street Journal"
                   className="h-16 w-auto object-contain"
                   data-testid="logo-wsj"
-                  onError={(e) => {
-                    const target = e.target as HTMLImageElement;
-                    target.style.display = 'none';
-                    const parent = target.parentElement;
-                    if (parent) {
-                      parent.innerHTML = '<div class="text-gray-400 font-bold text-sm" style="font-family: serif;">THE WALL STREET JOURNAL</div>';
-                    }
-                  }}
                 />
               </div>
               {/* Entrepreneur */}
               <div className="grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100 w-full flex justify-center">
                 <img 
-                  src={`https://cdn.brandfetch.io/entrepreneur.com?c=${import.meta.env.VITE_BRANDFETCH_CLIENT_ID || ''}`}
+                  src={entrepreneurLogo}
                   alt="Entrepreneur"
                   className="h-16 w-auto object-contain"
                   data-testid="logo-entrepreneur"
-                  onError={(e) => {
-                    const target = e.target as HTMLImageElement;
-                    target.style.display = 'none';
-                    const parent = target.parentElement;
-                    if (parent) {
-                      parent.innerHTML = '<div class="text-gray-400 font-bold text-2xl">Entrepreneur</div>';
-                    }
-                  }}
                 />
               </div>
               {/* Bloomberg */}
               <div className="grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100 w-full flex justify-center">
                 <img 
-                  src={`https://cdn.brandfetch.io/bloomberg.com?c=${import.meta.env.VITE_BRANDFETCH_CLIENT_ID || ''}`}
+                  src={bloombergLogo}
                   alt="Bloomberg"
                   className="h-16 w-auto object-contain"
                   data-testid="logo-bloomberg"
-                  onError={(e) => {
-                    const target = e.target as HTMLImageElement;
-                    target.style.display = 'none';
-                    const parent = target.parentElement;
-                    if (parent) {
-                      parent.innerHTML = '<div class="text-gray-400 font-bold text-3xl">Bloomberg</div>';
-                    }
-                  }}
                 />
               </div>
             </div>
