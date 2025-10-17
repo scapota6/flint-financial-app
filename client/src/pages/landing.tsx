@@ -389,52 +389,54 @@ function Landing() {
               <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-black to-transparent z-10 pointer-events-none" />
               <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-black to-transparent z-10 pointer-events-none" />
               
-              {/* Scrolling track */}
-              <div className="flex gap-6 animate-scroll" style={{
-                animation: 'scroll 60s linear infinite'
-              }} data-testid="scrolling-institutions">
-                {/* First set of logos */}
-                {INSTITUTIONS.map((institution, idx) => (
-                  <div key={`logo-${idx}`} className="flex-shrink-0 flex items-center justify-center" data-testid={`institution-${institution.name.toLowerCase().replace(/[^a-z0-9]/g, '-')}`}>
-                    <div className="h-14 w-14 rounded-full bg-gray-800/60 border border-gray-700/50 flex items-center justify-center p-2 hover:border-purple-500/50 transition-all duration-300">
-                      <img 
-                        src={`https://cdn.brandfetch.io/${institution.domain}?c=${import.meta.env.VITE_BRANDFETCH_CLIENT_ID || ''}`}
-                        alt={institution.name}
-                        className="h-full w-full object-contain"
-                        title={institution.name}
-                        onError={(e) => {
-                          const target = e.target as HTMLImageElement;
-                          target.style.display = 'none';
-                          const parent = target.parentElement;
-                          if (parent) {
-                            parent.innerHTML = `<div class="text-xs text-gray-400 font-semibold text-center">${institution.name.substring(0, 3).toUpperCase()}</div>`;
-                          }
-                        }}
-                      />
+              {/* Scrolling track - seamless infinite scroll */}
+              <div className="flex gap-6" data-testid="scrolling-institutions">
+                <div className="flex gap-6 animate-scroll-seamless">
+                  {/* First set of logos */}
+                  {INSTITUTIONS.map((institution, idx) => (
+                    <div key={`logo-${idx}`} className="flex-shrink-0 flex items-center justify-center" data-testid={`institution-${institution.name.toLowerCase().replace(/[^a-z0-9]/g, '-')}`}>
+                      <div className="h-16 w-16 rounded-full bg-gray-800/60 border border-gray-700/50 flex items-center justify-center overflow-hidden hover:border-purple-500/50 transition-all duration-300">
+                        <img 
+                          src={`https://cdn.brandfetch.io/${institution.domain}?c=${import.meta.env.VITE_BRANDFETCH_CLIENT_ID || ''}`}
+                          alt={institution.name}
+                          className="h-full w-full object-cover scale-125"
+                          title={institution.name}
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            target.style.display = 'none';
+                            const parent = target.parentElement;
+                            if (parent) {
+                              parent.innerHTML = `<div class="text-xs text-gray-400 font-semibold text-center">${institution.name.substring(0, 3).toUpperCase()}</div>`;
+                            }
+                          }}
+                        />
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
                 {/* Duplicate set for seamless loop */}
-                {INSTITUTIONS.map((institution, idx) => (
-                  <div key={`logo-dup-${idx}`} className="flex-shrink-0 flex items-center justify-center">
-                    <div className="h-14 w-14 rounded-full bg-gray-800/60 border border-gray-700/50 flex items-center justify-center p-2 hover:border-purple-500/50 transition-all duration-300">
-                      <img 
-                        src={`https://cdn.brandfetch.io/${institution.domain}?c=${import.meta.env.VITE_BRANDFETCH_CLIENT_ID || ''}`}
-                        alt={institution.name}
-                        className="h-full w-full object-contain"
-                        title={institution.name}
-                        onError={(e) => {
-                          const target = e.target as HTMLImageElement;
-                          target.style.display = 'none';
-                          const parent = target.parentElement;
-                          if (parent) {
-                            parent.innerHTML = `<div class="text-xs text-gray-400 font-semibold text-center">${institution.name.substring(0, 3).toUpperCase()}</div>`;
-                          }
-                        }}
-                      />
+                <div className="flex gap-6 animate-scroll-seamless">
+                  {INSTITUTIONS.map((institution, idx) => (
+                    <div key={`logo-dup-${idx}`} className="flex-shrink-0 flex items-center justify-center">
+                      <div className="h-16 w-16 rounded-full bg-gray-800/60 border border-gray-700/50 flex items-center justify-center overflow-hidden hover:border-purple-500/50 transition-all duration-300">
+                        <img 
+                          src={`https://cdn.brandfetch.io/${institution.domain}?c=${import.meta.env.VITE_BRANDFETCH_CLIENT_ID || ''}`}
+                          alt={institution.name}
+                          className="h-full w-full object-cover scale-125"
+                          title={institution.name}
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            target.style.display = 'none';
+                            const parent = target.parentElement;
+                            if (parent) {
+                              parent.innerHTML = `<div class="text-xs text-gray-400 font-semibold text-center">${institution.name.substring(0, 3).toUpperCase()}</div>`;
+                            }
+                          }}
+                        />
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
             </div>
             
