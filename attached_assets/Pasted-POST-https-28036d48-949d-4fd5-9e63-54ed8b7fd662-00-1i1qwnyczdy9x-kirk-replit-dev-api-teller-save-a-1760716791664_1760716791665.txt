@@ -1,0 +1,38 @@
+POST https://28036d48-949d-4fd5-9e63-54ed8b7fd662-00-1i1qwnyczdy9x.kirk.replit.dev/api/teller/save-account 500 (Internal Server Error)
+onSuccess @ simple-connect-buttons.tsx:172
+await in onSuccess
+success @ connect.js:1
+I @ connect.js:1Understand this error
+simple-connect-buttons.tsx:200 🏦 Error saving account: Error: Failed to save bank accounts
+    at Object.onSuccess (simple-connect-buttons.tsx:188:25)
+overrideMethod @ hook.js:608
+(anonymous) @ rrweb-plugin-console-record.js:2447
+onSuccess @ simple-connect-buttons.tsx:200
+await in onSuccess
+success @ connect.js:1
+I @ connect.js:1Understand this error
+simple-connect-buttons.tsx:229 🏦 Teller Connect Error: Error: Failed to save bank accounts
+    at Object.onSuccess (simple-connect-buttons.tsx:188:25)
+overrideMethod @ hook.js:608
+(anonymous) @ rrweb-plugin-console-record.js:2447
+onError @ simple-connect-buttons.tsx:229
+execute @ @tanstack_react-query.js?v=515028a0:2084
+await in execute
+mutate @ @tanstack_react-query.js?v=515028a0:2378
+(anonymous) @ @tanstack_react-query.js?v=515028a0:3566
+onClick @ simple-connect-buttons.tsx:340
+callCallback2 @ chunk-RPCDYKBN.js?v=515028a0:3674
+invokeGuardedCallbackDev @ chunk-RPCDYKBN.js?v=515028a0:3699
+invokeGuardedCallback @ chunk-RPCDYKBN.js?v=515028a0:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-RPCDYKBN.js?v=515028a0:3736
+executeDispatch @ chunk-RPCDYKBN.js?v=515028a0:7014
+processDispatchQueueItemsInOrder @ chunk-RPCDYKBN.js?v=515028a0:7034
+processDispatchQueue @ chunk-RPCDYKBN.js?v=515028a0:7043
+dispatchEventsForPlugins @ chunk-RPCDYKBN.js?v=515028a0:7051
+(anonymous) @ chunk-RPCDYKBN.js?v=515028a0:7174
+batchedUpdates$1 @ chunk-RPCDYKBN.js?v=515028a0:18913
+batchedUpdates @ chunk-RPCDYKBN.js?v=515028a0:3579
+dispatchEventForPluginEventSystem @ chunk-RPCDYKBN.js?v=515028a0:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-RPCDYKBN.js?v=515028a0:5478
+dispatchEvent @ chunk-RPCDYKBN.js?v=515028a0:5472
+dispatchDiscreteEvent @ chunk-RPCDYKBN.js?v=515028a0:5449Understand this error
