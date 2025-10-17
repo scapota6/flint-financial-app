@@ -408,22 +408,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const connectedAccounts = await storage.getConnectedAccounts(userId);
         const tellerAccounts = connectedAccounts.filter(acc => acc.provider === 'teller');
         
+        // Import resilientTellerFetch for mTLS authentication
+        const { resilientTellerFetch } = await import('./teller/client');
+        
         for (const account of tellerAccounts) {
           // Always include accounts, validate access for real-time data
           if (account.accessToken) {
             try {
-              // Fetch both account info and balances from Teller
+              // Fetch both account info and balances from Teller with mTLS
               const [accountResponse, balancesResponse] = await Promise.all([
-                fetch(`https://api.teller.io/accounts/${account.externalAccountId}`, {
-                  headers: {
-                    'Authorization': `Basic ${Buffer.from(account.accessToken + ":").toString("base64")}`,
+                resilientTellerFetch(
+                  `https://api.teller.io/accounts/${account.externalAccountId}`,
+                  {
+                    headers: {
+                      'Authorization': `Basic ${Buffer.from(account.accessToken + ":").toString("base64")}`,
+                    },
                   },
-                }),
-                fetch(`https://api.teller.io/accounts/${account.externalAccountId}/balances`, {
-                  headers: {
-                    'Authorization': `Basic ${Buffer.from(account.accessToken + ":").toString("base64")}`,
+                  'Dashboard-Account'
+                ),
+                resilientTellerFetch(
+                  `https://api.teller.io/accounts/${account.externalAccountId}/balances`,
+                  {
+                    headers: {
+                      'Authorization': `Basic ${Buffer.from(account.accessToken + ":").toString("base64")}`,
+                    },
                   },
-                })
+                  'Dashboard-Balance'
+                )
               ]);
               
               if (accountResponse.ok && balancesResponse.ok) {
