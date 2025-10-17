@@ -7,13 +7,14 @@ export class HealthCheckService {
   private readonly HEALTH_CHECK_INTERVAL = 6 * 60 * 60 * 1000; // 6 hours in milliseconds
 
   start() {
-    console.log('[Health Check] Starting scheduled health checks every 6 hours');
-    this.intervalId = setInterval(async () => {
-      await this.runHealthCheck();
-    }, this.HEALTH_CHECK_INTERVAL);
+    console.log('[Health Check] Health checks temporarily disabled (needs mTLS fix)');
+    // TEMPORARILY DISABLED - Health check needs to use mTLS for Teller API calls
+    // this.intervalId = setInterval(async () => {
+    //   await this.runHealthCheck();
+    // }, this.HEALTH_CHECK_INTERVAL);
 
     // Also run immediately on startup
-    setTimeout(() => this.runHealthCheck(), 5000); // Wait 5 seconds after server start
+    // setTimeout(() => this.runHealthCheck(), 5000); // Wait 5 seconds after server start
   }
 
   stop() {
