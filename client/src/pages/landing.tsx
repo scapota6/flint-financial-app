@@ -6,10 +6,10 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import forbesLogo from '@assets/png-clipart-forbes-chief-executive-united-states-logo-art-director-escobar-company-text_1760730893332.png';
-import wsjLogo from '@assets/avojvtx0x_1760730893332.webp';
-import entrepreneurLogo from '@assets/154-1547881_entrepreneur-logo-entrepreneur-gray-logo_1760730893331.png';
-import bloombergLogo from '@assets/png-clipart-new-york-city-bloomberg-logo-business-public-relations-others-text-public-relations_1760730893333.png';
+import forbesLogo from '@assets/png-clipart-forbes-chief-executive-united-states-logo-art-director-escobar-company-text_1760730981433.png';
+import wsjLogo from '@assets/avojvtx0x_1760730981432.webp';
+import entrepreneurLogo from '@assets/154-1547881_entrepreneur-logo-entrepreneur-gray-logo_1760730981429.png';
+import bloombergLogo from '@assets/png-clipart-new-york-city-bloomberg-logo-business-public-relations-others-text-public-relations_1760730944516.png';
 
 // Institution list for scrolling banner
 const INSTITUTIONS = [
