@@ -209,10 +209,17 @@ router.post("/save-account", requireAuth, async (req: any, res) => {
     });
     
   } catch (error: any) {
-    logger.error("Teller save account error", { error: error.message });
+    console.error('[Teller Save Account] Full error:', error);
+    console.error('[Teller Save Account] Error stack:', error.stack);
+    logger.error("Teller save account error", { 
+      error: error.message,
+      stack: error.stack,
+      name: error.name
+    });
     res.status(500).json({ 
       message: "Failed to save bank accounts",
-      error: error.message
+      error: error.message,
+      details: error.stack
     });
   }
 });
