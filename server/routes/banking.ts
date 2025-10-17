@@ -2,6 +2,7 @@ import { Router } from "express";
 import { requireAuth } from "../middleware/jwt-auth";
 import { storage } from "../storage";
 import { getTellerAccessToken } from "../store/tellerUsers";
+import { resilientTellerFetch } from "../teller/client";
 
 const router = Router();
 
@@ -29,12 +30,16 @@ router.get("/", requireAuth, async (req: any, res) => {
     for (const account of dbAccounts) {
       try {
         // Test the connection by trying to fetch account info
-        const response = await fetch(`https://api.teller.io/accounts/${account.externalAccountId}`, {
-          headers: {
-            'Authorization': `Basic ${Buffer.from(accessToken + ":").toString("base64")}`,
-            'Accept': 'application/json'
-          }
-        });
+        const response = await resilientTellerFetch(
+          `https://api.teller.io/accounts/${account.externalAccountId}`,
+          {
+            headers: {
+              'Authorization': `Basic ${Buffer.from(accessToken + ":").toString("base64")}`,
+              'Accept': 'application/json'
+            }
+          },
+          'Banking-ValidateAccount'
+        );
         
         if (response.ok) {
           const accountInfo = await response.json();

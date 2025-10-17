@@ -11,7 +11,7 @@ import { v4 as uuidv4 } from 'uuid';
 import tellerPaymentsRouter from './teller.payments';
 import { getAccountLimit } from '../routes';
 import { getTellerUser, saveTellerUser, getTellerAccessToken } from '../store/tellerUsers';
-import { tellerFetch } from '../teller/client';
+import { resilientTellerFetch } from '../teller/client';
 
 const router = Router();
 
@@ -94,7 +94,7 @@ router.post("/save-account", requireAuth, async (req: any, res) => {
     const authHeader = `Basic ${Buffer.from(accessToken + ":").toString("base64")}`;
     
     // Fetch account details from Teller with mTLS
-    const tellerResponse = await tellerFetch(
+    const tellerResponse = await resilientTellerFetch(
       'https://api.teller.io/accounts',
       {
         method: 'GET',
@@ -102,7 +102,8 @@ router.post("/save-account", requireAuth, async (req: any, res) => {
           'Authorization': authHeader,
           'Accept': 'application/json'
         }
-      }
+      },
+      'SaveAccount-FetchAccounts'
     );
     
     if (!tellerResponse.ok) {
@@ -297,7 +298,7 @@ router.post("/exchange-token", requireAuth, async (req: any, res) => {
     logger.info("Fetching Teller accounts with enrollment ID");
     
     // Fetch account details from Teller
-    const tellerResponse = await fetch(
+    const tellerResponse = await resilientTellerFetch(
       'https://api.teller.io/accounts',
       {
         method: 'GET',
@@ -305,7 +306,8 @@ router.post("/exchange-token", requireAuth, async (req: any, res) => {
           'Authorization': authHeader,
           'Accept': 'application/json'
         }
-      }
+      },
+      'ExchangeToken-FetchAccounts'
     );
     
     if (!tellerResponse.ok) {
@@ -466,12 +468,12 @@ router.get("/accounts", requireAuth, async (req: any, res) => {
       try {
         // Test connectivity by making a simple API call
         const authHeader = `Basic ${Buffer.from(accessToken + ":").toString("base64")}`;
-        const response = await tellerFetch(`https://api.teller.io/accounts/${dbAccount.externalAccountId}`, {
+        const response = await resilientTellerFetch(`https://api.teller.io/accounts/${dbAccount.externalAccountId}`, {
           headers: {
             'Authorization': authHeader,
             'Accept': 'application/json'
           }
-        });
+        }, 'GetAccounts-ConnectivityCheck');
         
         if (response.ok) {
           const accountData = await response.json();
@@ -560,14 +562,15 @@ router.get("/transactions/:accountId", requireAuth, async (req: any, res) => {
     
     // Fetch transactions from Teller
     const authHeader = `Basic ${Buffer.from(accessToken + ":").toString("base64")}`;
-    const response = await fetch(
+    const response = await resilientTellerFetch(
       `https://api.teller.io/accounts/${accountId}/transactions`,
       {
         headers: {
           'Authorization': authHeader,
           'Accept': 'application/json'
         }
-      }
+      },
+      'GetTransactions-FetchTransactions'
     );
     
     if (!response.ok) {

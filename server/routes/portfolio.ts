@@ -10,6 +10,7 @@ import { logger } from "@shared/logger";
 import { getSnapUser } from "../store/snapUsers";
 import { requireAuth } from "../middleware/jwt-auth";
 import { getTellerAccessToken } from "../store/tellerUsers";
+import { resilientTellerFetch } from "../teller/client";
 
 const router = Router();
 
@@ -116,20 +117,26 @@ router.get("/summary", requireAuth, async (req: any, res) => {
       } else {
         for (const account of tellerAccounts) {
           try {
+            const authHeader = `Basic ${Buffer.from(accessToken + ":").toString("base64")}`;
+            const requestOptions = {
+              headers: {
+                'Authorization': authHeader,
+                'Accept': 'application/json'
+              }
+            };
+            
             // Fetch account info and balances from Teller
             const [accountResponse, balancesResponse] = await Promise.all([
-              fetch(`https://api.teller.io/accounts/${account.externalAccountId}`, {
-                headers: {
-                  'Authorization': `Basic ${Buffer.from(accessToken + ":").toString("base64")}`,
-                  'Accept': 'application/json'
-                },
-              }),
-              fetch(`https://api.teller.io/accounts/${account.externalAccountId}/balances`, {
-                headers: {
-                  'Authorization': `Basic ${Buffer.from(accessToken + ":").toString("base64")}`,
-                  'Accept': 'application/json'
-                },
-              })
+              resilientTellerFetch(
+                `https://api.teller.io/accounts/${account.externalAccountId}`,
+                requestOptions,
+                'Portfolio-FetchAccount'
+              ),
+              resilientTellerFetch(
+                `https://api.teller.io/accounts/${account.externalAccountId}/balances`,
+                requestOptions,
+                'Portfolio-FetchBalances'
+              )
             ]);
             
             if (accountResponse.ok && balancesResponse.ok) {

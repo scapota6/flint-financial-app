@@ -18,6 +18,8 @@ import { getServerFeatureFlags } from "@shared/feature-flags";
 import { logger } from "@shared/logger";
 import { demoMode } from "@shared/demo-mode";
 import { sendApplicationNotificationEmail } from "./services/email";
+import { getTellerAccessToken } from "./store/tellerUsers";
+import { resilientTellerFetch } from "./teller/client";
 import { 
   insertConnectedAccountSchema,
   insertWatchlistItemSchema,
@@ -2358,78 +2360,100 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log(`[Account Details] Found account: ${account.provider}, External ID: ${account.externalAccountId}`);
       
       if (account.provider === 'teller') {
-        // Call Teller Accounts API to get the Account core object
-        const authHeader = `Basic ${Buffer.from(account.accessToken + ":").toString("base64")}`;
+        // Get Teller access token from teller_users table
+        const accessToken = await getTellerAccessToken(userId);
+        
+        if (!accessToken) {
+          logger.error('Teller access token not found', { userId, accountId: account.id });
+          return res.status(500).json({ 
+            message: "Failed to fetch account details - authentication missing" 
+          });
+        }
         
         try {
-          // Fetch account core object from Teller
-          const accountResponse = await fetch(
-            `https://api.teller.io/accounts/${account.externalAccountId}`,
-            {
-              headers: {
-                'Authorization': authHeader,
-                'Accept': 'application/json'
-              }
+          // Build authorization header
+          const authHeader = `Basic ${Buffer.from(accessToken + ":").toString("base64")}`;
+          const requestOptions: RequestInit = {
+            headers: {
+              'Authorization': authHeader,
+              'Accept': 'application/json'
             }
-          );
+          };
           
+          // Fetch account core object from Teller using mTLS
+          const accountResponse = await resilientTellerFetch(
+            `https://api.teller.io/accounts/${account.externalAccountId}`,
+            requestOptions,
+            'AccountDetails-Account'
+          );
           if (!accountResponse.ok) {
             throw new Error(`Teller API error: ${accountResponse.status}`);
           }
-          
           const tellerAccount = await accountResponse.json();
           
-          // Fetch live balances from Teller Balances endpoint
-          const balancesResponse = await fetch(
-            `https://api.teller.io/accounts/${account.externalAccountId}/balances`,
-            {
-              headers: {
-                'Authorization': authHeader,
-                'Accept': 'application/json'
-              }
+          // Fetch live balances from Teller Balances endpoint using mTLS
+          let balances = null;
+          try {
+            const balancesResponse = await resilientTellerFetch(
+              `https://api.teller.io/accounts/${account.externalAccountId}/balances`,
+              requestOptions,
+              'AccountDetails-Balance'
+            );
+            if (!balancesResponse.ok) {
+              throw new Error(`Teller API error: ${balancesResponse.status}`);
             }
-          );
+            balances = await balancesResponse.json();
+          } catch (error) {
+            console.log('[Account Details] Failed to fetch balances:', error);
+          }
           
-          const balances = balancesResponse.ok ? await balancesResponse.json() : null;
-          
-          // Fetch account details (routing/account info) for masked identifiers
-          const detailsResponse = await fetch(
-            `https://api.teller.io/accounts/${account.externalAccountId}/details`,
-            {
-              headers: {
-                'Authorization': authHeader,
-                'Accept': 'application/json'
-              }
+          // Fetch account details (routing/account info) for masked identifiers using mTLS
+          let accountDetails = null;
+          try {
+            const detailsResponse = await resilientTellerFetch(
+              `https://api.teller.io/accounts/${account.externalAccountId}/details`,
+              requestOptions,
+              'AccountDetails-Details'
+            );
+            if (!detailsResponse.ok) {
+              throw new Error(`Teller API error: ${detailsResponse.status}`);
             }
-          );
+            accountDetails = await detailsResponse.json();
+          } catch (error) {
+            console.log('[Account Details] Failed to fetch account details:', error);
+          }
           
-          const accountDetails = detailsResponse.ok ? await detailsResponse.json() : null;
-          
-          // Fetch transactions with pagination (recent 30 days worth)
-          const transactionsResponse = await fetch(
-            `https://api.teller.io/accounts/${account.externalAccountId}/transactions?count=50`,
-            {
-              headers: {
-                'Authorization': authHeader,
-                'Accept': 'application/json'
-              }
+          // Fetch transactions with pagination (recent 30 days worth) using mTLS
+          let transactions = [];
+          try {
+            const transactionsResponse = await resilientTellerFetch(
+              `https://api.teller.io/accounts/${account.externalAccountId}/transactions?count=50`,
+              requestOptions,
+              'AccountDetails-Transactions'
+            );
+            if (!transactionsResponse.ok) {
+              throw new Error(`Teller API error: ${transactionsResponse.status}`);
             }
-          );
+            transactions = await transactionsResponse.json();
+          } catch (error) {
+            console.log('[Account Details] Failed to fetch transactions:', error);
+          }
           
-          const transactions = transactionsResponse.ok ? await transactionsResponse.json() : [];
-          
-          // Fetch statements from Teller Statements resource
-          const statementsResponse = await fetch(
-            `https://api.teller.io/accounts/${account.externalAccountId}/statements`,
-            {
-              headers: {
-                'Authorization': authHeader,
-                'Accept': 'application/json'
-              }
+          // Fetch statements from Teller Statements resource using mTLS
+          let statements = [];
+          try {
+            const statementsResponse = await resilientTellerFetch(
+              `https://api.teller.io/accounts/${account.externalAccountId}/statements`,
+              requestOptions,
+              'AccountDetails-Statements'
+            );
+            if (!statementsResponse.ok) {
+              throw new Error(`Teller API error: ${statementsResponse.status}`);
             }
-          );
-          
-          const statements = statementsResponse.ok ? await statementsResponse.json() : [];
+            statements = await statementsResponse.json();
+          } catch (error) {
+            console.log('[Account Details] Failed to fetch statements:', error);
+          }
           
           // Use Teller mapper to calculate credit limit and other values
           const { mapTellerToFlint } = await import('./lib/teller-mapping.js');
@@ -2439,24 +2463,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
           let paymentCapabilities = null;
           if (tellerAccount.subtype === 'credit_card') {
             try {
-              const capabilitiesResponse = await fetch(
+              const capabilitiesResponse = await resilientTellerFetch(
                 `https://api.teller.io/accounts/${account.externalAccountId}/capabilities`,
-                {
-                  headers: {
-                    'Authorization': authHeader,
-                    'Accept': 'application/json'
-                  }
-                }
+                requestOptions,
+                'AccountDetails-Capabilities'
               );
-              
-              if (capabilitiesResponse.ok) {
-                const capabilities = await capabilitiesResponse.json();
-                paymentCapabilities = {
-                  paymentsSupported: capabilities.payments || capabilities.zelle || false,
-                  zelleSupported: capabilities.zelle || false,
-                  supportedMethods: capabilities.payment_methods || []
-                };
+              if (!capabilitiesResponse.ok) {
+                throw new Error(`Teller API error: ${capabilitiesResponse.status}`);
               }
+              const capabilities = await capabilitiesResponse.json();
+              
+              paymentCapabilities = {
+                paymentsSupported: capabilities.payments || capabilities.zelle || false,
+                zelleSupported: capabilities.zelle || false,
+                supportedMethods: capabilities.payment_methods || []
+              };
             } catch (error) {
               // Payment capabilities check failed, continue without payments
               paymentCapabilities = { paymentsSupported: false };

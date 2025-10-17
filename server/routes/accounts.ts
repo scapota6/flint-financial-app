@@ -9,6 +9,8 @@ import crypto from "crypto";
 import { requireAuth } from "../middleware/jwt-auth";
 import { storage } from "../storage";
 import { logger } from "@shared/logger";
+import { resilientTellerFetch } from "../teller/client";
+import { getTellerAccessToken } from "../store/tellerUsers";
 
 const router = Router();
 
@@ -130,14 +132,19 @@ router.get("/health", requireAuth, async (req: any, res) => {
             }
           } else if (account.provider === 'teller') {
             // Verify Teller connection with lightweight call
-            if (account.accessToken && account.externalAccountId) {
-              const authHeader = `Basic ${Buffer.from(account.accessToken + ":").toString("base64")}`;
-              const response = await fetch(`https://api.teller.io/accounts/${account.externalAccountId}`, {
-                headers: {
-                  'Authorization': authHeader,
-                  'Accept': 'application/json'
-                }
-              });
+            const accessToken = await getTellerAccessToken(userId);
+            if (accessToken && account.externalAccountId) {
+              const authHeader = `Basic ${Buffer.from(accessToken + ":").toString("base64")}`;
+              const response = await resilientTellerFetch(
+                `https://api.teller.io/accounts/${account.externalAccountId}`,
+                {
+                  headers: {
+                    'Authorization': authHeader,
+                    'Accept': 'application/json'
+                  }
+                },
+                'AccountHealth-CheckTeller'
+              );
               
               status = response.ok ? 'connected' : 'disconnected';
             } else {
@@ -447,23 +454,36 @@ router.get("/banks", requireAuth, async (req: any, res) => {
     if (process.env.TELLER_APPLICATION_ID) {
       const { mapTellerToFlint } = await import('../lib/teller-mapping.js');
       
+      // Get Teller access token for this user
+      const accessToken = await getTellerAccessToken(userId);
+      
       for (const account of bankAccounts) {
-        if (account.provider === 'teller' && account.accessToken) {
+        if (account.provider === 'teller' && accessToken) {
           try {
-            const authHeader = `Basic ${Buffer.from(account.accessToken + ":").toString("base64")}`;
+            const authHeader = `Basic ${Buffer.from(accessToken + ":").toString("base64")}`;
+            const requestOptions = {
+              headers: { 
+                'Authorization': authHeader,
+                'Accept': 'application/json'
+              }
+            };
             
             // Fetch account info to get type
-            const accountResponse = await fetch(`https://api.teller.io/accounts/${account.externalAccountId}`, {
-              headers: { 'Authorization': authHeader },
-            });
+            const accountResponse = await resilientTellerFetch(
+              `https://api.teller.io/accounts/${account.externalAccountId}`,
+              requestOptions,
+              'Banks-FetchAccount'
+            );
             
             if (!accountResponse.ok) continue;
             const tellerAccount = await accountResponse.json();
             
             // Fetch live balances from Teller Balances endpoint
-            const balancesResponse = await fetch(`https://api.teller.io/accounts/${account.externalAccountId}/balances`, {
-              headers: { 'Authorization': authHeader },
-            });
+            const balancesResponse = await resilientTellerFetch(
+              `https://api.teller.io/accounts/${account.externalAccountId}/balances`,
+              requestOptions,
+              'Banks-FetchBalances'
+            );
             
             if (balancesResponse.ok) {
               const balances = await balancesResponse.json();
@@ -554,13 +574,21 @@ router.get("/banks/:id/transactions", requireAuth, async (req: any, res) => {
     let transactions: any[] = [];
     
     // Fetch from Teller if available
-    if (account.provider === 'teller' && account.accessToken) {
-      try {
-        const response = await fetch(`https://api.teller.io/accounts/${account.externalAccountId}/transactions`, {
-          headers: {
-            'Authorization': `Basic ${Buffer.from(account.accessToken + ":").toString("base64")}`,
-          },
-        });
+    if (account.provider === 'teller') {
+      const accessToken = await getTellerAccessToken(userId);
+      if (accessToken) {
+        try {
+          const authHeader = `Basic ${Buffer.from(accessToken + ":").toString("base64")}`;
+          const response = await resilientTellerFetch(
+            `https://api.teller.io/accounts/${account.externalAccountId}/transactions`,
+            {
+              headers: {
+                'Authorization': authHeader,
+                'Accept': 'application/json'
+              }
+            },
+            'BankTransactions-FetchTransactions'
+          );
         
         if (response.ok) {
           const tellerTransactions = await response.json();
@@ -573,8 +601,9 @@ router.get("/banks/:id/transactions", requireAuth, async (req: any, res) => {
             date: tx.date
           }));
         }
-      } catch (error: any) {
-        logger.error("Failed to fetch Teller transactions", { error });
+        } catch (error: any) {
+          logger.error("Failed to fetch Teller transactions", { error });
+        }
       }
     }
     

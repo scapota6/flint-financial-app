@@ -3,6 +3,7 @@ import { db } from '../db';
 import { sql } from 'drizzle-orm';
 import { encryptionService } from '../services/EncryptionService';
 import snaptrade from 'snaptrade-typescript-sdk';
+import { resilientTellerFetch } from '../teller/client';
 
 // Version information
 const APP_VERSION = process.env.npm_package_version || '1.0.0';
@@ -137,9 +138,13 @@ async function checkTellerHealth(): Promise<ServiceStatus> {
   const startTime = Date.now();
   try {
     // Check Teller API status
-    const response = await fetch('https://api.teller.io/', {
-      method: 'HEAD'
-    });
+    const response = await resilientTellerFetch(
+      'https://api.teller.io/',
+      {
+        method: 'HEAD'
+      },
+      'Health-CheckTeller'
+    );
     const latency = Date.now() - startTime;
     
     const status: ServiceStatus = {

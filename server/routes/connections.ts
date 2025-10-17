@@ -9,6 +9,7 @@ import { storage } from "../storage";
 import { logger } from "@shared/logger";
 import crypto from "crypto";
 import { v4 as uuidv4 } from 'uuid';
+import { resilientTellerFetch } from "../teller/client";
 
 const router = Router();
 
@@ -349,12 +350,18 @@ router.post("/teller/exchange", requireAuth, async (req: any, res) => {
     }
     
     // Exchange enrollment ID for access token
-    const response = await fetch("https://api.teller.io/accounts/", {
-      method: "GET",
-      headers: {
-        "Authorization": `Basic ${Buffer.from(enrollmentId + ":").toString("base64")}`,
+    const authHeader = `Basic ${Buffer.from(enrollmentId + ":").toString("base64")}`;
+    const response = await resilientTellerFetch(
+      "https://api.teller.io/accounts/",
+      {
+        method: "GET",
+        headers: {
+          "Authorization": authHeader,
+          "Accept": "application/json"
+        },
       },
-    });
+      'Connections-ExchangeToken'
+    );
     
     if (!response.ok) {
       throw new Error(`Teller API error: ${response.status}`);
