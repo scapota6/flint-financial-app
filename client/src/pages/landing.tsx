@@ -269,6 +269,80 @@ function Landing() {
           </div>
         </section>
 
+        {/* As Seen On Section */}
+        <section className="py-16 border-y border-gray-800/50 bg-gray-900/30" data-section="as-seen-on">
+          <div className="max-w-6xl mx-auto space-y-8">
+            <div className="text-center">
+              <h3 className="text-sm uppercase tracking-wider text-gray-400 font-semibold mb-8">As Seen On</h3>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 items-center justify-items-center opacity-60">
+              {/* Forbes */}
+              <div className="grayscale hover:grayscale-0 transition-all duration-300">
+                <svg className="h-8 w-auto fill-current text-gray-400 hover:text-white transition-colors" viewBox="0 0 120 30" xmlns="http://www.w3.org/2000/svg">
+                  <text x="0" y="20" fontSize="20" fontWeight="bold" fontFamily="serif">Forbes</text>
+                </svg>
+              </div>
+              {/* Wall Street Journal */}
+              <div className="grayscale hover:grayscale-0 transition-all duration-300">
+                <svg className="h-8 w-auto fill-current text-gray-400 hover:text-white transition-colors" viewBox="0 0 180 30" xmlns="http://www.w3.org/2000/svg">
+                  <text x="0" y="12" fontSize="10" fontWeight="300" fontFamily="serif">THE</text>
+                  <text x="0" y="24" fontSize="12" fontWeight="bold" fontFamily="serif">WALL STREET JOURNAL</text>
+                </svg>
+              </div>
+              {/* Entrepreneur */}
+              <div className="grayscale hover:grayscale-0 transition-all duration-300">
+                <svg className="h-8 w-auto fill-current text-gray-400 hover:text-white transition-colors" viewBox="0 0 140 30" xmlns="http://www.w3.org/2000/svg">
+                  <text x="0" y="20" fontSize="16" fontWeight="bold" fontFamily="sans-serif">Entrepreneur</text>
+                </svg>
+              </div>
+              {/* Bloomberg */}
+              <div className="grayscale hover:grayscale-0 transition-all duration-300">
+                <svg className="h-8 w-auto fill-current text-gray-400 hover:text-white transition-colors" viewBox="0 0 140 30" xmlns="http://www.w3.org/2000/svg">
+                  <text x="0" y="20" fontSize="18" fontWeight="bold" fontFamily="sans-serif">Bloomberg</text>
+                </svg>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Supported Institutions Scrolling Banner */}
+        <section className="py-12 bg-gradient-to-b from-gray-900/30 to-transparent overflow-hidden" data-section="institutions">
+          <div className="max-w-6xl mx-auto space-y-6">
+            <div className="text-center">
+              <h3 className="text-sm uppercase tracking-wider text-gray-400 font-semibold">Connect Your Accounts From</h3>
+            </div>
+            
+            {/* Scrolling container */}
+            <div className="relative">
+              {/* Gradient overlays for smooth edges */}
+              <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-black to-transparent z-10 pointer-events-none" />
+              <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-black to-transparent z-10 pointer-events-none" />
+              
+              {/* Scrolling track */}
+              <div className="flex gap-8 animate-scroll" style={{
+                animation: 'scroll 40s linear infinite'
+              }}>
+                {/* First set of logos */}
+                {['Chase', 'Fidelity', 'Schwab', 'Robinhood', 'E*TRADE', 'Webull', 'Interactive Brokers', 'Coinbase', 'Bank of America', 'Wells Fargo', 'Citi', 'Capital One', 'Binance', 'Kraken', 'Alpaca', 'Public', 'Vanguard', 'TD Ameritrade'].map((name, idx) => (
+                  <div key={`logo-${idx}`} className="flex-shrink-0 flex items-center justify-center px-6 py-3 bg-gray-800/40 border border-gray-700/50 rounded-lg min-w-[140px]">
+                    <span className="text-gray-300 font-medium text-sm">{name}</span>
+                  </div>
+                ))}
+                {/* Duplicate set for seamless loop */}
+                {['Chase', 'Fidelity', 'Schwab', 'Robinhood', 'E*TRADE', 'Webull', 'Interactive Brokers', 'Coinbase', 'Bank of America', 'Wells Fargo', 'Citi', 'Capital One', 'Binance', 'Kraken', 'Alpaca', 'Public', 'Vanguard', 'TD Ameritrade'].map((name, idx) => (
+                  <div key={`logo-dup-${idx}`} className="flex-shrink-0 flex items-center justify-center px-6 py-3 bg-gray-800/40 border border-gray-700/50 rounded-lg min-w-[140px]">
+                    <span className="text-gray-300 font-medium text-sm">{name}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+            
+            <p className="text-center text-xs text-gray-500 mt-4">
+              + 5,000 more banks and brokerages
+            </p>
+          </div>
+        </section>
+
         {/* The Problem Section */}
         <section className="py-20 bg-gradient-to-b from-red-950/20 to-transparent border-y border-red-900/30" data-section="problem">
           <div className="max-w-6xl mx-auto space-y-12">
