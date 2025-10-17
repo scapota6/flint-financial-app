@@ -6,6 +6,34 @@
  */
 
 import React, { useState, useEffect } from 'react';
+
+// Institution list for scrolling banner
+const INSTITUTIONS = [
+  { name: 'Chase', domain: 'chase.com' },
+  { name: 'Fidelity', domain: 'fidelity.com' },
+  { name: 'Schwab', domain: 'schwab.com' },
+  { name: 'Robinhood', domain: 'robinhood.com' },
+  { name: 'E*TRADE', domain: 'etrade.com' },
+  { name: 'Webull', domain: 'webull.com' },
+  { name: 'Interactive Brokers', domain: 'interactivebrokers.com' },
+  { name: 'Coinbase', domain: 'coinbase.com' },
+  { name: 'Bank of America', domain: 'bankofamerica.com' },
+  { name: 'Wells Fargo', domain: 'wellsfargo.com' },
+  { name: 'Citi', domain: 'citi.com' },
+  { name: 'Capital One', domain: 'capitalone.com' },
+  { name: 'Binance', domain: 'binance.com' },
+  { name: 'Kraken', domain: 'kraken.com' },
+  { name: 'Alpaca', domain: 'alpaca.markets' },
+  { name: 'Public', domain: 'public.com' },
+  { name: 'Vanguard', domain: 'vanguard.com' },
+  { name: 'TD Ameritrade', domain: 'tdameritrade.com' },
+  { name: 'Questrade', domain: 'questrade.com' },
+  { name: 'Wealthsimple', domain: 'wealthsimple.com' },
+  { name: 'Tradestation', domain: 'tradestation.com' },
+  { name: 'US Bank', domain: 'usbank.com' },
+  { name: 'PNC', domain: 'pnc.com' },
+  { name: 'Truist', domain: 'truist.com' }
+];
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -283,6 +311,14 @@ function Landing() {
                   alt="Forbes"
                   className="h-8 w-auto object-contain"
                   data-testid="logo-forbes"
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    target.style.display = 'none';
+                    const parent = target.parentElement;
+                    if (parent) {
+                      parent.innerHTML = '<div class="text-gray-400 font-bold text-xl" style="font-family: serif;">Forbes</div>';
+                    }
+                  }}
                 />
               </div>
               {/* Wall Street Journal */}
@@ -292,6 +328,14 @@ function Landing() {
                   alt="Wall Street Journal"
                   className="h-8 w-auto object-contain"
                   data-testid="logo-wsj"
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    target.style.display = 'none';
+                    const parent = target.parentElement;
+                    if (parent) {
+                      parent.innerHTML = '<div class="text-gray-400 font-bold text-sm" style="font-family: serif;">THE WALL STREET JOURNAL</div>';
+                    }
+                  }}
                 />
               </div>
               {/* Entrepreneur */}
@@ -301,6 +345,14 @@ function Landing() {
                   alt="Entrepreneur"
                   className="h-8 w-auto object-contain"
                   data-testid="logo-entrepreneur"
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    target.style.display = 'none';
+                    const parent = target.parentElement;
+                    if (parent) {
+                      parent.innerHTML = '<div class="text-gray-400 font-bold text-lg">Entrepreneur</div>';
+                    }
+                  }}
                 />
               </div>
               {/* Bloomberg */}
@@ -310,6 +362,14 @@ function Landing() {
                   alt="Bloomberg"
                   className="h-8 w-auto object-contain"
                   data-testid="logo-bloomberg"
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    target.style.display = 'none';
+                    const parent = target.parentElement;
+                    if (parent) {
+                      parent.innerHTML = '<div class="text-gray-400 font-bold text-xl">Bloomberg</div>';
+                    }
+                  }}
                 />
               </div>
             </div>
@@ -334,32 +394,7 @@ function Landing() {
                 animation: 'scroll 60s linear infinite'
               }} data-testid="scrolling-institutions">
                 {/* First set of logos */}
-                {[
-                  { name: 'Chase', domain: 'chase.com' },
-                  { name: 'Fidelity', domain: 'fidelity.com' },
-                  { name: 'Schwab', domain: 'schwab.com' },
-                  { name: 'Robinhood', domain: 'robinhood.com' },
-                  { name: 'E*TRADE', domain: 'etrade.com' },
-                  { name: 'Webull', domain: 'webull.com' },
-                  { name: 'Interactive Brokers', domain: 'interactivebrokers.com' },
-                  { name: 'Coinbase', domain: 'coinbase.com' },
-                  { name: 'Bank of America', domain: 'bankofamerica.com' },
-                  { name: 'Wells Fargo', domain: 'wellsfargo.com' },
-                  { name: 'Citi', domain: 'citi.com' },
-                  { name: 'Capital One', domain: 'capitalone.com' },
-                  { name: 'Binance', domain: 'binance.com' },
-                  { name: 'Kraken', domain: 'kraken.com' },
-                  { name: 'Alpaca', domain: 'alpaca.markets' },
-                  { name: 'Public', domain: 'public.com' },
-                  { name: 'Vanguard', domain: 'vanguard.com' },
-                  { name: 'TD Ameritrade', domain: 'tdameritrade.com' },
-                  { name: 'Questrade', domain: 'questrade.com' },
-                  { name: 'Wealthsimple', domain: 'wealthsimple.com' },
-                  { name: 'Tradestation', domain: 'tradestation.com' },
-                  { name: 'US Bank', domain: 'usbank.com' },
-                  { name: 'PNC', domain: 'pnc.com' },
-                  { name: 'Truist', domain: 'truist.com' }
-                ].map((institution, idx) => (
+                {INSTITUTIONS.map((institution, idx) => (
                   <div key={`logo-${idx}`} className="flex-shrink-0 flex items-center justify-center" data-testid={`institution-${institution.name.toLowerCase().replace(/[^a-z0-9]/g, '-')}`}>
                     <div className="h-14 w-14 rounded-full bg-gray-800/60 border border-gray-700/50 flex items-center justify-center p-2 hover:border-purple-500/50 transition-all duration-300">
                       <img 
@@ -367,37 +402,20 @@ function Landing() {
                         alt={institution.name}
                         className="h-full w-full object-contain"
                         title={institution.name}
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.style.display = 'none';
+                          const parent = target.parentElement;
+                          if (parent) {
+                            parent.innerHTML = `<div class="text-xs text-gray-400 font-semibold text-center">${institution.name.substring(0, 3).toUpperCase()}</div>`;
+                          }
+                        }}
                       />
                     </div>
                   </div>
                 ))}
                 {/* Duplicate set for seamless loop */}
-                {[
-                  { name: 'Chase', domain: 'chase.com' },
-                  { name: 'Fidelity', domain: 'fidelity.com' },
-                  { name: 'Schwab', domain: 'schwab.com' },
-                  { name: 'Robinhood', domain: 'robinhood.com' },
-                  { name: 'E*TRADE', domain: 'etrade.com' },
-                  { name: 'Webull', domain: 'webull.com' },
-                  { name: 'Interactive Brokers', domain: 'interactivebrokers.com' },
-                  { name: 'Coinbase', domain: 'coinbase.com' },
-                  { name: 'Bank of America', domain: 'bankofamerica.com' },
-                  { name: 'Wells Fargo', domain: 'wellsfargo.com' },
-                  { name: 'Citi', domain: 'citi.com' },
-                  { name: 'Capital One', domain: 'capitalone.com' },
-                  { name: 'Binance', domain: 'binance.com' },
-                  { name: 'Kraken', domain: 'kraken.com' },
-                  { name: 'Alpaca', domain: 'alpaca.markets' },
-                  { name: 'Public', domain: 'public.com' },
-                  { name: 'Vanguard', domain: 'vanguard.com' },
-                  { name: 'TD Ameritrade', domain: 'tdameritrade.com' },
-                  { name: 'Questrade', domain: 'questrade.com' },
-                  { name: 'Wealthsimple', domain: 'wealthsimple.com' },
-                  { name: 'Tradestation', domain: 'tradestation.com' },
-                  { name: 'US Bank', domain: 'usbank.com' },
-                  { name: 'PNC', domain: 'pnc.com' },
-                  { name: 'Truist', domain: 'truist.com' }
-                ].map((institution, idx) => (
+                {INSTITUTIONS.map((institution, idx) => (
                   <div key={`logo-dup-${idx}`} className="flex-shrink-0 flex items-center justify-center">
                     <div className="h-14 w-14 rounded-full bg-gray-800/60 border border-gray-700/50 flex items-center justify-center p-2 hover:border-purple-500/50 transition-all duration-300">
                       <img 
@@ -405,6 +423,14 @@ function Landing() {
                         alt={institution.name}
                         className="h-full w-full object-contain"
                         title={institution.name}
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.style.display = 'none';
+                          const parent = target.parentElement;
+                          if (parent) {
+                            parent.innerHTML = `<div class="text-xs text-gray-400 font-semibold text-center">${institution.name.substring(0, 3).toUpperCase()}</div>`;
+                          }
+                        }}
                       />
                     </div>
                   </div>
