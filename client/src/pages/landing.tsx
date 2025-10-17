@@ -6,7 +6,6 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { useQuery } from '@tanstack/react-query';
 import forbesLogo from '@assets/image_1760730257165.png';
 import wsjLogo from '@assets/image_1760730223928.png';
 import entrepreneurLogo from '@assets/image_1760730243349.png';
@@ -109,16 +108,6 @@ function Landing() {
   });
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [dashboardPreviewOpen, setDashboardPreviewOpen] = useState(false);
-
-  // Fetch supported institutions count
-  const { data: institutionsData } = useQuery<{ count: number; source: string }>({
-    queryKey: ['/api/teller/institutions-count'],
-    staleTime: 1000 * 60 * 60 * 24, // Cache for 24 hours
-  });
-
-  const tellerCount = institutionsData?.count || 100;
-  const snaptradeCount = 20; // SnapTrade supports 20+ brokerages per their docs
-  const totalInstitutions = tellerCount + snaptradeCount;
   const [checkoutPlanId, setCheckoutPlanId] = useState<string | null>(null);
   const { toast } = useToast();
 
@@ -420,7 +409,7 @@ function Landing() {
             </div>
             
             <p className="text-center text-xs text-gray-500 mt-4" data-testid="text-more-institutions">
-              + {totalInstitutions}+ banks and brokerages supported via Teller & SnapTrade
+              120+ banks and brokerages supported
             </p>
           </div>
         </section>
