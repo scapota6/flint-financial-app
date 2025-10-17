@@ -37,7 +37,8 @@ Preferred communication style: Simple, everyday language.
 - **Compliance Framework**: Legal disclaimers system with user acknowledgment tracking and RBAC groundwork.
 - **Settings Management**: Profile management, connected accounts management, data export.
 - **Teller Balance Mapping System**: Utility for accurately mapping Teller.io account balances.
-- **SnapTrade Integration**: Stores user credentials and brokerage authorizations, consolidated registration, server-side auto-sync, normalized account display names, auto-recovery for orphaned accounts.
+- **Teller Integration Architecture**: One enrollment per user pattern - access tokens stored in `teller_users` table (similar to SnapTrade), with helper function `getTellerAccessToken(userId)` for API calls. Prevents token duplication across connected accounts.
+- **SnapTrade Integration**: Stores user credentials and brokerage authorizations in `snaptrade_users` table, consolidated registration, server-side auto-sync, normalized account display names, auto-recovery for orphaned accounts.
 
 ### Production Infrastructure
 - **Database Backup & Recovery**: Neon Database with continuous data protection and 7-day PITR.
