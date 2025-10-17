@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { requireAuth } from "../middleware/jwt-auth";
 import { storage } from "../storage";
+import { getTellerAccessToken } from "../store/tellerUsers";
 
 const router = Router();
 
@@ -16,20 +17,21 @@ router.get("/", requireAuth, async (req: any, res) => {
       return res.json({ accounts: [] });
     }
     
+    // Fetch Teller access token for this user
+    const accessToken = await getTellerAccessToken(userId);
+    if (!accessToken) {
+      return res.json({ accounts: [] }); // No Teller enrollment
+    }
+    
     // Validate account connections by checking Teller API
     const validatedAccounts = [];
     
     for (const account of dbAccounts) {
       try {
-        if (!account.accessToken) {
-          // No access token means disconnected
-          continue;
-        }
-        
         // Test the connection by trying to fetch account info
         const response = await fetch(`https://api.teller.io/accounts/${account.externalAccountId}`, {
           headers: {
-            'Authorization': `Basic ${Buffer.from(account.accessToken + ":").toString("base64")}`,
+            'Authorization': `Basic ${Buffer.from(accessToken + ":").toString("base64")}`,
             'Accept': 'application/json'
           }
         });

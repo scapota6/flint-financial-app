@@ -90,6 +90,16 @@ export const snaptradeConnections = pgTable('snaptrade_connections', {
   userAuthIndex: index('snaptrade_connections_user_auth_idx').on(table.flintUserId, table.brokerageAuthorizationId),
 }));
 
+// Teller users table: stores one enrollment per user (similar to snaptrade_users)
+export const tellerUsers = pgTable('teller_users', {
+  flintUserId: varchar('flint_user_id').primaryKey().references(() => users.id),
+  enrollmentId: varchar('enrollment_id').notNull().unique(), // Teller enrollment ID
+  accessToken: varchar('access_token').notNull(), // Teller access token (stored once per user)
+  institutionName: varchar('institution_name'), // Primary institution name
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+});
+
 // Connected accounts (banks, brokerages, crypto)
 export const connectedAccounts = pgTable("connected_accounts", {
   id: serial("id").primaryKey(),
@@ -453,6 +463,9 @@ export type InsertSnaptradeUser = typeof snaptradeUsers.$inferInsert;
 
 export type SnaptradeConnection = typeof snaptradeConnections.$inferSelect;
 export type InsertSnaptradeConnection = typeof snaptradeConnections.$inferInsert;
+
+export type TellerUser = typeof tellerUsers.$inferSelect;
+export type InsertTellerUser = typeof tellerUsers.$inferInsert;
 
 // Insert schemas
 export const insertConnectedAccountSchema = createInsertSchema(connectedAccounts).omit({

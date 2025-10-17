@@ -9,6 +9,7 @@ import { marketDataService } from "../services/market-data";
 import { logger } from "@shared/logger";
 import { getSnapUser } from "../store/snapUsers";
 import { requireAuth } from "../middleware/jwt-auth";
+import { getTellerAccessToken } from "../store/tellerUsers";
 
 const router = Router();
 
@@ -108,20 +109,24 @@ router.get("/summary", requireAuth, async (req: any, res) => {
       const connectedAccounts = await storage.getConnectedAccounts(userId);
       const tellerAccounts = connectedAccounts.filter(acc => acc.provider === 'teller');
       
-      for (const account of tellerAccounts) {
-        if (account.accessToken) {
+      // Fetch Teller access token for this user
+      const accessToken = await getTellerAccessToken(userId);
+      if (!accessToken) {
+        console.log('No Teller access token found for portfolio user');
+      } else {
+        for (const account of tellerAccounts) {
           try {
             // Fetch account info and balances from Teller
             const [accountResponse, balancesResponse] = await Promise.all([
               fetch(`https://api.teller.io/accounts/${account.externalAccountId}`, {
                 headers: {
-                  'Authorization': `Basic ${Buffer.from(account.accessToken + ":").toString("base64")}`,
+                  'Authorization': `Basic ${Buffer.from(accessToken + ":").toString("base64")}`,
                   'Accept': 'application/json'
                 },
               }),
               fetch(`https://api.teller.io/accounts/${account.externalAccountId}/balances`, {
                 headers: {
-                  'Authorization': `Basic ${Buffer.from(account.accessToken + ":").toString("base64")}`,
+                  'Authorization': `Basic ${Buffer.from(accessToken + ":").toString("base64")}`,
                   'Accept': 'application/json'
                 },
               })

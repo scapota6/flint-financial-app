@@ -10,6 +10,7 @@ import { storage } from "../storage";
 import { v4 as uuidv4 } from 'uuid';
 import tellerPaymentsRouter from './teller.payments';
 import { getAccountLimit } from '../routes';
+import { getTellerUser, saveTellerUser, getTellerAccessToken } from '../store/tellerUsers';
 
 const router = Router();
 
@@ -112,6 +113,16 @@ router.post("/save-account", requireAuth, async (req: any, res) => {
     const accounts = await tellerResponse.json();
     logger.info(`Teller accounts fetched: ${accounts.length} accounts`);
     
+    // Save/update Teller enrollment for this user (store access token once per user)
+    // Use access token as enrollmentId if enrollmentId not provided (Teller SDK pattern)
+    const actualEnrollmentId = enrollmentId || accessToken;
+    await saveTellerUser(userId, {
+      enrollmentId: actualEnrollmentId,
+      accessToken: accessToken,
+      institutionName: institution
+    });
+    logger.info("Teller enrollment saved/updated", { userId, enrollmentId: actualEnrollmentId });
+    
     // Get user and calculate limits
     const user = await storage.getUser(userId);
     const existingAccounts = await storage.getConnectedAccounts(userId);
@@ -211,7 +222,7 @@ router.post("/save-account", requireAuth, async (req: any, res) => {
         status: 'connected',
         accountType,
         balance: formattedBalance,
-        accessToken: accessToken, // CRITICAL: Store access token for API calls
+        // NOTE: Access token is NOT stored here - it's in teller_users table to avoid duplication
       });
     }
     
@@ -419,20 +430,29 @@ router.get("/accounts", requireAuth, async (req: any, res) => {
       });
     }
     
+    // Fetch Teller access token for this user
+    const accessToken = await getTellerAccessToken(userId);
+    if (!accessToken) {
+      return res.json({ 
+        provider: 'teller',
+        accounts: [] 
+      });
+    }
+    
     // Test connectivity for each account and filter out inaccessible ones
     const validAccounts = [];
     const invalidAccountIds = [];
     
     for (const dbAccount of dbAccounts) {
-      if (!dbAccount.accessToken || !dbAccount.externalAccountId) {
-        console.log(`[Teller Connectivity] Account ${dbAccount.id} missing credentials, marking inactive`);
+      if (!dbAccount.externalAccountId) {
+        console.log(`[Teller Connectivity] Account ${dbAccount.id} missing external ID, marking inactive`);
         invalidAccountIds.push(dbAccount.id);
         continue;
       }
       
       try {
         // Test connectivity by making a simple API call
-        const authHeader = `Basic ${Buffer.from(dbAccount.accessToken + ":").toString("base64")}`;
+        const authHeader = `Basic ${Buffer.from(accessToken + ":").toString("base64")}`;
         const response = await fetch(`https://api.teller.io/accounts/${dbAccount.externalAccountId}`, {
           headers: {
             'Authorization': authHeader,
@@ -511,14 +531,20 @@ router.get("/transactions/:accountId", requireAuth, async (req: any, res) => {
     const userId = req.user.claims.sub;
     const { accountId } = req.params;
     
-    // Get account with access token
+    // Get account to verify ownership
     const account = await storage.getConnectedAccountByExternalId(userId, 'teller', accountId);
     if (!account || account.userId !== userId) {
       return res.status(404).json({ message: "Account not found" });
     }
     
+    // Fetch Teller access token
+    const accessToken = await getTellerAccessToken(userId);
+    if (!accessToken) {
+      return res.status(400).json({ message: "Teller enrollment not found" });
+    }
+    
     // Fetch transactions from Teller
-    const authHeader = `Basic ${Buffer.from(account.accessToken + ":").toString("base64")}`;
+    const authHeader = `Basic ${Buffer.from(accessToken + ":").toString("base64")}`;
     const response = await fetch(
       `https://api.teller.io/accounts/${accountId}/transactions`,
       {
@@ -675,9 +701,15 @@ router.get("/balances", requireAuth, async (req: any, res) => {
     // Get all connected Teller accounts
     const accounts = await storage.getConnectedAccountsByProvider(userId, 'teller');
     
+    // Fetch Teller access token
+    const accessToken = await getTellerAccessToken(userId);
+    if (!accessToken) {
+      return res.json({ balances: [] });
+    }
+    
     const balances = [];
     for (const account of accounts) {
-      const authHeader = `Basic ${Buffer.from(account.accessToken + ":").toString("base64")}`;
+      const authHeader = `Basic ${Buffer.from(accessToken + ":").toString("base64")}`;
       
       try {
         const response = await fetch(
@@ -733,8 +765,14 @@ router.get("/identity", requireAuth, async (req: any, res) => {
       return res.json({ identity: [] });
     }
     
-    // Use the first account's token to get identity info
-    const authHeader = `Basic ${Buffer.from(accounts[0].accessToken + ":").toString("base64")}`;
+    // Fetch Teller access token
+    const accessToken = await getTellerAccessToken(userId);
+    if (!accessToken) {
+      return res.status(400).json({ message: "Teller enrollment not found" });
+    }
+    
+    // Use access token to get identity info
+    const authHeader = `Basic ${Buffer.from(accessToken + ":").toString("base64")}`;
     
     const response = await fetch(
       'https://api.teller.io/identity',
@@ -771,13 +809,19 @@ router.get("/account/:accountId/details", requireAuth, async (req: any, res) => 
     const userId = req.user.claims.sub;
     const { accountId } = req.params;
     
-    // Get account with access token
+    // Get account to verify ownership
     const account = await storage.getConnectedAccountByExternalId(userId, 'teller', accountId);
     if (!account || account.userId !== userId) {
       return res.status(404).json({ message: "Account not found" });
     }
     
-    const authHeader = `Basic ${Buffer.from(account.accessToken + ":").toString("base64")}`;
+    // Fetch Teller access token
+    const accessToken = await getTellerAccessToken(userId);
+    if (!accessToken) {
+      return res.status(400).json({ message: "Teller enrollment not found" });
+    }
+    
+    const authHeader = `Basic ${Buffer.from(accessToken + ":").toString("base64")}`;
     
     const response = await fetch(
       `https://api.teller.io/accounts/${accountId}/details`,
@@ -1050,13 +1094,19 @@ router.post("/payments", requireAuth, async (req: any, res) => {
       });
     }
     
-    // Get account with access token
+    // Get account to verify ownership
     const account = await storage.getConnectedAccountByExternalId(userId, 'teller', accountId);
     if (!account || account.userId !== userId) {
       return res.status(404).json({ message: "Account not found" });
     }
     
-    const authHeader = `Basic ${Buffer.from(account.accessToken + ":").toString("base64")}`;
+    // Fetch Teller access token
+    const accessToken = await getTellerAccessToken(userId);
+    if (!accessToken) {
+      return res.status(400).json({ message: "Teller enrollment not found" });
+    }
+    
+    const authHeader = `Basic ${Buffer.from(accessToken + ":").toString("base64")}`;
     
     // Create capability-checked payment via Teller
     const response = await fetch(
@@ -1128,7 +1178,13 @@ router.get("/enrollment/:enrollmentId/status", requireAuth, async (req: any, res
       return res.status(404).json({ message: "Enrollment not found" });
     }
     
-    const authHeader = `Basic ${Buffer.from(account.accessToken + ":").toString("base64")}`;
+    // Fetch Teller access token
+    const accessToken = await getTellerAccessToken(userId);
+    if (!accessToken) {
+      return res.status(400).json({ message: "Teller enrollment not found" });
+    }
+    
+    const authHeader = `Basic ${Buffer.from(accessToken + ":").toString("base64")}`;
     
     // Try to fetch account to check if connection is still valid
     const response = await fetch(
@@ -1174,7 +1230,7 @@ router.get("/account/:accountId/details", requireAuth, async (req: any, res) => 
       accountId 
     });
     
-    // Get the connected account to retrieve access token
+    // Get the connected account to verify ownership
     const connectedAccount = await storage.getConnectedAccountByExternalId(userId, 'teller', accountId);
     
     if (!connectedAccount) {
@@ -1183,14 +1239,16 @@ router.get("/account/:accountId/details", requireAuth, async (req: any, res) => 
       });
     }
     
-    if (!connectedAccount.accessToken) {
+    // Fetch Teller access token
+    const accessToken = await getTellerAccessToken(userId);
+    if (!accessToken) {
       return res.status(400).json({ 
-        message: "No access token found for this account"
+        message: "Teller enrollment not found"
       });
     }
     
     // Create auth header with access token (Teller uses Basic auth, not Bearer)
-    const authHeader = `Basic ${Buffer.from(connectedAccount.accessToken + ":").toString("base64")}`;
+    const authHeader = `Basic ${Buffer.from(accessToken + ":").toString("base64")}`;
     
     // Fetch detailed account info from Teller
     const accountResponse = await fetch(
@@ -1432,17 +1490,17 @@ router.post("/init-update", requireAuth, async (req: any, res) => {
     
     // For update mode, we need to get a connectToken from Teller
     // This requires the existing enrollment_id/access_token
-    const existingToken = account.accessToken;
-    if (!existingToken) {
+    const accessToken = await getTellerAccessToken(userId);
+    if (!accessToken) {
       return res.status(400).json({ 
-        message: "No access token found for account. Cannot initialize update mode." 
+        message: "Teller enrollment not found. Cannot initialize update mode." 
       });
     }
     
     // According to Teller docs, we can use the existing enrollment_id as connectToken
     // for update mode, or we need to call Teller API to get a proper connectToken
-    // For now, we'll use the enrollment_id directly as the connectToken
-    const connectToken = existingToken;
+    // For now, we'll use the access token directly as the connectToken
+    const connectToken = accessToken;
     
     res.json({
       applicationId: process.env.TELLER_APPLICATION_ID,
@@ -1477,6 +1535,12 @@ router.get("/money-movement", requireAuth, async (req: any, res) => {
     const tellerAccounts = await storage.getConnectedAccounts(userId);
     const accounts = tellerAccounts.filter(acc => acc.provider === 'teller');
     
+    // Fetch Teller access token
+    const accessToken = await getTellerAccessToken(userId);
+    if (!accessToken) {
+      return res.json({ moneyIn: 0, moneyOut: 0, sources: [], spend: [] });
+    }
+    
     let moneyIn = 0;
     let moneyOut = 0;
     const sources: { [key: string]: { amount: number; provider: string } } = {};
@@ -1484,10 +1548,8 @@ router.get("/money-movement", requireAuth, async (req: any, res) => {
     
     // Fetch transactions from all accounts
     for (const account of accounts) {
-      if (!account.accessToken) continue;
-      
       try {
-        const authHeader = `Basic ${Buffer.from(account.accessToken + ":").toString("base64")}`;
+        const authHeader = `Basic ${Buffer.from(accessToken + ":").toString("base64")}`;
         const response = await fetch(
           `https://api.teller.io/accounts/${account.externalAccountId}/transactions`,
           {
@@ -1561,10 +1623,8 @@ router.get("/money-movement", requireAuth, async (req: any, res) => {
       const monthEnd = new Date(targetDate.getFullYear(), targetDate.getMonth() - i + 1, 0);
       
       for (const account of accounts) {
-        if (!account.accessToken) continue;
-        
         try {
-          const authHeader = `Basic ${Buffer.from(account.accessToken + ":").toString("base64")}`;
+          const authHeader = `Basic ${Buffer.from(accessToken + ":").toString("base64")}`;
           const response = await fetch(
             `https://api.teller.io/accounts/${account.externalAccountId}/transactions`,
             {
