@@ -67,11 +67,18 @@ router.post("/connect-init", requireAuth, async (req: any, res) => {
  * Save account from Teller SDK onSuccess callback
  */
 router.post("/save-account", requireAuth, async (req: any, res) => {
+  console.log('[DEBUG] /api/teller/save-account route HIT');
+  console.log('[DEBUG] Request body:', JSON.stringify(req.body));
+  console.log('[DEBUG] User:', req.user);
+  
   try {
     const userId = req.user.claims.sub;
     const { accessToken, enrollmentId, institution } = req.body;
     
+    console.log('[DEBUG] Extracted values:', { userId, accessToken: accessToken ? 'EXISTS' : 'MISSING', enrollmentId, institution });
+    
     if (!accessToken) {
+      console.log('[DEBUG] Missing accessToken, returning 400');
       return res.status(400).json({ 
         message: "Access token is required" 
       });
