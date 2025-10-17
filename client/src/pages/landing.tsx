@@ -309,38 +309,38 @@ function Landing() {
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-12 items-center justify-items-center">
               {/* Forbes */}
-              <div className="grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100 w-full flex justify-center">
+              <div className="transition-all duration-300 opacity-70 hover:opacity-100 w-full flex justify-center">
                 <img 
                   src={forbesLogo}
                   alt="Forbes"
-                  className="h-16 w-auto object-contain"
+                  className="h-16 w-auto object-contain invert brightness-0 invert"
                   data-testid="logo-forbes"
                 />
               </div>
               {/* Wall Street Journal */}
-              <div className="grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100 w-full flex justify-center">
+              <div className="transition-all duration-300 opacity-70 hover:opacity-100 w-full flex justify-center">
                 <img 
                   src={wsjLogo}
                   alt="Wall Street Journal"
-                  className="h-16 w-auto object-contain"
+                  className="h-16 w-auto object-contain invert brightness-0 invert"
                   data-testid="logo-wsj"
                 />
               </div>
               {/* Entrepreneur */}
-              <div className="grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100 w-full flex justify-center">
+              <div className="transition-all duration-300 opacity-70 hover:opacity-100 w-full flex justify-center">
                 <img 
                   src={entrepreneurLogo}
                   alt="Entrepreneur"
-                  className="h-16 w-auto object-contain"
+                  className="h-16 w-auto object-contain invert brightness-0 invert"
                   data-testid="logo-entrepreneur"
                 />
               </div>
               {/* Bloomberg */}
-              <div className="grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100 w-full flex justify-center">
+              <div className="transition-all duration-300 opacity-70 hover:opacity-100 w-full flex justify-center">
                 <img 
                   src={bloombergLogo}
                   alt="Bloomberg"
-                  className="h-16 w-auto object-contain"
+                  className="h-16 w-auto object-contain invert brightness-0 invert"
                   data-testid="logo-bloomberg"
                 />
               </div>
