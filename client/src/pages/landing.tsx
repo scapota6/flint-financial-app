@@ -299,34 +299,34 @@ function Landing() {
 
         {/* As Seen On Section */}
         <section className="py-16 border-y border-gray-800/50 bg-gray-900/30" data-section="as-seen-on">
-          <div className="max-w-6xl mx-auto space-y-8">
+          <div className="max-w-6xl mx-auto space-y-12 px-4">
             <div className="text-center">
-              <h3 className="text-sm uppercase tracking-wider text-gray-400 font-semibold mb-8" data-testid="text-as-seen-on">As Seen On</h3>
+              <h3 className="text-sm uppercase tracking-wider text-gray-400 font-semibold" data-testid="text-as-seen-on">As Seen On</h3>
             </div>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 items-center justify-items-center">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-12 items-center justify-items-center">
               {/* Forbes */}
-              <div className="grayscale hover:grayscale-0 transition-all duration-300 opacity-60 hover:opacity-100">
+              <div className="grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100 w-full flex justify-center">
                 <img 
                   src={`https://cdn.brandfetch.io/forbes.com?c=${import.meta.env.VITE_BRANDFETCH_CLIENT_ID || ''}`}
                   alt="Forbes"
-                  className="h-8 w-auto object-contain"
+                  className="h-16 w-auto object-contain"
                   data-testid="logo-forbes"
                   onError={(e) => {
                     const target = e.target as HTMLImageElement;
                     target.style.display = 'none';
                     const parent = target.parentElement;
                     if (parent) {
-                      parent.innerHTML = '<div class="text-gray-400 font-bold text-xl" style="font-family: serif;">Forbes</div>';
+                      parent.innerHTML = '<div class="text-gray-400 font-bold text-3xl" style="font-family: serif;">Forbes</div>';
                     }
                   }}
                 />
               </div>
               {/* Wall Street Journal */}
-              <div className="grayscale hover:grayscale-0 transition-all duration-300 opacity-60 hover:opacity-100">
+              <div className="grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100 w-full flex justify-center">
                 <img 
                   src={`https://cdn.brandfetch.io/wsj.com?c=${import.meta.env.VITE_BRANDFETCH_CLIENT_ID || ''}`}
                   alt="Wall Street Journal"
-                  className="h-8 w-auto object-contain"
+                  className="h-16 w-auto object-contain"
                   data-testid="logo-wsj"
                   onError={(e) => {
                     const target = e.target as HTMLImageElement;
@@ -339,35 +339,35 @@ function Landing() {
                 />
               </div>
               {/* Entrepreneur */}
-              <div className="grayscale hover:grayscale-0 transition-all duration-300 opacity-60 hover:opacity-100">
+              <div className="grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100 w-full flex justify-center">
                 <img 
                   src={`https://cdn.brandfetch.io/entrepreneur.com?c=${import.meta.env.VITE_BRANDFETCH_CLIENT_ID || ''}`}
                   alt="Entrepreneur"
-                  className="h-8 w-auto object-contain"
+                  className="h-16 w-auto object-contain"
                   data-testid="logo-entrepreneur"
                   onError={(e) => {
                     const target = e.target as HTMLImageElement;
                     target.style.display = 'none';
                     const parent = target.parentElement;
                     if (parent) {
-                      parent.innerHTML = '<div class="text-gray-400 font-bold text-lg">Entrepreneur</div>';
+                      parent.innerHTML = '<div class="text-gray-400 font-bold text-2xl">Entrepreneur</div>';
                     }
                   }}
                 />
               </div>
               {/* Bloomberg */}
-              <div className="grayscale hover:grayscale-0 transition-all duration-300 opacity-60 hover:opacity-100">
+              <div className="grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100 w-full flex justify-center">
                 <img 
                   src={`https://cdn.brandfetch.io/bloomberg.com?c=${import.meta.env.VITE_BRANDFETCH_CLIENT_ID || ''}`}
                   alt="Bloomberg"
-                  className="h-8 w-auto object-contain"
+                  className="h-16 w-auto object-contain"
                   data-testid="logo-bloomberg"
                   onError={(e) => {
                     const target = e.target as HTMLImageElement;
                     target.style.display = 'none';
                     const parent = target.parentElement;
                     if (parent) {
-                      parent.innerHTML = '<div class="text-gray-400 font-bold text-xl">Bloomberg</div>';
+                      parent.innerHTML = '<div class="text-gray-400 font-bold text-3xl">Bloomberg</div>';
                     }
                   }}
                 />
