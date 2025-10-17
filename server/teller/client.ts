@@ -1,12 +1,12 @@
 import { storage } from "../storage";
 import { logger } from "@shared/logger";
 import crypto from 'crypto';
-import https from 'https';
+import { Agent, Dispatcher } from 'undici';
 
 // ===== MTLS CONFIGURATION =====
 
-// Load certificates for mTLS authentication
-function getTellerHttpsAgent(): https.Agent | undefined {
+// Load certificates for mTLS authentication using undici
+function getTellerDispatcher(): Dispatcher | undefined {
   const cert = process.env.TELLER_CERT;
   const key = process.env.TELLER_PRIVATE_KEY;
   
@@ -21,14 +21,17 @@ function getTellerHttpsAgent(): https.Agent | undefined {
     return undefined;
   }
   
-  return new https.Agent({
-    cert,
-    key,
-    rejectUnauthorized: true
+  // Create undici Agent with mTLS configuration
+  return new Agent({
+    connect: {
+      cert,
+      key,
+      rejectUnauthorized: true
+    }
   });
 }
 
-const tellerAgent = getTellerHttpsAgent();
+const tellerDispatcher = getTellerDispatcher();
 
 // ===== PRODUCTION-GRADE ERROR HANDLING & RESILIENCE =====
 
@@ -70,8 +73,8 @@ async function resilientTellerFetch(
 ): Promise<Response> {
   const requestId = generateRequestId();
   
-  // Add request ID to headers for tracking and mTLS agent
-  const enhancedOptions: RequestInit & { agent?: https.Agent } = {
+  // Add request ID to headers for tracking and mTLS dispatcher
+  const enhancedOptions: RequestInit & { dispatcher?: Dispatcher } = {
     ...options,
     headers: {
       ...options.headers,
@@ -80,9 +83,9 @@ async function resilientTellerFetch(
     }
   };
   
-  // Add mTLS agent if available
-  if (tellerAgent) {
-    enhancedOptions.agent = tellerAgent;
+  // Add mTLS dispatcher if available
+  if (tellerDispatcher) {
+    enhancedOptions.dispatcher = tellerDispatcher;
   }
 
   let lastError: any;
@@ -93,7 +96,7 @@ async function resilientTellerFetch(
         requestId,
         url: url.replace(/\/accounts\/[^\/]+/, '/accounts/***'),
         method: enhancedOptions.method || 'GET',
-        mtls: !!tellerAgent
+        mtls: !!tellerDispatcher
       });
 
       const response = await fetch(url, enhancedOptions as RequestInit);
@@ -1226,7 +1229,7 @@ export async function tellerFetch(
   url: string,
   options: RequestInit
 ): Promise<Response> {
-  const enhancedOptions: RequestInit & { agent?: https.Agent } = {
+  const enhancedOptions: RequestInit & { dispatcher?: Dispatcher } = {
     ...options,
     headers: {
       ...options.headers,
@@ -1234,9 +1237,9 @@ export async function tellerFetch(
     }
   };
   
-  // Add mTLS agent if available
-  if (tellerAgent) {
-    enhancedOptions.agent = tellerAgent;
+  // Add mTLS dispatcher if available
+  if (tellerDispatcher) {
+    enhancedOptions.dispatcher = tellerDispatcher;
   }
   
   return fetch(url, enhancedOptions as RequestInit);

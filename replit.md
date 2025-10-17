@@ -37,7 +37,7 @@ Preferred communication style: Simple, everyday language.
 - **Compliance Framework**: Legal disclaimers system with user acknowledgment tracking and RBAC groundwork.
 - **Settings Management**: Profile management, connected accounts management, data export.
 - **Teller Balance Mapping System**: Utility for accurately mapping Teller.io account balances.
-- **Teller Integration Architecture**: One enrollment per user pattern - access tokens stored in `teller_users` table (similar to SnapTrade), with helper function `getTellerAccessToken(userId)` for API calls. Prevents token duplication across connected accounts.
+- **Teller Integration Architecture**: One enrollment per user pattern - access tokens stored in `teller_users` table (similar to SnapTrade), with helper function `getTellerAccessToken(userId)` for API calls. Prevents token duplication across connected accounts. **mTLS Authentication**: Uses undici Agent/Dispatcher for client certificate authentication in development/production environments (configured via TELLER_CERT and TELLER_PRIVATE_KEY environment variables).
 - **SnapTrade Integration**: Stores user credentials and brokerage authorizations in `snaptrade_users` table, consolidated registration, server-side auto-sync, normalized account display names, auto-recovery for orphaned accounts.
 
 ### Production Infrastructure
@@ -65,6 +65,7 @@ Preferred communication style: Simple, everyday language.
 - **argon2**: Secure password hashing.
 - **jsonwebtoken**: JWT token generation and verification.
 - **speakeasy**: TOTP/MFA implementation.
+- **undici**: HTTP client with mTLS support for Teller.io authentication.
 - **vite**: Frontend build tool.
 - **typescript**: Language.
 - **tailwindcss**: CSS framework.
