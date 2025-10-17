@@ -959,6 +959,41 @@ router.get("/institutions", async (req, res) => {
 });
 
 /**
+ * GET /api/teller/institutions-count
+ * Get count of supported institutions (public endpoint)
+ */
+router.get("/institutions-count", async (req, res) => {
+  try {
+    const response = await resilientTellerFetch('https://api.teller.io/institutions', {
+      headers: {
+        'Accept': 'application/json'
+      }
+    }, 'Institutions-Count');
+    
+    if (!response.ok) {
+      throw new Error(`Failed to fetch institutions: ${response.status}`);
+    }
+    
+    const institutions = await response.json();
+    const count = Array.isArray(institutions) ? institutions.length : 0;
+    
+    res.json({ 
+      count,
+      source: 'teller'
+    });
+    
+  } catch (error: any) {
+    logger.error("Failed to fetch institutions count", { error: error.message });
+    // Return a fallback count instead of error
+    res.json({ 
+      count: 100,
+      source: 'fallback',
+      message: 'Using fallback count'
+    });
+  }
+});
+
+/**
  * POST /api/teller/webhook
  * Handle Teller webhook events with proper signature verification
  * Following: https://teller.io/docs/api/webhooks
