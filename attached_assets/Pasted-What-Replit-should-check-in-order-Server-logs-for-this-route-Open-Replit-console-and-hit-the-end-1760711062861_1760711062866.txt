@@ -1,0 +1,59 @@
+What Replit should check (in order)
+
+Server logs for this route
+
+Open Replit console and hit the endpoint again; copy the full stack trace.
+
+Make sure your handler prints req.user?.id, req.body, and the Teller response (redact tokens).
+
+Auth/session actually present in prod
+
+Many times the secure cookie isn’t sent on your custom domain.
+
+Verify before the handler you have a user: call /api/auth/me from the same browser session. If that’s 401/empty, the save step will fail later.
+
+Cookie flags: Secure: true, SameSite: "None", domain: .flint-investing.com (or leave unset), path /.
+
+Payload from Teller Connect
+
+Ensure the client is POSTing JSON with:
+
+{
+  "enrollmentId": "...",  // or "accessToken": "..."
+  "accounts": [ { "id": "...", "name": "...", "type": "...", "subtype": "...", "institution": "..."} ]
+}
+
+
+Check Content-Type: application/json.
+
+If you use the new Teller Connect (Enrollments) flow, you must exchange the enrollment_id for an access_token server-side. If your code still expects accessToken directly, it’ll crash.
+
+Env vars in Replit (Production)
+
+Confirm they exist and are spelled exactly:
+
+TELLER_APPLICATION_ID
+
+TELLER_APPLICATION_SECRET (or TELLER_SECRET_KEY, whichever your code uses)
+
+DATABASE_URL
+
+Verify you’re hitting sandbox vs production consistently. Sandbox tokens won’t work against prod API hosts and vice-versa.
+
+Database writes
+
+Common cause of 500: Prisma/ORM constraint errors.
+
+Check your accounts table for NOT NULL fields you’re not sending (e.g., institutionName, last4, official_name, unique composite constraints).
+
+Try inserting one account row manually in the DB console with the exact values you’re passing to confirm schema alignment.
+
+CSRF middleware
+
+If you enabled double-submit CSRF, ensure the request includes the x-csrf-token header that matches the CSRF cookie. (403 is typical, but mis-handling can bubble as 500.)
+
+CORS isn’t the issue (you’re getting a 500, not a CORS/network block), but still verify Access-Control-Allow-Credentials if cookies are used.
+
+API host & path correctness
+
+Ensure the frontend calls your backend (same origin) and not a stale /api proxy that points to localhost or an old Replit URL.
