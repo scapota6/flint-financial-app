@@ -6,10 +6,10 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import forbesLogo from '@assets/image_1760730257165.png';
-import wsjLogo from '@assets/image_1760730223928.png';
-import entrepreneurLogo from '@assets/image_1760730243349.png';
-import bloombergLogo from '@assets/image_1760730267086.png';
+import forbesLogo from '@assets/png-clipart-forbes-chief-executive-united-states-logo-art-director-escobar-company-text_1760730893332.png';
+import wsjLogo from '@assets/avojvtx0x_1760730893332.webp';
+import entrepreneurLogo from '@assets/154-1547881_entrepreneur-logo-entrepreneur-gray-logo_1760730893331.png';
+import bloombergLogo from '@assets/png-clipart-new-york-city-bloomberg-logo-business-public-relations-others-text-public-relations_1760730893333.png';
 
 // Institution list for scrolling banner
 const INSTITUTIONS = [
@@ -314,7 +314,6 @@ function Landing() {
                   src={forbesLogo}
                   alt="Forbes"
                   className="h-16 w-auto object-contain invert"
-                  style={{ mixBlendMode: 'screen' }}
                   data-testid="logo-forbes"
                 />
               </div>
@@ -324,7 +323,6 @@ function Landing() {
                   src={wsjLogo}
                   alt="Wall Street Journal"
                   className="h-16 w-auto object-contain invert"
-                  style={{ mixBlendMode: 'screen' }}
                   data-testid="logo-wsj"
                 />
               </div>
@@ -334,7 +332,6 @@ function Landing() {
                   src={entrepreneurLogo}
                   alt="Entrepreneur"
                   className="h-16 w-auto object-contain invert"
-                  style={{ mixBlendMode: 'screen' }}
                   data-testid="logo-entrepreneur"
                 />
               </div>
@@ -344,7 +341,6 @@ function Landing() {
                   src={bloombergLogo}
                   alt="Bloomberg"
                   className="h-16 w-auto object-contain invert"
-                  style={{ mixBlendMode: 'screen' }}
                   data-testid="logo-bloomberg"
                 />
               </div>
