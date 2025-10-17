@@ -305,7 +305,7 @@ function Landing() {
         <section className="py-16 border-y border-gray-800/50 bg-gray-900/30" data-section="as-seen-on">
           <div className="max-w-6xl mx-auto space-y-12 px-4">
             <div className="text-center">
-              <h3 className="text-sm uppercase tracking-wider text-gray-400 font-semibold" data-testid="text-as-seen-on">As Seen On</h3>
+              <h3 className="text-sm uppercase tracking-wider text-gray-400 font-semibold" data-testid="text-as-seen-on">AS FEATURED ON</h3>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-12 items-center justify-items-center">
               {/* Forbes */}
