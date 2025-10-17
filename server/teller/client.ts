@@ -5,13 +5,57 @@ import { Agent, Dispatcher } from 'undici';
 
 // ===== MTLS CONFIGURATION =====
 
+// Format PEM certificate or private key by adding proper line breaks
+function formatPEM(pem: string): string {
+  // If already has newlines, return as-is
+  if (pem.includes('\n')) {
+    return pem;
+  }
+  
+  // Remove any existing whitespace
+  const cleaned = pem.replace(/\s+/g, ' ').trim();
+  
+  // Detect if this is a certificate or private key
+  const isCert = cleaned.includes('BEGIN CERTIFICATE');
+  const isKey = cleaned.includes('BEGIN PRIVATE KEY') || cleaned.includes('BEGIN RSA PRIVATE KEY');
+  
+  if (!isCert && !isKey) {
+    return pem; // Return original if not a valid PEM format
+  }
+  
+  // Extract header, body, and footer
+  let beginHeader, endHeader;
+  if (isCert) {
+    beginHeader = '-----BEGIN CERTIFICATE-----';
+    endHeader = '-----END CERTIFICATE-----';
+  } else if (cleaned.includes('BEGIN RSA PRIVATE KEY')) {
+    beginHeader = '-----BEGIN RSA PRIVATE KEY-----';
+    endHeader = '-----END RSA PRIVATE KEY-----';
+  } else {
+    beginHeader = '-----BEGIN PRIVATE KEY-----';
+    endHeader = '-----END PRIVATE KEY-----';
+  }
+  
+  const beginIndex = cleaned.indexOf(beginHeader) + beginHeader.length;
+  const endIndex = cleaned.indexOf(endHeader);
+  const body = cleaned.substring(beginIndex, endIndex).replace(/\s/g, '');
+  
+  // Split body into 64-character lines
+  const lines = [];
+  for (let i = 0; i < body.length; i += 64) {
+    lines.push(body.substring(i, i + 64));
+  }
+  
+  return `${beginHeader}\n${lines.join('\n')}\n${endHeader}`;
+}
+
 // Load certificates for mTLS authentication using undici
 function getTellerDispatcher(): Dispatcher | undefined {
-  const cert = process.env.TELLER_CERT;
-  const key = process.env.TELLER_PRIVATE_KEY;
+  const certRaw = process.env.TELLER_CERT;
+  const keyRaw = process.env.TELLER_PRIVATE_KEY;
   
   // In sandbox mode, certificates are optional
-  if (!cert || !key) {
+  if (!certRaw || !keyRaw) {
     const env = process.env.TELLER_ENVIRONMENT || 'development';
     if (env === 'sandbox') {
       console.warn('[Teller mTLS] Running in sandbox mode without certificates');
@@ -20,6 +64,12 @@ function getTellerDispatcher(): Dispatcher | undefined {
     console.warn('[Teller mTLS] Certificates not found for', env, 'environment');
     return undefined;
   }
+  
+  // Format certificates properly with line breaks
+  const cert = formatPEM(certRaw);
+  const key = formatPEM(keyRaw);
+  
+  console.log('[Teller mTLS] Certificates formatted and loaded');
   
   // Create undici Agent with mTLS configuration
   try {
