@@ -156,8 +156,8 @@ router.post("/save-account", requireAuth, async (req: any, res) => {
     for (const account of accountsToSave) {
       const institutionName = institution || account.institution?.name || 'Unknown Bank';
       const lastFour = account.last_four || account.mask || '';
-      // All Teller accounts are bank accounts (checking, savings, or credit cards)
-      const accountType = 'bank';
+      // Distinguish credit cards from bank accounts for proper handling
+      const accountType = account.type === 'credit' ? 'card' : 'bank';
       
       // Create descriptive account name: "Institution - Account Type (****1234)"
       let accountName = account.name || '';
@@ -172,8 +172,18 @@ router.post("/save-account", requireAuth, async (req: any, res) => {
         ? (account.balance?.ledger || 0)
         : (account.balance?.available || 0);
       
-      // Ensure balance is a valid decimal with 2 decimal places
-      const formattedBalance = Number(balanceValue).toFixed(2);
+      // Safely convert balance to decimal with 2 decimal places, handling edge cases
+      let formattedBalance = '0.00';
+      try {
+        const numBalance = Number(balanceValue);
+        if (isFinite(numBalance)) {
+          formattedBalance = numBalance.toFixed(2);
+        } else {
+          console.warn(`[Teller] Invalid balance value for account ${account.id}: ${balanceValue}, using 0.00`);
+        }
+      } catch (err) {
+        console.error(`[Teller] Error converting balance for account ${account.id}:`, err);
+      }
       
       console.log(`[Teller] Saving account: ${account.id}`, {
         name: accountName,
@@ -227,10 +237,10 @@ router.post("/save-account", requireAuth, async (req: any, res) => {
       stack: error.stack,
       name: error.name
     });
+    // Don't expose stack traces to clients for security
     res.status(500).json({ 
       message: "Failed to save bank accounts",
-      error: error.message,
-      details: error.stack
+      error: error.message
     });
   }
 });
