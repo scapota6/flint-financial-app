@@ -6,9 +6,9 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import forbesLogo from '@assets/png-clipart-forbes-chief-executive-united-states-logo-art-director-escobar-company-text_1760730981433.png';
-import wsjLogo from '@assets/avojvtx0x_1760730981432.webp';
-import entrepreneurLogo from '@assets/154-1547881_entrepreneur-logo-entrepreneur-gray-logo_1760730981429.png';
+import forbesLogo from '@assets/12-126619_forbes-logo-black-and-white-johns-hopkins-logo_1760731194172.png';
+import wsjLogo from '@assets/485-4859692_the-wall-street-journal-png-download-wall-street_1760731194174.png';
+import entrepreneurLogo from '@assets/651-6519331_entrepreneur-logo-black-and-white-calligraphy-hd-png_1760731236580.png';
 import bloombergLogo from '@assets/png-clipart-new-york-city-bloomberg-logo-business-public-relations-others-text-public-relations_1760730944516.png';
 
 // Institution list for scrolling banner
@@ -313,7 +313,7 @@ function Landing() {
                 <img 
                   src={forbesLogo}
                   alt="Forbes"
-                  className="h-16 w-auto object-contain invert"
+                  className="h-16 w-auto object-contain"
                   data-testid="logo-forbes"
                 />
               </div>
@@ -322,7 +322,7 @@ function Landing() {
                 <img 
                   src={wsjLogo}
                   alt="Wall Street Journal"
-                  className="h-16 w-auto object-contain invert"
+                  className="h-16 w-auto object-contain"
                   data-testid="logo-wsj"
                 />
               </div>
@@ -331,7 +331,7 @@ function Landing() {
                 <img 
                   src={entrepreneurLogo}
                   alt="Entrepreneur"
-                  className="h-16 w-auto object-contain invert"
+                  className="h-16 w-auto object-contain"
                   data-testid="logo-entrepreneur"
                 />
               </div>
