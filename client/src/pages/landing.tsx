@@ -352,7 +352,7 @@ function Landing() {
         <section className="py-12 bg-gradient-to-b from-gray-900/30 to-transparent overflow-hidden" data-section="institutions">
           <div className="max-w-6xl mx-auto space-y-6">
             <div className="text-center">
-              <h3 className="text-sm uppercase tracking-wider text-gray-400 font-semibold" data-testid="text-connect-accounts">Connect Your Accounts From</h3>
+              <h3 className="text-sm uppercase tracking-wider text-gray-400 font-semibold" data-testid="text-connect-accounts">Connected with our partners</h3>
             </div>
             
             {/* Scrolling container */}
@@ -384,9 +384,30 @@ function Landing() {
                     </div>
                   </div>
                 ))}
-                {/* Duplicate set for seamless loop */}
+                {/* Second set for seamless loop */}
                 {INSTITUTIONS.map((institution, idx) => (
                   <div key={`logo-dup-${idx}`} className="flex-shrink-0 flex items-center justify-center">
+                    <div className="h-16 w-16 rounded-full bg-gray-800/60 border border-gray-700/50 flex items-center justify-center overflow-hidden hover:border-purple-500/50 transition-all duration-300">
+                      <img 
+                        src={`https://cdn.brandfetch.io/${institution.domain}?c=${import.meta.env.VITE_BRANDFETCH_CLIENT_ID || ''}`}
+                        alt={institution.name}
+                        className="h-full w-full object-cover scale-125"
+                        title={institution.name}
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.style.display = 'none';
+                          const parent = target.parentElement;
+                          if (parent) {
+                            parent.innerHTML = `<div class="text-xs text-gray-400 font-semibold text-center">${institution.name.substring(0, 3).toUpperCase()}</div>`;
+                          }
+                        }}
+                      />
+                    </div>
+                  </div>
+                ))}
+                {/* Third set for longer scroll */}
+                {INSTITUTIONS.map((institution, idx) => (
+                  <div key={`logo-dup2-${idx}`} className="flex-shrink-0 flex items-center justify-center">
                     <div className="h-16 w-16 rounded-full bg-gray-800/60 border border-gray-700/50 flex items-center justify-center overflow-hidden hover:border-purple-500/50 transition-all duration-300">
                       <img 
                         src={`https://cdn.brandfetch.io/${institution.domain}?c=${import.meta.env.VITE_BRANDFETCH_CLIENT_ID || ''}`}
