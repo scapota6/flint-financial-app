@@ -47,10 +47,12 @@ router.post("/connect-init", requireAuth, async (req: any, res) => {
       userId
     });
     
-    // Force sandbox mode for testing
+    // Use environment from TELLER_ENVIRONMENT or default to development
+    const environment = process.env.TELLER_ENVIRONMENT || 'development';
+    
     res.json({
       applicationId,
-      environment: 'sandbox', // Always use sandbox until production is set up
+      environment,
       redirectUri
     });
     
