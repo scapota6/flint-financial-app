@@ -213,18 +213,26 @@ async function main() {
   });
   console.log('');
 
-  // Confirmation prompt
-  const readline = require('readline').createInterface({
-    input: process.stdin,
-    output: process.stdout
-  });
-
-  const confirmed = await new Promise<boolean>((resolve) => {
-    readline.question(`⚠️  Are you sure you want to send ${contacts.length} emails? (yes/no): `, (answer: string) => {
-      readline.close();
-      resolve(answer.toLowerCase() === 'yes');
+  // Confirmation prompt (skip if --yes flag is provided)
+  const autoConfirm = process.argv.includes('--yes');
+  
+  let confirmed = autoConfirm;
+  
+  if (!autoConfirm) {
+    const readline = require('readline').createInterface({
+      input: process.stdin,
+      output: process.stdout
     });
-  });
+
+    confirmed = await new Promise<boolean>((resolve) => {
+      readline.question(`⚠️  Are you sure you want to send ${contacts.length} emails? (yes/no): `, (answer: string) => {
+        readline.close();
+        resolve(answer.toLowerCase() === 'yes');
+      });
+    });
+  } else {
+    console.log('⚡ Auto-confirmed via --yes flag\n');
+  }
 
   if (!confirmed) {
     console.log('❌ Cancelled. No emails were sent.');
