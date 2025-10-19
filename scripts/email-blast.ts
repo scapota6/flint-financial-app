@@ -105,7 +105,7 @@ function getWaitlistEmailTemplate(firstName: string): string {
             
             <p>Thank you for being part of our early waitlist and believing in what we're building. Your early support means everything to us.</p>
             
-            <p>Flint's goal has always been simple: <strong>make it effortless to see all your investments in one place</strong>: stocks, crypto, banks, everything. We're just getting started, and we can't wait to keep improving with your feedback.</p>
+            <p>Flint's goal has always been simple: <strong>make it effortless to see all your investments in one place</strong>: stocks, crypto, banks, everything. Not only that, but you can also <strong>execute trades and transfer money</strong> all from the same platform. We're just getting started, and we can't wait to keep improving with your feedback.</p>
             
             <p><strong>Try it out for free here:</strong> <a href="https://www.flint-investing.com/">https://www.flint-investing.com/</a></p>
             
