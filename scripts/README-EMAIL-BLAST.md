@@ -12,7 +12,7 @@ Send personalized waitlist launch emails to your contacts.
 
 ## Email Template
 
-**Subject:** your off the waitlist - Flint
+**Subject:** youre off the waitlist - Flint
 
 **Content:**
 - Personalized greeting with first name
@@ -75,7 +75,7 @@ Other columns in the CSV are ignored.
 
 📧 Email Preview:
 ---
-Subject: your off the waitlist - Flint
+Subject: youre off the waitlist - Flint
 From: Flint Support <updates@updates.flint-investing.com>
 Reply-To: support@flint-investing.com
 ---

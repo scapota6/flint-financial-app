@@ -158,7 +158,7 @@ async function sendEmail(
       from: fromEmail,
       to: [contact.email],
       replyTo: 'support@flint-investing.com',
-      subject: 'your off the waitlist - Flint',
+      subject: 'youre off the waitlist - Flint',
       html: getWaitlistEmailTemplate(contact.firstName),
     });
 
@@ -195,7 +195,7 @@ async function main() {
   // Show preview
   console.log('📧 Email Preview:');
   console.log('---');
-  console.log('Subject: your off the waitlist - Flint');
+  console.log('Subject: youre off the waitlist - Flint');
   console.log('From: Flint Support <updates@updates.flint-investing.com>');
   console.log('Reply-To: support@flint-investing.com');
   console.log('---');
