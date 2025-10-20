@@ -181,8 +181,11 @@ function delay(ms: number): Promise<void> {
 async function main() {
   console.log('🚀 Flint Waitlist Email Blast\n');
 
-  // Read CSV
-  const csvPath = path.join(process.cwd(), 'attached_assets', 'apollo-contacts-export_1760916491011.csv');
+  // Read CSV (use command line argument or default)
+  // Skip first 2 args (node executable and script path), then find CSV filename
+  const args = process.argv.slice(2);
+  const csvFileName = args.find(arg => !arg.startsWith('--')) || 'apollo-contacts-export (1)_1760918345566.csv';
+  const csvPath = path.join(process.cwd(), 'attached_assets', csvFileName);
   
   if (!fs.existsSync(csvPath)) {
     console.error('❌ CSV file not found:', csvPath);
