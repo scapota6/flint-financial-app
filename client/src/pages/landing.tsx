@@ -38,6 +38,10 @@ const INSTITUTIONS = [
   { name: 'PNC', domain: 'pnc.com' },
   { name: 'Truist', domain: 'truist.com' }
 ];
+
+// Hide "6-Month Commitment" CTA section until this timestamp (24 hours from 2025-10-20 00:30 UTC)
+const SHOW_SIX_MONTH_CTA_AFTER = new Date('2025-10-21T00:30:00Z').getTime();
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -794,33 +798,35 @@ function Landing() {
           </div>
         </section>
 
-        {/* CTA 2: 6-Month Commitment */}
-        <section id="six" data-section="six" className="py-20">
-          <div className="max-w-4xl mx-auto text-center space-y-8">
-            <div className="space-y-4">
-              <h2 className="text-4xl lg:text-5xl font-bold">
-                A year feels <span className="text-purple-400">too long?</span>
-              </h2>
-              <p className="text-xl text-gray-300">
-                Get one month free when you invest for 6 months.
-              </p>
-            </div>
-            
-            <div className="space-y-6">
-              <div className="text-5xl font-bold text-white">$249.99</div>
-              <p className="text-lg text-gray-300">6 months</p>
+        {/* CTA 2: 6-Month Commitment - Hidden for 24 hours, will auto-show after Oct 21, 2025 00:30 UTC */}
+        {Date.now() >= SHOW_SIX_MONTH_CTA_AFTER && (
+          <section id="six" data-section="six" className="py-20">
+            <div className="max-w-4xl mx-auto text-center space-y-8">
+              <div className="space-y-4">
+                <h2 className="text-4xl lg:text-5xl font-bold">
+                  A year feels <span className="text-purple-400">too long?</span>
+                </h2>
+                <p className="text-xl text-gray-300">
+                  Get one month free when you invest for 6 months.
+                </p>
+              </div>
               
-              <Button 
-                size="lg" 
-                className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-4 text-lg"
-                data-cta="unlimited-6mo"
-                onClick={() => handleCTAClick('unlimited-6mo', '$249.99')}
-              >
-                Start with Unlimited – 6 Months for $249.99
-              </Button>
+              <div className="space-y-6">
+                <div className="text-5xl font-bold text-white">$249.99</div>
+                <p className="text-lg text-gray-300">6 months</p>
+                
+                <Button 
+                  size="lg" 
+                  className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-4 text-lg"
+                  data-cta="unlimited-6mo"
+                  onClick={() => handleCTAClick('unlimited-6mo', '$249.99')}
+                >
+                  Start with Unlimited – 6 Months for $249.99
+                </Button>
+              </div>
             </div>
-          </div>
-        </section>
+          </section>
+        )}
 
         {/* Dashboard Preview Modal */}
         <Dialog open={dashboardPreviewOpen} onOpenChange={setDashboardPreviewOpen}>
