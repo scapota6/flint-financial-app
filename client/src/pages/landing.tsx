@@ -40,7 +40,7 @@ const INSTITUTIONS = [
 ];
 
 // Hide "2,847+ users" social proof section until this timestamp (24 hours from now)
-const SHOW_SOCIAL_PROOF_AFTER = new Date('2025-10-22T01:05:00Z').getTime();
+const SHOW_SOCIAL_PROOF_AFTER = new Date('2025-10-23T16:00:00Z').getTime();
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
