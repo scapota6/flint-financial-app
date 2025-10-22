@@ -51,16 +51,19 @@ function formatPEM(pem: string): string {
 
 // Load certificates for mTLS authentication using undici
 function getTellerDispatcher(): Dispatcher | undefined {
+  const env = process.env.TELLER_ENVIRONMENT || 'development';
+  
+  // In sandbox mode, skip certificate loading entirely
+  if (env === 'sandbox') {
+    console.log('[Teller mTLS] Running in sandbox mode - skipping certificate loading');
+    return undefined;
+  }
+  
   const certRaw = process.env.TELLER_CERT;
   const keyRaw = process.env.TELLER_PRIVATE_KEY;
   
-  // In sandbox mode, certificates are optional
+  // In production/development, certificates are required
   if (!certRaw || !keyRaw) {
-    const env = process.env.TELLER_ENVIRONMENT || 'development';
-    if (env === 'sandbox') {
-      console.warn('[Teller mTLS] Running in sandbox mode without certificates');
-      return undefined;
-    }
     console.warn('[Teller mTLS] Certificates not found for', env, 'environment');
     return undefined;
   }
@@ -69,7 +72,7 @@ function getTellerDispatcher(): Dispatcher | undefined {
   const cert = formatPEM(certRaw);
   const key = formatPEM(keyRaw);
   
-  console.log('[Teller mTLS] Certificates formatted and loaded');
+  console.log('[Teller mTLS] Certificates formatted and loaded for', env, 'environment');
   
   // Create undici Agent with mTLS configuration
   try {
