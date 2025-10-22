@@ -39,8 +39,8 @@ const INSTITUTIONS = [
   { name: 'Truist', domain: 'truist.com' }
 ];
 
-// Hide "6-Month Commitment" CTA section until this timestamp (24 hours from 2025-10-20 00:30 UTC)
-const SHOW_SIX_MONTH_CTA_AFTER = new Date('2025-10-21T00:30:00Z').getTime();
+// Hide "2,847+ users" social proof section until this timestamp (24 hours from now)
+const SHOW_SOCIAL_PROOF_AFTER = new Date('2025-10-22T01:05:00Z').getTime();
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -778,55 +778,55 @@ function Landing() {
           </div>
         </section>
 
-        {/* Social Proof Block #1 */}
-        <section className="py-16 border-y border-gray-800">
-          <div className="max-w-4xl mx-auto text-center space-y-6">
-            <div className="flex items-center justify-center space-x-2">
-              <div className="flex -space-x-2">
-                <img src={avatar1} alt="User avatar" className="w-10 h-10 rounded-full border-2 border-black object-cover" />
-                <img src={avatar2} alt="User avatar" className="w-10 h-10 rounded-full border-2 border-black object-cover" />
-                <img src={avatar3} alt="User avatar" className="w-10 h-10 rounded-full border-2 border-black object-cover" />
-                <img src={avatar4} alt="User avatar" className="w-10 h-10 rounded-full border-2 border-black object-cover" />
-                <img src={avatar5} alt="User avatar" className="w-10 h-10 rounded-full border-2 border-black object-cover" />
+        {/* Social Proof Block #1 - Hidden for 24 hours, will auto-show after Oct 22, 2025 01:05 UTC */}
+        {Date.now() >= SHOW_SOCIAL_PROOF_AFTER && (
+          <section className="py-16 border-y border-gray-800">
+            <div className="max-w-4xl mx-auto text-center space-y-6">
+              <div className="flex items-center justify-center space-x-2">
+                <div className="flex -space-x-2">
+                  <img src={avatar1} alt="User avatar" className="w-10 h-10 rounded-full border-2 border-black object-cover" />
+                  <img src={avatar2} alt="User avatar" className="w-10 h-10 rounded-full border-2 border-black object-cover" />
+                  <img src={avatar3} alt="User avatar" className="w-10 h-10 rounded-full border-2 border-black object-cover" />
+                  <img src={avatar4} alt="User avatar" className="w-10 h-10 rounded-full border-2 border-black object-cover" />
+                  <img src={avatar5} alt="User avatar" className="w-10 h-10 rounded-full border-2 border-black object-cover" />
+                </div>
+                <span className="text-lg font-semibold">2,847+ users</span>
               </div>
-              <span className="text-lg font-semibold">2,847+ users</span>
-            </div>
-            <p className="text-xl text-gray-300 leading-relaxed">
-              Over <strong>2,847 users</strong> already upgraded Flint and are managing 12+ accounts, 
-              paying off credit cards faster, and cutting hours of financial stress each week.
-            </p>
-          </div>
-        </section>
-
-        {/* CTA 2: 6-Month Commitment - Hidden for 24 hours, will auto-show after Oct 21, 2025 00:30 UTC */}
-        {Date.now() >= SHOW_SIX_MONTH_CTA_AFTER && (
-          <section id="six" data-section="six" className="py-20">
-            <div className="max-w-4xl mx-auto text-center space-y-8">
-              <div className="space-y-4">
-                <h2 className="text-4xl lg:text-5xl font-bold">
-                  A year feels <span className="text-purple-400">too long?</span>
-                </h2>
-                <p className="text-xl text-gray-300">
-                  Get one month free when you invest for 6 months.
-                </p>
-              </div>
-              
-              <div className="space-y-6">
-                <div className="text-5xl font-bold text-white">$249.99</div>
-                <p className="text-lg text-gray-300">6 months</p>
-                
-                <Button 
-                  size="lg" 
-                  className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-4 text-lg"
-                  data-cta="unlimited-6mo"
-                  onClick={() => handleCTAClick('unlimited-6mo', '$249.99')}
-                >
-                  Start with Unlimited – 6 Months for $249.99
-                </Button>
-              </div>
+              <p className="text-xl text-gray-300 leading-relaxed">
+                Over <strong>2,847 users</strong> already upgraded Flint and are managing 12+ accounts, 
+                paying off credit cards faster, and cutting hours of financial stress each week.
+              </p>
             </div>
           </section>
         )}
+
+        {/* CTA 2: 6-Month Commitment */}
+        <section id="six" data-section="six" className="py-20">
+          <div className="max-w-4xl mx-auto text-center space-y-8">
+            <div className="space-y-4">
+              <h2 className="text-4xl lg:text-5xl font-bold">
+                A year feels <span className="text-purple-400">too long?</span>
+              </h2>
+              <p className="text-xl text-gray-300">
+                Get one month free when you invest for 6 months.
+              </p>
+            </div>
+            
+            <div className="space-y-6">
+              <div className="text-5xl font-bold text-white">$249.99</div>
+              <p className="text-lg text-gray-300">6 months</p>
+              
+              <Button 
+                size="lg" 
+                className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-4 text-lg"
+                data-cta="unlimited-6mo"
+                onClick={() => handleCTAClick('unlimited-6mo', '$249.99')}
+              >
+                Start with Unlimited – 6 Months for $249.99
+              </Button>
+            </div>
+          </div>
+        </section>
 
         {/* Dashboard Preview Modal */}
         <Dialog open={dashboardPreviewOpen} onOpenChange={setDashboardPreviewOpen}>
