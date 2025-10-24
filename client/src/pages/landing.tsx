@@ -40,7 +40,7 @@ const INSTITUTIONS = [
 ];
 
 // Hide "2,847+ users" social proof section until this timestamp (24 hours from now)
-const SHOW_SOCIAL_PROOF_AFTER = new Date('2025-10-23T16:00:00Z').getTime();
+const SHOW_SOCIAL_PROOF_AFTER = new Date('2025-10-22T01:05:00Z').getTime();
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -1344,7 +1344,7 @@ function Landing() {
           
           <div className="border-t border-gray-700 pt-8 mt-8">
             <p className="text-sm text-gray-300 text-center">
-              &copy; 2025 Flint Tech Inc. All rights reserved.
+              &copy; 2025 Flint Financial Management Platform. All rights reserved.
             </p>
           </div>
         </div>
@@ -1361,7 +1361,7 @@ function Landing() {
         __html: JSON.stringify({
           "@context": "https://schema.org",
           "@type": "Organization",
-          "name": "Flint Tech Inc",
+          "name": "Flint",
           "description": "Financial management platform for connecting banks, brokerages, and crypto wallets",
           "url": "https://flint.com",
           "logo": "https://flint.com/logo.png",
@@ -1380,7 +1380,7 @@ function Landing() {
           "description": "Connect all your financial accounts in one secure platform",
           "brand": {
             "@type": "Brand",
-            "name": "Flint Tech Inc"
+            "name": "Flint"
           },
           "offers": {
             "@type": "Offer",
