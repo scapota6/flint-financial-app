@@ -55,7 +55,8 @@ const app = express();
           'https://assets.lemonsqueezy.com',
           'https://js.whop.com',
           'https://whop.com',
-          'https://us-assets.i.posthog.com'
+          'https://us-assets.i.posthog.com',
+          'https://connect.facebook.net'
         ],
         // Styles (separate style-src-elem is respected by newer browsers)
         styleSrc: [SELF, UNSAFE_INLINE, 'https://fonts.googleapis.com'],
@@ -88,9 +89,11 @@ const app = express();
           'https://whop.com',
           'https://us.i.posthog.com',
           'https://us-assets.i.posthog.com',
+          'https://connect.facebook.net',
+          'https://www.facebook.com',
           // add your exact Replit base (scheme+host+port) if you ever call absolute URLs
         ],
-        imgSrc: [SELF, 'data:', 'https://cdn.brandfetch.io'],
+        imgSrc: [SELF, 'data:', 'https://cdn.brandfetch.io', 'https://www.facebook.com'],
         baseUri: [SELF],
         frameAncestors: [SELF], // adjust if you embed your app elsewhere
         // If you use Stripe web workers or wasm, add workerSrc/childSrc as needed.
