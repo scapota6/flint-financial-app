@@ -97,9 +97,5 @@ externalPort = 3000
 [[ports]]
 localPort = 45589
 
-[[ports]]
-localPort = 46747
-externalPort = 6000
-
 [agent]
 integrations = ["resend:1.0.0"]
