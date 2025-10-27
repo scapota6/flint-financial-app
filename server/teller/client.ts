@@ -6,17 +6,11 @@ import { Agent, Dispatcher } from 'undici';
 // ===== ENVIRONMENT CONFIGURATION =====
 
 /**
- * Get the Teller API base URL based on environment
- * - sandbox: https://api.sandbox.teller.io
- * - development/production: https://api.teller.io
+ * Get the Teller API base URL
+ * Note: Teller uses the same URL for both sandbox and production.
+ * The environment is determined by the access token, not the URL.
  */
 export function getTellerBaseUrl(): string {
-  const env = process.env.TELLER_ENVIRONMENT || 'development';
-  
-  if (env === 'sandbox') {
-    return 'https://api.sandbox.teller.io';
-  }
-  
   return 'https://api.teller.io';
 }
 
