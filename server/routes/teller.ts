@@ -31,6 +31,8 @@ router.post("/connect-init", requireAuth, async (req: any, res) => {
     const userId = req.user.claims.sub;
     const applicationId = process.env.TELLER_APPLICATION_ID;
     
+    console.log('[Teller Connect Init] User:', userId, 'CSRF token present:', !!req.headers['x-csrf-token']);
+    
     if (!applicationId) {
       return res.status(503).json({ 
         message: "Banking service not configured",
@@ -51,6 +53,8 @@ router.post("/connect-init", requireAuth, async (req: any, res) => {
     // Use environment from TELLER_ENVIRONMENT or default to development
     const environment = process.env.TELLER_ENVIRONMENT || 'development';
     
+    console.log('[Teller Connect Init] Returning environment:', environment);
+    
     res.json({
       applicationId,
       environment,
@@ -58,6 +62,7 @@ router.post("/connect-init", requireAuth, async (req: any, res) => {
     });
     
   } catch (error: any) {
+    console.error('[Teller Connect Init] Error:', error);
     logger.error("Failed to initialize Teller Connect", { error });
     res.status(500).json({ 
       message: "Failed to initialize bank connection",
