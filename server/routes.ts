@@ -19,7 +19,7 @@ import { logger } from "@shared/logger";
 import { demoMode } from "@shared/demo-mode";
 import { sendApplicationNotificationEmail } from "./services/email";
 import { getTellerAccessToken } from "./store/tellerUsers";
-import { resilientTellerFetch } from "./teller/client";
+import { resilientTellerFetch, getTellerBaseUrl } from "./teller/client";
 import { 
   insertConnectedAccountSchema,
   insertWatchlistItemSchema,
@@ -430,7 +430,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
               const authHeader = `Basic ${Buffer.from(tellerAccessToken + ":").toString("base64")}`;
               const [accountResponse, balancesResponse] = await Promise.all([
                 resilientTellerFetch(
-                  `https://api.teller.io/accounts/${account.externalAccountId}`,
+                  `${getTellerBaseUrl()}/accounts/${account.externalAccountId}`,
                   {
                     headers: {
                       'Authorization': authHeader,
@@ -439,7 +439,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
                   'Dashboard-Account'
                 ),
                 resilientTellerFetch(
-                  `https://api.teller.io/accounts/${account.externalAccountId}/balances`,
+                  `${getTellerBaseUrl()}/accounts/${account.externalAccountId}/balances`,
                   {
                     headers: {
                       'Authorization': authHeader,
@@ -878,7 +878,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         
         try {
           const response = await fetch(
-            `https://api.teller.io/accounts/${account.externalAccountId}/transactions?count=500`,
+            `${getTellerBaseUrl()}/accounts/${account.externalAccountId}/transactions?count=500`,
             {
               headers: {
                 'Authorization': `Basic ${Buffer.from(account.accessToken + ":").toString("base64")}`,
@@ -1185,7 +1185,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
         try {
           const tellerResponse = await fetch(
-            `https://api.teller.io/accounts/${tellerAccount.externalAccountId}/transactions`,
+            `${getTellerBaseUrl()}/accounts/${tellerAccount.externalAccountId}/transactions`,
             {
               headers: {
                 'Authorization': `Bearer ${tellerAccount.accessToken}`,
@@ -1786,7 +1786,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       // Validate with Teller API
-      const tellerResponse = await fetch('https://api.teller.io/accounts', {
+      const tellerResponse = await fetch(`${getTellerBaseUrl()}/accounts`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
@@ -1876,7 +1876,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       // Validate with Teller API
-      const tellerResponse = await fetch('https://api.teller.io/accounts', {
+      const tellerResponse = await fetch(`${getTellerBaseUrl()}/accounts`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
@@ -2382,7 +2382,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           
           // Fetch account core object from Teller using mTLS
           const accountResponse = await resilientTellerFetch(
-            `https://api.teller.io/accounts/${account.externalAccountId}`,
+            `${getTellerBaseUrl()}/accounts/${account.externalAccountId}`,
             requestOptions,
             'AccountDetails-Account'
           );
@@ -2395,7 +2395,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           let balances = null;
           try {
             const balancesResponse = await resilientTellerFetch(
-              `https://api.teller.io/accounts/${account.externalAccountId}/balances`,
+              `${getTellerBaseUrl()}/accounts/${account.externalAccountId}/balances`,
               requestOptions,
               'AccountDetails-Balance'
             );
@@ -2411,7 +2411,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           let accountDetails = null;
           try {
             const detailsResponse = await resilientTellerFetch(
-              `https://api.teller.io/accounts/${account.externalAccountId}/details`,
+              `${getTellerBaseUrl()}/accounts/${account.externalAccountId}/details`,
               requestOptions,
               'AccountDetails-Details'
             );
@@ -2427,7 +2427,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           let transactions = [];
           try {
             const transactionsResponse = await resilientTellerFetch(
-              `https://api.teller.io/accounts/${account.externalAccountId}/transactions?count=500`,
+              `${getTellerBaseUrl()}/accounts/${account.externalAccountId}/transactions?count=500`,
               requestOptions,
               'AccountDetails-Transactions'
             );
@@ -2443,7 +2443,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           let statements = [];
           try {
             const statementsResponse = await resilientTellerFetch(
-              `https://api.teller.io/accounts/${account.externalAccountId}/statements`,
+              `${getTellerBaseUrl()}/accounts/${account.externalAccountId}/statements`,
               requestOptions,
               'AccountDetails-Statements'
             );
@@ -2464,7 +2464,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           if (tellerAccount.subtype === 'credit_card') {
             try {
               const capabilitiesResponse = await resilientTellerFetch(
-                `https://api.teller.io/accounts/${account.externalAccountId}/capabilities`,
+                `${getTellerBaseUrl()}/accounts/${account.externalAccountId}/capabilities`,
                 requestOptions,
                 'AccountDetails-Capabilities'
               );
@@ -2745,7 +2745,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // First, check if payments are supported
       const capabilitiesResponse = await fetch(
-        `https://api.teller.io/accounts/${account.externalAccountId}/capabilities`,
+        `${getTellerBaseUrl()}/accounts/${account.externalAccountId}/capabilities`,
         {
           headers: {
             'Authorization': authHeader,
@@ -2779,7 +2779,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Initiate payment
       const paymentResponse = await fetch(
-        `https://api.teller.io/accounts/${account.externalAccountId}/payments`,
+        `${getTellerBaseUrl()}/accounts/${account.externalAccountId}/payments`,
         {
           method: 'POST',
           headers: {
@@ -2908,7 +2908,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         
         // Fetch account details from Teller
         const accountResponse = await fetch(
-          `https://api.teller.io/accounts/${account.externalAccountId}/details`,
+          `${getTellerBaseUrl()}/accounts/${account.externalAccountId}/details`,
           {
             headers: {
               'Authorization': authHeader,
@@ -2925,7 +2925,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         
         // Fetch balances
         const balancesResponse = await fetch(
-          `https://api.teller.io/accounts/${account.externalAccountId}/balances`,
+          `${getTellerBaseUrl()}/accounts/${account.externalAccountId}/balances`,
           {
             headers: {
               'Authorization': authHeader,

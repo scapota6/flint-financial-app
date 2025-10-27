@@ -78,6 +78,7 @@ const app = express();
         connectSrc: [
           SELF,
           'https://api.teller.io',
+          'https://api.sandbox.teller.io',
           'https://cdn.teller.io',
           'https://js.stripe.com',
           'https://api.stripe.com',

@@ -2,7 +2,7 @@ import { storage } from "../storage";
 import { accountsApi } from "../lib/snaptrade";
 import { logger } from "@shared/logger";
 import { getTellerAccessToken } from "../store/tellerUsers";
-import { resilientTellerFetch } from "../teller/client";
+import { resilientTellerFetch, getTellerBaseUrl } from "../teller/client";
 
 export class HealthCheckService {
   private intervalId: NodeJS.Timeout | null = null;
@@ -65,7 +65,7 @@ export class HealthCheckService {
               try {
                 const authHeader = `Basic ${Buffer.from(accessToken + ":").toString("base64")}`;
                 const response = await resilientTellerFetch(
-                  `https://api.teller.io/accounts/${account.externalAccountId}`,
+                  `${getTellerBaseUrl()}/accounts/${account.externalAccountId}`,
                   {
                     headers: {
                       'Authorization': authHeader,

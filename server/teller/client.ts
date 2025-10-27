@@ -3,6 +3,23 @@ import { logger } from "@shared/logger";
 import crypto from 'crypto';
 import { Agent, Dispatcher } from 'undici';
 
+// ===== ENVIRONMENT CONFIGURATION =====
+
+/**
+ * Get the Teller API base URL based on environment
+ * - sandbox: https://api.sandbox.teller.io
+ * - development/production: https://api.teller.io
+ */
+export function getTellerBaseUrl(): string {
+  const env = process.env.TELLER_ENVIRONMENT || 'development';
+  
+  if (env === 'sandbox') {
+    return 'https://api.sandbox.teller.io';
+  }
+  
+  return 'https://api.teller.io';
+}
+
 // ===== MTLS CONFIGURATION =====
 
 // Format PEM certificate or private key by adding proper line breaks
@@ -592,7 +609,7 @@ export async function tellerForUser(userId: string): Promise<TellerClient> {
         
         try {
           const response = await resilientTellerFetch(
-            `https://api.teller.io/accounts/${accountId}`,
+            `${getTellerBaseUrl()}/accounts/${accountId}`,
             {
               headers: {
                 'Authorization': `Bearer ${token}`,
@@ -618,7 +635,7 @@ export async function tellerForUser(userId: string): Promise<TellerClient> {
         for (const [accountId, token] of entries) {
           try {
             const response = await resilientTellerFetch(
-              `https://api.teller.io/accounts`,
+              `${getTellerBaseUrl()}/accounts`,
               {
                 headers: {
                   'Authorization': `Bearer ${token}`,
@@ -648,7 +665,7 @@ export async function tellerForUser(userId: string): Promise<TellerClient> {
         
         try {
           const response = await resilientTellerFetch(
-            `https://api.teller.io/accounts/${accountId}`,
+            `${getTellerBaseUrl()}/accounts/${accountId}`,
             {
               method: 'DELETE',
               headers: {
@@ -687,7 +704,7 @@ export async function tellerForUser(userId: string): Promise<TellerClient> {
           throw new Error(`No access token found for account ${params.account_id}`);
         }
         
-        const url = new URL(`https://api.teller.io/accounts/${params.account_id}/transactions`);
+        const url = new URL(`${getTellerBaseUrl()}/accounts/${params.account_id}/transactions`);
         if (params.count) {
           url.searchParams.set('count', params.count.toString());
         }
@@ -738,7 +755,7 @@ export async function tellerForUser(userId: string): Promise<TellerClient> {
         
         try {
           const response = await resilientTellerFetch(
-            `https://api.teller.io/accounts/${accountId}/transactions/${transactionId}`,
+            `${getTellerBaseUrl()}/accounts/${accountId}/transactions/${transactionId}`,
             {
               headers: {
                 'Authorization': `Bearer ${token}`,
@@ -780,7 +797,7 @@ export async function tellerForUser(userId: string): Promise<TellerClient> {
         
         try {
           const response = await resilientTellerFetch(
-            `https://api.teller.io/accounts/${accountId}/balances`,
+            `${getTellerBaseUrl()}/accounts/${accountId}/balances`,
             {
               headers: {
                 'Authorization': `Bearer ${token}`,
@@ -822,7 +839,7 @@ export async function tellerForUser(userId: string): Promise<TellerClient> {
         
         try {
           const response = await resilientTellerFetch(
-            `https://api.teller.io/accounts/${accountId}/details`,
+            `${getTellerBaseUrl()}/accounts/${accountId}/details`,
             {
               headers: {
                 'Authorization': `Bearer ${token}`,
@@ -869,7 +886,7 @@ export async function tellerForUser(userId: string): Promise<TellerClient> {
         
         try {
           const response = await resilientTellerFetch(
-            `https://api.teller.io/accounts/${accountId}/payments`,
+            `${getTellerBaseUrl()}/accounts/${accountId}/payments`,
             {
               method: 'OPTIONS',
               headers: {
@@ -919,7 +936,7 @@ export async function tellerForUser(userId: string): Promise<TellerClient> {
         
         try {
           const response = await resilientTellerFetch(
-            `https://api.teller.io/accounts/${accountId}/payees`,
+            `${getTellerBaseUrl()}/accounts/${accountId}/payees`,
             {
               method: 'POST',
               headers: {
@@ -992,7 +1009,7 @@ export async function tellerForUser(userId: string): Promise<TellerClient> {
         
         try {
           const response = await resilientTellerFetch(
-            `https://api.teller.io/accounts/${accountId}/payments`,
+            `${getTellerBaseUrl()}/accounts/${accountId}/payments`,
             {
               method: 'POST',
               headers,
@@ -1048,7 +1065,7 @@ export async function tellerForUser(userId: string): Promise<TellerClient> {
         
         try {
           const response = await resilientTellerFetch(
-            `https://api.teller.io/accounts/${accountId}/payments`,
+            `${getTellerBaseUrl()}/accounts/${accountId}/payments`,
             {
               headers: {
                 'Authorization': `Bearer ${token}`,
@@ -1093,7 +1110,7 @@ export async function tellerForUser(userId: string): Promise<TellerClient> {
         
         try {
           const response = await resilientTellerFetch(
-            `https://api.teller.io/accounts/${accountId}/payments/${paymentId}`,
+            `${getTellerBaseUrl()}/accounts/${accountId}/payments/${paymentId}`,
             {
               headers: {
                 'Authorization': `Bearer ${token}`,
@@ -1140,7 +1157,7 @@ export async function tellerForUser(userId: string): Promise<TellerClient> {
         for (const [accountId, token] of entries) {
           try {
             const response = await resilientTellerFetch(
-              `https://api.teller.io/identity`,
+              `${getTellerBaseUrl()}/identity`,
               {
                 headers: {
                   'Authorization': `Bearer ${token}`,
