@@ -481,3 +481,134 @@ body {
     grid-template-columns: 120px 1fr 120px 100px;
   }
 }
+
+/* 18. Typography System (Apple Style) */
+
+/* Headings */
+.h1,
+h1 {
+  font-family: var(--font);
+  font-weight: 700;
+  font-size: clamp(2.5rem, 5vw, 3.5rem);
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  color: var(--txt);
+}
+
+.h2,
+h2 {
+  font-family: var(--font);
+  font-weight: 600;
+  font-size: clamp(1.75rem, 3vw, 2.25rem);
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: var(--txt);
+}
+
+.h3,
+h3 {
+  font-family: var(--font);
+  font-weight: 600;
+  font-size: 1.5rem;
+  letter-spacing: -0.015em;
+  color: var(--txt);
+}
+
+/* Subheaders / Supporting Text */
+.subtitle {
+  font-family: var(--font);
+  font-weight: 400;
+  font-size: 1.1rem;
+  color: var(--txt-2);
+  line-height: 1.6;
+  letter-spacing: -0.01em;
+}
+
+/* Paragraph / Body */
+p,
+.body {
+  font-family: var(--font);
+  font-weight: 400;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--txt-2);
+}
+
+/* Strong emphasis */
+strong,
+b {
+  font-weight: 600;
+  color: var(--txt);
+}
+
+/* Caption / small */
+.small {
+  font-size: 0.875rem;
+  color: var(--txt-3);
+  letter-spacing: 0.01em;
+}
+
+/* Hero Gradient Text */
+.gradient-text {
+  background: linear-gradient(90deg, #8a5cff, #2f80ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Stat numbers (e.g. 3+ hours, $1,847) */
+.stat-number {
+  font-family: var(--font);
+  font-weight: 700;
+  font-size: 2.5rem;
+  letter-spacing: -0.02em;
+  color: var(--txt);
+}
+
+/* CTA Button Typography */
+.btn {
+  font-family: var(--font);
+  font-weight: 600;
+  font-size: 1rem;
+  letter-spacing: -0.01em;
+}
+
+/* Section Titles */
+.section-title {
+  font-family: var(--font);
+  font-weight: 700;
+  font-size: 2rem;
+  letter-spacing: -0.02em;
+  color: var(--txt);
+  margin-bottom: 12px;
+}
+
+/* Pricing Highlight */
+.price {
+  font-size: 3rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--txt);
+}
+.price strike {
+  color: var(--txt-3);
+  font-weight: 400;
+}
+
+/* Accent colors for specific words */
+.txt-purple { color: var(--purple); }
+.txt-blue { color: var(--blue); }
+.txt-green { color: var(--green); }
+.txt-red { color: var(--red); }
+
+/* Apple-style smooth text rendering */
+body, h1, h2, h3, p {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* 19. Responsive Typography */
+@media (max-width: 768px) {
+  h1, .h1 { font-size: 2rem; }
+  h2, .h2 { font-size: 1.5rem; }
+  .stat-number { font-size: 2rem; }
+}
