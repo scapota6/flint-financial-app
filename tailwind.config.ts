@@ -6,7 +6,7 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['"Inter"', '"SF Pro Display"', '"SF Pro Text"', '-apple-system', 'BlinkMacSystemFont', 'system-ui', 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', 'sans-serif'],
+        sans: ['"Poppins"', '"Inter"', '"SF Pro Display"', '"SF Pro Text"', '-apple-system', 'BlinkMacSystemFont', 'system-ui', 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', 'sans-serif'],
       },
       borderRadius: {
         lg: "var(--radius)",
