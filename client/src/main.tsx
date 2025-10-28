@@ -4,6 +4,7 @@ import App from "./App";
 import { ErrorBoundary } from "./components/error-boundary";
 import { PostHogProvider } from 'posthog-js/react';
 import "./index.css";
+import "./styles/flint-glass.css";
 
 const posthogOptions = {
   api_host: import.meta.env.VITE_PUBLIC_POSTHOG_HOST || 'https://us.i.posthog.com',

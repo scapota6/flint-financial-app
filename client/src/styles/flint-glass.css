@@ -1,0 +1,483 @@
+/* Flint Glass Dark - Apple-style web theme */
+
+/* 1. Tokens */
+:root {
+  --bg-0: #0a0b0d;
+  --bg-1: #0f1114;
+  --bg-2: rgba(24, 26, 31, 0.55);
+  --glass: rgba(28, 31, 36, 0.55);
+  --glass-strong: rgba(28, 31, 36, 0.7);
+  --border: rgba(255, 255, 255, 0.08);
+  --divider: rgba(255, 255, 255, 0.06);
+
+  --txt: #f2f4f6;
+  --txt-2: #a7adba;
+  --txt-3: #8b91a1;
+
+  --blue: #2f80ff;
+  --blue-2: #5aa0ff;
+  --purple: #8a5cff;
+  --green: #35d073;
+  --red: #ff6b6b;
+  --yellow: #ffc400;
+
+  --radius-lg: 28px;
+  --radius-md: 20px;
+  --radius-sm: 14px;
+
+  --shadow-xl: 0 24px 80px rgba(0, 0, 0, 0.45);
+  --shadow-md: 0 12px 40px rgba(0, 0, 0, 0.35);
+
+  --focus-ring: 0 0 0 3px rgba(47, 128, 255, 0.35);
+
+  --blur: 16px;
+  --sat: 140%;
+
+  --font: "SF Pro Display", "SF Pro Text", -apple-system, BlinkMacSystemFont,
+    "Inter", system-ui, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+
+  --container-w: 980px;
+}
+
+/* 2. Base */
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font);
+  color: var(--txt);
+  background: radial-gradient(
+      1200px 800px at 50% -20%,
+      #12141a 0%,
+      #0a0b0d 60%,
+      #000 100%
+    ),
+    var(--bg-0);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* 3. Utilities */
+.container {
+  width: min(var(--container-w), 92vw);
+  margin: 0 auto;
+}
+.muted {
+  color: var(--txt-2);
+}
+.subtle {
+  color: var(--txt-3);
+}
+.row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+.hr {
+  height: 1px;
+  background: var(--divider);
+  border: 0;
+  margin: 16px 0;
+}
+.blur {
+  background: var(--glass);
+  backdrop-filter: blur(var(--blur)) saturate(var(--sat));
+  -webkit-backdrop-filter: blur(var(--blur)) saturate(var(--sat));
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-md);
+}
+
+/* 4. Cards */
+.card {
+  background: var(--glass);
+  backdrop-filter: blur(var(--blur)) saturate(var(--sat));
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 18px;
+  box-shadow: var(--shadow-md);
+}
+.card-title {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+.card-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-top: 1px solid var(--divider);
+}
+.card-row:first-child {
+  border-top: 0;
+}
+
+/* 5. Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 46px;
+  padding: 0 18px;
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  cursor: pointer;
+  font-weight: 500;
+  color: #fff;
+  transition: all 0.22s ease;
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(var(--blur)) saturate(var(--sat));
+}
+.btn:focus {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+.btn:active {
+  transform: scale(0.98);
+}
+.btn-primary {
+  background: linear-gradient(180deg, var(--blue), #0f6aff);
+  border-color: rgba(47, 128, 255, 0.35);
+}
+.btn-primary:hover {
+  filter: brightness(1.06);
+  box-shadow: 0 0 18px rgba(47, 128, 255, 0.35);
+}
+.btn-ghost {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border);
+  color: var(--txt);
+}
+.btn-danger {
+  background: linear-gradient(180deg, #ff6565, #e04141);
+  border-color: rgba(255, 107, 107, 0.35);
+}
+.btn[disabled],
+.btn.disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* 6. Fields */
+.field {
+  width: 100%;
+  height: 52px;
+  padding: 0 14px;
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border);
+  color: var(--txt);
+  transition: all 0.2s ease;
+}
+.field::placeholder {
+  color: var(--txt-3);
+}
+.field:focus {
+  outline: none;
+  border-color: rgba(255, 255, 255, 0.18);
+  box-shadow: var(--focus-ring);
+}
+.field.error {
+  border-color: rgba(255, 0, 0, 0.35);
+}
+
+/* 7. Tabs */
+.tabs {
+  display: flex;
+  gap: 8px;
+  margin: 8px 0 14px 0;
+}
+.tab {
+  height: 34px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  color: var(--txt-2);
+  background: rgba(255, 255, 255, 0.04);
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+.tab:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.08);
+}
+.tab.active {
+  color: #fff;
+  border-color: var(--border);
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: inset 0 -2px 0 var(--blue);
+}
+
+/* 8. Modal */
+.modal-shell {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.48);
+  backdrop-filter: blur(6px);
+  display: grid;
+  place-items: center;
+  z-index: 60;
+  animation: fadeIn 0.2s ease;
+}
+.modal {
+  width: min(980px, 94vw);
+  max-height: 88vh;
+  overflow: auto;
+  border-radius: var(--radius-lg);
+  background: var(--glass);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-xl);
+  backdrop-filter: blur(var(--blur)) saturate(var(--sat));
+}
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 20px;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.06),
+    rgba(255, 255, 255, 0)
+  );
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+.modal-title {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+/* 9. Dropdown menu */
+.menu {
+  position: absolute;
+  z-index: 70;
+  min-width: 320px;
+  max-height: 360px;
+  overflow: auto;
+  border-radius: 18px;
+  border: 1px solid var(--border);
+  background: var(--glass-strong);
+  backdrop-filter: blur(var(--blur)) saturate(var(--sat));
+  box-shadow: var(--shadow-md);
+  padding: 8px;
+  animation: menuIn 0.18s ease;
+}
+.menu-search {
+  position: sticky;
+  top: 0;
+  padding: 8px;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.06),
+    rgba(255, 255, 255, 0)
+  );
+}
+.menu-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 0.16s ease;
+  color: var(--txt);
+}
+.menu-item:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+.menu-item .logo {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  object-fit: cover;
+}
+
+/* 10. Table */
+.table {
+  width: 100%;
+}
+.thead,
+.tr {
+  display: grid;
+  grid-template-columns: 160px 1fr 140px 120px;
+  gap: 12px;
+  align-items: center;
+}
+.thead {
+  position: sticky;
+  top: 0;
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(6px);
+  padding: 10px;
+  border-bottom: 1px solid var(--divider);
+}
+.tbody .tr {
+  padding: 10px;
+  border-bottom: 1px solid var(--divider);
+}
+.td.right {
+  text-align: right;
+}
+.amount-pos {
+  color: var(--green);
+}
+.amount-neg {
+  color: var(--red);
+}
+
+/* 11. Badges */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 72px;
+  height: 26px;
+  padding: 0 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
+}
+.badge.pending {
+  background: rgba(255, 196, 0, 0.18);
+  color: #ffe07a;
+  border-color: rgba(255, 196, 0, 0.4);
+}
+.badge.failed {
+  background: rgba(255, 107, 107, 0.18);
+  color: #ff9a9a;
+  border-color: rgba(255, 107, 107, 0.4);
+}
+
+/* 12. Toasts */
+.toast {
+  position: fixed;
+  top: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  min-width: 320px;
+  max-width: 540px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: var(--glass);
+  backdrop-filter: blur(var(--blur));
+  box-shadow: var(--shadow-md);
+  z-index: 90;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+.toast.success {
+  border-left: 4px solid var(--green);
+}
+.toast.error {
+  border-left: 4px solid var(--red);
+}
+
+/* 13. Spinner / success ring */
+.spinner {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 3px solid rgba(255, 255, 255, 0.15);
+  border-top-color: var(--blue);
+  animation: spin 1.1s linear infinite;
+}
+.ring-success {
+  width: 84px;
+  height: 84px;
+  border-radius: 50%;
+  background: conic-gradient(var(--green) 0 100%, rgba(255, 255, 255, 0.08) 0);
+  display: grid;
+  place-items: center;
+}
+
+/* 14. Skeletons */
+.skeleton {
+  position: relative;
+  overflow: hidden;
+  border-radius: 10px;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.06),
+    rgba(255, 255, 255, 0.09),
+    rgba(255, 255, 255, 0.06)
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.2s ease-in-out infinite;
+}
+
+/* 15. Chips (Amount shortcuts) */
+.chips {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.chip {
+  min-width: 72px;
+  height: 36px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.06);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.18s ease;
+  cursor: pointer;
+  color: #fff;
+}
+.chip:hover {
+  box-shadow: 0 0 14px rgba(47, 128, 255, 0.22);
+}
+.chip.active {
+  background: linear-gradient(180deg, var(--blue-2), var(--blue));
+}
+
+/* 16. Animations */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes menuIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* 17. Responsive table tweak */
+@media (max-width: 1024px) {
+  .thead,
+  .tr {
+    grid-template-columns: 120px 1fr 120px 100px;
+  }
+}

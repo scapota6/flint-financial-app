@@ -15,7 +15,7 @@ export function SkeletonPlaceholder({
 }: SkeletonPlaceholderProps) {
   return (
     <div 
-      className={`bg-gray-700 animate-pulse ${height} ${width} ${rounded ? 'rounded' : ''} ${className}`}
+      className={`skeleton bg-gray-700 animate-pulse ${height} ${width} ${rounded ? 'rounded' : ''} ${className}`}
     />
   );
 }
