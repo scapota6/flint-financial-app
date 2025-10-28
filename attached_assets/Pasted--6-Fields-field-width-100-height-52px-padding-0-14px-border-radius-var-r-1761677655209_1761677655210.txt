@@ -1,0 +1,116 @@
+
+/* 6. Fields */
+.field {
+  width: 100%;
+  height: 52px;
+  padding: 0 14px;
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border);
+  color: var(--txt);
+  transition: all 0.2s ease;
+}
+.field::placeholder {
+  color: var(--txt-3);
+}
+.field:focus {
+  outline: none;
+  border-color: rgba(255, 255, 255, 0.18);
+  box-shadow: var(--focus-ring);
+}
+.field.error {
+  border-color: rgba(255, 0, 0, 0.35);
+}
+
+/* 7. Tabs */
+.tabs {
+  display: flex;
+  gap: 8px;
+  margin: 8px 0 14px 0;
+}
+.tab {
+  height: 34px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  color: var(--txt-2);
+  background: rgba(255, 255, 255, 0.04);
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+.tab:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.08);
+}
+.tab.active {
+  color: #fff;
+  border-color: var(--border);
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: inset 0 -2px 0 var(--blue);
+}
+
+/* 8. Modal */
+.modal-shell {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.48);
+  backdrop-filter: blur(6px);
+  display: grid;
+  place-items: center;
+  z-index: 60;
+  animation: fadeIn 0.2s ease;
+}
+.modal {
+  width: min(980px, 94vw);
+  max-height: 88vh;
+  overflow: auto;
+  border-radius: var(--radius-lg);
+  background: var(--glass);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-xl);
+  backdrop-filter: blur(var(--blur)) saturate(var(--sat));
+}
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 20px;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.06),
+    rgba(255, 255, 255, 0)
+  );
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+.modal-title {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+/* 9. Dropdown menu */
+.menu {
+  position: absolute;
+  z-index: 70;
+  min-width: 320px;
+  max-height: 360px;
+  overflow: auto;
+  border-radius: 18px;
+  border: 1px solid var(--border);
+  background: var(--glass-strong);
+  backdrop-filter: blur(var(--blur)) saturate(var(--sat));
+  box-shadow: var(--shadow-md);
+  padding: 8px;
+  animation: menuIn 0.18s ease;
+}
+.menu-search {
+  position: sticky;
+  top: 0;
+  padding: 8px;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.06),
+    rgba(255, 255, 255, 0)
+  );
+}

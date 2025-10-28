@@ -1,0 +1,60 @@
+Rebuild the entire Flint web app interface to match this Apple-style dark glass design system. 
+Use this exact CSS as the global site theme. Create a file named src/styles/flint-glass.css and import it once in App.jsx so it applies everywhere.
+
+Replace all current buttons, inputs, cards, modals, dropdowns, tabs, tables, and toasts with this Apple-inspired glassmorphism style. Keep all layout and functionality the same — only restyle.
+
+Here is the full CSS for the new global theme:
+
+<PASTE ALL CSS BELOW INTO THAT FILE>
+
+/* Flint Glass Dark - Apple-style web theme */
+/* 1. Tokens */
+:root{
+  --bg-0:#0a0b0d;
+  --bg-1:#0f1114;
+  --bg-2:rgba(24,26,31,0.55);
+  --glass:rgba(28,31,36,0.55);
+  --glass-strong:rgba(28,31,36,0.7);
+  --border:rgba(255,255,255,0.08);
+  --divider:rgba(255,255,255,0.06);
+  --txt:#f2f4f6;
+  --txt-2:#a7adba;
+  --txt-3:#8b91a1;
+  --blue:#2f80ff;
+  --blue-2:#5aa0ff;
+  --purple:#8a5cff;
+  --green:#35d073;
+  --red:#ff6b6b;
+  --yellow:#ffc400;
+  --radius-lg:28px;
+  --radius-md:20px;
+  --radius-sm:14px;
+  --shadow-xl:0 24px 80px rgba(0,0,0,0.45);
+  --shadow-md:0 12px 40px rgba(0,0,0,0.35);
+  --focus-ring:0 0 0 3px rgba(47,128,255,0.35);
+  --blur:16px;
+  --sat:140%;
+  --font:"SF Pro Display","SF Pro Text",-apple-system,BlinkMacSystemFont,"Inter",system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+  --container-w:980px;
+}
+/* body, cards, buttons, fields, tabs, modal, dropdown, tables, badges, toast, spinner, skeletons, chips, balances, animations, etc. */
+[PASTE THE REST OF THE CSS YOU HAVE FROM THE FLINT-GLASS.CSS FILE HERE — everything starting from body{...} down to the @media rule]
+
+After creating the file and importing it at the top of App.jsx like:
+import "./styles/flint-glass.css";
+
+Map the existing elements:
+- Primary buttons -> .btn .btn-primary
+- Secondary -> .btn .btn-ghost
+- Danger -> .btn .btn-danger
+- Inputs -> .field
+- Tabs -> .tabs / .tab
+- Cards -> .card
+- Modals -> .modal-shell / .modal
+- Dropdowns -> .menu / .menu-item
+- Tables -> .table / .thead / .tbody / .tr / .td
+- Toasts -> .toast.success or .toast.error
+- Spinners -> .spinner
+- Skeletons -> .skeleton
+
+Do not change routing or data fetching — only replace the visual layer with this Apple-style dark glass theme so it looks identical to the latest Teller Transfer UI mockups.
