@@ -191,7 +191,7 @@ export default function Dashboard() {
       <div className="min-h-screen" style={{ background: 'var(--bg)', color: 'var(--text-primary)' }}>
         <div className="max-w-7xl mx-auto p-6">
           <div className="text-center py-12">
-            <h2 className="text-2xl font-semibold mb-4">Error Loading Dashboard</h2>
+            <h2 className="h3 mb-4">Error Loading Dashboard</h2>
             <p className="text-gray-400 mb-6">Please try refreshing the page</p>
             <Button onClick={() => refetch()} className="flint-btn-primary">
               <RefreshCw className="h-4 w-4 mr-2" />
@@ -208,7 +208,7 @@ export default function Dashboard() {
       <div className="max-w-7xl mx-auto p-6">
         {/* Dashboard Header */}
         <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-2 font-mono">
+          <h1 className="h1 mb-2 font-mono">
             <SparkleTitle>Dashboard</SparkleTitle>
           </h1>
           <p className="text-gray-400">Welcome back, {(user as any)?.firstName || (user as any)?.email?.split('@')[0] || 'Trader'}</p>

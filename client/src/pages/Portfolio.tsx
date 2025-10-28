@@ -195,7 +195,7 @@ export default function Portfolio() {
             <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-gradient-to-r from-purple-500/20 to-blue-500/20 flex items-center justify-center">
               <AlertCircle className="h-8 w-8 text-purple-400" />
             </div>
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-white via-purple-200 to-purple-400 bg-clip-text text-transparent mb-4">
+            <h1 className="h1 bg-gradient-to-r from-white via-purple-200 to-purple-400 bg-clip-text text-transparent mb-4">
               No Portfolio Data
             </h1>
             <p className="text-slate-400 mb-8 max-w-md mx-auto">
@@ -228,7 +228,7 @@ export default function Portfolio() {
         <div className="mb-8">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-4xl font-bold bg-gradient-to-r from-white via-purple-200 to-purple-400 bg-clip-text text-transparent">
+              <h1 className="h1 bg-gradient-to-r from-white via-purple-200 to-purple-400 bg-clip-text text-transparent">
                 Portfolio Overview
               </h1>
               <p className="text-slate-400 mt-2">
@@ -257,7 +257,7 @@ export default function Portfolio() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-white">
+              <div className="stat-number text-white">
                 {formatCurrency(netWorth)}
               </div>
               <div className={`flex items-center mt-2 text-sm ${isPositive ? 'text-green-400' : 'text-red-400'}`}>
@@ -277,7 +277,7 @@ export default function Portfolio() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-white">
+            <div className="stat-number text-white">
               {formatCurrency(summary?.totals?.investable || 0)}
             </div>
             <p className="text-xs text-slate-400 mt-2">
@@ -296,7 +296,7 @@ export default function Portfolio() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-white">
+            <div className="stat-number text-white">
               {formatCurrency(summary?.totals?.cash || 0)}
             </div>
             <p className="text-xs text-slate-400 mt-2">
@@ -315,7 +315,7 @@ export default function Portfolio() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-red-400">
+            <div className="stat-number text-red-400">
               {formatCurrency(Math.abs(summary?.totals?.debt || 0))}
             </div>
             <p className="text-xs text-slate-400 mt-2">

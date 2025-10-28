@@ -270,7 +270,7 @@ function Landing() {
       <main className="mx-auto max-w-7xl px-4 lg:px-8 relative z-10">
         <section className="py-20 text-center space-y-8">
           <div className="space-y-6">
-            <h2 className="text-5xl lg:text-6xl font-bold tracking-tight">
+            <h2 className="h1 tracking-tight">
               Feel confident with your{' '}
               <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 bg-clip-text text-transparent">
                 money again.
@@ -447,7 +447,7 @@ function Landing() {
         <section className="py-20 bg-gradient-to-b from-red-950/20 to-transparent border-y border-red-900/30" data-section="problem">
           <div className="max-w-6xl mx-auto space-y-12">
             <div className="text-center space-y-4">
-              <h2 className="text-4xl lg:text-5xl font-bold tracking-tight text-white">
+              <h2 className="h2 tracking-tight text-white">
                 The hidden cost of scattered finances
               </h2>
               <p className="text-xl text-gray-300 max-w-3xl mx-auto">
@@ -465,7 +465,7 @@ function Landing() {
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <div className="text-5xl font-bold text-red-400">3+ hours</div>
+                    <div className="stat-number text-red-400">3+ hours</div>
                     <div className="text-gray-400 text-lg">wasted every week</div>
                   </div>
                   <p className="text-gray-300">
@@ -483,7 +483,7 @@ function Landing() {
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <div className="text-5xl font-bold text-orange-400">$1,847</div>
+                    <div className="stat-number text-orange-400">$1,847</div>
                     <div className="text-gray-400 text-lg">lost per year</div>
                   </div>
                   <p className="text-gray-300">
@@ -1167,7 +1167,7 @@ function Landing() {
         <section id="fast-track" data-section="fast-track" className="py-20">
           <div className="max-w-4xl mx-auto text-center space-y-8">
             <div className="space-y-4">
-              <h2 className="text-4xl lg:text-5xl font-bold">
+              <h2 className="h2">
                 Want to skip the <span className="text-purple-400">waitlist?</span>
               </h2>
               <p className="text-xl text-gray-300">
@@ -1176,7 +1176,7 @@ function Landing() {
             </div>
             
             <div className="space-y-6">
-              <div className="text-5xl font-bold text-white">$79.99</div>
+              <div className="stat-number text-white">$79.99</div>
               
               <Button 
                 size="lg" 
@@ -1199,7 +1199,7 @@ function Landing() {
         <section id="apply" data-section="apply" className="py-20 bg-gray-900/50">
           <div className="max-w-2xl mx-auto">
             <div className="text-center space-y-6 mb-12">
-              <h2 className="text-4xl lg:text-5xl font-bold">
+              <h2 className="h2">
                 Apply for <span className="text-purple-400">Flint Free</span>
               </h2>
               <p className="text-xl text-gray-300">

@@ -120,7 +120,7 @@ export default function Accounts() {
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900/20 to-slate-900">
       <div className="container mx-auto px-4 pt-24 pb-12 max-w-7xl">
         <div className="mb-8">
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-white via-purple-200 to-purple-400 bg-clip-text text-transparent">
+          <h1 className="h1 bg-gradient-to-r from-white via-purple-200 to-purple-400 bg-clip-text text-transparent">
             Manage Accounts
           </h1>
           <p className="text-slate-400 mt-2">
@@ -132,7 +132,7 @@ export default function Accounts() {
           <Card className="border-dashed bg-slate-800/30 border-slate-700">
             <CardContent className="flex flex-col items-center justify-center py-12">
               <AlertCircle className="h-12 w-12 text-slate-400 mb-4" />
-              <h3 className="text-lg font-semibold mb-2 text-white">No Accounts Connected</h3>
+              <h3 className="section-title mb-2 text-white">No Accounts Connected</h3>
               <p className="text-slate-400 text-center">
                 Go to the Portfolio page to view connected accounts
               </p>

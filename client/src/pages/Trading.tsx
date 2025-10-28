@@ -97,7 +97,7 @@ export default function Trading() {
       <div className="container mx-auto px-4 pt-24 pb-12 max-w-7xl">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-white via-purple-200 to-purple-400 bg-clip-text text-transparent">
+          <h1 className="h1 bg-gradient-to-r from-white via-purple-200 to-purple-400 bg-clip-text text-transparent">
             Trading
           </h1>
           <p className="text-slate-400 mt-2">
