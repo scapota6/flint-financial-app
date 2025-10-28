@@ -33,8 +33,8 @@
   --blur: 16px;
   --sat: 140%;
 
-  --font: "SF Pro Display", "SF Pro Text", -apple-system, BlinkMacSystemFont,
-    "Inter", system-ui, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+  --font: "Inter", "SF Pro Display", "SF Pro Text", -apple-system, BlinkMacSystemFont,
+    system-ui, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
 
   --container-w: 980px;
 }
