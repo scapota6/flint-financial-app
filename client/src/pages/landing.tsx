@@ -718,66 +718,6 @@ function Landing() {
           </div>
         </section>
 
-        {/* Hero Section - CTA 1: Unlimited Annual */}
-        <section id="annual" data-section="annual" className="grid lg:grid-cols-2 gap-12 py-20 items-center">
-          <div className="space-y-8">
-            <div className="space-y-4">
-              <h1 className="text-4xl lg:text-6xl font-bold tracking-tight">
-                See if you qualify for{' '}
-                <span className="text-purple-400">Flint Free</span> below.
-              </h1>
-              <p className="text-xl text-gray-300 leading-relaxed">
-                Or get started right now with <strong>2 free months</strong> (20% savings) 
-                when you invest upfront in Flint Unlimited.
-              </p>
-            </div>
-            
-            <div className="space-y-6">
-              <div className="flex items-baseline space-x-2">
-                <span className="text-5xl font-bold text-white">$499.99</span>
-                <span className="text-lg text-gray-400 line-through">$600</span>
-                <span className="text-lg text-gray-300">/year</span>
-              </div>
-              
-              <Button 
-                size="lg" 
-                className="w-full lg:w-auto bg-purple-600 hover:bg-purple-700 text-white px-8 py-4 text-lg"
-                data-cta="annual-unlimited"
-                data-testid="button-cta-annual-unlimited"
-                onClick={() => handleCTAClick('unlimited-yearly', '$499.99')}
-              >
-                Start with Unlimited Annual – $499.99
-              </Button>
-              
-              <p className="text-sm text-gray-400">
-                Founding Member pricing. Renews at same rate if you keep your plan.
-              </p>
-            </div>
-          </div>
-          
-          {/* Trust badges */}
-          <div className="space-y-8">
-            <div className="grid grid-cols-1 gap-6">
-              <Card className="bg-gray-900 border-gray-700">
-                <CardContent className="p-6">
-                  <div className="flex items-center space-x-3 mb-4">
-                    <Shield className="h-6 w-6 text-green-400" />
-                    <span className="font-semibold">Bank-grade encryption</span>
-                  </div>
-                  <div className="flex items-center space-x-3 mb-4">
-                    <Building className="h-6 w-6 text-blue-400" />
-                    <span className="font-semibold">Trusted financial infrastructure</span>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    <Lock className="h-6 w-6 text-purple-400" />
-                    <span className="font-semibold">No ads or selling data</span>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-        </section>
-
         {/* CTA 6: Free Application Form */}
         <section id="apply" data-section="apply" className="py-20 bg-gray-900/50">
           <div className="max-w-2xl mx-auto">
@@ -894,6 +834,62 @@ function Landing() {
                 </CardContent>
               </Card>
             )}
+          </div>
+        </section>
+
+        {/* Hero Section - CTA 1: Unlimited Annual */}
+        <section id="annual" data-section="annual" className="grid lg:grid-cols-2 gap-12 py-20 items-center">
+          <div className="space-y-8">
+            <div className="space-y-4">
+              <p className="text-xl text-gray-300 leading-relaxed">
+                Or get started right now with <strong>2 free months</strong> (20% savings) 
+                when you invest upfront in Flint Unlimited.
+              </p>
+            </div>
+            
+            <div className="space-y-6">
+              <div className="flex items-baseline space-x-2">
+                <span className="text-5xl font-bold text-white">$499.99</span>
+                <span className="text-lg text-gray-400 line-through">$600</span>
+                <span className="text-lg text-gray-300">/year</span>
+              </div>
+              
+              <Button 
+                size="lg" 
+                className="w-full lg:w-auto bg-purple-600 hover:bg-purple-700 text-white px-8 py-4 text-lg"
+                data-cta="annual-unlimited"
+                data-testid="button-cta-annual-unlimited"
+                onClick={() => handleCTAClick('unlimited-yearly', '$499.99')}
+              >
+                Start with Unlimited Annual – $499.99
+              </Button>
+              
+              <p className="text-sm text-gray-400">
+                Founding Member pricing. Renews at same rate if you keep your plan.
+              </p>
+            </div>
+          </div>
+          
+          {/* Trust badges */}
+          <div className="space-y-8">
+            <div className="grid grid-cols-1 gap-6">
+              <Card className="bg-gray-900 border-gray-700">
+                <CardContent className="p-6">
+                  <div className="flex items-center space-x-3 mb-4">
+                    <Shield className="h-6 w-6 text-green-400" />
+                    <span className="font-semibold">Bank-grade encryption</span>
+                  </div>
+                  <div className="flex items-center space-x-3 mb-4">
+                    <Building className="h-6 w-6 text-blue-400" />
+                    <span className="font-semibold">Trusted financial infrastructure</span>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <Lock className="h-6 w-6 text-purple-400" />
+                    <span className="font-semibold">No ads or selling data</span>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
           </div>
         </section>
 
