@@ -778,6 +778,125 @@ function Landing() {
           </div>
         </section>
 
+        {/* CTA 6: Free Application Form */}
+        <section id="apply" data-section="apply" className="py-20 bg-gray-900/50">
+          <div className="max-w-2xl mx-auto">
+            <div className="text-center space-y-6 mb-12">
+              <h2 className="h2">
+                Apply for <span className="text-purple-400">Flint Free</span>
+              </h2>
+              <p className="text-xl text-gray-300">
+                Tell us about your accounts and we'll let you know if you qualify.
+              </p>
+            </div>
+
+            {!formSubmitted ? (
+              <Card className="bg-gray-800 border-gray-700">
+                <CardContent className="p-8">
+                  <form onSubmit={handleFormSubmit} className="space-y-6">
+                    <div className="space-y-2">
+                      <Label htmlFor="firstName" className="text-white">First Name *</Label>
+                      <Input
+                        id="firstName"
+                        type="text"
+                        required
+                        value={formData.firstName}
+                        onChange={(e) => setFormData({...formData, firstName: e.target.value})}
+                        className="bg-gray-700 border-gray-600 text-white"
+                        placeholder="Enter your first name"
+                        data-testid="input-first-name"
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="email" className="text-white">Email *</Label>
+                      <Input
+                        id="email"
+                        type="email"
+                        required
+                        value={formData.email}
+                        onChange={(e) => setFormData({...formData, email: e.target.value})}
+                        className="bg-gray-700 border-gray-600 text-white"
+                        placeholder="Enter your email"
+                        data-testid="input-email"
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label className="text-white">How many accounts are you looking to connect? *</Label>
+                      <Select
+                        value={formData.accountCount}
+                        onValueChange={(value) => setFormData({...formData, accountCount: value})}
+                        required
+                      >
+                        <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
+                          <SelectValue placeholder="Select number of accounts" />
+                        </SelectTrigger>
+                        <SelectContent className="bg-gray-700 border-gray-600">
+                          <SelectItem value="1">1</SelectItem>
+                          <SelectItem value="2">2</SelectItem>
+                          <SelectItem value="3">3</SelectItem>
+                          <SelectItem value="4+">4+</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    
+                    <div className="space-y-4">
+                      <Label className="text-white">What will you connect? *</Label>
+                      <RadioGroup
+                        value={formData.connectType}
+                        onValueChange={(value) => setFormData({...formData, connectType: value})}
+                        className="space-y-3"
+                      >
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="banks" id="banks" className="border-gray-600" />
+                          <Label htmlFor="banks" className="text-white cursor-pointer">Banks</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="brokerages" id="brokerages" className="border-gray-600" />
+                          <Label htmlFor="brokerages" className="text-white cursor-pointer">Brokerages</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="both" id="both" className="border-gray-600" />
+                          <Label htmlFor="both" className="text-white cursor-pointer">Both</Label>
+                        </div>
+                      </RadioGroup>
+                    </div>
+                    
+                    <Button 
+                      type="submit" 
+                      className="w-full bg-purple-600 hover:bg-purple-700 text-white py-3"
+                      disabled={!formData.firstName || !formData.email || !formData.accountCount || !formData.connectType}
+                      data-testid="button-submit-application"
+                    >
+                      Submit Application
+                    </Button>
+                    
+                    <p className="text-xs text-gray-400 text-center">
+                      We'll never sell your data. Privacy policy applies.
+                    </p>
+                  </form>
+                </CardContent>
+              </Card>
+            ) : (
+              <Card className="bg-gray-800 border-gray-700">
+                <CardContent className="p-8 text-center space-y-6">
+                  <div className="text-6xl">✅</div>
+                  <h3 className="text-2xl font-bold text-green-400">Application Submitted!</h3>
+                  <p className="text-gray-300">We'll review your application and email you within 24 hours.</p>
+                  <Button 
+                    variant="outline"
+                    className="mt-4"
+                    onClick={() => setFormSubmitted(false)}
+                  >
+                    Submit Another Application
+                  </Button>
+                </CardContent>
+              </Card>
+            )}
+          </div>
+        </section>
+
         {/* Social Proof Block #1 - Hidden for 24 hours, will auto-show after Oct 22, 2025 01:05 UTC */}
         {Date.now() >= SHOW_SOCIAL_PROOF_AFTER && (
           <section className="py-16 border-y border-gray-800">
@@ -1192,125 +1311,6 @@ function Landing() {
                 <strong className="text-white">Credited toward any subscription</strong> if you upgrade later.
               </p>
             </div>
-          </div>
-        </section>
-
-        {/* CTA 6: Free Application Form */}
-        <section id="apply" data-section="apply" className="py-20 bg-gray-900/50">
-          <div className="max-w-2xl mx-auto">
-            <div className="text-center space-y-6 mb-12">
-              <h2 className="h2">
-                Apply for <span className="text-purple-400">Flint Free</span>
-              </h2>
-              <p className="text-xl text-gray-300">
-                Tell us about your accounts and we'll let you know if you qualify.
-              </p>
-            </div>
-
-            {!formSubmitted ? (
-              <Card className="bg-gray-800 border-gray-700">
-                <CardContent className="p-8">
-                  <form onSubmit={handleFormSubmit} className="space-y-6">
-                    <div className="space-y-2">
-                      <Label htmlFor="firstName" className="text-white">First Name *</Label>
-                      <Input
-                        id="firstName"
-                        type="text"
-                        required
-                        value={formData.firstName}
-                        onChange={(e) => setFormData({...formData, firstName: e.target.value})}
-                        className="bg-gray-700 border-gray-600 text-white"
-                        placeholder="Enter your first name"
-                        data-testid="input-first-name"
-                      />
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <Label htmlFor="email" className="text-white">Email *</Label>
-                      <Input
-                        id="email"
-                        type="email"
-                        required
-                        value={formData.email}
-                        onChange={(e) => setFormData({...formData, email: e.target.value})}
-                        className="bg-gray-700 border-gray-600 text-white"
-                        placeholder="Enter your email"
-                        data-testid="input-email"
-                      />
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <Label className="text-white">How many accounts are you looking to connect? *</Label>
-                      <Select
-                        value={formData.accountCount}
-                        onValueChange={(value) => setFormData({...formData, accountCount: value})}
-                        required
-                      >
-                        <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
-                          <SelectValue placeholder="Select number of accounts" />
-                        </SelectTrigger>
-                        <SelectContent className="bg-gray-700 border-gray-600">
-                          <SelectItem value="1">1</SelectItem>
-                          <SelectItem value="2">2</SelectItem>
-                          <SelectItem value="3">3</SelectItem>
-                          <SelectItem value="4+">4+</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    
-                    <div className="space-y-4">
-                      <Label className="text-white">What will you connect? *</Label>
-                      <RadioGroup
-                        value={formData.connectType}
-                        onValueChange={(value) => setFormData({...formData, connectType: value})}
-                        className="space-y-3"
-                      >
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="banks" id="banks" className="border-gray-600" />
-                          <Label htmlFor="banks" className="text-white cursor-pointer">Banks</Label>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="brokerages" id="brokerages" className="border-gray-600" />
-                          <Label htmlFor="brokerages" className="text-white cursor-pointer">Brokerages</Label>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="both" id="both" className="border-gray-600" />
-                          <Label htmlFor="both" className="text-white cursor-pointer">Both</Label>
-                        </div>
-                      </RadioGroup>
-                    </div>
-                    
-                    <Button 
-                      type="submit" 
-                      className="w-full bg-purple-600 hover:bg-purple-700 text-white py-3"
-                      disabled={!formData.firstName || !formData.email || !formData.accountCount || !formData.connectType}
-                      data-testid="button-submit-application"
-                    >
-                      Submit Application
-                    </Button>
-                    
-                    <p className="text-xs text-gray-400 text-center">
-                      We'll never sell your data. Privacy policy applies.
-                    </p>
-                  </form>
-                </CardContent>
-              </Card>
-            ) : (
-              <Card className="bg-gray-800 border-gray-700">
-                <CardContent className="p-8 text-center space-y-6">
-                  <div className="text-6xl">✅</div>
-                  <h3 className="text-2xl font-bold text-green-400">Application Submitted!</h3>
-                  <p className="text-gray-300">We'll review your application and email you within 24 hours.</p>
-                  <Button 
-                    variant="outline"
-                    className="mt-4"
-                    onClick={() => setFormSubmitted(false)}
-                  >
-                    Submit Another Application
-                  </Button>
-                </CardContent>
-              </Card>
-            )}
           </div>
         </section>
       </main>
