@@ -1278,37 +1278,6 @@ function Landing() {
           </div>
         </section>
 
-        {/* CTA 5: Fast-Track Pass */}
-        <section id="fast-track" data-section="fast-track" className="py-20">
-          <div className="max-w-4xl mx-auto text-center space-y-8">
-            <div className="space-y-4">
-              <h2 className="h2">
-                Want to skip the <span className="text-purple-400">waitlist?</span>
-              </h2>
-              <p className="text-xl text-gray-300">
-                Qualify right away with the Fast-Track Pass.
-              </p>
-            </div>
-            
-            <div className="space-y-6">
-              <div className="stat-number text-white">$79.99</div>
-              
-              <Button 
-                size="lg" 
-                className="bg-yellow-600 hover:bg-yellow-700 text-black px-8 py-4 text-lg font-semibold"
-                data-cta="fast-track"
-                onClick={() => handleCTAClick('fast-track', '$79.99')}
-              >
-                Unlock Free Now for $79.99
-              </Button>
-              
-              <p className="text-sm text-gray-400">
-                Instant access to Flint Free + priority onboarding. 
-                <strong className="text-white">Credited toward any subscription</strong> if you upgrade later.
-              </p>
-            </div>
-          </div>
-        </section>
       </main>
 
       {/* Legal Footer */}
