@@ -790,6 +790,9 @@ router.post('/setup-password', async (req, res) => {
       5
     );
 
+    // Check if this is a first-time setup or password reset
+    const isFirstTimeSetup = !user.passwordHash;
+
     // Update user password in a transaction
     await db.transaction(async (tx) => {
       // Update user with new password and mark email as verified
@@ -812,15 +815,17 @@ router.post('/setup-password', async (req, res) => {
         .where(eq(passwordResetTokens.id, resetToken.id));
     });
 
-    // Send welcome email to the new user
-    const welcomeEmailResult = await sendWelcomeEmail(
-      user.email || '',
-      user.firstName || 'User'
-    );
+    // Only send welcome email for first-time setup, not for password resets
+    if (isFirstTimeSetup) {
+      const welcomeEmailResult = await sendWelcomeEmail(
+        user.email || '',
+        user.firstName || 'User'
+      );
 
-    if (!welcomeEmailResult.success) {
-      console.error('Failed to send welcome email:', welcomeEmailResult.error);
-      // Don't fail the request if email fails - password is already set
+      if (!welcomeEmailResult.success) {
+        console.error('Failed to send welcome email:', welcomeEmailResult.error);
+        // Don't fail the request if email fails - password is already set
+      }
     }
 
     return res.status(200).json({
