@@ -30,6 +30,10 @@ export function installCsrf(app: Express) {
   app.use((req, res, next) => {
     const isPublicPath = publicPaths.some(path => req.path === path) || req.url.includes('/webhook');
     
+    // Check if request is from mobile app (React Native/iOS/Android)
+    // Mobile apps send X-Mobile-App header to bypass CSRF
+    const isMobileApp = req.headers['x-mobile-app'] === 'true';
+    
     // Debug logging for webhook paths
     if (req.path.includes('webhook') || req.url.includes('webhook')) {
       console.log('[CSRF] Webhook request - path:', req.path, 'url:', req.url, 'isPublic:', isPublicPath);
@@ -40,7 +44,13 @@ export function installCsrf(app: Express) {
       return next();
     }
     
-    // Apply CSRF for all other routes
+    // Skip CSRF for mobile app requests
+    if (isMobileApp) {
+      console.log('[CSRF] Skipping CSRF for mobile app request:', req.path);
+      return next();
+    }
+    
+    // Apply CSRF for all other routes (web browser requests)
     csrf({
       cookie: {
         key: 'flint_csrf',
