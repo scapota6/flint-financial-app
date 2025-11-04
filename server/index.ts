@@ -131,13 +131,12 @@ const app = express();
     next();
   });
 
-  // 4) CORS — allow credentials from your client origin
-  const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN ?? 'https://28036d48-949d-4fd5-9e63-54ed8b7fd662-00-1i1qwnyczdy9x.kirk.replit.dev';
+  // 4) CORS — allow credentials from all origins (configured for mobile app)
   app.use(cors({
-    origin: CLIENT_ORIGIN,
+    origin: true, // Allow all origins
     credentials: true,
-    allowedHeaders: ['Content-Type', 'x-csrf-token'],
-    methods: ['GET','POST','PUT','PATCH','DELETE','OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   }));
 
   // 3) Trust proxy so Secure cookies work behind Replit's TLS
