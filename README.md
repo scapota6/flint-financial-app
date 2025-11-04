@@ -33,10 +33,23 @@ A comprehensive financial platform that enables seamless multi-brokerage trading
 - **Replit Auth** with OpenID Connect
 
 ### External Integrations
+
+#### Financial Services
 - **SnapTrade API** - Multi-brokerage trading and account data
 - **Teller.io** - Bank account connections and ACH transfers
-- **Polygon.io** - Real-time market data
-- **Stripe** - Subscription and payment processing
+- **Polygon.io** - Real-time market data and quotes
+
+#### Payment & Subscription Management
+- **Whop** - Primary subscription management and payment processing
+- **Stripe** - Additional payment processing
+- **Lemon Squeezy** - Legacy subscription system (deprecated)
+
+#### Communication & Analytics
+- **Resend** - Transactional email service (approval emails, password resets)
+- **PostHog** - Analytics tracking (client and server-side)
+
+#### Authentication
+- **Replit Auth** - OpenID Connect authentication
 
 ## 🏗️ Architecture
 
@@ -75,19 +88,30 @@ A comprehensive financial platform that enables seamless multi-brokerage trading
    # Database
    DATABASE_URL=your_postgresql_url
    
-   # SnapTrade API
+   # Financial Services
    SNAPTRADE_CLIENT_ID=your_client_id
    SNAPTRADE_CONSUMER_KEY=your_consumer_key
-   
-   # Teller API
    TELLER_APPLICATION_ID=your_app_id
    TELLER_SIGNING_SECRET=your_secret
-   
-   # Polygon.io
    POLYGON_API_KEY=your_api_key
    
-   # Stripe
-   STRIPE_SECRET_KEY=your_secret_key
+   # Payment & Subscriptions
+   WHOP_API_KEY=your_whop_api_key
+   WHOP_WEBHOOK_SECRET=your_whop_webhook_secret
+   STRIPE_SECRET_KEY=your_stripe_key
+   VITE_STRIPE_PUBLIC_KEY=your_stripe_public_key
+   LEMONSQUEEZY_API_KEY=your_lemonsqueezy_key (legacy)
+   LEMONSQUEEZY_STORE_ID=your_store_id (legacy)
+   
+   # Communication & Analytics
+   RESEND_API_KEY=your_resend_api_key
+   VITE_PUBLIC_POSTHOG_KEY=your_posthog_key
+   VITE_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com
+   
+   # Authentication
+   ISSUER_URL=your_replit_auth_issuer_url
+   CLIENT_ID=your_replit_auth_client_id
+   CLIENT_SECRET=your_replit_auth_client_secret
    ```
 
 4. Push database schema:
@@ -167,10 +191,25 @@ This project is proprietary and confidential. All rights reserved.
 
 ## 🔗 Links
 
+### Repository
 - [GitHub Repository](https://github.com/scapota6/flint-financial-app)
+
+### Financial Services
 - [SnapTrade Documentation](https://docs.snaptrade.com)
 - [Teller API Docs](https://teller.io/docs)
 - [Polygon.io API](https://polygon.io/docs)
+
+### Payment & Subscriptions
+- [Whop Documentation](https://docs.whop.com)
+- [Stripe Documentation](https://stripe.com/docs)
+- [Lemon Squeezy Docs](https://docs.lemonsqueezy.com)
+
+### Communication & Analytics
+- [Resend Documentation](https://resend.com/docs)
+- [PostHog Documentation](https://posthog.com/docs)
+
+### Platform
+- [Replit Auth Docs](https://docs.replit.com/hosting/authentication)
 
 ---
 
