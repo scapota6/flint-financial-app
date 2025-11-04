@@ -167,11 +167,11 @@ This project is proprietary and confidential. All rights reserved.
 
 ## 🔗 Links
 
-- [Live Demo](https://flint-investing.replit.app) (if deployed)
+- [GitHub Repository](https://github.com/scapota6/flint-financial-app)
 - [SnapTrade Documentation](https://docs.snaptrade.com)
 - [Teller API Docs](https://teller.io/docs)
 - [Polygon.io API](https://polygon.io/docs)
 
 ---
 
-Built with ❤️ using modern web technologies for seamless financial management.# OFFICIALFLINTAPP
+Built with ❤️ using modern web technologies for seamless financial management.
