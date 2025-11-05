@@ -105,9 +105,21 @@ router.post("/snaptrade/register", requireAuth, async (req: any, res) => {
     }
     
     // Step 4: Call loginSnapTradeUser with dynamic redirect URL
-    const redirectUrl = `${req.protocol}://${req.get('host')}/snaptrade/callback`;
+    // Accept custom redirectUri from request body (for mobile deep links)
+    // Otherwise fall back to web app callback URL
+    const customRedirectUri = req.body?.redirectUri;
+    const redirectUrl = customRedirectUri || `${req.protocol}://${req.get('host')}/snaptrade/callback`;
+    const isMobileApp = !!customRedirectUri;
     
-    logger.info("Generating SnapTrade portal URL", { userId, metadata: { redirectUrl, snaptradeUserId, hasUserSecret: !!userSecret } });
+    logger.info("Generating SnapTrade portal URL", { 
+      userId, 
+      metadata: { 
+        redirectUrl, 
+        isMobileApp,
+        snaptradeUserId, 
+        hasUserSecret: !!userSecret 
+      } 
+    });
     
     // Add small delay to allow SnapTrade's eventual consistency (registration -> login)
     await new Promise(resolve => setTimeout(resolve, 500));
@@ -123,10 +135,11 @@ router.post("/snaptrade/register", requireAuth, async (req: any, res) => {
     // Step 5: Return the portal URL
     const portalUrl = (loginData as any).redirectURI;
     
-    logger.info("SnapTrade portal URL generated", { userId, metadata: { hasPortalUrl: !!portalUrl } });
+    logger.info("SnapTrade portal URL generated", { userId, metadata: { hasPortalUrl: !!portalUrl, isMobileApp } });
     
     res.json({ 
-      redirectUrl: portalUrl,
+      url: portalUrl,
+      redirectUrl: portalUrl, // Backward compatibility with existing web clients
       message: "Redirect user to SnapTrade connection portal"
     });
     
@@ -261,7 +274,10 @@ router.post("/snaptrade/register", requireAuth, async (req: any, res) => {
         });
         
         // Generate login URL with recovery ID
-        const redirectUrl = `${req.protocol}://${req.get('host')}/snaptrade/callback`;
+        // Use custom redirectUri from request body (for mobile apps) or fall back to web callback
+        const customRedirectUri = req.body?.redirectUri;
+        const redirectUrl = customRedirectUri || `${req.protocol}://${req.get('host')}/snaptrade/callback`;
+        const isMobileApp = !!customRedirectUri;
         
         // Add delay to allow SnapTrade's eventual consistency
         await new Promise(resolve => setTimeout(resolve, 500));
@@ -276,10 +292,11 @@ router.post("/snaptrade/register", requireAuth, async (req: any, res) => {
         
         const portalUrl = (loginData as any).redirectURI;
         
-        logger.info("Auto-recovery successful", { userId, metadata: { newId, hasPortalUrl: !!portalUrl } });
+        logger.info("Auto-recovery successful", { userId, metadata: { newId, hasPortalUrl: !!portalUrl, isMobileApp } });
         
         return res.json({ 
-          redirectUrl: portalUrl,
+          url: portalUrl,
+          redirectUrl: portalUrl, // Backward compatibility with existing web clients
           message: "Redirect user to SnapTrade connection portal",
           recovered: true
         });
