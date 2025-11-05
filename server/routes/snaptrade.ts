@@ -1040,4 +1040,189 @@ router.post('/sync', isAuthenticated, async (req: any, res) => {
   }
 });
 
+/**
+ * POST /api/snaptrade/callback
+ * Mobile OAuth callback endpoint - accepts connection_id and syncs specific account
+ * This is called by iOS/mobile apps after SnapTrade OAuth redirect
+ * 
+ * Required body params:
+ * - authorizationId or connection_id: The brokerage authorization ID from OAuth callback
+ */
+router.post('/callback', isAuthenticated, async (req: any, res) => {
+  try {
+    const flintUserId = req.user.claims.sub;
+    const { authorizationId, connection_id } = req.body;
+    
+    // Use either field name (authorizationId or connection_id)
+    const connectionId = authorizationId || connection_id;
+    
+    // Require connection ID
+    if (!connectionId) {
+      console.warn('[SnapTrade Mobile Callback] Missing connection ID in request');
+      return res.status(400).json({
+        success: false,
+        message: 'Connection ID is required (authorizationId or connection_id)'
+      });
+    }
+    
+    console.log('[SnapTrade Mobile Callback] Starting mobile callback sync', {
+      userId: flintUserId,
+      connectionId
+    });
+    
+    // Get user's SnapTrade credentials from database
+    const [snapUser] = await db
+      .select()
+      .from(snaptradeUsers)
+      .where(eq(snaptradeUsers.flintUserId, flintUserId))
+      .limit(1);
+    
+    if (!snapUser) {
+      console.log('[SnapTrade Mobile Callback] No SnapTrade user found for:', flintUserId);
+      return res.status(404).json({ 
+        success: false,
+        message: 'SnapTrade user not found. Please register first.' 
+      });
+    }
+    
+    console.log('[SnapTrade Mobile Callback] Found SnapTrade user, fetching accounts...');
+    
+    // Fetch connected accounts from SnapTrade
+    const accounts = await listAccounts(
+      flintUserId,
+      snapUser.userSecret,
+      flintUserId
+    );
+    
+    console.log('[SnapTrade Mobile Callback] Received accounts:', {
+      count: accounts?.length || 0,
+      targetConnectionId: connectionId
+    });
+    
+    // Find the specific account matching the connection ID
+    let targetAccount = null;
+    for (const account of (accounts as any[]) || []) {
+      const brokerageAuthId = 
+        account.brokerage_authorization?.id || 
+        account.brokerageAuthorization?.id ||
+        account.authorization_id ||
+        account.id;
+      
+      if (brokerageAuthId === connectionId) {
+        targetAccount = account;
+        break;
+      }
+    }
+    
+    // Return error if the specific connection wasn't found
+    if (!targetAccount) {
+      console.warn('[SnapTrade Mobile Callback] Connection ID not found in accounts:', {
+        connectionId,
+        availableAccounts: (accounts as any[])?.map((a: any) => ({
+          id: a.id,
+          authId: a.brokerage_authorization?.id || a.authorization_id
+        }))
+      });
+      
+      return res.status(404).json({
+        success: false,
+        message: `Connection ${connectionId} not found. The account may not be connected yet.`
+      });
+    }
+    
+    // Extract account details
+    const brokerageAuthId = 
+      targetAccount.brokerage_authorization?.id || 
+      targetAccount.brokerageAuthorization?.id ||
+      targetAccount.authorization_id ||
+      targetAccount.id;
+      
+    const brokerageName = 
+      targetAccount.brokerage_authorization?.name || 
+      targetAccount.brokerageAuthorization?.name ||
+      targetAccount.institution_name ||
+      targetAccount.name || 
+      'Unknown';
+    
+    console.log('[SnapTrade Mobile Callback] Processing target account:', {
+      brokerageAuthId,
+      brokerageName,
+      accountId: targetAccount.id
+    });
+    
+    // Check if connection already exists
+    const [existing] = await db
+      .select()
+      .from(snaptradeConnections)
+      .where(and(
+        eq(snaptradeConnections.flintUserId, flintUserId),
+        eq(snaptradeConnections.brokerageAuthorizationId, brokerageAuthId)
+      ))
+      .limit(1);
+    
+    let savedConnection;
+    
+    if (existing) {
+      // Update existing connection
+      const [updated] = await db
+        .update(snaptradeConnections)
+        .set({
+          brokerageName,
+          disabled: false,
+          updatedAt: new Date(),
+          lastSyncAt: new Date()
+        })
+        .where(eq(snaptradeConnections.id, existing.id))
+        .returning();
+      
+      savedConnection = updated;
+      console.log('[SnapTrade Mobile Callback] Updated connection:', brokerageAuthId);
+    } else {
+      // Create new connection
+      const [created] = await db
+        .insert(snaptradeConnections)
+        .values({
+          flintUserId,
+          brokerageAuthorizationId: brokerageAuthId,
+          brokerageName,
+          disabled: false,
+          lastSyncAt: new Date()
+        })
+        .returning();
+      
+      savedConnection = created;
+      console.log('[SnapTrade Mobile Callback] Created new connection:', brokerageAuthId);
+    }
+    
+    console.log('[SnapTrade Mobile Callback] Successfully synced connection:', {
+      userId: flintUserId,
+      connectionId: brokerageAuthId,
+      brokerageName
+    });
+    
+    res.json({
+      success: true,
+      message: 'Account connected successfully',
+      connection: {
+        id: savedConnection.id,
+        brokerageName: savedConnection.brokerageName,
+        authorizationId: savedConnection.brokerageAuthorizationId
+      }
+    });
+    
+  } catch (error: any) {
+    console.error('[SnapTrade Mobile Callback] Error:', {
+      message: error.message,
+      status: error.status,
+      responseBody: error.responseBody
+    });
+    
+    res.status(500).json({ 
+      success: false,
+      message: 'Failed to complete connection',
+      error: error.message || 'Unknown error'
+    });
+  }
+});
+
 export default router;
