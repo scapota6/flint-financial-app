@@ -1,0 +1,50 @@
+Backend Fix Needed #2: Portfolio Holdings Data Structure
+WHAT: The /api/portfolio-holdings endpoint needs to return proper value and shares data for crypto holdings.
+
+WHY: The iOS mobile app successfully connects to Coinbase and retrieves holdings (XLM, POL, AMP, GRT), but all holdings show $0.00 value and 0 shares instead of actual amounts. However, the dashboard correctly shows $12.58 in investments, indicating the data exists but isn't being formatted correctly for the portfolio endpoint.
+
+WHAT FOR: To display accurate portfolio holdings with real values and quantities in the mobile app's Portfolio screen.
+
+CURRENT ISSUE:
+
+The mobile app receives holdings data but they appear to be missing or have zero values for:
+
+value - The total dollar value of each holding
+shares - The quantity/amount of each holding
+Expected Data Structure:
+
+The mobile app expects each holding in the holdings array to have:
+
+{
+  "symbol": "XLM",           // ✅ Working
+  "name": "Stellar Lumens",  // ✅ Working
+  "value": 12.58,            // ❌ Returns 0 or missing
+  "shares": 50.5,            // ❌ Returns 0 or missing
+  "gainLoss": 2.50,          // Optional: gain/loss in dollars
+  "gainLossPercent": 5.25    // Optional: gain/loss percentage
+}
+
+POTENTIAL ROOT CAUSE:
+
+The /api/dashboard endpoint correctly aggregates the total investment value ($12.58), but the /api/portfolio-holdings endpoint may be:
+
+Not calculating the USD value for each holding
+Not including the quantity/shares field
+Returning different data structure than expected
+Missing price data for crypto assets
+THE FIX:
+
+Update /api/portfolio-holdings to ensure each holding includes:
+
+value: Current market value in USD (quantity * current_price)
+shares: The actual quantity of the asset held
+Optional: gainLoss and gainLossPercent for P&L display
+TESTING:
+
+After the fix, the mobile app's Portfolio screen should display:
+
+Each holding with its correct dollar value (not $0.00)
+Each holding with its correct quantity (not "0 shares")
+Total Portfolio Value matching the Dashboard's Investment balance ($12.58)
+NOTE: This appears to be a SnapTrade data mapping issue - the backend successfully retrieves Coinbase holdings but may need to properly map SnapTrade's response format to the mobile app's expected format.
+
