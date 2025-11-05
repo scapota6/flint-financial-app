@@ -18,7 +18,7 @@ Preferred communication style: Simple, everyday language.
 - **Runtime**: Node.js with Express.js.
 - **Database**: PostgreSQL with Drizzle ORM, utilizing Neon Database.
 - **Authentication**: Custom hardened JWT-based authentication (Argon2id, httpOnly/SameSite cookies, double-submit-cookie CSRF, multi-device sessions, MFA/TOTP support, password reset via email with SHA-256 tokens, rate limiting, account enumeration protection, timing-safe operations).
-- **CSRF Protection**: Web requests require CSRF tokens; mobile apps (React Native/iOS) bypass CSRF by sending `X-Mobile-App: true` header.
+- **CSRF Protection**: Web requests require CSRF tokens; mobile apps (React Native/iOS) bypass CSRF by sending `X-Mobile-App: true` header. CORS configured to allow `X-Mobile-App` and `X-CSRF-Token` headers for mobile/web client compatibility.
 - **API Pattern**: RESTful API with JSON responses and robust JSON error handling.
 
 ### Performance Optimizations

@@ -135,7 +135,7 @@ const app = express();
   app.use(cors({
     origin: true, // Allow all origins
     credentials: true,
-    allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'X-Mobile-App', 'X-CSRF-Token'],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   }));
 
