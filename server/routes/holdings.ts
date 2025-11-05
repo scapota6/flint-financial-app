@@ -65,6 +65,10 @@ router.get('/portfolio-holdings', requireAuth, async (req: any, res) => {
               brokerageName = a.name || 'Default';
             }
             
+            const calculatedValue = currentPrice * units;
+            const calculatedProfitLoss = (currentPrice - avgPrice) * units;
+            const calculatedProfitLossPercent = avgPrice ? ((currentPrice - avgPrice) / avgPrice) * 100 : 0;
+            
             return {
               accountId: a.id,
               accountName: a.name || 'Unknown Account',
@@ -74,12 +78,17 @@ router.get('/portfolio-holdings', requireAuth, async (req: any, res) => {
               quantity: units,
               averageCost: avgPrice,
               currentPrice: currentPrice,
-              currentValue: currentPrice * units,
+              currentValue: calculatedValue,
               totalCost: avgPrice * units,
-              profitLoss: (currentPrice - avgPrice) * units,
-              profitLossPercent: avgPrice ? ((currentPrice - avgPrice) / avgPrice) * 100 : 0,
+              profitLoss: calculatedProfitLoss,
+              profitLossPercent: calculatedProfitLossPercent,
               currency: pos.symbol?.symbol?.currency?.code || pos.universal_symbol?.currency?.code || pos.currency?.code || 'USD',
               type: pos.symbol?.symbol?.type?.description || pos.universal_symbol?.type || pos.type || 'stock',
+              // Mobile app field aliases (for iOS/React Native compatibility)
+              value: calculatedValue,
+              shares: units,
+              gainLoss: calculatedProfitLoss,
+              gainLossPercent: calculatedProfitLossPercent,
               // Ensure all nullable fields are explicitly null instead of undefined
               costBasisPerShare: avgPrice || null,
               lastUpdated: pos.last_updated || null,
