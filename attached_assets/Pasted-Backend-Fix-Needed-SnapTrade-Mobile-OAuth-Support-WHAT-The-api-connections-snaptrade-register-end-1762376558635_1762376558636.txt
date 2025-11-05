@@ -1,0 +1,37 @@
+Backend Fix Needed: SnapTrade Mobile OAuth Support
+WHAT: The /api/connections/snaptrade/register endpoint needs to accept and use a custom redirectUri parameter from the request body.
+
+WHY: The iOS mobile app is sending its own deep link redirect URI (exp://... or flintapp://snaptrade-callback), but the backend is currently ignoring it and hardcoding the web app's callback URL (https://www.flint-investing.com/snaptrade/callback). This causes iOS Safari to fail the OAuth flow because it can't redirect to the web URL.
+
+WHAT FOR: To enable SnapTrade brokerage account connections from the iOS mobile app. Currently, users complete Coinbase authentication but see an error {"success":false,"message":"Account ID is required"} because the redirect URL doesn't match.
+
+THE FIX:
+
+Update the /api/connections/snaptrade/register endpoint to:
+
+Accept redirectUri from request body:
+
+const { redirectUri } = req.body;
+
+Pass it to SnapTrade when generating the portal URL:
+
+If redirectUri is provided (mobile app), use it as the customRedirect parameter
+If not provided (web app), use the existing web callback URL
+Example logic:
+
+const callbackUrl = redirectUri || 'https://www.flint-investing.com/snaptrade/callback';
+// Pass callbackUrl to SnapTrade's portal generation
+
+CURRENT BEHAVIOR:
+
+Mobile app sends: POST /api/connections/snaptrade/register with { redirectUri: "flintapp://snaptrade-callback" }
+Backend returns: SnapTrade URL with customRedirect=https://www.flint-investing.com/snaptrade/callback (wrong)
+EXPECTED BEHAVIOR:
+
+Mobile app sends: POST /api/connections/snaptrade/register with { redirectUri: "flintapp://snaptrade-callback" }
+Backend returns: SnapTrade URL with customRedirect=flintapp://snaptrade-callback (correct)
+RESULT:
+After the fix, Safari will automatically close after successful Coinbase connection (because it receives the deep link redirect) instead of showing the error page.
+
+TESTING:
+After the fix, when mobile app calls the endpoint with a custom redirectUri, the backend should return a SnapTrade URL containing that same redirectUri in the customRedirect parameter.
