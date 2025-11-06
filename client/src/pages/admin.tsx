@@ -906,19 +906,19 @@ function UsersTab() {
       </Dialog>
 
       <Dialog open={actionDialog === 'tier'} onOpenChange={() => setActionDialog(null)}>
-        <DialogContent className="bg-slate-900/40 backdrop-blur-xl border border-slate-700/50">
+        <DialogContent className="bg-slate-900/95 backdrop-blur-xl border border-slate-700/50 text-white">
           <DialogHeader>
-            <DialogTitle>Change Subscription Tier</DialogTitle>
-            <DialogDescription>
+            <DialogTitle className="text-white">Change Subscription Tier</DialogTitle>
+            <DialogDescription className="text-gray-400">
               Update subscription tier for {selectedUser?.email}
             </DialogDescription>
           </DialogHeader>
           <div className="py-4">
             <Select value={newTier} onValueChange={setNewTier}>
-              <SelectTrigger className="bg-gray-800 border-gray-700" data-testid="select-new-tier">
+              <SelectTrigger className="bg-gray-800 border-gray-700 text-white" data-testid="select-new-tier">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent className="bg-slate-900/40 backdrop-blur-xl border border-slate-700/50">
+              <SelectContent className="bg-slate-900 border border-slate-700/50 text-white z-[9999]">
                 <SelectItem value="free">Free</SelectItem>
                 <SelectItem value="basic">Basic</SelectItem>
                 <SelectItem value="pro">Pro</SelectItem>
