@@ -581,4 +581,245 @@ r.get("/crypto/search", isAuthenticated, async (req: any, res) => {
   }
 });
 
+/**
+ * GET /api/trade/crypto/quote
+ * Get quote for a cryptocurrency pair
+ */
+r.get("/crypto/quote", isAuthenticated, async (req: any, res) => {
+  try {
+    const userId = req.user.claims.sub;
+    const { pairId, accountId } = req.query;
+    
+    if (!pairId || !accountId) {
+      return res.status(400).json({ 
+        message: "Pair ID and Account ID are required"
+      });
+    }
+    
+    if (!snaptradeClient) {
+      return res.status(503).json({ 
+        message: "Trading service not configured"
+      });
+    }
+    
+    const snaptradeUser = await storage.getSnapTradeUser(userId);
+    if (!snaptradeUser?.snaptradeUserId || !snaptradeUser?.userSecret) {
+      return res.status(403).json({ 
+        message: "No brokerage account connected"
+      });
+    }
+    
+    try {
+      const { data: quote } = await snaptradeClient.trading.getCryptocurrencyPairQuote({
+        userId: snaptradeUser.snaptradeUserId,
+        userSecret: snaptradeUser.userSecret,
+        accountId: accountId as string,
+        cryptoPairId: pairId as string
+      });
+      
+      res.json({
+        quote,
+        pairId
+      });
+      
+    } catch (snapError: any) {
+      logger.error("SnapTrade crypto quote error", snapError);
+      
+      return res.status(400).json({ 
+        message: "Failed to fetch crypto quote",
+        error: snapError.response?.data?.detail?.message || snapError.message
+      });
+    }
+    
+  } catch (error: any) {
+    logger.error("Error fetching crypto quote", { error });
+    res.status(500).json({ 
+      message: "Failed to fetch crypto quote",
+      error: error instanceof Error ? error.message : "Unknown error"
+    });
+  }
+});
+
+/**
+ * POST /api/trade/crypto/preview
+ * Preview a cryptocurrency order
+ */
+r.post("/crypto/preview", isAuthenticated, async (req: any, res) => {
+  try {
+    const userId = req.user.claims.sub;
+    const { accountId, pairId, symbol, side, amount, type } = req.body;
+    
+    if (!accountId || !symbol || !side || !amount || !type) {
+      return res.status(400).json({ 
+        message: "Account ID, symbol, side, amount, and type are required"
+      });
+    }
+    
+    // Validate amount is positive
+    const amountNum = parseFloat(amount);
+    if (isNaN(amountNum) || amountNum <= 0) {
+      return res.status(400).json({ 
+        message: "Amount must be a positive number"
+      });
+    }
+    
+    if (!snaptradeClient) {
+      return res.status(503).json({ 
+        message: "Trading service not configured"
+      });
+    }
+    
+    const snaptradeUser = await storage.getSnapTradeUser(userId);
+    if (!snaptradeUser?.snaptradeUserId || !snaptradeUser?.userSecret) {
+      return res.status(403).json({ 
+        message: "No brokerage account connected"
+      });
+    }
+    
+    try {
+      const instrument: any = {
+        symbol: symbol,
+        type: "CRYPTOCURRENCY_PAIR"
+      };
+      
+      // Include pairId if provided (recommended)
+      if (pairId) {
+        instrument.id = pairId;
+      }
+      
+      const { data: preview } = await snaptradeClient.trading.previewCryptoOrder({
+        userId: snaptradeUser.snaptradeUserId,
+        userSecret: snaptradeUser.userSecret,
+        account_id: accountId,
+        instrument: instrument,
+        side: side.toUpperCase(),
+        type: type.toUpperCase(),
+        amount: amountNum.toString(),
+        time_in_force: "GTC",
+        post_only: false
+      });
+      
+      res.json({
+        preview,
+        symbol,
+        pairId
+      });
+      
+    } catch (snapError: any) {
+      logger.error("SnapTrade crypto preview error", snapError);
+      
+      return res.status(400).json({ 
+        message: "Failed to preview crypto order",
+        error: snapError.response?.data?.detail?.message || snapError.message
+      });
+    }
+    
+  } catch (error: any) {
+    logger.error("Error previewing crypto order", { error });
+    res.status(500).json({ 
+      message: "Failed to preview crypto order",
+      error: error instanceof Error ? error.message : "Unknown error"
+    });
+  }
+});
+
+/**
+ * POST /api/trade/crypto/place
+ * Place a cryptocurrency order
+ */
+r.post("/crypto/place", isAuthenticated, async (req: any, res) => {
+  try {
+    const userId = req.user.claims.sub;
+    const { accountId, pairId, symbol, side, amount, type } = req.body;
+    
+    if (!accountId || !symbol || !side || !amount || !type) {
+      return res.status(400).json({ 
+        message: "Account ID, symbol, side, amount, and type are required"
+      });
+    }
+    
+    // Validate amount is positive
+    const amountNum = parseFloat(amount);
+    if (isNaN(amountNum) || amountNum <= 0) {
+      return res.status(400).json({ 
+        message: "Amount must be a positive number"
+      });
+    }
+    
+    if (!snaptradeClient) {
+      return res.status(503).json({ 
+        message: "Trading service not configured"
+      });
+    }
+    
+    const snaptradeUser = await storage.getSnapTradeUser(userId);
+    if (!snaptradeUser?.snaptradeUserId || !snaptradeUser?.userSecret) {
+      return res.status(403).json({ 
+        message: "No brokerage account connected"
+      });
+    }
+    
+    try {
+      const instrument: any = {
+        symbol: symbol,
+        type: "CRYPTOCURRENCY_PAIR"
+      };
+      
+      // Include pairId if provided (recommended)
+      if (pairId) {
+        instrument.id = pairId;
+      }
+      
+      const { data: order } = await snaptradeClient.trading.placeCryptoOrder({
+        userId: snaptradeUser.snaptradeUserId,
+        userSecret: snaptradeUser.userSecret,
+        account_id: accountId,
+        instrument: instrument,
+        side: side.toUpperCase(),
+        type: type.toUpperCase(),
+        amount: amountNum.toString(),
+        time_in_force: "GTC",
+        post_only: false
+      });
+      
+      // Log activity
+      await storage.logActivity({
+        userId,
+        action: 'crypto_order_placed',
+        description: `Placed ${side} order for ${amount} ${symbol}`,
+        metadata: {
+          accountId,
+          symbol,
+          side,
+          amount,
+          type,
+          pairId,
+          orderId: order?.id
+        }
+      });
+      
+      res.json({
+        success: true,
+        order,
+        message: "Crypto order placed successfully"
+      });
+      
+    } catch (snapError: any) {
+      logger.error("SnapTrade place crypto order error", snapError);
+      
+      return res.status(400).json({ 
+        message: "Failed to place crypto order",
+        error: snapError.response?.data?.detail?.message || snapError.message
+      });
+    }
+    
+  } catch (error: any) {
+    logger.error("Error placing crypto order", { error });
+    res.status(500).json({ 
+      message: "Failed to place crypto order",
+      error: error instanceof Error ? error.message : "Unknown error"
+    });
+  }
+});
+
 export default r;
