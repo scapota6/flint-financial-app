@@ -18,7 +18,7 @@ export function getInstitutionLogo(accountName: string) {
       logo: <img 
         src={`https://cdn.brandfetch.io/robinhood.com?c=${BRANDFETCH_CLIENT_ID}`}
         alt={displayName}
-        className="h-10 w-10 object-contain p-1"
+        className="h-full w-full object-cover scale-125"
       />,
       bgClass: 'bg-green-500/20',
       textClass: 'text-green-500'
@@ -30,7 +30,7 @@ export function getInstitutionLogo(accountName: string) {
       logo: <img 
         src={`https://cdn.brandfetch.io/chase.com?c=${BRANDFETCH_CLIENT_ID}`}
         alt={displayName}
-        className="h-10 w-10 object-contain p-1"
+        className="h-full w-full object-cover scale-125"
       />,
       bgClass: 'bg-blue-600/20',
       textClass: 'text-blue-600'
@@ -42,7 +42,7 @@ export function getInstitutionLogo(accountName: string) {
       logo: <img 
         src={`https://cdn.brandfetch.io/bankofamerica.com?c=${BRANDFETCH_CLIENT_ID}`}
         alt={displayName}
-        className="h-10 w-10 object-contain p-1"
+        className="h-full w-full object-cover scale-125"
       />,
       bgClass: 'bg-red-600/20',
       textClass: 'text-red-600'
@@ -54,7 +54,7 @@ export function getInstitutionLogo(accountName: string) {
       logo: <img 
         src={`https://cdn.brandfetch.io/citi.com?c=${BRANDFETCH_CLIENT_ID}`}
         alt={displayName}
-        className="h-10 w-10 object-contain p-1"
+        className="h-full w-full object-cover scale-125"
       />,
       bgClass: 'bg-blue-500/20',
       textClass: 'text-blue-500'
@@ -66,7 +66,7 @@ export function getInstitutionLogo(accountName: string) {
       logo: <img 
         src={`https://cdn.brandfetch.io/morganstanley.com?c=${BRANDFETCH_CLIENT_ID}`}
         alt={displayName}
-        className="h-10 w-10 object-contain p-1"
+        className="h-full w-full object-cover scale-125"
       />,
       bgClass: 'bg-indigo-600/20',
       textClass: 'text-indigo-600'
@@ -78,7 +78,7 @@ export function getInstitutionLogo(accountName: string) {
       logo: <img 
         src={`https://cdn.brandfetch.io/capitalone.com?c=${BRANDFETCH_CLIENT_ID}`}
         alt={displayName}
-        className="h-10 w-10 object-contain p-1"
+        className="h-full w-full object-cover scale-125"
       />,
       bgClass: 'bg-purple-600/20',
       textClass: 'text-purple-600'
@@ -90,7 +90,7 @@ export function getInstitutionLogo(accountName: string) {
       logo: <img 
         src={`https://cdn.brandfetch.io/pnc.com?c=${BRANDFETCH_CLIENT_ID}`}
         alt={displayName}
-        className="h-10 w-10 object-contain p-1"
+        className="h-full w-full object-cover scale-125"
       />,
       bgClass: 'bg-orange-600/20',
       textClass: 'text-orange-600'
@@ -102,7 +102,7 @@ export function getInstitutionLogo(accountName: string) {
       logo: <img 
         src={`https://cdn.brandfetch.io/wellsfargo.com?c=${BRANDFETCH_CLIENT_ID}`}
         alt={displayName}
-        className="h-10 w-10 object-contain p-1"
+        className="h-full w-full object-cover scale-125"
       />,
       bgClass: 'bg-amber-600/20',
       textClass: 'text-amber-600'
@@ -114,7 +114,7 @@ export function getInstitutionLogo(accountName: string) {
       logo: <img 
         src={`https://cdn.brandfetch.io/americanexpress.com?c=${BRANDFETCH_CLIENT_ID}`}
         alt={displayName}
-        className="h-10 w-10 object-contain p-1"
+        className="h-full w-full object-cover scale-125"
       />,
       bgClass: 'bg-cyan-600/20',
       textClass: 'text-cyan-600'
@@ -126,7 +126,7 @@ export function getInstitutionLogo(accountName: string) {
       logo: <img 
         src={`https://cdn.brandfetch.io/td.com?c=${BRANDFETCH_CLIENT_ID}`}
         alt={displayName}
-        className="h-10 w-10 object-contain p-1"
+        className="h-full w-full object-cover scale-125"
       />,
       bgClass: 'bg-emerald-600/20',
       textClass: 'text-emerald-600'
@@ -138,7 +138,7 @@ export function getInstitutionLogo(accountName: string) {
       logo: <img 
         src={`https://cdn.brandfetch.io/usbank.com?c=${BRANDFETCH_CLIENT_ID}`}
         alt={displayName}
-        className="h-10 w-10 object-contain p-1"
+        className="h-full w-full object-cover scale-125"
       />,
       bgClass: 'bg-slate-600/20',
       textClass: 'text-slate-600'
@@ -150,7 +150,7 @@ export function getInstitutionLogo(accountName: string) {
       logo: <img 
         src={`https://cdn.brandfetch.io/usaa.com?c=${BRANDFETCH_CLIENT_ID}`}
         alt={displayName}
-        className="h-10 w-10 object-contain p-1"
+        className="h-full w-full object-cover scale-125"
       />,
       bgClass: 'bg-blue-900/20',
       textClass: 'text-blue-900'
@@ -163,7 +163,7 @@ export function getInstitutionLogo(accountName: string) {
       logo: <img 
         src={`https://cdn.brandfetch.io/fidelity.com?c=${BRANDFETCH_CLIENT_ID}`}
         alt={displayName}
-        className="h-10 w-10 object-contain p-1"
+        className="h-full w-full object-cover scale-125"
       />,
       bgClass: 'bg-emerald-600/20',
       textClass: 'text-emerald-600'
@@ -175,7 +175,7 @@ export function getInstitutionLogo(accountName: string) {
       logo: <img 
         src={`https://cdn.brandfetch.io/schwab.com?c=${BRANDFETCH_CLIENT_ID}`}
         alt={displayName}
-        className="h-10 w-10 object-contain p-1"
+        className="h-full w-full object-cover scale-125"
       />,
       bgClass: 'bg-blue-700/20',
       textClass: 'text-blue-700'
@@ -187,7 +187,7 @@ export function getInstitutionLogo(accountName: string) {
       logo: <img 
         src={`https://cdn.brandfetch.io/etrade.com?c=${BRANDFETCH_CLIENT_ID}`}
         alt={displayName}
-        className="h-10 w-10 object-contain p-1"
+        className="h-full w-full object-cover scale-125"
       />,
       bgClass: 'bg-purple-700/20',
       textClass: 'text-purple-700'
@@ -199,7 +199,7 @@ export function getInstitutionLogo(accountName: string) {
       logo: <img 
         src={`https://cdn.brandfetch.io/tdameritrade.com?c=${BRANDFETCH_CLIENT_ID}`}
         alt={displayName}
-        className="h-10 w-10 object-contain p-1"
+        className="h-full w-full object-cover scale-125"
       />,
       bgClass: 'bg-green-700/20',
       textClass: 'text-green-700'
@@ -211,7 +211,7 @@ export function getInstitutionLogo(accountName: string) {
       logo: <img 
         src={`https://cdn.brandfetch.io/interactivebrokers.com?c=${BRANDFETCH_CLIENT_ID}`}
         alt={displayName}
-        className="h-10 w-10 object-contain p-1"
+        className="h-full w-full object-cover scale-125"
       />,
       bgClass: 'bg-red-700/20',
       textClass: 'text-red-700'
@@ -223,7 +223,7 @@ export function getInstitutionLogo(accountName: string) {
       logo: <img 
         src={`https://cdn.brandfetch.io/webull.com?c=${BRANDFETCH_CLIENT_ID}`}
         alt={displayName}
-        className="h-10 w-10 object-contain p-1"
+        className="h-full w-full object-cover scale-125"
       />,
       bgClass: 'bg-yellow-600/20',
       textClass: 'text-yellow-600'
@@ -235,7 +235,7 @@ export function getInstitutionLogo(accountName: string) {
       logo: <img 
         src={`https://cdn.brandfetch.io/vanguard.com?c=${BRANDFETCH_CLIENT_ID}`}
         alt={displayName}
-        className="h-10 w-10 object-contain p-1"
+        className="h-full w-full object-cover scale-125"
       />,
       bgClass: 'bg-red-800/20',
       textClass: 'text-red-800'
@@ -247,7 +247,7 @@ export function getInstitutionLogo(accountName: string) {
       logo: <img 
         src={`https://cdn.brandfetch.io/ml.com?c=${BRANDFETCH_CLIENT_ID}`}
         alt={displayName}
-        className="h-10 w-10 object-contain p-1"
+        className="h-full w-full object-cover scale-125"
       />,
       bgClass: 'bg-blue-800/20',
       textClass: 'text-blue-800'
@@ -259,7 +259,7 @@ export function getInstitutionLogo(accountName: string) {
       logo: <img 
         src={`https://cdn.brandfetch.io/coinbase.com?c=${BRANDFETCH_CLIENT_ID}`}
         alt={displayName}
-        className="h-10 w-10 object-contain p-1"
+        className="h-full w-full object-cover scale-125"
       />,
       bgClass: 'bg-blue-600/20',
       textClass: 'text-blue-600'
@@ -272,7 +272,7 @@ export function getInstitutionLogo(accountName: string) {
       logo: <img 
         src={`https://cdn.brandfetch.io/alpaca.markets?c=${BRANDFETCH_CLIENT_ID}`}
         alt={displayName}
-        className="h-10 w-10 object-contain p-1"
+        className="h-full w-full object-cover scale-125"
       />,
       bgClass: 'bg-yellow-500/20',
       textClass: 'text-yellow-500'
@@ -284,7 +284,7 @@ export function getInstitutionLogo(accountName: string) {
       logo: <img 
         src={`https://cdn.brandfetch.io/tradestation.com?c=${BRANDFETCH_CLIENT_ID}`}
         alt={displayName}
-        className="h-10 w-10 object-contain p-1"
+        className="h-full w-full object-cover scale-125"
       />,
       bgClass: 'bg-blue-500/20',
       textClass: 'text-blue-500'
@@ -296,7 +296,7 @@ export function getInstitutionLogo(accountName: string) {
       logo: <img 
         src={`https://cdn.brandfetch.io/tastytrade.com?c=${BRANDFETCH_CLIENT_ID}`}
         alt={displayName}
-        className="h-10 w-10 object-contain p-1"
+        className="h-full w-full object-cover scale-125"
       />,
       bgClass: 'bg-red-500/20',
       textClass: 'text-red-500'
@@ -308,7 +308,7 @@ export function getInstitutionLogo(accountName: string) {
       logo: <img 
         src={`https://cdn.brandfetch.io/public.com?c=${BRANDFETCH_CLIENT_ID}`}
         alt={displayName}
-        className="h-10 w-10 object-contain p-1"
+        className="h-full w-full object-cover scale-125"
       />,
       bgClass: 'bg-green-400/20',
       textClass: 'text-green-400'
@@ -320,7 +320,7 @@ export function getInstitutionLogo(accountName: string) {
       logo: <img 
         src={`https://cdn.brandfetch.io/ally.com?c=${BRANDFETCH_CLIENT_ID}`}
         alt={displayName}
-        className="h-10 w-10 object-contain p-1"
+        className="h-full w-full object-cover scale-125"
       />,
       bgClass: 'bg-purple-500/20',
       textClass: 'text-purple-500'
@@ -332,7 +332,7 @@ export function getInstitutionLogo(accountName: string) {
       logo: <img 
         src={`https://cdn.brandfetch.io/moomoo.com?c=${BRANDFETCH_CLIENT_ID}`}
         alt={displayName}
-        className="h-10 w-10 object-contain p-1"
+        className="h-full w-full object-cover scale-125"
       />,
       bgClass: 'bg-yellow-400/20',
       textClass: 'text-yellow-400'
@@ -344,7 +344,7 @@ export function getInstitutionLogo(accountName: string) {
       logo: <img 
         src={`https://cdn.brandfetch.io/sofi.com?c=${BRANDFETCH_CLIENT_ID}`}
         alt={displayName}
-        className="h-10 w-10 object-contain p-1"
+        className="h-full w-full object-cover scale-125"
       />,
       bgClass: 'bg-teal-500/20',
       textClass: 'text-teal-500'
@@ -356,7 +356,7 @@ export function getInstitutionLogo(accountName: string) {
       logo: <img 
         src={`https://cdn.brandfetch.io/acorns.com?c=${BRANDFETCH_CLIENT_ID}`}
         alt={displayName}
-        className="h-10 w-10 object-contain p-1"
+        className="h-full w-full object-cover scale-125"
       />,
       bgClass: 'bg-emerald-400/20',
       textClass: 'text-emerald-400'
@@ -368,7 +368,7 @@ export function getInstitutionLogo(accountName: string) {
       logo: <img 
         src={`https://cdn.brandfetch.io/stash.com?c=${BRANDFETCH_CLIENT_ID}`}
         alt={displayName}
-        className="h-10 w-10 object-contain p-1"
+        className="h-full w-full object-cover scale-125"
       />,
       bgClass: 'bg-indigo-500/20',
       textClass: 'text-indigo-500'
@@ -380,7 +380,7 @@ export function getInstitutionLogo(accountName: string) {
       logo: <img 
         src={`https://cdn.brandfetch.io/betterment.com?c=${BRANDFETCH_CLIENT_ID}`}
         alt={displayName}
-        className="h-10 w-10 object-contain p-1"
+        className="h-full w-full object-cover scale-125"
       />,
       bgClass: 'bg-blue-400/20',
       textClass: 'text-blue-400'
@@ -392,7 +392,7 @@ export function getInstitutionLogo(accountName: string) {
       logo: <img 
         src={`https://cdn.brandfetch.io/wealthfront.com?c=${BRANDFETCH_CLIENT_ID}`}
         alt={displayName}
-        className="h-10 w-10 object-contain p-1"
+        className="h-full w-full object-cover scale-125"
       />,
       bgClass: 'bg-cyan-500/20',
       textClass: 'text-cyan-500'
@@ -404,7 +404,7 @@ export function getInstitutionLogo(accountName: string) {
       logo: <img 
         src={`https://cdn.brandfetch.io/m1finance.com?c=${BRANDFETCH_CLIENT_ID}`}
         alt={displayName}
-        className="h-10 w-10 object-contain p-1"
+        className="h-full w-full object-cover scale-125"
       />,
       bgClass: 'bg-red-400/20',
       textClass: 'text-red-400'
@@ -417,7 +417,7 @@ export function getInstitutionLogo(accountName: string) {
       logo: <img 
         src={`https://cdn.brandfetch.io/kraken.com?c=${BRANDFETCH_CLIENT_ID}`}
         alt={displayName}
-        className="h-10 w-10 object-contain p-1"
+        className="h-full w-full object-cover scale-125"
       />,
       bgClass: 'bg-purple-600/20',
       textClass: 'text-purple-600'
@@ -429,7 +429,7 @@ export function getInstitutionLogo(accountName: string) {
       logo: <img 
         src={`https://cdn.brandfetch.io/gemini.com?c=${BRANDFETCH_CLIENT_ID}`}
         alt={displayName}
-        className="h-10 w-10 object-contain p-1"
+        className="h-full w-full object-cover scale-125"
       />,
       bgClass: 'bg-cyan-600/20',
       textClass: 'text-cyan-600'
@@ -441,7 +441,7 @@ export function getInstitutionLogo(accountName: string) {
       logo: <img 
         src={`https://cdn.brandfetch.io/binance.com?c=${BRANDFETCH_CLIENT_ID}`}
         alt={displayName}
-        className="h-10 w-10 object-contain p-1"
+        className="h-full w-full object-cover scale-125"
       />,
       bgClass: 'bg-yellow-500/20',
       textClass: 'text-yellow-500'
@@ -463,7 +463,7 @@ export function getInstitutionLogo(accountName: string) {
       logo: <img 
         src={`https://cdn.brandfetch.io/${potentialDomain}?c=${BRANDFETCH_CLIENT_ID}`}
         alt={displayName}
-        className="h-10 w-10 object-contain p-1"
+        className="h-full w-full object-cover scale-125"
         onError={(e) => {
           // If Brandfetch fails, fall back to building icon
           const target = e.target as HTMLImageElement;
@@ -481,7 +481,7 @@ export function getInstitutionLogo(accountName: string) {
   
   // Final fallback for unknown institutions
   return {
-    logo: <Building2 className="h-10 w-10 p-1" aria-label={displayName} />,
+    logo: <Building2 className="h-8 w-8" aria-label={displayName} />,
     bgClass: 'bg-gray-500/20',
     textClass: 'text-gray-500'
   };
