@@ -151,14 +151,14 @@ export default function AdminDashboard() {
   return (
     <div className="min-h-screen bg-black text-white">
       {/* Admin Header */}
-      <div className="border-b border-gray-800 bg-gray-900/50 sticky top-16 z-10">
+      <div className="border-b border-slate-700/50 bg-slate-900/40 backdrop-blur-xl sticky top-16 z-10">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <Shield className="h-6 w-6 text-purple-400" />
               <h1 className="text-2xl font-bold">Admin Dashboard</h1>
             </div>
-            <Badge className="bg-purple-600" data-testid="badge-admin-role">Administrator</Badge>
+            <Badge className="bg-purple-600/20 border border-purple-500/50" data-testid="badge-admin-role">Administrator</Badge>
           </div>
         </div>
       </div>
@@ -166,48 +166,92 @@ export default function AdminDashboard() {
       {/* Main Content */}
       <div className="container mx-auto px-4 py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="bg-gray-900 border border-gray-800" data-testid="tabs-admin-navigation">
-            <TabsTrigger value="overview" data-testid="tab-overview">
+          <TabsList className="bg-slate-900/40 backdrop-blur-xl border border-slate-700/50 p-1" data-testid="tabs-admin-navigation">
+            <TabsTrigger 
+              value="overview" 
+              data-testid="tab-overview"
+              className="data-[state=active]:bg-purple-600/20 hover:bg-purple-600/10"
+            >
               <BarChart3 className="h-4 w-4 mr-2" />
               Overview
             </TabsTrigger>
-            <TabsTrigger value="applications" data-testid="tab-applications">
+            <TabsTrigger 
+              value="applications" 
+              data-testid="tab-applications"
+              className="data-[state=active]:bg-purple-600/20 hover:bg-purple-600/10"
+            >
               <FileText className="h-4 w-4 mr-2" />
               Applications
             </TabsTrigger>
-            <TabsTrigger value="users" data-testid="tab-users">
+            <TabsTrigger 
+              value="users" 
+              data-testid="tab-users"
+              className="data-[state=active]:bg-purple-600/20 hover:bg-purple-600/10"
+            >
               <Users className="h-4 w-4 mr-2" />
               Users
             </TabsTrigger>
-            <TabsTrigger value="connections" data-testid="tab-connections">
+            <TabsTrigger 
+              value="connections" 
+              data-testid="tab-connections"
+              className="data-[state=active]:bg-purple-600/20 hover:bg-purple-600/10"
+            >
               <Activity className="h-4 w-4 mr-2" />
               Connections
             </TabsTrigger>
-            <TabsTrigger value="analytics" data-testid="tab-analytics">
+            <TabsTrigger 
+              value="analytics" 
+              data-testid="tab-analytics"
+              className="data-[state=active]:bg-purple-600/20 hover:bg-purple-600/10"
+            >
               <BarChart3 className="h-4 w-4 mr-2" />
               Analytics
             </TabsTrigger>
-            <TabsTrigger value="logs" data-testid="tab-logs">
+            <TabsTrigger 
+              value="logs" 
+              data-testid="tab-logs"
+              className="data-[state=active]:bg-purple-600/20 hover:bg-purple-600/10"
+            >
               <AlertTriangle className="h-4 w-4 mr-2" />
               Error Logs
             </TabsTrigger>
-            <TabsTrigger value="features" data-testid="tab-features">
+            <TabsTrigger 
+              value="features" 
+              data-testid="tab-features"
+              className="data-[state=active]:bg-purple-600/20 hover:bg-purple-600/10"
+            >
               <Flag className="h-4 w-4 mr-2" />
               Feature Flags
             </TabsTrigger>
-            <TabsTrigger value="audit" data-testid="tab-audit">
+            <TabsTrigger 
+              value="audit" 
+              data-testid="tab-audit"
+              className="data-[state=active]:bg-purple-600/20 hover:bg-purple-600/10"
+            >
               <Shield className="h-4 w-4 mr-2" />
               Audit Trail
             </TabsTrigger>
-            <TabsTrigger value="error-tracking" data-testid="tab-error-tracking">
+            <TabsTrigger 
+              value="error-tracking" 
+              data-testid="tab-error-tracking"
+              className="data-[state=active]:bg-purple-600/20 hover:bg-purple-600/10"
+            >
               <AlertTriangle className="h-4 w-4 mr-2" />
               Error Tracking
             </TabsTrigger>
-            <TabsTrigger value="snaptrade" data-testid="tab-snaptrade">
+            <TabsTrigger 
+              value="snaptrade" 
+              data-testid="tab-snaptrade"
+              className="data-[state=active]:bg-purple-600/20 hover:bg-purple-600/10"
+            >
               <TrendingUp className="h-4 w-4 mr-2" />
               SnapTrade
             </TabsTrigger>
-            <TabsTrigger value="orphaned-accounts" data-testid="tab-orphaned-accounts">
+            <TabsTrigger 
+              value="orphaned-accounts" 
+              data-testid="tab-orphaned-accounts"
+              className="data-[state=active]:bg-purple-600/20 hover:bg-purple-600/10"
+            >
               <UserX className="h-4 w-4 mr-2" />
               Orphaned Accounts
             </TabsTrigger>
@@ -278,7 +322,7 @@ function OverviewTab() {
 
   return (
     <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4" data-testid="section-overview">
-      <Card className="bg-gray-900 border-gray-800">
+      <Card className="bg-slate-900/40 backdrop-blur-xl border border-slate-700/50">
         <CardHeader className="flex flex-row items-center justify-between pb-2">
           <CardTitle className="text-sm font-medium text-gray-400">Total Users</CardTitle>
           <Users className="h-4 w-4 text-purple-400" />
@@ -291,7 +335,7 @@ function OverviewTab() {
         </CardContent>
       </Card>
 
-      <Card className="bg-gray-900 border-gray-800">
+      <Card className="bg-slate-900/40 backdrop-blur-xl border border-slate-700/50">
         <CardHeader className="flex flex-row items-center justify-between pb-2">
           <CardTitle className="text-sm font-medium text-gray-400">Active Connections</CardTitle>
           <Activity className="h-4 w-4 text-blue-400" />
@@ -304,7 +348,7 @@ function OverviewTab() {
         </CardContent>
       </Card>
 
-      <Card className="bg-gray-900 border-gray-800">
+      <Card className="bg-slate-900/40 backdrop-blur-xl border border-slate-700/50">
         <CardHeader className="flex flex-row items-center justify-between pb-2">
           <CardTitle className="text-sm font-medium text-gray-400">Pending Applications</CardTitle>
           <FileText className="h-4 w-4 text-yellow-400" />
@@ -317,7 +361,7 @@ function OverviewTab() {
         </CardContent>
       </Card>
 
-      <Card className="bg-gray-900 border-gray-800">
+      <Card className="bg-slate-900/40 backdrop-blur-xl border border-slate-700/50">
         <CardHeader className="flex flex-row items-center justify-between pb-2">
           <CardTitle className="text-sm font-medium text-gray-400">Monthly Revenue</CardTitle>
           <DollarSign className="h-4 w-4 text-green-400" />
@@ -376,10 +420,10 @@ function ApplicationsTab() {
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-4">
           <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="w-40 bg-gray-900 border-gray-800" data-testid="select-status-filter">
+            <SelectTrigger className="w-40 bg-slate-900/40 backdrop-blur-xl border border-slate-700/50" data-testid="select-status-filter">
               <SelectValue placeholder="Filter by status" />
             </SelectTrigger>
-            <SelectContent className="bg-gray-900 border-gray-800">
+            <SelectContent className="bg-slate-900/40 backdrop-blur-xl border border-slate-700/50">
               <SelectItem value="all">All Status</SelectItem>
               <SelectItem value="pending">Pending</SelectItem>
               <SelectItem value="approved">Approved</SelectItem>
@@ -392,11 +436,11 @@ function ApplicationsTab() {
         </div>
       </div>
 
-      <Card className="bg-gray-900 border-gray-800">
+      <Card className="bg-slate-900/40 backdrop-blur-xl border border-slate-700/50">
         <CardContent className="p-0">
           <Table>
             <TableHeader>
-              <TableRow className="border-gray-800">
+              <TableRow className="border-slate-700/50">
                 <TableHead>Name</TableHead>
                 <TableHead>Email</TableHead>
                 <TableHead>Accounts</TableHead>
@@ -408,7 +452,7 @@ function ApplicationsTab() {
             </TableHeader>
             <TableBody>
               {data?.applications?.map((app: any) => (
-                <TableRow key={app.id} className="border-gray-800" data-testid={`row-application-${app.id}`}>
+                <TableRow key={app.id} className="border-slate-700/50" data-testid={`row-application-${app.id}`}>
                   <TableCell className="font-medium" data-testid={`text-name-${app.id}`}>{app.firstName}</TableCell>
                   <TableCell data-testid={`text-email-${app.id}`}>{app.email}</TableCell>
                   <TableCell data-testid={`text-accounts-${app.id}`}>{app.accountCount}</TableCell>
@@ -468,7 +512,7 @@ function ApplicationsTab() {
         <div className="flex items-center justify-center space-x-2">
           <Button
             variant="outline"
-            className="border-gray-800"
+            className="border-slate-700/50"
             onClick={() => setPage(p => Math.max(1, p - 1))}
             disabled={page === 1}
             data-testid="button-prev-page"
@@ -480,7 +524,7 @@ function ApplicationsTab() {
           </span>
           <Button
             variant="outline"
-            className="border-gray-800"
+            className="border-slate-700/50"
             onClick={() => setPage(p => Math.min(data.pagination.totalPages, p + 1))}
             disabled={page === data.pagination.totalPages}
             data-testid="button-next-page"
@@ -612,15 +656,15 @@ function UsersTab() {
             placeholder="Search by name or email..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="pl-10 bg-gray-900 border-gray-800"
+            className="pl-10 bg-slate-900/40 backdrop-blur-xl border border-slate-700/50"
             data-testid="input-search-users"
           />
         </div>
         <Select value={tierFilter} onValueChange={setTierFilter}>
-          <SelectTrigger className="w-40 bg-gray-900 border-gray-800" data-testid="select-tier-filter">
+          <SelectTrigger className="w-40 bg-slate-900/40 backdrop-blur-xl border border-slate-700/50" data-testid="select-tier-filter">
             <SelectValue placeholder="Filter by tier" />
           </SelectTrigger>
-          <SelectContent className="bg-gray-900 border-gray-800">
+          <SelectContent className="bg-slate-900/40 backdrop-blur-xl border border-slate-700/50">
             <SelectItem value="all">All Tiers</SelectItem>
             <SelectItem value="free">Free</SelectItem>
             <SelectItem value="basic">Basic</SelectItem>
@@ -630,11 +674,11 @@ function UsersTab() {
         </Select>
       </div>
 
-      <Card className="bg-gray-900 border-gray-800">
+      <Card className="bg-slate-900/40 backdrop-blur-xl border border-slate-700/50">
         <CardContent className="p-0">
           <Table>
             <TableHeader>
-              <TableRow className="border-gray-800">
+              <TableRow className="border-slate-700/50">
                 <TableHead>Email</TableHead>
                 <TableHead>Name</TableHead>
                 <TableHead>Tier</TableHead>
@@ -645,7 +689,7 @@ function UsersTab() {
             </TableHeader>
             <TableBody>
               {data?.users?.map((user: any) => (
-                <TableRow key={user.id} className="border-gray-800" data-testid={`row-user-${user.id}`}>
+                <TableRow key={user.id} className="border-slate-700/50" data-testid={`row-user-${user.id}`}>
                   <TableCell className="font-medium" data-testid={`text-email-${user.id}`}>{user.email}</TableCell>
                   <TableCell data-testid={`text-name-${user.id}`}>
                     {user.firstName} {user.lastName}
@@ -670,8 +714,7 @@ function UsersTab() {
                     <div className="flex flex-wrap gap-2">
                       <Button
                         size="sm"
-                        variant="outline"
-                        className="border-gray-700"
+                        className="rounded-full bg-slate-900/40 backdrop-blur-xl border border-slate-700/50 hover:bg-white/10 shadow-sm"
                         onClick={() => {
                           setDashboardUser({ 
                             id: user.id, 
@@ -681,12 +724,12 @@ function UsersTab() {
                         }}
                         data-testid={`button-view-dashboard-${user.id}`}
                       >
-                        <Eye className="h-4 w-4" />
+                        <Eye className="h-4 w-4 mr-1" />
+                        View
                       </Button>
                       <Button
                         size="sm"
-                        variant="outline"
-                        className="border-gray-700"
+                        className="rounded-full bg-slate-900/40 backdrop-blur-xl border border-slate-700/50 hover:bg-white/10 shadow-sm"
                         onClick={() => {
                           setSelectedUser(user);
                           setActionDialog('setPassword');
@@ -698,20 +741,19 @@ function UsersTab() {
                       </Button>
                       <Button
                         size="sm"
-                        variant="outline"
-                        className="border-gray-700"
+                        className="rounded-full bg-slate-900/40 backdrop-blur-xl border border-slate-700/50 hover:bg-white/10 shadow-sm"
                         onClick={() => {
                           setSelectedUser(user);
                           setActionDialog('reset');
                         }}
                         data-testid={`button-reset-${user.id}`}
                       >
+                        <RefreshCw className="h-4 w-4 mr-1" />
                         Reset
                       </Button>
                       <Button
                         size="sm"
-                        variant="outline"
-                        className="border-gray-700"
+                        className="rounded-full bg-slate-900/40 backdrop-blur-xl border border-slate-700/50 hover:bg-white/10 shadow-sm"
                         onClick={() => {
                           setSelectedUser(user);
                           setNewTier(user.subscriptionTier);
@@ -719,23 +761,24 @@ function UsersTab() {
                         }}
                         data-testid={`button-tier-${user.id}`}
                       >
-                        <Settings className="h-4 w-4" />
+                        <Settings className="h-4 w-4 mr-1" />
+                        Tier
                       </Button>
                       <Button
                         size="sm"
-                        variant="outline"
-                        className="border-gray-700"
+                        className="rounded-full bg-slate-900/40 backdrop-blur-xl border border-slate-700/50 hover:bg-white/10 shadow-sm"
                         onClick={() => {
                           setSelectedUser(user);
                           setActionDialog('ban');
                         }}
                         data-testid={`button-ban-${user.id}`}
                       >
-                        <Ban className="h-4 w-4" />
+                        <Ban className="h-4 w-4 mr-1" />
+                        Ban
                       </Button>
                       <Button
                         size="sm"
-                        variant="destructive"
+                        className="rounded-full bg-red-500/20 backdrop-blur-xl border border-red-500/30 hover:bg-red-500/30 shadow-sm text-red-400 hover:text-red-300"
                         onClick={() => {
                           setSelectedUser(user);
                           setActionDialog('delete');
@@ -743,7 +786,8 @@ function UsersTab() {
                         disabled={user.isAdmin}
                         data-testid={`button-delete-${user.id}`}
                       >
-                        <Trash2 className="h-4 w-4" />
+                        <Trash2 className="h-4 w-4 mr-1" />
+                        Delete
                       </Button>
                     </div>
                   </TableCell>
@@ -756,7 +800,7 @@ function UsersTab() {
 
       {/* Action Dialogs */}
       <Dialog open={actionDialog === 'delete'} onOpenChange={() => setActionDialog(null)}>
-        <DialogContent className="bg-gray-900 border-gray-800">
+        <DialogContent className="bg-slate-900/40 backdrop-blur-xl border border-slate-700/50">
           <DialogHeader>
             <DialogTitle className="text-red-500">Permanently Delete User</DialogTitle>
             <DialogDescription className="space-y-2">
@@ -798,7 +842,7 @@ function UsersTab() {
         setActionDialog(null);
         setResetLink(null);
       }}>
-        <DialogContent className="bg-gray-900 border-gray-800">
+        <DialogContent className="bg-slate-900/40 backdrop-blur-xl border border-slate-700/50">
           <DialogHeader>
             <DialogTitle>Reset Password</DialogTitle>
             <DialogDescription>
@@ -862,7 +906,7 @@ function UsersTab() {
       </Dialog>
 
       <Dialog open={actionDialog === 'tier'} onOpenChange={() => setActionDialog(null)}>
-        <DialogContent className="bg-gray-900 border-gray-800">
+        <DialogContent className="bg-slate-900/40 backdrop-blur-xl border border-slate-700/50">
           <DialogHeader>
             <DialogTitle>Change Subscription Tier</DialogTitle>
             <DialogDescription>
@@ -874,7 +918,7 @@ function UsersTab() {
               <SelectTrigger className="bg-gray-800 border-gray-700" data-testid="select-new-tier">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent className="bg-gray-900 border-gray-800">
+              <SelectContent className="bg-slate-900/40 backdrop-blur-xl border border-slate-700/50">
                 <SelectItem value="free">Free</SelectItem>
                 <SelectItem value="basic">Basic</SelectItem>
                 <SelectItem value="pro">Pro</SelectItem>
@@ -903,7 +947,7 @@ function UsersTab() {
         setActionDialog(null);
         setNewPassword('');
       }}>
-        <DialogContent className="bg-gray-900 border-gray-800">
+        <DialogContent className="bg-slate-900/40 backdrop-blur-xl border border-slate-700/50">
           <DialogHeader>
             <DialogTitle>Set Password</DialogTitle>
             <DialogDescription>
@@ -943,7 +987,7 @@ function UsersTab() {
       </Dialog>
 
       <Dialog open={actionDialog === 'ban'} onOpenChange={() => setActionDialog(null)}>
-        <DialogContent className="bg-gray-900 border-gray-800">
+        <DialogContent className="bg-slate-900/40 backdrop-blur-xl border border-slate-700/50">
           <DialogHeader>
             <DialogTitle>{selectedUser?.isBanned ? 'Unban' : 'Ban'} User</DialogTitle>
             <DialogDescription>
@@ -1066,7 +1110,7 @@ function ConnectionsTab() {
 
   return (
     <div className="space-y-4" data-testid="section-connections">
-      <Card className="bg-gray-900 border-gray-800">
+      <Card className="bg-slate-900/40 backdrop-blur-xl border border-slate-700/50">
         <CardHeader>
           <CardTitle>User Connections</CardTitle>
           <CardDescription>View connections grouped by user. Click to expand.</CardDescription>
@@ -1136,7 +1180,7 @@ function ConnectionsTab() {
               const limitDisplay = isUnlimited ? '∞' : group.connectionLimit;
               
               return (
-                <Collapsible key={group.userId} className="border border-gray-800 rounded-lg" data-testid={`collapsible-user-${group.userId}`}>
+                <Collapsible key={group.userId} className="border border-slate-700/50 rounded-lg" data-testid={`collapsible-user-${group.userId}`}>
                   <CollapsibleTrigger className="w-full p-4 flex items-center justify-between hover:bg-gray-800/50 transition-colors group" data-testid={`trigger-user-${group.userId}`}>
                     <div className="flex items-center gap-4">
                       <ChevronRight className="h-4 w-4 transition-transform group-data-[state=open]:rotate-90 text-gray-400" />
@@ -1177,7 +1221,7 @@ function ConnectionsTab() {
                 <CollapsibleContent className="px-4 pb-4" data-testid={`content-user-${group.userId}`}>
                   <Table>
                     <TableHeader>
-                      <TableRow className="border-gray-800">
+                      <TableRow className="border-slate-700/50">
                         <TableHead>Institution</TableHead>
                         <TableHead>Account Type</TableHead>
                         <TableHead>Account Name</TableHead>
@@ -1189,7 +1233,7 @@ function ConnectionsTab() {
                     </TableHeader>
                     <TableBody>
                       {group.connections.map((conn) => (
-                        <TableRow key={conn.id} className="border-gray-800" data-testid={`row-connection-${conn.id}`}>
+                        <TableRow key={conn.id} className="border-slate-700/50" data-testid={`row-connection-${conn.id}`}>
                           <TableCell data-testid={`text-institution-${conn.id}`}>{conn.institutionName}</TableCell>
                           <TableCell className="capitalize" data-testid={`text-type-${conn.id}`}>{conn.accountType}</TableCell>
                           <TableCell data-testid={`text-name-${conn.id}`}>{conn.accountName}</TableCell>
@@ -1233,7 +1277,7 @@ function ConnectionsTab() {
 
           {/* Pagination Controls */}
           {data?.pagination && data.pagination.totalPages > 1 && (
-            <div className="flex items-center justify-between pt-4 border-t border-gray-800" data-testid="pagination-controls">
+            <div className="flex items-center justify-between pt-4 border-t border-slate-700/50" data-testid="pagination-controls">
               <div className="text-sm text-gray-400" data-testid="text-pagination-info">
                 Page {data.pagination.page} of {data.pagination.totalPages} ({data.pagination.total} total)
               </div>
@@ -1288,7 +1332,7 @@ function AnalyticsTab() {
   return (
     <div className="space-y-6" data-testid="section-analytics">
       <div className="grid gap-6 md:grid-cols-2">
-        <Card className="bg-gray-900 border-gray-800">
+        <Card className="bg-slate-900/40 backdrop-blur-xl border border-slate-700/50">
           <CardHeader>
             <CardTitle>Teller Connections</CardTitle>
           </CardHeader>
@@ -1310,7 +1354,7 @@ function AnalyticsTab() {
           </CardContent>
         </Card>
 
-        <Card className="bg-gray-900 border-gray-800">
+        <Card className="bg-slate-900/40 backdrop-blur-xl border border-slate-700/50">
           <CardHeader>
             <CardTitle>SnapTrade Connections</CardTitle>
           </CardHeader>
@@ -1337,7 +1381,7 @@ function AnalyticsTab() {
         </Card>
       </div>
 
-      <Card className="bg-gray-900 border-gray-800">
+      <Card className="bg-slate-900/40 backdrop-blur-xl border border-slate-700/50">
         <CardHeader>
           <CardTitle>Connections by Brokerage</CardTitle>
         </CardHeader>
@@ -1373,10 +1417,10 @@ function ErrorLogsTab() {
     <div className="space-y-4" data-testid="section-error-logs">
       <div className="flex items-center justify-between">
         <Select value={days} onValueChange={setDays}>
-          <SelectTrigger className="w-40 bg-gray-900 border-gray-800" data-testid="select-days">
+          <SelectTrigger className="w-40 bg-slate-900/40 backdrop-blur-xl border border-slate-700/50" data-testid="select-days">
             <SelectValue />
           </SelectTrigger>
-          <SelectContent className="bg-gray-900 border-gray-800">
+          <SelectContent className="bg-slate-900/40 backdrop-blur-xl border border-slate-700/50">
             <SelectItem value="1">Last 24 hours</SelectItem>
             <SelectItem value="7">Last 7 days</SelectItem>
             <SelectItem value="30">Last 30 days</SelectItem>
@@ -1388,7 +1432,7 @@ function ErrorLogsTab() {
         </span>
       </div>
 
-      <Card className="bg-gray-900 border-gray-800">
+      <Card className="bg-slate-900/40 backdrop-blur-xl border border-slate-700/50">
         <CardHeader>
           <CardTitle>Failed Email Logs</CardTitle>
           <CardDescription>{data?.period}</CardDescription>
@@ -1441,7 +1485,7 @@ function FeatureFlagsTab() {
 
   return (
     <div className="space-y-4" data-testid="section-feature-flags">
-      <Card className="bg-gray-900 border-gray-800">
+      <Card className="bg-slate-900/40 backdrop-blur-xl border border-slate-700/50">
         <CardHeader>
           <CardTitle>Feature Flags</CardTitle>
           <CardDescription>Toggle features on or off across the platform</CardDescription>
@@ -1494,10 +1538,10 @@ function AuditTrailTab() {
     <div className="space-y-4" data-testid="section-audit-trail">
       <div className="flex items-center justify-between">
         <Select value={actionFilter} onValueChange={setActionFilter}>
-          <SelectTrigger className="w-60 bg-gray-900 border-gray-800" data-testid="select-action-filter">
+          <SelectTrigger className="w-60 bg-slate-900/40 backdrop-blur-xl border border-slate-700/50" data-testid="select-action-filter">
             <SelectValue placeholder="Filter by action" />
           </SelectTrigger>
-          <SelectContent className="bg-gray-900 border-gray-800">
+          <SelectContent className="bg-slate-900/40 backdrop-blur-xl border border-slate-700/50">
             <SelectItem value="all">All Actions</SelectItem>
             <SelectItem value="approve_application">Approve Application</SelectItem>
             <SelectItem value="reject_application">Reject Application</SelectItem>
@@ -1509,11 +1553,11 @@ function AuditTrailTab() {
         </Select>
       </div>
 
-      <Card className="bg-gray-900 border-gray-800">
+      <Card className="bg-slate-900/40 backdrop-blur-xl border border-slate-700/50">
         <CardContent className="p-0">
           <Table>
             <TableHeader>
-              <TableRow className="border-gray-800">
+              <TableRow className="border-slate-700/50">
                 <TableHead>Timestamp</TableHead>
                 <TableHead>Admin</TableHead>
                 <TableHead>Action</TableHead>
@@ -1523,7 +1567,7 @@ function AuditTrailTab() {
             </TableHeader>
             <TableBody>
               {data?.logs?.map((log: any) => (
-                <TableRow key={log.id} className="border-gray-800" data-testid={`row-audit-${log.id}`}>
+                <TableRow key={log.id} className="border-slate-700/50" data-testid={`row-audit-${log.id}`}>
                   <TableCell data-testid={`text-time-${log.id}`}>
                     {new Date(log.timestamp).toLocaleString()}
                   </TableCell>
@@ -1618,7 +1662,7 @@ function SnapTradeTab() {
 
   return (
     <div className="space-y-4" data-testid="section-snaptrade">
-      <Card className="bg-gray-900 border-gray-800">
+      <Card className="bg-slate-900/40 backdrop-blur-xl border border-slate-700/50">
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
             <span>SnapTrade Connections</span>
@@ -1629,7 +1673,7 @@ function SnapTradeTab() {
         <CardContent className="p-0">
           <Table>
             <TableHeader>
-              <TableRow className="border-gray-800">
+              <TableRow className="border-slate-700/50">
                 <TableHead>User Email</TableHead>
                 <TableHead>SnapTrade User ID</TableHead>
                 <TableHead>Brokerage</TableHead>
@@ -1640,7 +1684,7 @@ function SnapTradeTab() {
             </TableHeader>
             <TableBody>
               {data?.connections?.map((conn: any) => (
-                <TableRow key={conn.connectionId} className="border-gray-800" data-testid={`row-snaptrade-${conn.connectionId}`}>
+                <TableRow key={conn.connectionId} className="border-slate-700/50" data-testid={`row-snaptrade-${conn.connectionId}`}>
                   <TableCell className="font-medium" data-testid={`text-email-${conn.connectionId}`}>
                     {conn.userEmail || 'Unknown'}
                   </TableCell>
@@ -1704,7 +1748,7 @@ function SnapTradeTab() {
 
       {/* Delete User Confirmation Dialog */}
       <Dialog open={deleteUserDialogOpen} onOpenChange={setDeleteUserDialogOpen}>
-        <DialogContent className="bg-gray-900 border-gray-800 text-white">
+        <DialogContent className="bg-slate-900/40 backdrop-blur-xl border border-slate-700/50 text-white">
           <DialogHeader>
             <DialogTitle className="text-red-500">Delete SnapTrade User</DialogTitle>
             <DialogDescription className="text-gray-400">
@@ -1797,7 +1841,7 @@ function ErrorTrackingTab() {
 
   return (
     <div className="space-y-4" data-testid="section-error-tracking">
-      <Card className="bg-gray-900 border-gray-800">
+      <Card className="bg-slate-900/40 backdrop-blur-xl border border-slate-700/50">
         <CardHeader>
           <CardTitle>Search User Errors</CardTitle>
           <CardDescription>Search for errors by user email to debug account issues</CardDescription>
@@ -1830,7 +1874,7 @@ function ErrorTrackingTab() {
       </Card>
 
       {searchResults && (
-        <Card className="bg-gray-900 border-gray-800">
+        <Card className="bg-slate-900/40 backdrop-blur-xl border border-slate-700/50">
           <CardHeader>
             <CardTitle>
               {searchResults.user ? (
@@ -1854,7 +1898,7 @@ function ErrorTrackingTab() {
             <CardContent className="p-0">
               <Table>
                 <TableHeader>
-                  <TableRow className="border-gray-800">
+                  <TableRow className="border-slate-700/50">
                     <TableHead>Timestamp</TableHead>
                     <TableHead>Type</TableHead>
                     <TableHead>Endpoint</TableHead>
@@ -1865,7 +1909,7 @@ function ErrorTrackingTab() {
                 </TableHeader>
                 <TableBody>
                   {searchResults.errors.map((error: any) => (
-                    <TableRow key={error.id} className="border-gray-800" data-testid={`row-error-${error.id}`}>
+                    <TableRow key={error.id} className="border-slate-700/50" data-testid={`row-error-${error.id}`}>
                       <TableCell data-testid={`text-timestamp-${error.id}`}>
                         {new Date(error.timestamp).toLocaleString()}
                       </TableCell>
@@ -1919,7 +1963,7 @@ function ErrorTrackingTab() {
 
       {/* Error Details Dialog */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="bg-gray-900 border-gray-800 max-w-3xl max-h-[80vh] overflow-y-auto">
+        <DialogContent className="bg-slate-900/40 backdrop-blur-xl border border-slate-700/50 max-w-3xl max-h-[80vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Error Details</DialogTitle>
             <DialogDescription>
