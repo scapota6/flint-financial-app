@@ -2882,7 +2882,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   registerDemoRoutes(app);
   
   const tradingRouter = await import('./routes/trading');
-  app.use('/api/trade', tradingRouter.default);
+  const { isAuthenticated } = await import('./replitAuth');
+  app.use('/api/trade', isAuthenticated, tradingRouter.default);
 
   // Teller Payments routes  
   const tellerPaymentsRouter = await import('./routes/teller-payments');
