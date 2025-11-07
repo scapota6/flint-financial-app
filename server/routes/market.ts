@@ -4,7 +4,7 @@
  */
 
 import { Router } from "express";
-import { isAuthenticated } from "../replitAuth";
+import { requireAuth } from "../middleware/jwt-auth";
 import { marketDataService } from "../services/market-data";
 import { snaptradeClient } from '../lib/snaptrade';
 import { logger } from "@shared/logger";
@@ -28,7 +28,7 @@ const TIMEFRAMES = {
  * GET /api/market/quote
  * Returns real-time quote data for a symbol
  */
-router.get("/quote", isAuthenticated, async (req: any, res) => {
+router.get("/quote", requireAuth, async (req: any, res) => {
   try {
     const { symbol } = req.query;
     
@@ -76,7 +76,7 @@ router.get("/quote", isAuthenticated, async (req: any, res) => {
  * GET /api/market/candles
  * Returns historical candle data for charting
  */
-router.get("/candles", isAuthenticated, async (req: any, res) => {
+router.get("/candles", requireAuth, async (req: any, res) => {
   try {
     const { symbol, tf = '1D', limit = '500' } = req.query;
     
@@ -235,7 +235,7 @@ router.get("/candles", isAuthenticated, async (req: any, res) => {
  * GET /api/market/search
  * Search for symbols
  */
-router.get("/search", isAuthenticated, async (req: any, res) => {
+router.get("/search", requireAuth, async (req: any, res) => {
   try {
     const { query } = req.query;
     
