@@ -86,6 +86,10 @@ export function TradingTicket({ accountId, prefilledSymbol, onOrderPlaced }: Tra
   const accounts = accountsData?.accounts || [];
   const symbols = searchResults?.results || [];
 
+  // Check if selected account supports trading
+  const selectedAccountData = accounts.find((acc: any) => acc.id === selectedAccount);
+  const canTrade = selectedAccountData?.tradingEnabled ?? false;
+
   function formatCurrency(amount: number | null | undefined, currency: string = 'USD'): string {
     if (amount === null || amount === undefined) return 'N/A';
     return new Intl.NumberFormat('en-US', {
@@ -305,6 +309,17 @@ export function TradingTicket({ accountId, prefilledSymbol, onOrderPlaced }: Tra
       <CardContent className="space-y-4">
         <ErrorAlert error={impactMutation.error} title="Order Preview Error" />
 
+        {/* Read-only account warning */}
+        {selectedAccountData && !canTrade && (
+          <Alert variant="destructive" data-testid="alert-trading-disabled">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>
+              Trading is not supported on {selectedAccountData.institution || 'this'} accounts. 
+              Please select a different brokerage account that supports trading.
+            </AlertDescription>
+          </Alert>
+        )}
+
         {/* Account Selection */}
         <div className="space-y-2">
           <Label htmlFor="account">Account</Label>
@@ -313,9 +328,14 @@ export function TradingTicket({ accountId, prefilledSymbol, onOrderPlaced }: Tra
               <SelectValue placeholder="Select account" />
             </SelectTrigger>
             <SelectContent>
-              {accounts.map((account) => (
+              {accounts.map((account: any) => (
                 <SelectItem key={account.id} value={account.id}>
-                  {account.name} · {account.institution}
+                  <div className="flex items-center justify-between w-full">
+                    <span>{account.name} · {account.institution}</span>
+                    {account.tradingEnabled === false && (
+                      <Badge variant="secondary" className="ml-2">Read Only</Badge>
+                    )}
+                  </div>
                 </SelectItem>
               ))}
             </SelectContent>
@@ -481,7 +501,7 @@ export function TradingTicket({ accountId, prefilledSymbol, onOrderPlaced }: Tra
 
         <Button
           onClick={handlePreviewOrder}
-          disabled={!selectedAccount || !symbol || !quantity || impactMutation.isPending}
+          disabled={!canTrade || !selectedAccount || !symbol || !quantity || impactMutation.isPending}
           className="w-full"
           data-testid="button-preview-order"
         >

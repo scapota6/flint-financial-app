@@ -116,36 +116,9 @@ router.get("/candles", requireAuth, async (req: any, res) => {
     const userId = req.user.claims.sub;
     const snaptradeUser = await (await import("../storage")).storage.getSnapTradeUser(userId);
     
-    // Try SnapTrade first for historical data
-    if (snaptradeClient) {
-      try {
-        
-        if (snaptradeUser?.snaptradeUserId && snaptradeUser?.userSecret) {
-          // Get historical prices from SnapTrade
-          const { data: priceHistory } = await snaptradeClient.marketData.getOptionStrategy({
-            userId: snaptradeUser.snaptradeUserId,
-            userSecret: snaptradeUser.userSecret,
-            underlyingSymbolId: symbol as string,
-            strategyType: 'CUSTOM' // Using CUSTOM to get underlying prices
-          });
-          
-          // Convert to candle format if data available
-          if (priceHistory) {
-            const candles = [];
-            // SnapTrade response would need proper parsing here
-            // This is a placeholder structure
-            return res.json({
-              symbol,
-              timeframe: tf,
-              candles,
-              source: 'snaptrade'
-            });
-          }
-        }
-      } catch (snapError) {
-        logger.warn("SnapTrade historical data failed, falling back", { snapError });
-      }
-    }
+    // Note: SnapTrade does not provide historical candle/time series data
+    // We generate synthetic candles working backwards from the current real-time price
+    // This provides a reasonable chart visualization while using live pricing data
     
     // Fetch the current real-time quote to use as the ending price
     let currentRealPrice: number;

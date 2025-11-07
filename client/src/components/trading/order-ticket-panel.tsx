@@ -5,6 +5,9 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
+import { AlertCircle } from 'lucide-react';
 
 interface OrderTicketPanelProps {
   symbol: string;
@@ -36,6 +39,9 @@ export default function OrderTicketPanel({
   const selectedAccount = (accounts as any)?.accounts?.find(
     (acc: any) => acc.id === selectedAccountId
   );
+
+  // Check if selected account supports trading
+  const canTrade = selectedAccount?.tradingEnabled ?? false;
 
   const estimatedTotal = () => {
     const qty = parseFloat(quantity) || 0;
@@ -72,6 +78,21 @@ export default function OrderTicketPanel({
         <CardTitle className="text-[#F2F4F6] text-lg">Order Ticket</CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
+        {/* Read-only account warning */}
+        {selectedAccount && !canTrade && (
+          <Alert 
+            variant="destructive" 
+            className="bg-red-900/20 border-red-800"
+            data-testid="alert-trading-disabled"
+          >
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription className="text-red-200">
+              Trading is not supported on {selectedAccount.institution_name || 'this'} accounts. 
+              Please select a different brokerage account that supports trading.
+            </AlertDescription>
+          </Alert>
+        )}
+
         {/* Trading Account Selector */}
         <div className="space-y-2">
           <Label className="text-[#A7ADBA] text-sm">Trading Account</Label>
@@ -101,11 +122,16 @@ export default function OrderTicketPanel({
                   className="text-[#F2F4F6] hover:bg-white/10"
                   data-testid={`account-option-${account.id}`}
                 >
-                  <div>
-                    <div className="font-medium">{account.name}</div>
-                    <div className="text-[#A7ADBA] text-sm">
-                      {account.institution_name} • ${account.balance?.total?.amount?.toLocaleString() || '0'}
+                  <div className="flex items-center justify-between w-full">
+                    <div>
+                      <div className="font-medium">{account.name}</div>
+                      <div className="text-[#A7ADBA] text-sm">
+                        {account.institution_name} • ${account.balance?.total?.amount?.toLocaleString() || '0'}
+                      </div>
                     </div>
+                    {account.tradingEnabled === false && (
+                      <Badge variant="secondary" className="ml-2">Read Only</Badge>
+                    )}
                   </div>
                 </SelectItem>
               ))}
@@ -216,7 +242,7 @@ export default function OrderTicketPanel({
         {/* Place Order Button */}
         <Button
           onClick={handlePlaceOrder}
-          disabled={!quantity || parseFloat(quantity) <= 0}
+          disabled={!canTrade || !quantity || parseFloat(quantity) <= 0}
           className={`w-full h-14 rounded-xl font-semibold text-base ${
             orderSide === 'buy'
               ? 'bg-[#34C759] hover:bg-[#34C759]/90 shadow-lg shadow-[#34C759]/30'

@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Loader2, TrendingUp, TrendingDown } from "lucide-react";
+import { Loader2, TrendingUp, TrendingDown, AlertCircle } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 
 interface TradeModalProps {
@@ -23,6 +23,8 @@ interface Account {
   id: string;
   name: string;
   balance: { total: { amount: number; currency: string } };
+  tradingEnabled?: boolean;
+  institutionName?: string;
 }
 
 export function TradeModal({ isOpen, onClose, symbol = "", currentPrice = 0, onTradeComplete, presetAction = null }: TradeModalProps) {
@@ -166,6 +168,7 @@ export function TradeModal({ isOpen, onClose, symbol = "", currentPrice = 0, onT
   const availableBalance = selectedAccountData?.balance?.total?.amount || 0;
   const estimatedTotal = calculateEstimatedTotal();
   const canAfford = action === "BUY" ? estimatedTotal <= availableBalance : true;
+  const canTrade = selectedAccountData?.tradingEnabled ?? false;
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -193,6 +196,17 @@ export function TradeModal({ isOpen, onClose, symbol = "", currentPrice = 0, onT
         {success && (
           <Alert className="bg-green-900/20 border-green-800 text-green-200">
             <AlertDescription className="text-green-200">{success}</AlertDescription>
+          </Alert>
+        )}
+
+        {/* Read-only account warning */}
+        {selectedAccountData && !canTrade && (
+          <Alert variant="destructive" className="bg-red-900/20 border-red-800 text-red-200" data-testid="alert-trading-disabled">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription className="text-red-200">
+              Trading is not supported on {selectedAccountData.institutionName || selectedAccountData.name} accounts. 
+              Please select a different brokerage account that supports trading.
+            </AlertDescription>
           </Alert>
         )}
 
@@ -234,7 +248,12 @@ export function TradeModal({ isOpen, onClose, symbol = "", currentPrice = 0, onT
               <SelectContent className="bg-gray-800 border-gray-600">
                 {accounts.map((account) => (
                   <SelectItem key={account.id} value={account.id} className="text-white hover:bg-gray-700">
-                    {account.name} - ${account.balance?.total?.amount?.toFixed(2) || '0.00'}
+                    <div className="flex items-center justify-between w-full">
+                      <span>{account.name} - ${account.balance?.total?.amount?.toFixed(2) || '0.00'}</span>
+                      {account.tradingEnabled === false && (
+                        <Badge variant="secondary" className="ml-2">Read Only</Badge>
+                      )}
+                    </div>
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -294,13 +313,14 @@ export function TradeModal({ isOpen, onClose, symbol = "", currentPrice = 0, onT
           )}
 
           <DialogFooter>
-            <Button type="button" variant="outline" onClick={onClose} className="bg-gray-800 border-gray-600 text-white hover:bg-gray-700">
+            <Button type="button" variant="outline" onClick={onClose} className="bg-gray-800 border-gray-600 text-white hover:bg-gray-700" data-testid="button-cancel">
               Cancel
             </Button>
             <Button 
               type="submit" 
-              disabled={isLoading || !canAfford || success !== ""}
+              disabled={!canTrade || isLoading || !canAfford || success !== ""}
               className={action === "BUY" ? "bg-green-600 hover:bg-green-700 text-white" : "bg-red-600 hover:bg-red-700 text-white"}
+              data-testid="button-place-order"
             >
               {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {action} {quantity ? `${quantity} shares` : 'Stock'}

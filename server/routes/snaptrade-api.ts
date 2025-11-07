@@ -33,6 +33,7 @@ import {
   getUserAccountActivities,
   getUserAccountOptionsHoldings
 } from '../lib/snaptrade-client';
+import { getBrokerageCapabilities } from '../lib/brokerage-capabilities';
 
 const router = Router();
 
@@ -220,17 +221,25 @@ router.get('/accounts', async (req, res) => {
 
     // Return database data (ensures consistency)
     const persistedAccounts = await getSnapTradeAccounts(flintUserId);
-    const adaptedAccounts = persistedAccounts.map(({ account }) => ({
-      id: account.id,
-      name: account.name || 'Default',
-      type: account.accountType || account.rawType || 'brokerage',
-      institution: account.institution,
-      number: account.numberMasked || account.number,
-      balance: account.totalBalanceAmount || 0,
-      currency: account.currency || 'USD',
-      status: account.status || 'active',
-      lastSync: account.lastHoldingsSyncAt || account.updatedAt
-    }));
+    const adaptedAccounts = persistedAccounts.map(({ account }) => {
+      // Get trading capabilities for this brokerage
+      const capabilities = getBrokerageCapabilities(account.institution);
+      
+      return {
+        id: account.id,
+        name: account.name || 'Default',
+        type: account.accountType || account.rawType || 'brokerage',
+        institution: account.institution,
+        institutionName: account.institution,
+        number: account.numberMasked || account.number,
+        balance: account.totalBalanceAmount || 0,
+        currency: account.currency || 'USD',
+        status: account.status || 'active',
+        lastSync: account.lastHoldingsSyncAt || account.updatedAt,
+        tradingEnabled: capabilities.tradingEnabled,
+        capabilities: capabilities.capabilities
+      };
+    });
 
     res.json({
       accounts: adaptedAccounts,

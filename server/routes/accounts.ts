@@ -11,6 +11,7 @@ import { storage } from "../storage";
 import { logger } from "@shared/logger";
 import { resilientTellerFetch } from "../teller/client";
 import { getTellerAccessToken } from "../store/tellerUsers";
+import { getBrokerageCapabilities } from "../lib/brokerage-capabilities";
 
 const router = Router();
 
@@ -239,15 +240,22 @@ router.get("/brokerages", requireAuth, async (req: any, res) => {
               String(snapAccount.balance?.total?.amount || 0)
             );
             
+            // Get trading capabilities for this brokerage
+            const brokerageName = snapAccount.institution_name || dbAccount.institutionName;
+            const capabilities = getBrokerageCapabilities(brokerageName);
+            
             validAccounts.push({
               id: dbAccount.id,
               name: dbAccount.accountName,
               currency: dbAccount.currency || 'USD',
               balance: parseFloat(String(snapAccount.balance?.total?.amount || 0)),
               buyingPower: parseFloat(String(snapAccount.balance?.total?.amount || 0)) * 0.5,
-              lastSync: new Date()
+              lastSync: new Date(),
+              institutionName: brokerageName,
+              tradingEnabled: capabilities.tradingEnabled,
+              capabilities: capabilities.capabilities
             });
-            console.log(`[SnapTrade Connectivity] Account ${dbAccount.id} (${dbAccount.externalAccountId}) is accessible`);
+            console.log(`[SnapTrade Connectivity] Account ${dbAccount.id} (${dbAccount.externalAccountId}) is accessible - Trading: ${capabilities.tradingEnabled}`);
           }
         } else {
           // Account not found in SnapTrade API response - mark as inactive

@@ -3,6 +3,7 @@ import { requireAuth } from "../middleware/jwt-auth";
 import { storage } from "../storage";
 import { getTellerAccessToken } from "../store/tellerUsers";
 import { resilientTellerFetch } from "../teller/client";
+import { getBrokerageCapabilities } from "../lib/brokerage-capabilities";
 
 const router = Router();
 
@@ -151,6 +152,9 @@ router.get("/accounts", requireAuth, async (req: any, res) => {
               ? `${account.institution_name} ${account.meta?.type || 'Account'}`.trim()
               : account.name;
             
+            // Get trading capabilities for this brokerage
+            const capabilities = getBrokerageCapabilities(account.institution_name);
+            
             brokerages.push({
               id: account.id,
               accountName: accountName || account.institution_name || 'Unknown Account',
@@ -159,7 +163,9 @@ router.get("/accounts", requireAuth, async (req: any, res) => {
               externalAccountId: account.id,
               institutionName: account.institution_name,
               accountType: account.meta?.type || 'DEFAULT',
-              currency: account.balance?.total?.currency || 'USD'
+              currency: account.balance?.total?.currency || 'USD',
+              tradingEnabled: capabilities.tradingEnabled,
+              capabilities: capabilities.capabilities
             });
           }
         }

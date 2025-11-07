@@ -32,7 +32,9 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { TrendingUp, TrendingDown, DollarSign, Activity } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
+import { TrendingUp, TrendingDown, DollarSign, Activity, AlertCircle } from 'lucide-react';
 import { formatCurrency } from '@/lib/utils';
 
 const tradeSchema = z.object({
@@ -186,6 +188,13 @@ export default function EnhancedTradeModal({
     return quantity * price;
   };
 
+  // Check if selected account supports trading
+  const selectedAccountId = form.watch('accountId');
+  const selectedAccount = (accounts as any)?.brokerageAccounts?.find(
+    (acc: any) => acc.id === selectedAccountId
+  );
+  const canTrade = selectedAccount?.tradingEnabled ?? false;
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[500px]">
@@ -209,6 +218,16 @@ export default function EnhancedTradeModal({
         </DialogHeader>
 
         <div className="space-y-4">
+          {/* Read-only account warning */}
+          {selectedAccount && !canTrade && (
+            <Alert variant="destructive" data-testid="alert-trading-disabled">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>
+                Trading is not supported on {selectedAccount.institutionName || 'this'} accounts. 
+                Please select a different brokerage account that supports trading.
+              </AlertDescription>
+            </Alert>
+          )}
           {/* Real-time Quote Card */}
           <Card className="p-4 bg-muted/50">
             <div className="flex items-center justify-between">
@@ -250,7 +269,12 @@ export default function EnhancedTradeModal({
                         ) : (accounts as any)?.brokerageAccounts?.length > 0 ? (
                           (accounts as any).brokerageAccounts.map((account: any) => (
                             <SelectItem key={account.id} value={account.id}>
-                              {account.institutionName} - {account.accountNumber}
+                              <div className="flex items-center justify-between w-full">
+                                <span>{account.institutionName} - {account.accountNumber}</span>
+                                {account.tradingEnabled === false && (
+                                  <Badge variant="secondary" className="ml-2">Read Only</Badge>
+                                )}
+                              </div>
                             </SelectItem>
                           ))
                         ) : (
@@ -371,17 +395,19 @@ export default function EnhancedTradeModal({
                   variant="outline"
                   onClick={onClose}
                   className="flex-1"
+                  data-testid="button-cancel"
                 >
                   Cancel
                 </Button>
                 <Button
                   type="submit"
-                  disabled={executeTrade.isPending}
+                  disabled={!canTrade || executeTrade.isPending}
                   className={`flex-1 ${
                     action === 'buy' 
                       ? 'bg-green-600 hover:bg-green-700' 
                       : 'bg-red-600 hover:bg-red-700'
                   }`}
+                  data-testid="button-place-order"
                 >
                   {executeTrade.isPending ? 'Placing Order...' : `${action === 'buy' ? 'Buy' : 'Sell'} ${symbol}`}
                 </Button>

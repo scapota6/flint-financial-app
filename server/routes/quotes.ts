@@ -5,34 +5,21 @@ import { snaptradeUsers } from "@shared/schema";
 import { eq } from "drizzle-orm";
 import { authApi, accountsApi, tradingApi } from "../lib/snaptrade";
 import { validate, createApiError, extractSnapTradeRequestId } from '../lib/validation';
+import { storage } from "../storage";
 
 const router = Router();
 
 // Helper function to get user's SnapTrade credentials (returns null if not connected)
-async function getSnapTradeCredentials(email: string): Promise<{ userId: string; userSecret: string } | null> {
+async function getSnapTradeCredentials(userId: string): Promise<{ userId: string; userSecret: string } | null> {
   try {
-    // Find the Flint user by email
-    const flintUser = await db.query.users.findFirst({
-      where: (users, { eq }) => eq(users.email, email)
-    });
-    
-    if (!flintUser) {
-      return null;
-    }
-    
-    // Get SnapTrade credentials
-    const [credentials] = await db
-      .select()
-      .from(snaptradeUsers)
-      .where(eq(snaptradeUsers.flintUserId, flintUser.id))
-      .limit(1);
+    const credentials = await storage.getSnapTradeUser(userId);
     
     if (!credentials) {
       return null;
     }
     
     return {
-      userId: credentials.flintUserId,
+      userId: credentials.snaptradeUserId || credentials.flintUserId,
       userSecret: credentials.userSecret
     };
   } catch (error) {
@@ -44,9 +31,9 @@ async function getSnapTradeCredentials(email: string): Promise<{ userId: string;
 // Get real-time quote for a symbol
 router.get("/:symbol", requireAuth, async (req: any, res) => {
   try {
-    const email = req.user.claims.email?.toLowerCase();
-    if (!email) {
-      return res.status(400).json({ error: "User email required" });
+    const userId = req.user.claims.sub;
+    if (!userId) {
+      return res.status(400).json({ error: "User ID required" });
     }
 
     const { symbol } = req.params;
@@ -57,7 +44,7 @@ router.get("/:symbol", requireAuth, async (req: any, res) => {
     console.log(`Getting quote for ${symbol.toUpperCase()}`);
 
     // Try to get user credentials (null if not connected)
-    const credentials = await getSnapTradeCredentials(email);
+    const credentials = await getSnapTradeCredentials(userId);
 
     // Strategy 1: User has connected brokerage - get live trading quotes
     if (credentials) {

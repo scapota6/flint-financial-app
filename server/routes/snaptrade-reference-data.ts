@@ -4,37 +4,26 @@
  */
 
 import { Router } from 'express';
-import { isAuthenticated } from '../replitAuth';
+import { requireAuth } from '../middleware/jwt-auth';
 import { db } from '../db';
 import { snaptradeUsers } from '@shared/schema';
 import { eq } from 'drizzle-orm';
 import { extractSnapTradeRequestId, createApiError } from '../lib/validation';
 import type { ErrorResponse } from '@shared/types';
+import { storage } from '../storage';
 
 const router = Router();
 
 // Helper to get SnapTrade credentials for authenticated user
-async function getSnapTradeCredentials(email: string) {
-  const flintUser = await db.query.users.findFirst({
-    where: (users, { eq }) => eq(users.email, email)
-  });
-  
-  if (!flintUser) {
-    throw new Error('User not found');
-  }
-  
-  const [credentials] = await db
-    .select()
-    .from(snaptradeUsers)
-    .where(eq(snaptradeUsers.flintUserId, flintUser.id))
-    .limit(1);
+async function getSnapTradeCredentials(userId: string) {
+  const credentials = await storage.getSnapTradeUser(userId);
   
   if (!credentials) {
     throw new Error('SnapTrade account not connected');
   }
   
   return {
-    userId: credentials.flintUserId,
+    userId: credentials.snaptradeUserId || credentials.flintUserId,
     userSecret: credentials.userSecret
   };
 }
@@ -43,22 +32,22 @@ async function getSnapTradeCredentials(email: string) {
  * GET /api/snaptrade/reference/partner-info
  * Get partner information for admin diagnostics
  */
-router.get('/partner-info', isAuthenticated, async (req: any, res) => {
+router.get('/partner-info', requireAuth, async (req: any, res) => {
   try {
-    const email = req.user.claims.email?.toLowerCase();
+    const userId = req.user.claims.sub;
     
-    if (!email) {
+    if (!userId) {
       return res.status(400).json({
         error: {
-          code: 'MISSING_EMAIL',
-          message: 'User email required',
+          code: 'MISSING_USER_ID',
+          message: 'User ID required',
           requestId: null
         }
       });
     }
     
     console.log('[SnapTrade Reference] Getting partner info for admin diagnostics:', {
-      email
+      userId
     });
     
     // Get partner info from SnapTrade
@@ -123,16 +112,16 @@ router.get('/partner-info', isAuthenticated, async (req: any, res) => {
  * Symbol search for trading
  * Query params: substring, userAccountId (optional)
  */
-router.get('/symbol-search', isAuthenticated, async (req: any, res) => {
+router.get('/symbol-search', requireAuth, async (req: any, res) => {
   try {
     const { substring, userAccountId } = req.query;
-    const email = req.user.claims.email?.toLowerCase();
+    const userId = req.user.claims.sub;
     
-    if (!email) {
+    if (!userId) {
       return res.status(400).json({
         error: {
-          code: 'MISSING_EMAIL',
-          message: 'User email required',
+          code: 'MISSING_USER_ID',
+          message: 'User ID required',
           requestId: null
         }
       });
@@ -148,10 +137,10 @@ router.get('/symbol-search', isAuthenticated, async (req: any, res) => {
       });
     }
     
-    const credentials = await getSnapTradeCredentials(email);
+    const credentials = await getSnapTradeCredentials(userId);
     
     console.log('[SnapTrade Reference] Symbol search:', {
-      email,
+      userId,
       substring,
       userAccountId: userAccountId || 'all accounts'
     });
@@ -248,22 +237,22 @@ router.get('/symbol-search', isAuthenticated, async (req: any, res) => {
  * GET /api/snaptrade/reference/security-types
  * Get available security types for humanized display
  */
-router.get('/security-types', isAuthenticated, async (req: any, res) => {
+router.get('/security-types', requireAuth, async (req: any, res) => {
   try {
-    const email = req.user.claims.email?.toLowerCase();
+    const userId = req.user.claims.sub;
     
-    if (!email) {
+    if (!userId) {
       return res.status(400).json({
         error: {
-          code: 'MISSING_EMAIL',
-          message: 'User email required',
+          code: 'MISSING_USER_ID',
+          message: 'User ID required',
           requestId: null
         }
       });
     }
     
     console.log('[SnapTrade Reference] Getting security types:', {
-      email
+      userId
     });
     
     // Get security types from SnapTrade
@@ -322,23 +311,23 @@ router.get('/security-types', isAuthenticated, async (req: any, res) => {
  * GET /api/snaptrade/reference/symbols/:ticker
  * Get detailed symbol information by ticker
  */
-router.get('/symbols/:ticker', isAuthenticated, async (req: any, res) => {
+router.get('/symbols/:ticker', requireAuth, async (req: any, res) => {
   try {
     const { ticker } = req.params;
-    const email = req.user.claims.email?.toLowerCase();
+    const userId = req.user.claims.sub;
     
-    if (!email) {
+    if (!userId) {
       return res.status(400).json({
         error: {
-          code: 'MISSING_EMAIL',
-          message: 'User email required',
+          code: 'MISSING_USER_ID',
+          message: 'User ID required',
           requestId: null
         }
       });
     }
     
     console.log('[SnapTrade Reference] Getting symbol details:', {
-      email,
+      userId,
       ticker
     });
     
@@ -424,23 +413,23 @@ router.get('/symbols/:ticker', isAuthenticated, async (req: any, res) => {
  * Background index cache for all brokerage instruments
  * This is for background caching - could be resource intensive
  */
-router.get('/instruments/:brokerage', isAuthenticated, async (req: any, res) => {
+router.get('/instruments/:brokerage', requireAuth, async (req: any, res) => {
   try {
     const { brokerage } = req.params;
-    const email = req.user.claims.email?.toLowerCase();
+    const userId = req.user.claims.sub;
     
-    if (!email) {
+    if (!userId) {
       return res.status(400).json({
         error: {
-          code: 'MISSING_EMAIL',
-          message: 'User email required',
+          code: 'MISSING_USER_ID',
+          message: 'User ID required',
           requestId: null
         }
       });
     }
     
     console.log('[SnapTrade Reference] Getting all brokerage instruments (background cache):', {
-      email,
+      userId,
       brokerage
     });
     
