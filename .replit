@@ -101,5 +101,9 @@ externalPort = 3000
 [[ports]]
 localPort = 45589
 
+[[ports]]
+localPort = 45929
+externalPort = 8000
+
 [agent]
 integrations = ["resend:1.0.0", "javascript_stripe:1.0.0", "javascript_log_in_with_replit:1.0.0"]

@@ -87,41 +87,28 @@ export function StockDetailPage() {
     setError("");
 
     try {
-      // Try to get quote from SnapTrade
-      const response = await fetch(`/api/snaptrade/quote?symbol=${symbol}`);
+      // Get quote from the unified endpoint that works for both connected and non-connected users
+      const response = await fetch(`/api/quotes/${symbol}`);
       
       if (response.ok) {
         const data = await response.json();
         setStockData({
-          symbol: symbol,
+          symbol: data.symbol || symbol,
           name: data.name || `${symbol} Inc.`,
           price: data.price || 0,
           change: data.change || 0,
           changePercent: data.changePercent || 0,
-          volume: data.volume
+          volume: data.volume || 0
         });
       } else {
-        // Fallback data
-        setStockData({
-          symbol: symbol,
-          name: `${symbol} Inc.`,
-          price: 299.05,
-          change: 3.07,
-          changePercent: 1.81,
-          volume: 89000000
-        });
+        // If the endpoint returns an error, show a message
+        const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+        console.error('Failed to load stock data:', errorData);
+        setError(errorData.error || 'Failed to load stock data');
       }
     } catch (err) {
       console.error('Failed to load stock data:', err);
-      // Use fallback data on error
-      setStockData({
-        symbol: symbol,
-        name: `${symbol} Inc.`,
-        price: 299.05,
-        change: 3.07,
-        changePercent: 1.81,
-        volume: 89000000
-      });
+      setError("Failed to load stock data. Please try again.");
     } finally {
       setIsLoading(false);
     }
