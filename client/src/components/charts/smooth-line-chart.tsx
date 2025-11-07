@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { TrendingUp } from 'lucide-react';
 
@@ -10,45 +10,69 @@ interface SmoothLineChartProps {
 
 type TimePeriod = '1D' | '1W' | '1M' | '3M' | 'YTD' | '1Y' | 'ALL';
 
+interface Candle {
+  time: number;
+  open: number;
+  high: number;
+  low: number;
+  close: number;
+  volume: number;
+}
+
+interface CandleResponse {
+  symbol: string;
+  timeframe: string;
+  candles: Candle[];
+  source: string;
+}
+
+// Helper function to convert time periods to API timeframe format
+const periodToTimeframe = (period: TimePeriod): string => {
+  const mapping: Record<TimePeriod, string> = {
+    '1D': '1D',
+    '1W': '1W',
+    '1M': '1M',
+    '3M': '3M',
+    'YTD': '1Y', // Approximate YTD with 1 year
+    '1Y': '1Y',
+    'ALL': '5Y'
+  };
+  return mapping[period];
+};
+
 export default function SmoothLineChart({ 
   symbol, 
   height = 300,
   showTimePeriodSelector = true 
 }: SmoothLineChartProps) {
   const [selectedPeriod, setSelectedPeriod] = useState<TimePeriod>('3M');
-  const [chartData, setChartData] = useState<number[]>([]);
 
-  const { data: quote } = useQuery({
-    queryKey: [`/api/quotes/${symbol}`],
-    refetchInterval: 5000,
+  // Fetch candle data from the API
+  const { data: candleData, isLoading } = useQuery<CandleResponse>({
+    queryKey: [`/api/market/candles`, symbol, selectedPeriod],
+    queryFn: async () => {
+      const tf = periodToTimeframe(selectedPeriod);
+      const response = await fetch(`/api/market/candles?symbol=${symbol}&tf=${tf}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch candle data');
+      }
+      return response.json();
+    },
+    refetchInterval: 60000, // Refresh every minute
   });
 
-  useEffect(() => {
-    const generateMockData = () => {
-      const basePrice = (quote as any)?.price || 224.50;
-      const points = selectedPeriod === '1D' ? 78 : selectedPeriod === '1W' ? 35 : 90;
-      const data: number[] = [];
-      
-      for (let i = 0; i < points; i++) {
-        const variation = Math.sin(i / 10) * 5 + (Math.random() - 0.5) * 3;
-        data.push(basePrice + variation);
-      }
-      
-      return data;
-    };
+  // Extract close prices from candles for the line chart
+  const chartData = candleData?.candles?.map(candle => candle.close) || [];
 
-    setChartData(generateMockData());
-  }, [selectedPeriod, quote]);
-
-  const maxValue = Math.max(...chartData);
-  const minValue = Math.min(...chartData);
-  const range = maxValue - minValue;
+  const maxValue = chartData.length > 0 ? Math.max(...chartData) : 0;
+  const minValue = chartData.length > 0 ? Math.min(...chartData) : 0;
+  const range = maxValue - minValue || 1; // Prevent division by zero
 
   const createSVGPath = () => {
     if (chartData.length === 0) return '';
 
     const width = 100;
-    const stepX = width / (chartData.length - 1);
+    const stepX = chartData.length > 1 ? width / (chartData.length - 1) : 0;
 
     const points = chartData.map((value, index) => {
       const x = index * stepX;
@@ -79,46 +103,55 @@ export default function SmoothLineChart({
 
   return (
     <div className="w-full" data-testid="smooth-line-chart">
-      <svg 
-        viewBox="0 0 100 100" 
-        preserveAspectRatio="none"
-        style={{ height: `${height}px` }}
-        className="w-full"
-      >
-        <defs>
-          <linearGradient id={`gradient-${symbol}`} x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="#34C759" stopOpacity="0.3" />
-            <stop offset="100%" stopColor="#34C759" stopOpacity="0.0" />
-          </linearGradient>
-        </defs>
-        
-        {chartData.length > 0 && (
-          <>
-            <path
-              d={`${createSVGPath()} L 100,100 L 0,100 Z`}
-              fill={`url(#gradient-${symbol})`}
-            />
-            
-            <path
-              d={createSVGPath()}
-              fill="none"
-              stroke="#34C759"
-              strokeWidth="0.5"
-              vectorEffect="non-scaling-stroke"
-            />
-            
-            {chartData.length > 0 && (
-              <circle
-                cx={100}
-                cy={((maxValue - chartData[chartData.length - 1]) / range) * 100}
-                r="1.5"
-                fill="#34C759"
+      {isLoading ? (
+        <div 
+          className="w-full flex items-center justify-center bg-white/5 rounded-lg"
+          style={{ height: `${height}px` }}
+        >
+          <div className="text-[#A7ADBA] text-sm">Loading chart data...</div>
+        </div>
+      ) : (
+        <svg 
+          viewBox="0 0 100 100" 
+          preserveAspectRatio="none"
+          style={{ height: `${height}px` }}
+          className="w-full"
+        >
+          <defs>
+            <linearGradient id={`gradient-${symbol}`} x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor="#34C759" stopOpacity="0.3" />
+              <stop offset="100%" stopColor="#34C759" stopOpacity="0.0" />
+            </linearGradient>
+          </defs>
+          
+          {chartData.length > 0 && (
+            <>
+              <path
+                d={`${createSVGPath()} L 100,100 L 0,100 Z`}
+                fill={`url(#gradient-${symbol})`}
+              />
+              
+              <path
+                d={createSVGPath()}
+                fill="none"
+                stroke="#34C759"
+                strokeWidth="0.5"
                 vectorEffect="non-scaling-stroke"
               />
-            )}
-          </>
-        )}
-      </svg>
+              
+              {chartData.length > 0 && (
+                <circle
+                  cx={100}
+                  cy={((maxValue - chartData[chartData.length - 1]) / range) * 100}
+                  r="1.5"
+                  fill="#34C759"
+                  vectorEffect="non-scaling-stroke"
+                />
+              )}
+            </>
+          )}
+        </svg>
+      )}
 
       {showTimePeriodSelector && (
         <div className="flex gap-2 mt-6 justify-center" data-testid="time-period-selector">
