@@ -317,7 +317,7 @@ export default function OrderTicket({ symbol, currentPrice = 0, selectedAccountI
             type="number"
             value={quantity}
             onChange={(e) => setQuantity(e.target.value)}
-            min="0.001"
+            min="0"
             step="1"
             placeholder="0"
           />
@@ -331,7 +331,7 @@ export default function OrderTicket({ symbol, currentPrice = 0, selectedAccountI
               type="number"
               value={limitPrice}
               onChange={(e) => setLimitPrice(e.target.value)}
-              min="0.01"
+              min="0"
               step="0.01"
               placeholder="0.00"
             />

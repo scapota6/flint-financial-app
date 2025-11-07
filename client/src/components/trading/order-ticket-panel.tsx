@@ -181,6 +181,8 @@ export default function OrderTicketPanel({
             onChange={(e) => setQuantity(e.target.value)}
             className="bg-white/5 border-white/10 text-[#F2F4F6] placeholder:text-[#A7ADBA]/50 h-12 rounded-xl"
             data-testid="input-quantity"
+            min="0"
+            step="1"
           />
         </div>
 
@@ -195,6 +197,8 @@ export default function OrderTicketPanel({
               onChange={(e) => setLimitPrice(e.target.value)}
               className="bg-white/5 border-white/10 text-[#F2F4F6] placeholder:text-[#A7ADBA]/50 h-12 rounded-xl"
               data-testid="input-limit-price"
+              min="0"
+              step="0.01"
             />
           </div>
         )}

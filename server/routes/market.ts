@@ -36,8 +36,16 @@ router.get("/quote", requireAuth, async (req: any, res) => {
       return res.status(400).json({ message: "Symbol is required" });
     }
 
-    // Try to get real-time quote from market data service
-    const quote = await marketDataService.getMarketData(symbol as string);
+    // Get user credentials for SnapTrade
+    const userId = req.user.claims.sub;
+    const snaptradeUser = await (await import("../storage")).storage.getSnapTradeUser(userId);
+    
+    // Try to get real-time quote from market data service with user credentials
+    const quote = await marketDataService.getMarketData(
+      symbol as string,
+      snaptradeUser?.snaptradeUserId || snaptradeUser?.flintUserId,
+      snaptradeUser?.userSecret
+    );
     
     if (!quote) {
       return res.status(404).json({ message: "Quote not found" });

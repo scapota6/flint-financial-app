@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { isAuthenticated } from "../replitAuth";
+import { requireAuth } from "../middleware/jwt-auth";
 import { db } from "../db";
 import { snaptradeUsers } from "@shared/schema";
 import { eq } from "drizzle-orm";
@@ -42,7 +42,7 @@ async function getSnapTradeCredentials(email: string): Promise<{ userId: string;
 }
 
 // Get real-time quote for a symbol
-router.get("/:symbol", isAuthenticated, async (req: any, res) => {
+router.get("/:symbol", requireAuth, async (req: any, res) => {
   try {
     const email = req.user.claims.email?.toLowerCase();
     if (!email) {

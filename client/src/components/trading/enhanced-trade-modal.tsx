@@ -289,6 +289,7 @@ export default function EnhancedTradeModal({
                         <FormControl>
                           <Input
                             type="number"
+                            min="0"
                             step="0.01"
                             placeholder="Enter limit price"
                             {...field}
@@ -314,7 +315,8 @@ export default function EnhancedTradeModal({
                     <FormControl>
                       <Input
                         type="number"
-                        step="0.0001"
+                        min="0"
+                        step="1"
                         placeholder="Enter quantity"
                         {...field}
                       />

@@ -243,8 +243,8 @@ export default function TradeModal({
                   onChange={(e) => setQuantity(e.target.value)}
                   placeholder="0"
                   className="bg-gray-800 border-gray-700"
-                  step="0.01"
                   min="0"
+                  step="1"
                 />
               </div>
             </TabsContent>

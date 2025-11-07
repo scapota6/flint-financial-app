@@ -423,7 +423,7 @@ export function TradingTicket({ accountId, prefilledSymbol, onOrderPlaced }: Tra
             value={quantity}
             onChange={(e) => setQuantity(e.target.value)}
             placeholder="Number of shares"
-            min="1"
+            min="0"
             step="1"
             data-testid="input-quantity"
           />
