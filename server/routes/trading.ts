@@ -98,7 +98,7 @@ async function tradingPlaceOrder(input:any){
 }
 
 const r = Router();
-const pickUserId = (req:any)=> (req.user?.id || req.headers['x-user-id'] || req.body?.userId || '').toString().trim();
+const pickUserId = (req:any)=> (req.user?.id || req.user?.claims?.sub || req.headers['x-user-id'] || req.body?.userId || '').toString().trim();
 
 function validateOrder(b:any){
   const e:string[]=[];
@@ -113,7 +113,7 @@ function validateOrder(b:any){
 
 
 
-r.post('/trade/preview', async (req,res)=>{
+r.post('/preview', async (req,res)=>{
   try{
     const userId = pickUserId(req);
     if(!userId) return res.status(401).json({message:'No userId'});
@@ -159,7 +159,7 @@ r.post('/trade/preview', async (req,res)=>{
   }
 });
 
-r.post('/trade/place', async (req,res)=>{
+r.post('/place', async (req,res)=>{
   try{
     const userId = pickUserId(req);
     if(!userId) return res.status(401).json({message:'No userId'});
