@@ -87,7 +87,7 @@
   background: linear-gradient(
     90deg,
     transparent,
-    rgba(139, 92, 246, 0.15),
+    rgba(10, 132, 255, 0.15),
     transparent
   );
   animation: shimmer 4s ease-in-out infinite;
@@ -112,8 +112,8 @@
   bottom: -10px;
   background: radial-gradient(
     circle,
-    rgba(139, 92, 246, 0.3) 0%,
-    rgba(139, 92, 246, 0.1) 50%,
+    rgba(10, 132, 255, 0.3) 0%,
+    rgba(10, 132, 255, 0.1) 50%,
     transparent 100%
   );
   border-radius: 20px;
@@ -133,7 +133,7 @@
 }
 
 .recharts-pie-sector:hover {
-  filter: brightness(1.2) saturate(1.3) drop-shadow(0 0 20px rgba(139, 92, 246, 0.6));
+  filter: brightness(1.2) saturate(1.3) drop-shadow(0 0 20px rgba(10, 132, 255, 0.6));
   transform: scale(1.02);
 }
 
@@ -163,7 +163,7 @@
 
 /* Navbar link hover effects */
 .navbar-link-hover:hover {
-  text-shadow: 0 0 6px rgba(142, 68, 173, 0.6);
+  text-shadow: 0 0 6px rgba(10, 132, 255, 0.6);
 }
 
 .navbar-link-active {
@@ -177,13 +177,13 @@
   left: 0;
   right: 0;
   height: 2px;
-  background: #8e44ad;
+  background: #0A84FF;
   border-radius: 1px;
 }
 
 /* Enhanced button glow effects */
 .btn-glow-hover:hover {
-  box-shadow: 0 0 12px rgba(142, 68, 173, 0.5);
+  box-shadow: 0 0 12px rgba(10, 132, 255, 0.5);
   transform: scale(1.02);
   transition: all 0.2s ease;
 }
@@ -197,25 +197,28 @@
 }
 
 .dark .flint-card {
-  background: #1e1e1e;
-  border: 1px solid #333;
+  background: rgba(24, 27, 31, 0.55);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .flint-card:hover {
-  border-color: rgba(142, 68, 173, 0.4);
-  box-shadow: 0 0 8px rgba(142, 68, 173, 0.4);
+  border-color: rgba(10, 132, 255, 0.4);
+  box-shadow: 0 0 8px rgba(10, 132, 255, 0.4);
   transform: translateY(-4px) scale(1.03);
 }
 
 :root {
-  /* Light mode colors */
+  /* Light mode colors - Apple 2025 Liquid Glass */
   --bg: #ffffff;
   --surface: #f5f5f5;
   --text-primary: #1a1a1a;
   --text-secondary: #666666;
-  --accent: #8e44ad;      /* Flint purple */
-  --buy-color: #27ae60;   /* Green buy */
-  --sell-color: #c0392b;  /* Red sell */
+  --accent: #0A84FF;      /* Apple blue */
+  --accent-teal: #64D2FF;  /* Apple teal */
+  --buy-color: #34C759;   /* Apple green */
+  --sell-color: #FF3B30;  /* Apple red */
+  --warning-color: #FFD60A; /* Apple yellow */
   
   /* Shadcn theme variables - Light mode */
   --background: 0 0% 100%;    /* white */
@@ -224,59 +227,59 @@
   --card-foreground: 0 0% 10%;
   --popover: 0 0% 100%;
   --popover-foreground: 0 0% 10%;
-  --primary: 283 39% 48%;     /* #8e44ad */
+  --primary: 211 100% 52%;    /* Apple blue #0A84FF */
   --primary-foreground: 0 0% 100%;
   --secondary: 0 0% 96%;
   --secondary-foreground: 0 0% 10%;
   --muted: 0 0% 96%;
   --muted-foreground: 0 0% 40%;
-  --accent: 283 39% 48%;
+  --accent: 211 100% 52%;     /* Apple blue #0A84FF */
   --accent-foreground: 0 0% 100%;
-  --destructive: 4 69% 50%;   /* #c0392b */
+  --destructive: 3 100% 59%;  /* Apple red #FF3B30 */
   --destructive-foreground: 0 0% 100%;
   --border: 0 0% 88%;
   --input: 0 0% 88%;
-  --ring: 283 39% 48%;
-  --chart-1: 142 69% 45%;     /* #27ae60 */
-  --chart-2: 4 69% 50%;       /* #c0392b */
-  --chart-3: 283 39% 48%;     /* #8e44ad */
-  --chart-4: 35 91% 65%;
-  --chart-5: 200 80% 55%;
+  --ring: 211 100% 52%;       /* Apple blue */
+  --chart-1: 134 57% 50%;     /* Apple green #34C759 */
+  --chart-2: 3 100% 59%;      /* Apple red #FF3B30 */
+  --chart-3: 211 100% 52%;    /* Apple blue #0A84FF */
+  --chart-4: 199 100% 70%;    /* Apple teal #64D2FF */
+  --chart-5: 49 100% 52%;     /* Apple yellow #FFD60A */
   --radius: 0.75rem;          /* 12px border radius */
 }
 
 .dark {
-  /* Dark mode colors */
-  --bg: #121212;
-  --surface: #1e1e1e;
-  --text-primary: #ececec;
-  --text-secondary: #a0a0a0;
+  /* Dark mode colors - Apple 2025 Liquid Glass */
+  --bg: #0B0D11;
+  --surface: rgba(24, 27, 31, 0.55);
+  --text-primary: #F2F4F6;
+  --text-secondary: #A7ADBA;
   
   /* Shadcn theme variables - Dark mode */
-  --background: 216 13% 7%;
-  --foreground: 0 0% 93%;
-  --card: 216 13% 12%;
-  --card-foreground: 0 0% 93%;
-  --popover: 216 13% 12%;
-  --popover-foreground: 0 0% 93%;
-  --primary: 283 39% 48%;
+  --background: 220 22% 5%;    /* #0B0D11 */
+  --foreground: 210 17% 96%;   /* #F2F4F6 */
+  --card: 217 14% 10%;         /* Liquid glass surface */
+  --card-foreground: 210 17% 96%;
+  --popover: 217 14% 10%;
+  --popover-foreground: 210 17% 96%;
+  --primary: 211 100% 52%;     /* Apple blue #0A84FF */
   --primary-foreground: 0 0% 100%;
-  --secondary: 216 13% 15%;
-  --secondary-foreground: 0 0% 93%;
-  --muted: 216 13% 15%;
-  --muted-foreground: 0 0% 63%;
-  --accent: 283 39% 48%;
+  --secondary: 217 14% 15%;
+  --secondary-foreground: 210 17% 96%;
+  --muted: 217 14% 15%;
+  --muted-foreground: 214 11% 69%;  /* #A7ADBA */
+  --accent: 211 100% 52%;      /* Apple blue #0A84FF */
   --accent-foreground: 0 0% 100%;
-  --destructive: 4 69% 50%;
+  --destructive: 3 100% 59%;   /* Apple red #FF3B30 */
   --destructive-foreground: 0 0% 100%;
-  --border: 216 13% 18%;
-  --input: 216 13% 18%;
-  --ring: 283 39% 48%;
-  --chart-1: 142 69% 45%;
-  --chart-2: 4 69% 50%;
-  --chart-3: 283 39% 48%;
-  --chart-4: 35 91% 65%;
-  --chart-5: 200 80% 55%;
+  --border: 217 14% 18%;
+  --input: 217 14% 18%;
+  --ring: 211 100% 52%;        /* Apple blue */
+  --chart-1: 134 57% 50%;      /* Apple green #34C759 */
+  --chart-2: 3 100% 59%;       /* Apple red #FF3B30 */
+  --chart-3: 211 100% 52%;     /* Apple blue #0A84FF */
+  --chart-4: 199 100% 70%;     /* Apple teal #64D2FF */
+  --chart-5: 49 100% 52%;      /* Apple yellow #FFD60A */
 }
 
 @layer base {
@@ -309,45 +312,45 @@
   .flint-btn-primary {
     background: var(--accent);
     color: white;
-    box-shadow: 0 0 20px rgba(142, 68, 173, 0.3);
+    box-shadow: 0 0 20px rgba(10, 132, 255, 0.3);
   }
 
   .flint-btn-primary:hover {
-    box-shadow: 0 0 25px rgba(142, 68, 173, 0.5);
+    box-shadow: 0 0 25px rgba(10, 132, 255, 0.5);
   }
 
   .flint-btn-buy {
     background: var(--buy-color);
     color: white;
-    box-shadow: 0 0 20px rgba(39, 174, 96, 0.3);
+    box-shadow: 0 0 20px rgba(52, 199, 89, 0.3);
   }
 
   .flint-btn-buy:hover {
-    box-shadow: 0 0 25px rgba(39, 174, 96, 0.5);
+    box-shadow: 0 0 25px rgba(52, 199, 89, 0.5);
   }
 
   .flint-btn-sell {
     background: var(--sell-color);
     color: white;
-    box-shadow: 0 0 20px rgba(192, 57, 43, 0.3);
+    box-shadow: 0 0 20px rgba(255, 59, 48, 0.3);
   }
 
   .flint-btn-sell:hover {
-    box-shadow: 0 0 25px rgba(192, 57, 43, 0.5);
+    box-shadow: 0 0 25px rgba(255, 59, 48, 0.5);
   }
 
-  /* Glassmorphism Cards */
+  /* Glassmorphism Cards - Apple Liquid Glass */
   .flint-card {
-    background: rgba(30, 30, 30, 0.8);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(24, 27, 31, 0.55);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 12px;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
   }
 
   .flint-card-accent {
-    border-color: rgba(142, 68, 173, 0.3);
-    box-shadow: 0 4px 16px rgba(142, 68, 173, 0.1);
+    border-color: rgba(10, 132, 255, 0.3);
+    box-shadow: 0 4px 16px rgba(10, 132, 255, 0.1);
   }
 
   /* Connected Account Cards */
@@ -375,12 +378,12 @@
   }
   
   .trade-card {
-    background: linear-gradient(135deg, var(--dark-secondary) 0%, var(--dark-tertiary) 100%);
-    border: 1px solid var(--dark-quaternary);
+    background: linear-gradient(135deg, rgba(24, 27, 31, 0.55) 0%, rgba(30, 33, 37, 0.6) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.08);
   }
   
   .activity-item {
-    border-bottom: 1px solid var(--dark-quaternary);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   }
   
   .activity-item:last-child {
@@ -396,11 +399,11 @@
   }
   
   .watchlist-item:hover {
-    background-color: var(--dark-quaternary);
+    background-color: rgba(255, 255, 255, 0.08);
   }
   
   .loading-shimmer {
-    background: linear-gradient(90deg, var(--dark-quaternary) 25%, var(--dark-quinary) 50%, var(--dark-quaternary) 75%);
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0.08) 25%, rgba(255, 255, 255, 0.12) 50%, rgba(255, 255, 255, 0.08) 75%);
     background-size: 200% 100%;
     animation: shimmer 2s infinite;
   }
@@ -416,8 +419,8 @@
   }
   
   .notification {
-    background: linear-gradient(135deg, var(--dark-tertiary) 0%, var(--dark-quaternary) 100%);
-    border: 1px solid var(--dark-quinary);
+    background: linear-gradient(135deg, rgba(30, 33, 37, 0.6) 0%, rgba(255, 255, 255, 0.08) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.12);
     animation: slideIn 0.3s ease;
   }
   
@@ -433,22 +436,22 @@
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--dark-secondary);
+  background: rgba(24, 27, 31, 0.55);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--dark-quaternary);
+  background: rgba(255, 255, 255, 0.08);
   border-radius: 4px;
 }
 
 /* Enhanced accessibility and polish */
 .btn-glow-hover:hover {
-  box-shadow: 0 0 12px rgba(142, 68, 173, 0.4);
+  box-shadow: 0 0 12px rgba(10, 132, 255, 0.4);
   transform: translateY(-1px);
 }
 
 .focus-visible:focus-visible {
-  outline: 2px solid #8e44ad;
+  outline: 2px solid #0A84FF;
   outline-offset: 2px;
 }
 
@@ -477,7 +480,7 @@
 
 /* Interactive elements glow */
 .interactive-glow:hover {
-  text-shadow: 0 0 6px rgba(142, 68, 173, 0.6);
+  text-shadow: 0 0 6px rgba(10, 132, 255, 0.6);
 }
 
 /* Enhanced card hover effects */
@@ -486,14 +489,14 @@
   transition: transform 200ms ease;
 }
 
-/* Purple glow border for connected accounts */
-.purple-glow-border {
-  box-shadow: 0 0 8px rgba(142, 68, 173, 0.4);
-  border: 1px solid rgba(142, 68, 173, 0.3);
+/* Apple blue glow border for connected accounts */
+.blue-glow-border {
+  box-shadow: 0 0 8px rgba(10, 132, 255, 0.4);
+  border: 1px solid rgba(10, 132, 255, 0.3);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--dark-quinary);
+  background: rgba(255, 255, 255, 0.12);
 }
 
 /* Disconnect Button & Popover Styling */
@@ -525,11 +528,11 @@
 
 /* Global Navbar Styling */
 .navbar-link-active {
-  text-shadow: 0 0 6px rgba(142,68,173,0.6);
+  text-shadow: 0 0 6px rgba(10,132,255,0.6);
 }
 
 .navbar-link-hover:hover {
-  text-shadow: 0 0 6px rgba(142,68,173,0.6);
+  text-shadow: 0 0 6px rgba(10,132,255,0.6);
 }
 
 /* Enhanced Account Cards Grid */
@@ -542,9 +545,9 @@
 
 .account-card-enhanced {
   background: var(--surface);
-  border: 1px solid rgba(142,68,173,0.3);
+  border: 1px solid rgba(10,132,255,0.3);
   border-radius: 16px;
-  box-shadow: 0 0 8px rgba(142,68,173,0.4);
+  box-shadow: 0 0 8px rgba(10,132,255,0.4);
   transition: all 200ms ease;
   cursor: pointer;
   min-width: 240px;
@@ -553,7 +556,7 @@
 
 .account-card-enhanced:hover {
   transform: translateY(-4px) scale(1.03);
-  box-shadow: 0 8px 25px rgba(142,68,173,0.5);
+  box-shadow: 0 8px 25px rgba(10,132,255,0.5);
 }
 
 /* Skeleton Animation */
@@ -577,8 +580,8 @@
 
 /* Error Card Styling */
 .error-card {
-  background: rgba(192, 57, 43, 0.1);
-  border: 1px solid rgba(192, 57, 43, 0.5);
+  background: rgba(255, 59, 48, 0.1);
+  border: 1px solid rgba(255, 59, 48, 0.5);
   border-radius: 16px;
   padding: 1.5rem;
 }
@@ -603,15 +606,15 @@
 }
 
 .quick-buy-btn:hover {
-  box-shadow: 0 4px 15px rgba(39, 174, 96, 0.4);
+  box-shadow: 0 4px 15px rgba(52, 199, 89, 0.4);
 }
 
 .quick-sell-btn:hover {
-  box-shadow: 0 4px 15px rgba(231, 76, 60, 0.4);
+  box-shadow: 0 4px 15px rgba(255, 59, 48, 0.4);
 }
 
 .transfer-btn:hover {
-  box-shadow: 0 4px 15px rgba(142, 68, 173, 0.4);
+  box-shadow: 0 4px 15px rgba(10, 132, 255, 0.4);
 }
 
 /* Modal Animations */
@@ -666,19 +669,19 @@ body {
 
 h1, h2, h3, h4, h5, h6 {
   font-weight: 600;
-  color: white;
+  color: var(--text-primary);
 }
 
 p, span, div {
   font-weight: 400;
-  color: #CCCCCC;
+  color: var(--text-secondary);
 }
 
 /* Focus Styles for Accessibility */
 button:focus-visible,
 a:focus-visible,
 [tabindex]:focus-visible {
-  outline: 2px solid #8e44ad;
+  outline: 2px solid #0A84FF;
   outline-offset: 2px;
   border-radius: 4px;
 }
@@ -727,27 +730,27 @@ a:focus-visible,
   to { opacity: 1; transform: translateX(-50%) translateY(0); }
 }
 
-/* Enhanced Button System with Purple Glow Effects */
+/* Enhanced Button System with Apple Blue Glow Effects */
 .btn-standard {
-  @apply h-12 px-4 rounded-lg font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500/50;
+  @apply h-12 px-4 rounded-lg font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50;
 }
 
 .btn-primary {
-  @apply bg-purple-600 text-white hover:bg-purple-700;
-  box-shadow: 0 0 0 rgba(142, 68, 173, 0);
+  @apply bg-blue-600 text-white hover:bg-blue-700;
+  box-shadow: 0 0 0 rgba(10, 132, 255, 0);
 }
 
 .btn-primary:hover {
-  box-shadow: 0 0 12px rgba(142, 68, 173, 0.6);
+  box-shadow: 0 0 12px rgba(10, 132, 255, 0.6);
   transform: translateY(-1px);
 }
 
 .btn-secondary {
-  @apply border border-purple-500 text-purple-400 hover:bg-purple-500/10 hover:text-purple-300;
+  @apply border border-blue-500 text-blue-400 hover:bg-blue-500/10 hover:text-blue-300;
 }
 
 .btn-glow-hover:hover {
-  box-shadow: 0 0 12px rgba(142, 68, 173, 0.4);
+  box-shadow: 0 0 12px rgba(10, 132, 255, 0.4);
   transform: translateY(-1px);
 }
 
@@ -755,13 +758,13 @@ a:focus-visible,
 body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-weight: 400;
-  color: #CCCCCC;
+  color: var(--text-primary);
 }
 
 h1, h2, h3, h4, h5, h6 {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-weight: 600;
-  color: white;
+  color: var(--text-primary);
 }
 
 /* Sparkle Animation Enhancement */
@@ -789,7 +792,7 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Interactive Element Hover Effects */
 .interactive-glow:hover {
-  text-shadow: 0 0 6px rgba(142, 68, 173, 0.6);
+  text-shadow: 0 0 6px rgba(10, 132, 255, 0.6);
   transition: text-shadow 200ms ease;
 }
 
@@ -813,7 +816,7 @@ h1, h2, h3, h4, h5, h6 {
 button:focus-visible,
 a:focus-visible,
 [tabindex]:focus-visible {
-  outline: 2px solid #8e44ad;
+  outline: 2px solid #0A84FF;
   outline-offset: 2px;
   border-radius: 4px;
 }
@@ -861,6 +864,6 @@ a:focus-visible,
 }
 
 @keyframes pulseGlow {
-  0%, 100% { box-shadow: 0 0 8px rgba(142, 68, 173, 0.4); }
-  50% { box-shadow: 0 0 16px rgba(142, 68, 173, 0.8); }
+  0%, 100% { box-shadow: 0 0 8px rgba(10, 132, 255, 0.4); }
+  50% { box-shadow: 0 0 16px rgba(10, 132, 255, 0.8); }
 }
