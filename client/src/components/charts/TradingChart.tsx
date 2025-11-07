@@ -204,7 +204,7 @@ export default function TradingChart({
       let quote = await marketCache.getCachedQuote(symbol);
       
       if (!quote) {
-        const response = await fetch(`/api/market/quote?symbol=${symbol}`, {
+        const response = await fetch(`/api/quotes/${symbol}`, {
           credentials: 'include'
         });
         

@@ -26,7 +26,7 @@ export default function SimpleTradingChart({
   const fetchQuote = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch(`/api/market/quote?symbol=${symbol}`, {
+      const response = await fetch(`/api/quotes/${symbol}`, {
         credentials: 'include'
       });
       
