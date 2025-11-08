@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -34,8 +34,11 @@ import { Card } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
-import { TrendingUp, TrendingDown, DollarSign, Activity, AlertCircle } from 'lucide-react';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { TrendingUp, TrendingDown, DollarSign, Activity, AlertCircle, Info } from 'lucide-react';
 import { formatCurrency } from '@/lib/utils';
+import SymbolSearchAutocomplete from './symbol-search-autocomplete';
+import type { SymbolSearchResult } from '@shared/types';
 
 const tradeSchema = z.object({
   accountId: z.string().min(1, 'Please select an account'),
@@ -64,21 +67,32 @@ type TradeFormData = z.infer<typeof tradeSchema>;
 interface EnhancedTradeModalProps {
   isOpen: boolean;
   onClose: () => void;
-  symbol: string;
-  action: 'buy' | 'sell';
+  symbol?: string; // Made optional - can be selected via autocomplete
+  action?: 'buy' | 'sell'; // Made optional - can be set later
   currentPrice?: number;
 }
 
 export default function EnhancedTradeModal({
   isOpen,
   onClose,
-  symbol,
-  action,
+  symbol: initialSymbol = '',
+  action: initialAction = 'buy',
   currentPrice = 0,
 }: EnhancedTradeModalProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [orderType, setOrderType] = useState<'market' | 'limit'>('market');
+  const [selectedSymbolInfo, setSelectedSymbolInfo] = useState<SymbolSearchResult | null>(null);
+  const [symbol, setSymbol] = useState(initialSymbol);
+  const [action, setAction] = useState(initialAction);
+
+  // Update symbol when modal opens with initialSymbol
+  useEffect(() => {
+    if (isOpen && initialSymbol) {
+      setSymbol(initialSymbol);
+      setSelectedSymbolInfo(null); // Reset compatibility info
+    }
+  }, [isOpen, initialSymbol]);
 
   const form = useForm<TradeFormData>({
     resolver: zodResolver(tradeSchema),
@@ -199,36 +213,110 @@ export default function EnhancedTradeModal({
     return quantity * price;
   };
 
+  // Handle symbol selection from autocomplete
+  const handleSymbolSelect = (result: SymbolSearchResult) => {
+    setSymbol(result.symbol);
+    setSelectedSymbolInfo(result);
+    
+    // If only one compatible account, auto-select it
+    if (result.compatibleAccounts.length === 1) {
+      form.setValue('accountId', result.compatibleAccounts[0].accountId);
+    } else {
+      // Clear account selection to force user to choose
+      form.setValue('accountId', '');
+    }
+  };
+
   // Check if selected account supports trading
   const selectedAccountId = form.watch('accountId');
   const selectedAccount = (accounts as any)?.brokerageAccounts?.find(
     (acc: any) => acc.id === selectedAccountId
   );
   const canTrade = selectedAccount?.tradingEnabled ?? false;
+  
+  // Check if selected account is compatible with selected symbol
+  const isAccountCompatibleWithSymbol = selectedSymbolInfo
+    ? selectedSymbolInfo.compatibleAccounts.some(acc => acc.accountId === selectedAccountId)
+    : true; // If no symbol info, assume compatible
+
+  // Filter and sort accounts based on compatibility
+  const sortedAccounts = (accounts as any)?.brokerageAccounts?.slice().sort((a: any, b: any) => {
+    if (!selectedSymbolInfo) return 0;
+    
+    const aCompatible = selectedSymbolInfo.compatibleAccounts.some(acc => acc.accountId === a.id);
+    const bCompatible = selectedSymbolInfo.compatibleAccounts.some(acc => acc.accountId === b.id);
+    
+    if (aCompatible && !bCompatible) return -1;
+    if (!aCompatible && bCompatible) return 1;
+    return 0;
+  }) || [];
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             {action === 'buy' ? (
               <>
                 <TrendingUp className="h-5 w-5 text-green-500" />
-                Buy {symbol}
+                Buy {symbol || 'Stock'}
               </>
             ) : (
               <>
                 <TrendingDown className="h-5 w-5 text-red-500" />
-                Sell {symbol}
+                Sell {symbol || 'Stock'}
               </>
             )}
           </DialogTitle>
           <DialogDescription>
-            Place a {action} order for {symbol}
+            {symbol ? `Place a ${action} order for ${symbol}` : 'Search for a symbol to trade'}
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4">
+          {/* Symbol Search - Only show if no initial symbol or allow changing */}
+          {!initialSymbol && (
+            <div>
+              <label className="text-sm font-medium mb-2 block">Symbol</label>
+              <SymbolSearchAutocomplete
+                onSelect={handleSymbolSelect}
+                initialValue={symbol}
+                placeholder="Search stocks, crypto, ETFs..."
+              />
+              {selectedSymbolInfo && (
+                <div className="mt-2 text-sm text-muted-foreground flex items-center gap-2">
+                  <Badge variant="outline">{selectedSymbolInfo.assetTypeLabel}</Badge>
+                  <span>{selectedSymbolInfo.description}</span>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* No compatible accounts warning */}
+          {selectedSymbolInfo && !selectedSymbolInfo.isCompatibleWithAnyAccount && (
+            <Alert variant="destructive" data-testid="alert-no-compatible-accounts">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>
+                {selectedSymbolInfo.incompatibleReason || 'No compatible accounts found for this symbol.'}
+              </AlertDescription>
+            </Alert>
+          )}
+
+          {/* Account/Symbol mismatch warning */}
+          {selectedAccount && selectedSymbolInfo && !isAccountCompatibleWithSymbol && (
+            <Alert variant="destructive" data-testid="alert-incompatible-selection">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>
+                {selectedAccount.institutionName} does not support {selectedSymbolInfo.assetTypeLabel.toLowerCase()} trading. 
+                {selectedSymbolInfo.compatibleAccounts.length > 0 && (
+                  <span className="block mt-1">
+                    Try: {selectedSymbolInfo.compatibleAccounts.map(acc => acc.institution).join(', ')}
+                  </span>
+                )}
+              </AlertDescription>
+            </Alert>
+          )}
+
           {/* Read-only account warning */}
           {selectedAccount && !canTrade && (
             <Alert variant="destructive" data-testid="alert-trading-disabled">
@@ -268,31 +356,61 @@ export default function EnhancedTradeModal({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Brokerage Account</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
-                        <SelectTrigger>
+                        <SelectTrigger data-testid="select-account">
                           <SelectValue placeholder="Select an account" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
                         {accountsLoading ? (
                           <SelectItem value="loading" disabled>Loading accounts...</SelectItem>
-                        ) : (accounts as any)?.brokerageAccounts?.length > 0 ? (
-                          (accounts as any).brokerageAccounts.map((account: any) => (
-                            <SelectItem key={account.id} value={account.id}>
-                              <div className="flex items-center justify-between w-full">
-                                <span>{account.institutionName} - {account.accountNumber}</span>
-                                {account.tradingEnabled === false && (
-                                  <Badge variant="secondary" className="ml-2">Read Only</Badge>
-                                )}
-                              </div>
-                            </SelectItem>
-                          ))
+                        ) : sortedAccounts?.length > 0 ? (
+                          sortedAccounts.map((account: any) => {
+                            const isCompatible = !selectedSymbolInfo || 
+                              selectedSymbolInfo.compatibleAccounts.some(acc => acc.accountId === account.id);
+                            const isReadOnly = account.tradingEnabled === false;
+                            
+                            return (
+                              <SelectItem 
+                                key={account.id} 
+                                value={account.id}
+                                disabled={isReadOnly || (selectedSymbolInfo && !isCompatible)}
+                                data-testid={`account-option-${account.id}`}
+                              >
+                                <div className="flex items-center justify-between w-full gap-2">
+                                  <span className={!isCompatible ? 'text-muted-foreground' : ''}>
+                                    {account.institutionName} - {account.accountNumber}
+                                  </span>
+                                  <div className="flex gap-1">
+                                    {isReadOnly && (
+                                      <Badge variant="secondary" className="text-xs">Read Only</Badge>
+                                    )}
+                                    {!isReadOnly && selectedSymbolInfo && !isCompatible && (
+                                      <Badge variant="outline" className="text-xs bg-amber-500/10 text-amber-600 border-amber-500/20">
+                                        {selectedSymbolInfo.assetType === 'crypto' ? 'No Crypto' : 'Incompatible'}
+                                      </Badge>
+                                    )}
+                                    {!isReadOnly && selectedSymbolInfo && isCompatible && (
+                                      <Badge variant="outline" className="text-xs bg-green-500/10 text-green-600 border-green-500/20">
+                                        Compatible
+                                      </Badge>
+                                    )}
+                                  </div>
+                                </div>
+                              </SelectItem>
+                            );
+                          })
                         ) : (
                           <SelectItem value="none" disabled>No accounts connected</SelectItem>
                         )}
                       </SelectContent>
                     </Select>
+                    {selectedSymbolInfo && selectedSymbolInfo.compatibleAccounts.length > 0 && (
+                      <FormDescription className="text-xs">
+                        Compatible accounts shown first
+                      </FormDescription>
+                    )}
                     <FormMessage />
                   </FormItem>
                 )}
@@ -412,7 +530,13 @@ export default function EnhancedTradeModal({
                 </Button>
                 <Button
                   type="submit"
-                  disabled={!canTrade || executeTrade.isPending}
+                  disabled={
+                    !symbol ||
+                    !canTrade || 
+                    executeTrade.isPending ||
+                    (selectedSymbolInfo && !selectedSymbolInfo.isCompatibleWithAnyAccount) ||
+                    (selectedSymbolInfo && selectedAccountId && !isAccountCompatibleWithSymbol)
+                  }
                   className={`flex-1 ${
                     action === 'buy' 
                       ? 'bg-green-600 hover:bg-green-700' 
@@ -420,7 +544,16 @@ export default function EnhancedTradeModal({
                   }`}
                   data-testid="button-place-order"
                 >
-                  {executeTrade.isPending ? 'Placing Order...' : `${action === 'buy' ? 'Buy' : 'Sell'} ${symbol}`}
+                  {executeTrade.isPending 
+                    ? 'Placing Order...' 
+                    : !symbol
+                    ? 'Select Symbol'
+                    : (selectedSymbolInfo && !selectedSymbolInfo.isCompatibleWithAnyAccount)
+                    ? 'No Compatible Accounts'
+                    : (selectedSymbolInfo && selectedAccountId && !isAccountCompatibleWithSymbol)
+                    ? 'Account Incompatible'
+                    : `${action === 'buy' ? 'Buy' : 'Sell'} ${symbol}`
+                  }
                 </Button>
               </div>
             </form>

@@ -212,6 +212,33 @@ export interface SymbolSearchResponse {
   results: SymbolInfo[];
 }
 
+// Symbol search with compatibility information
+export type AssetType = 'stock' | 'crypto' | 'etf' | 'option' | 'mutual_fund' | 'bond' | 'unknown';
+
+export interface CompatibleAccount {
+  accountId: UUID;
+  institution: string;
+  name: string | null;
+}
+
+export interface SymbolSearchResult {
+  symbol: string;
+  description: string | null;
+  exchange: string | null;
+  currency: string;
+  assetType: AssetType;
+  assetTypeLabel: string;
+  isTradable: boolean;
+  compatibleAccounts: CompatibleAccount[];
+  incompatibleReason: string | null;
+  isCompatibleWithAnyAccount: boolean;
+}
+
+export interface SymbolSearchResultsResponse {
+  results: SymbolSearchResult[];
+  totalResults: number;
+}
+
 export interface ImpactRequest {
   accountId: UUID;
   symbol: string;

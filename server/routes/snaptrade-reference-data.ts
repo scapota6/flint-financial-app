@@ -109,12 +109,14 @@ router.get('/partner-info', requireAuth, async (req: any, res) => {
 
 /**
  * GET /api/snaptrade/reference/symbol-search
- * Symbol search for trading
- * Query params: substring, userAccountId (optional)
+ * Symbol search for trading with account compatibility checking
+ * Query params: substring (required)
+ * 
+ * Returns symbols with compatibility information for user's connected accounts
  */
 router.get('/symbol-search', requireAuth, async (req: any, res) => {
   try {
-    const { substring, userAccountId } = req.query;
+    const { substring } = req.query;
     const userId = req.user.claims.sub;
     
     if (!userId) {
@@ -127,7 +129,7 @@ router.get('/symbol-search', requireAuth, async (req: any, res) => {
       });
     }
     
-    if (!substring) {
+    if (!substring || substring.trim().length === 0) {
       return res.status(400).json({
         error: {
           code: 'MISSING_SUBSTRING',
@@ -139,42 +141,52 @@ router.get('/symbol-search', requireAuth, async (req: any, res) => {
     
     const credentials = await getSnapTradeCredentials(userId);
     
-    console.log('[SnapTrade Reference] Symbol search:', {
+    console.log('[SnapTrade Reference] Symbol search with compatibility:', {
       userId,
-      substring,
-      userAccountId: userAccountId || 'all accounts'
+      substring
+    });
+    
+    // Get user's connected accounts for compatibility checking
+    const { accountsApi } = await import('../lib/snaptrade');
+    const accountsResponse = await accountsApi.listUserAccounts({
+      userId: credentials.userId,
+      userSecret: credentials.userSecret
+    });
+    const accounts = accountsResponse.data || [];
+    
+    console.log('[SnapTrade Reference] Found user accounts:', {
+      count: accounts.length,
+      brokerages: accounts.map((acc: any) => acc.institution?.name || 'Unknown')
     });
     
     // Perform symbol search
     const { referenceDataApi } = await import('../lib/snaptrade');
+    const { classifySymbol, getAssetTypeLabel } = await import('../lib/snaptradeSymbolClassifier');
+    const { isTradingSupported } = await import('../lib/brokerage-capabilities');
     
     let searchResults = [];
-    if (userAccountId) {
-      // Search within a specific user account
-      const response = await referenceDataApi.symbolSearchUserAccount({
-        userId: credentials.userId,
-        userSecret: credentials.userSecret,
-        accountId: userAccountId,
+    try {
+      // Use getSymbols for substring search (supports descriptive queries like "bitcoin")
+      const response = await referenceDataApi.getSymbols({
         substring: substring
       });
       searchResults = response.data || [];
-    } else {
-      // General symbol search (if available)
-      try {
-        const response = await referenceDataApi.getSymbolsByTicker({
-          query: substring
-        });
-        searchResults = response.data || [];
-      } catch (e: any) {
-        console.log('[SnapTrade Reference] General symbol search not available, trying user account search');
-        // Fallback: if no general search, we'd need an account ID
-        return res.status(400).json({
-          error: {
-            code: 'ACCOUNT_REQUIRED',
-            message: 'Account ID required for symbol search in this SnapTrade configuration',
-            requestId: null
-          }
-        });
+    } catch (e: any) {
+      console.log('[SnapTrade Reference] General symbol search error:', e.message);
+      // Try account-specific search as fallback if we have accounts
+      if (accounts.length > 0) {
+        try {
+          const firstAccount = accounts[0];
+          const response = await referenceDataApi.symbolSearchUserAccount({
+            userId: credentials.userId,
+            userSecret: credentials.userSecret,
+            accountId: firstAccount.id,
+            substring: substring
+          });
+          searchResults = response.data || [];
+        } catch (fallbackError: any) {
+          console.error('[SnapTrade Reference] Fallback search also failed:', fallbackError.message);
+        }
       }
     }
     
@@ -183,22 +195,88 @@ router.get('/symbol-search', requireAuth, async (req: any, res) => {
       count: searchResults?.length || 0
     });
     
-    // Transform to normalized DTO format
-    const symbols = (searchResults || []).map((result: any) => ({
-      symbol: result.symbol || null,
-      description: result.description || result.name || null,
-      currency: result.currency?.code || 'USD',
-      exchange: result.exchange?.name || null,
-      type: result.type?.description || result.security_type || null,
-      isTradable: result.is_tradable !== false, // default true
-      ficgiCode: result.figi_code || null,
-      instrumentId: result.id || null
-    }));
+    // Classify and check compatibility for each symbol
+    const results = searchResults.map((result: any) => {
+      const assetType = classifySymbol(result);
+      const assetTypeLabel = getAssetTypeLabel(assetType);
+      
+      // Check which accounts are compatible with this asset type
+      const compatibleAccounts: any[] = [];
+      let incompatibleReason: string | null = null;
+      
+      accounts.forEach((account: any) => {
+        const brokerageName = account.institution?.name || '';
+        const supportsTrading = isTradingSupported(brokerageName);
+        
+        if (!supportsTrading) {
+          // Skip read-only accounts
+          return;
+        }
+        
+        // Check asset type compatibility
+        const brokerageNormalized = brokerageName.toUpperCase();
+        let isCompatible = false;
+        
+        if (assetType === 'stock' || assetType === 'etf') {
+          // Most brokerages support stocks
+          isCompatible = true;
+        } else if (assetType === 'crypto') {
+          // Only crypto exchanges support crypto
+          const cryptoBrokerages = ['COINBASE', 'BINANCE', 'KRAKEN', 'GEMINI', 'ROBINHOOD', 'WEBULL', 'ALPACA'];
+          isCompatible = cryptoBrokerages.some(cb => brokerageNormalized.includes(cb));
+        } else if (assetType === 'option') {
+          // Most US brokerages support options, except pure crypto exchanges
+          const cryptoOnly = ['COINBASE', 'BINANCE', 'KRAKEN', 'GEMINI'];
+          isCompatible = !cryptoOnly.some(cb => brokerageNormalized.includes(cb));
+        }
+        
+        if (isCompatible) {
+          compatibleAccounts.push({
+            accountId: account.id,
+            institution: brokerageName,
+            name: account.name || account.number || null
+          });
+        }
+      });
+      
+      // Generate incompatible reason if no compatible accounts
+      if (compatibleAccounts.length === 0 && accounts.length > 0) {
+        if (assetType === 'crypto') {
+          incompatibleReason = `None of your connected accounts support cryptocurrency trading. ${assetTypeLabel} can only be traded on crypto exchanges like Coinbase.`;
+        } else if (assetType === 'stock' || assetType === 'etf') {
+          incompatibleReason = `None of your connected accounts support ${assetTypeLabel.toLowerCase()} trading.`;
+        } else if (assetType === 'option') {
+          incompatibleReason = `None of your connected accounts support options trading.`;
+        } else {
+          incompatibleReason = `${assetTypeLabel} is not supported by your connected accounts.`;
+        }
+      }
+      
+      return {
+        symbol: result.symbol || '',
+        description: result.description || result.name || null,
+        exchange: result.exchange?.name || null,
+        currency: result.currency?.code || 'USD',
+        assetType,
+        assetTypeLabel,
+        isTradable: result.is_tradable !== false,
+        compatibleAccounts,
+        incompatibleReason,
+        isCompatibleWithAnyAccount: compatibleAccounts.length > 0
+      };
+    });
+    
+    // Sort results: compatible first, then by asset type
+    const sortedResults = results.sort((a, b) => {
+      if (a.isCompatibleWithAnyAccount !== b.isCompatibleWithAnyAccount) {
+        return a.isCompatibleWithAnyAccount ? -1 : 1;
+      }
+      return a.assetType.localeCompare(b.assetType);
+    });
     
     res.json({
-      symbols,
-      query: substring,
-      userAccountId: userAccountId || null
+      results: sortedResults,
+      totalResults: sortedResults.length
     });
     
   } catch (error: any) {
