@@ -54,7 +54,7 @@ import { Switch } from "@/components/ui/switch";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
-import { ArrowRight, Shield, TrendingUp, Zap, CheckCircle, Star, Users, DollarSign, Lock, Building, CreditCard, Check, X } from "lucide-react";
+import { ArrowRight, Shield, TrendingUp, Zap, CheckCircle, Star, Users, DollarSign, Lock, Building, CreditCard, Check, X, ArrowUpDown, RefreshCcw, Receipt, LineChart } from "lucide-react";
 import { Link } from "wouter";
 import { useToast } from "@/hooks/use-toast";
 import flintLogo from "@assets/flint-logo.png";
@@ -553,80 +553,80 @@ function Landing() {
             </div>
 
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {/* Unified Dashboard */}
+              {/* Money In/Out Flow */}
               <Card className="bg-gray-900/80 border-gray-700 hover:border-blue-500/50 transition-all duration-300">
                 <CardHeader>
                   <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center mb-4">
-                    <Building className="h-6 w-6 text-white" />
+                    <ArrowUpDown className="h-6 w-6 text-white" />
                   </div>
-                  <CardTitle className="text-white">Unified Dashboard</CardTitle>
+                  <CardTitle className="text-white">Money In/Out Flow</CardTitle>
                   <CardDescription className="text-gray-400">
-                    See all your banks and cards in one place.
+                    Track where your money comes from and where it goes.
                   </CardDescription>
                 </CardHeader>
               </Card>
 
-              {/* Account Syncing */}
+              {/* Recurring Subscriptions */}
               <Card className="bg-gray-900/80 border-gray-700 hover:border-blue-500/50 transition-all duration-300">
                 <CardHeader>
-                  <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center mb-4">
-                    <Zap className="h-6 w-6 text-white" />
+                  <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-purple-500 to-purple-700 flex items-center justify-center mb-4">
+                    <RefreshCcw className="h-6 w-6 text-white" />
                   </div>
-                  <CardTitle className="text-white">Synced Balances</CardTitle>
+                  <CardTitle className="text-white">Recurring Subscriptions</CardTitle>
                   <CardDescription className="text-gray-400">
-                    Your balances stay up to date.
+                    See all your subscriptions across every account.
                   </CardDescription>
                 </CardHeader>
               </Card>
 
-              {/* Trading */}
-              <Card className="bg-gray-900/80 border-gray-700 hover:border-blue-500/50 transition-all duration-300">
+              {/* Investment P&L */}
+              <Card className="bg-gray-900/80 border-gray-700 hover:border-green-500/50 transition-all duration-300">
                 <CardHeader>
                   <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-green-500 to-green-700 flex items-center justify-center mb-4">
                     <TrendingUp className="h-6 w-6 text-white" />
                   </div>
-                  <CardTitle className="text-white">Active Trading</CardTitle>
+                  <CardTitle className="text-white">Investment Profit/Loss</CardTitle>
                   <CardDescription className="text-gray-400">
-                    Buy and sell stocks right from Flint.
+                    Full view of gains and losses across all investments.
                   </CardDescription>
                 </CardHeader>
               </Card>
 
-              {/* Money Movement */}
-              <Card className="bg-gray-900/80 border-gray-700 hover:border-blue-500/50 transition-all duration-300">
+              {/* Transaction Review */}
+              <Card className="bg-gray-900/80 border-gray-700 hover:border-cyan-500/50 transition-all duration-300">
                 <CardHeader>
                   <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-cyan-500 to-cyan-700 flex items-center justify-center mb-4">
-                    <DollarSign className="h-6 w-6 text-white" />
+                    <Receipt className="h-6 w-6 text-white" />
                   </div>
-                  <CardTitle className="text-white">Money Movement</CardTitle>
+                  <CardTitle className="text-white">Transaction History</CardTitle>
                   <CardDescription className="text-gray-400">
-                    See where your money goes. Move it between accounts.
+                    Browse and analyze every transaction from all accounts.
                   </CardDescription>
                 </CardHeader>
               </Card>
 
-              {/* Portfolio Analytics */}
+              {/* Stock Charts */}
               <Card className="bg-gray-900/80 border-gray-700 hover:border-blue-500/50 transition-all duration-300">
                 <CardHeader>
-                  <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-cyan-500 to-cyan-700 flex items-center justify-center mb-4">
-                    <Star className="h-6 w-6 text-white" />
+                  <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-700 flex items-center justify-center mb-4">
+                    <LineChart className="h-6 w-6 text-white" />
                   </div>
-                  <CardTitle className="text-white">Portfolio Analytics</CardTitle>
+                  <CardTitle className="text-white">Smart Stock Charts</CardTitle>
                   <CardDescription className="text-gray-400">
-                    Watch your money grow over time.
+                    Make informed investment decisions with detailed charts.
                   </CardDescription>
                 </CardHeader>
               </Card>
 
-              {/* Security */}
-              <Card className="bg-gray-900/80 border-gray-700 hover:border-blue-500/50 transition-all duration-300">
+              {/* Credit Card Utilization */}
+              <Card className="bg-gray-900/80 border-gray-700 hover:border-orange-500/50 transition-all duration-300">
                 <CardHeader>
                   <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-orange-500 to-orange-700 flex items-center justify-center mb-4">
-                    <Shield className="h-6 w-6 text-white" />
+                    <CreditCard className="h-6 w-6 text-white" />
                   </div>
-                  <CardTitle className="text-white">Bank-Grade Security</CardTitle>
+                  <CardTitle className="text-white">Credit Card Management</CardTitle>
                   <CardDescription className="text-gray-400">
-                    Your data is safe. Bank-level protection.
+                    Monitor and manage your credit card utilization.
                   </CardDescription>
                 </CardHeader>
               </Card>
