@@ -22,7 +22,7 @@ export interface StockQuote {
 
 class UnifiedStockDataService {
   private cache: Map<string, StockQuote> = new Map();
-  private updateInterval: number = 5000; // 5 seconds
+  private updateInterval: number = 1000; // Live data: 1 second
 
   // No hardcoded data - all prices must come from APIs
 

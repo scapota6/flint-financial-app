@@ -14,7 +14,7 @@ export interface RealTimePriceData {
 
 export class RealTimePricingService {
   private static cache = new Map<string, { data: RealTimePriceData; timestamp: number }>();
-  private static CACHE_DURATION = 5000; // 5 seconds for real-time updates
+  private static CACHE_DURATION = 1000; // Live data: 1 second cache for real-time updates
   private static activeSubscriptions = new Set<string>();
 
   // Symbol mapping for different exchanges
@@ -36,7 +36,7 @@ export class RealTimePricingService {
     const cacheKey = symbol.toUpperCase();
     const cached = this.cache.get(cacheKey);
     
-    // Return cached data if still fresh (5 seconds)
+    // Return cached data if still fresh (1 second for live data)
     if (cached && Date.now() - cached.timestamp < this.CACHE_DURATION) {
       return cached.data;
     }
@@ -167,7 +167,7 @@ export class RealTimePricingService {
       } catch (error) {
         console.error('Real-time update failed:', error);
       }
-    }, 5000); // Update every 5 seconds
+    }, 1000); // Live data: Update every second
 
     return () => {
       symbols.forEach(symbol => this.activeSubscriptions.delete(symbol.toUpperCase()));
