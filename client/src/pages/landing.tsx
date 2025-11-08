@@ -51,6 +51,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Switch } from "@/components/ui/switch";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { ArrowRight, Shield, TrendingUp, Zap, CheckCircle, Star, Users, DollarSign, Lock, Building, CreditCard, Check, X } from "lucide-react";
 import { Link } from "wouter";
@@ -1213,6 +1214,89 @@ function Landing() {
                     </tbody>
                   </table>
                 </div>
+              </CardContent>
+            </Card>
+          </div>
+        </section>
+
+        {/* FAQ Section */}
+        <section id="faq" data-section="faq" className="py-20">
+          <div className="max-w-3xl mx-auto">
+            <div className="text-center space-y-4 mb-12">
+              <h2 className="text-3xl lg:text-4xl font-bold text-white">
+                Frequently Asked Questions
+              </h2>
+              <p className="text-xl text-gray-300">
+                Everything you need to know about Flint
+              </p>
+            </div>
+
+            <Card className="bg-gray-800 border-gray-700">
+              <CardContent className="p-6">
+                <Accordion type="single" collapsible className="w-full">
+                  <AccordionItem value="item-1" className="border-gray-700">
+                    <AccordionTrigger className="text-white hover:text-blue-400">
+                      Is my financial data secure?
+                    </AccordionTrigger>
+                    <AccordionContent className="text-gray-300">
+                      Yes! We use bank-level encryption (AES-256) to protect your data. We never store your bank login credentials - we use secure, read-only connections through industry-standard providers. Your information is encrypted both in transit and at rest.
+                    </AccordionContent>
+                  </AccordionItem>
+
+                  <AccordionItem value="item-2" className="border-gray-700">
+                    <AccordionTrigger className="text-white hover:text-blue-400">
+                      How many accounts can I connect?
+                    </AccordionTrigger>
+                    <AccordionContent className="text-gray-300">
+                      It depends on your plan. Plus allows 3 connections, Pro allows 5, and Unlimited gives you unlimited account connections. You can connect banks, credit cards, investment accounts, and crypto wallets.
+                    </AccordionContent>
+                  </AccordionItem>
+
+                  <AccordionItem value="item-3" className="border-gray-700">
+                    <AccordionTrigger className="text-white hover:text-blue-400">
+                      Can I cancel anytime?
+                    </AccordionTrigger>
+                    <AccordionContent className="text-gray-300">
+                      Absolutely. You can cancel your subscription at any time from your account settings. There are no long-term commitments or cancellation fees.
+                    </AccordionContent>
+                  </AccordionItem>
+
+                  <AccordionItem value="item-4" className="border-gray-700">
+                    <AccordionTrigger className="text-white hover:text-blue-400">
+                      What banks and brokerages do you support?
+                    </AccordionTrigger>
+                    <AccordionContent className="text-gray-300">
+                      We support over 12,000 financial institutions including Chase, Bank of America, Fidelity, Schwab, Robinhood, Coinbase, and many more. Most major US banks, credit unions, brokerages, and crypto exchanges are supported.
+                    </AccordionContent>
+                  </AccordionItem>
+
+                  <AccordionItem value="item-5" className="border-gray-700">
+                    <AccordionTrigger className="text-white hover:text-blue-400">
+                      How does trading work?
+                    </AccordionTrigger>
+                    <AccordionContent className="text-gray-300">
+                      With the Unlimited plan, you can buy and sell stocks directly through your connected brokerage accounts. We provide real-time quotes, market data, and a simple trading interface. Trading is available for supported brokerages like Robinhood, Alpaca, and E*TRADE.
+                    </AccordionContent>
+                  </AccordionItem>
+
+                  <AccordionItem value="item-6" className="border-gray-700">
+                    <AccordionTrigger className="text-white hover:text-blue-400">
+                      Do you offer a free trial?
+                    </AccordionTrigger>
+                    <AccordionContent className="text-gray-300">
+                      We currently don't offer a traditional free trial, but you can apply for a free account to test the platform. Approved applicants get access to explore Flint before committing to a paid plan.
+                    </AccordionContent>
+                  </AccordionItem>
+
+                  <AccordionItem value="item-7" className="border-gray-700 border-b-0">
+                    <AccordionTrigger className="text-white hover:text-blue-400">
+                      What's the difference between the plans?
+                    </AccordionTrigger>
+                    <AccordionContent className="text-gray-300">
+                      The main differences are the number of account connections and available features. Plus (3 accounts) is great for basic tracking, Pro (5 accounts) adds fund transfers, and Unlimited offers unlimited connections plus trading capabilities and priority support.
+                    </AccordionContent>
+                  </AccordionItem>
+                </Accordion>
               </CardContent>
             </Card>
           </div>
