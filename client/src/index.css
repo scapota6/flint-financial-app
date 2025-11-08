@@ -5,6 +5,15 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Smooth scrolling behavior */
+html {
+  scroll-behavior: smooth;
+}
+
+* {
+  scroll-behavior: smooth;
+}
+
 /* Conditional padding for upgrade banner */
 .has-upgrade-banner .authenticated-content {
   padding-top: 7rem; /* 112px - pt-28 */
@@ -70,6 +79,73 @@
   100% {
     transform: translateX(-100%);
   }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Smooth fade-in for sections */
+.fade-in-section {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+
+.fade-in-section.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Smooth transitions for all interactive elements */
+button, a, input, select, textarea {
+  transition: all 0.2s ease-in-out;
+}
+
+/* Card hover effects */
+.card, [class*="card-"] {
+  transition: transform 0.3s ease-out, box-shadow 0.3s ease-out;
+}
+
+.card:hover, [class*="card-"]:hover {
+  transform: translateY(-2px);
+}
+
+/* Button active state */
+button:active {
+  transform: scale(0.98);
+}
+
+/* Link hover effects */
+a {
+  transition: color 0.2s ease-in-out, opacity 0.2s ease-in-out;
+}
+
+/* Smooth image loading */
+img {
+  transition: opacity 0.3s ease-in-out;
 }
 
 .chart-container {

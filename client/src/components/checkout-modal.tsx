@@ -60,9 +60,13 @@ export function CheckoutModal({ planId, onClose }: CheckoutModalProps) {
               skipRedirect={true}
               onComplete={handleComplete}
               fallback={
-                <div className="flex items-center justify-center h-96">
-                  <div className="animate-pulse text-muted-foreground">
-                    Loading checkout...
+                <div className="flex flex-col items-center justify-center h-96 gap-4">
+                  <div className="relative w-16 h-16">
+                    <div className="absolute inset-0 border-4 border-blue-600/20 rounded-full"></div>
+                    <div className="absolute inset-0 border-4 border-transparent border-t-blue-600 rounded-full animate-spin"></div>
+                  </div>
+                  <div className="text-muted-foreground animate-pulse">
+                    Loading secure checkout...
                   </div>
                 </div>
               }

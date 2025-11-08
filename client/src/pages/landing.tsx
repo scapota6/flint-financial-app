@@ -127,6 +127,31 @@ function Landing() {
     });
   });
 
+  // Smooth fade-in animations for sections
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+          }
+        });
+      },
+      {
+        threshold: 0.1,
+        rootMargin: '0px 0px -100px 0px'
+      }
+    );
+
+    const sections = document.querySelectorAll('[data-section]');
+    sections.forEach((section) => {
+      section.classList.add('fade-in-section');
+      observer.observe(section);
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
   // Handle CTA clicks - opens Whop checkout in modal
   const handleCTAClick = async (ctaId: string, price: string) => {
     trackEvent('click_cta', { cta_id: ctaId, price });
