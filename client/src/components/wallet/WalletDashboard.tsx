@@ -56,14 +56,16 @@ export default function WalletDashboard() {
   const { data: walletBalance, isLoading: balanceLoading } = useQuery<WalletBalance>({
     queryKey: ['/api/wallet/balance'],
     queryFn: () => apiRequest('/api/wallet/balance'),
-    refetchInterval: 30000, // Refresh every 30 seconds
+    refetchInterval: 1000, // Live data: Update every second
+    staleTime: 500, // Live data: Consider stale after 0.5 seconds
   });
 
   // Fetch aggregated positions
   const { data: positionsData, isLoading: positionsLoading } = useQuery<{ positions: AggregatedPosition[] }>({
     queryKey: ['/api/trading/positions'],
     queryFn: () => apiRequest('/api/trading/positions'),
-    refetchInterval: 30000,
+    refetchInterval: 1000, // Live data: Update every second
+    staleTime: 500, // Live data: Consider stale after 0.5 seconds
   });
 
   // Fetch connected accounts for transfer

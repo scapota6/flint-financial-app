@@ -78,7 +78,8 @@ const RealTimeHoldings = memo(function RealTimeHoldings({
       return Array.isArray(data) ? data : (data.holdings || []);
     },
     enabled: isSnapTradeConnected, // Only fetch when SnapTrade is connected
-    refetchInterval: isSnapTradeConnected ? 15000 : false, // Update every 15 seconds for real-time pricing
+    refetchInterval: isSnapTradeConnected ? 1000 : false, // Live data: Update every second
+    staleTime: 500, // Live data: Consider stale after 0.5 seconds
     retry: 2, // Only retry twice on failure
     retryDelay: 3000, // Wait 3 seconds between retries
   });
