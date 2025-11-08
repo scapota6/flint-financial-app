@@ -1,5 +1,4 @@
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useEffect, useRef } from "react";
+import { useQuery } from "@tanstack/react-query";
 
 interface MarketData {
   symbol: string;
@@ -13,9 +12,6 @@ interface MarketData {
 
 // Hook for single symbol market data with real-time updates
 export function useMarketData(symbol: string, enabled: boolean = true) {
-  const queryClient = useQueryClient();
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
-
   const query = useQuery({
     queryKey: ["/api/market-data", symbol],
     queryFn: async (): Promise<MarketData> => {
@@ -27,32 +23,9 @@ export function useMarketData(symbol: string, enabled: boolean = true) {
     },
     enabled: enabled && !!symbol,
     staleTime: 500, // Live data: Consider stale after 0.5 seconds
-    refetchInterval: 1000, // Live data: Refetch every second
+    refetchInterval: 1000, // Live data: Refetch every second (React Query handles polling)
     retry: 2,
   });
-
-  // Set up real-time polling
-  useEffect(() => {
-    if (!enabled || !symbol) return;
-
-    // Clear existing interval
-    if (intervalRef.current) {
-      clearInterval(intervalRef.current);
-    }
-
-    // Set up new interval for real-time updates
-    intervalRef.current = setInterval(() => {
-      queryClient.invalidateQueries({ 
-        queryKey: ["/api/market-data", symbol] 
-      });
-    }, 1000); // Live data: Update every second
-
-    return () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-      }
-    };
-  }, [symbol, enabled, queryClient]);
 
   return {
     data: query.data,
@@ -64,9 +37,6 @@ export function useMarketData(symbol: string, enabled: boolean = true) {
 
 // Hook for multiple symbols market data
 export function useBulkMarketData(symbols: string[], enabled: boolean = true) {
-  const queryClient = useQueryClient();
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
-
   const query = useQuery({
     queryKey: ["/api/market-data/bulk", symbols.sort().join(",")],
     queryFn: async (): Promise<{[symbol: string]: MarketData | null}> => {
@@ -86,30 +56,9 @@ export function useBulkMarketData(symbols: string[], enabled: boolean = true) {
     },
     enabled: enabled && symbols.length > 0,
     staleTime: 500, // Live data: Consider stale after 0.5 seconds
-    refetchInterval: 1000, // Live data: Refetch every second
+    refetchInterval: 1000, // Live data: Refetch every second (React Query handles polling)
     retry: 2,
   });
-
-  // Set up real-time polling for bulk data
-  useEffect(() => {
-    if (!enabled || symbols.length === 0) return;
-
-    if (intervalRef.current) {
-      clearInterval(intervalRef.current);
-    }
-
-    intervalRef.current = setInterval(() => {
-      queryClient.invalidateQueries({ 
-        queryKey: ["/api/market-data/bulk", symbols.sort().join(",")] 
-      });
-    }, 1000); // Live data: Update every second
-
-    return () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-      }
-    };
-  }, [symbols, enabled, queryClient]);
 
   return {
     data: query.data,
@@ -121,9 +70,6 @@ export function useBulkMarketData(symbols: string[], enabled: boolean = true) {
 
 // Hook for watchlist with enriched market data
 export function useWatchlistMarketData() {
-  const queryClient = useQueryClient();
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
-
   const query = useQuery({
     queryKey: ["/api/market-data/watchlist"],
     queryFn: async () => {
@@ -134,28 +80,9 @@ export function useWatchlistMarketData() {
       return response.json();
     },
     staleTime: 500, // Live data: Consider stale after 0.5 seconds
-    refetchInterval: 1000, // Live data: Refetch every second
+    refetchInterval: 1000, // Live data: Refetch every second (React Query handles polling)
     retry: 2,
   });
-
-  // Real-time updates for watchlist
-  useEffect(() => {
-    if (intervalRef.current) {
-      clearInterval(intervalRef.current);
-    }
-
-    intervalRef.current = setInterval(() => {
-      queryClient.invalidateQueries({ 
-        queryKey: ["/api/market-data/watchlist"] 
-      });
-    }, 1000); // Live data: Update every second
-
-    return () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-      }
-    };
-  }, [queryClient]);
 
   return {
     watchlist: query.data?.watchlist || [],
