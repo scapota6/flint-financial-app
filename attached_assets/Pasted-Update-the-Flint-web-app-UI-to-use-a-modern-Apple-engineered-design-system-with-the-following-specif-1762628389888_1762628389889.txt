@@ -1,0 +1,45 @@
+Update the Flint web app UI to use a modern Apple-engineered design system with the following specifics:
+
+1. Define global CSS variables (Design Tokens) for colors, typography, radii, shadows:
+   - Primary Blue: #0A84FF
+   - Accent Teal: #64D2FF
+   - Success Green: #34C759
+   - Danger Red: #FF3B30
+   - Warning Yellow: #FFD60A
+   - Dark Background: #0B0D11
+   - Glass Surface (dark): rgba(24, 27, 31, 0.55)
+   - Text Primary (dark): #F2F4F6
+   - Text Secondary (dark): #A7ADBA
+   - Font stack: "SF Pro Display", "SF Pro Text", -apple-system, BlinkMacSystemFont, "Inter", system-ui, etc.
+   - Radii: lg 28px, md 20px, sm 14px
+   - Shadows: subtle dark shadows for depth
+   - Blur effect for glass surfaces: e.g., backdrop-filter: blur(16px) saturate(140%)
+
+2. Create a new CSS file (e.g., `styles/apple-theme.css`) that includes all variables and component style mappings (buttons, fields, cards, modals, tables, tabs, dropdowns, toasts, skeletons).
+
+3. Import this CSS file in your root entry (e.g., `main.tsx` or `App.jsx`) so it applies globally.
+
+4. Map existing component classes:
+   - `.btn`, `.btn-primary`, `.btn-ghost`, `.btn-danger`
+   - `.field` for inputs/selects
+   - `.card`
+   - `.modal-shell`, `.modal`
+   - `.tabs`, `.tab`
+   - `.table`, `.thead`, `.tbody`, `.tr`, `.td`
+   - `.toast.success`, `.toast.error`
+   - `.spinner`, `.skeleton`, etc.
+
+5. Apply the design system across landing pages and internal UI:
+   - Hero background uses dark background #0B0D11
+   - Headings use SF Pro Display & size ~34-36px bold
+   - Body text uses SF Pro Text ~16px
+   - Accent elements (buttons, links, highlights) use Primary Blue or Accent Teal
+   - Success states use Success Green (#34C759); Errors use Danger Red (#FF3B30)
+   - No primary use of purple; use teal or blue instead.
+
+6. Verify dark mode visually:
+   - Background deep, glass surfaces translucent
+   - Text high contrast (#F2F4F6 vs #0B0D11)
+   - Components have consistent spacing, rounded corners, and subtle shadows.
+
+Once done, the app should look like it was built by Apple engineers—clean, modern, glass-UI themed, Apple typography and palette.  
