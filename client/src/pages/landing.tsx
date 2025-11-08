@@ -1294,7 +1294,7 @@ function Landing() {
                       How does trading work?
                     </AccordionTrigger>
                     <AccordionContent className="text-gray-300">
-                      With the Unlimited plan, you can buy and sell stocks directly through your connected brokerage accounts. We provide real-time quotes, market data, and a simple trading interface. Trading is available for supported brokerages like Robinhood, Alpaca, and E*TRADE.
+                      With the Unlimited plan, you can buy and sell stocks directly through your connected brokerage accounts. We provide real-time quotes, market data, and a simple trading interface. Trading is available for only supported brokerages
                     </AccordionContent>
                   </AccordionItem>
 
