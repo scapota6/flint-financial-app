@@ -56,6 +56,7 @@ import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { ArrowRight, Shield, TrendingUp, Zap, CheckCircle, Star, Users, DollarSign, Lock, Building, CreditCard, Check, X, ArrowUpDown, RefreshCcw, Receipt, LineChart } from "lucide-react";
 import { Link } from "wouter";
 import { useToast } from "@/hooks/use-toast";
+import { CheckoutModal } from "@/components/checkout-modal";
 import flintLogo from "@assets/flint-logo.png";
 import dashboardPreview from "@assets/dashboard-preview.png";
 import avatar1 from "@assets/generated_images/Professional_Asian_woman_headshot_526eadc3.png";
@@ -112,6 +113,8 @@ function Landing() {
   });
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [dashboardPreviewOpen, setDashboardPreviewOpen] = useState(false);
+  const [checkoutModalOpen, setCheckoutModalOpen] = useState(false);
+  const [selectedCheckout, setSelectedCheckout] = useState<{ planId: string; planName: string } | null>(null);
   const { toast } = useToast();
 
   // Track section views
@@ -124,7 +127,7 @@ function Landing() {
     });
   });
 
-  // Handle CTA clicks - opens Whop checkout in popup window
+  // Handle CTA clicks - opens Whop checkout embed modal
   const handleCTAClick = async (ctaId: string, price: string) => {
     trackEvent('click_cta', { cta_id: ctaId, price });
     
@@ -132,7 +135,7 @@ function Landing() {
       // Parse tier and billing period from ctaId (e.g., 'basic-monthly', 'pro-yearly')
       const [tier, billingPeriod] = ctaId.split('-') as ['basic' | 'pro' | 'premium', 'monthly' | 'yearly'];
       
-      // Create checkout session via backend
+      // Create checkout session via backend to get plan ID
       const response = await fetch('/api/whop/create-checkout', {
         method: 'POST',
         headers: {
@@ -147,41 +150,22 @@ function Landing() {
       
       const data = await response.json();
       
-      if (data.purchaseUrl) {
-        // Open checkout in centered popup window
-        const width = 600;
-        const height = 800;
-        const left = (window.screen.width - width) / 2;
-        const top = (window.screen.height - height) / 2;
+      if (data.planId) {
+        // Generate user-friendly plan name
+        const tierNames: Record<string, string> = {
+          'basic': 'Basic',
+          'pro': 'Pro',
+          'premium': 'Premium'
+        };
+        const billingText = billingPeriod === 'yearly' ? 'Annual' : 'Monthly';
+        const planName = `Flint ${tierNames[tier]} - ${billingText}`;
         
-        const popup = window.open(
-          data.purchaseUrl,
-          'WhopCheckout',
-          `width=${width},height=${height},left=${left},top=${top},resizable=yes,scrollbars=yes,status=yes`
-        );
-        
-        if (!popup) {
-          toast({
-            title: "Popup Blocked",
-            description: "Please allow popups for this site to complete checkout.",
-            variant: "destructive"
-          });
-        } else {
-          // Focus the popup window
-          popup.focus();
-          
-          // Listen for popup close and show helpful message
-          const checkPopup = setInterval(() => {
-            if (popup.closed) {
-              clearInterval(checkPopup);
-              toast({
-                title: "Checkout Window Closed",
-                description: "If you completed your purchase, check your email for account setup instructions.",
-                variant: "default"
-              });
-            }
-          }, 1000);
-        }
+        // Open checkout modal with plan ID
+        setSelectedCheckout({
+          planId: data.planId,
+          planName
+        });
+        setCheckoutModalOpen(true);
       } else {
         toast({
           title: "Error",
@@ -1470,6 +1454,19 @@ function Landing() {
           }
         })
       }} />
+      
+      {/* Checkout Modal */}
+      {selectedCheckout && (
+        <CheckoutModal
+          isOpen={checkoutModalOpen}
+          onClose={() => {
+            setCheckoutModalOpen(false);
+            setSelectedCheckout(null);
+          }}
+          planId={selectedCheckout.planId}
+          planName={selectedCheckout.planName}
+        />
+      )}
     </div>
   );
 }
