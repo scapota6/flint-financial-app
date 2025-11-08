@@ -29,12 +29,10 @@ export function CheckoutModal({ planId, onClose }: CheckoutModalProps) {
   };
 
   return (
-    <Dialog open={isOpen} modal={true}>
+    <Dialog open={isOpen} onOpenChange={(open) => !open && handleClose()}>
       <DialogContent 
         className="max-w-[95vw] w-full max-h-[95vh] h-[90vh] md:max-w-2xl p-6 overflow-auto bg-black"
         aria-describedby="whop-checkout-description"
-        onEscapeKeyDown={(e) => e.preventDefault()}
-        onPointerDownOutside={(e) => e.preventDefault()}
       >
         <VisuallyHidden>
           <DialogTitle>Checkout</DialogTitle>
