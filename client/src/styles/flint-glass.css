@@ -280,7 +280,7 @@ body {
   max-height: 88vh;
   overflow: auto;
   border-radius: var(--radius-lg);
-  background: var(--glass);
+  background: rgb(28, 31, 36);
   border: 1px solid var(--border);
   box-shadow: var(--shadow-xl);
 }
