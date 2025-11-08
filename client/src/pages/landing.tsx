@@ -10,7 +10,6 @@ import forbesLogo from '@assets/forbes-logo-white_1760732850878.png';
 import wsjLogo from '@assets/12450_65f1b42317bb1_3142_1760732860674.png';
 import entrepreneurLogo from '@assets/images_1760732961328.png';
 import bloombergLogo from '@assets/bloomberg-logo-png-bloomberg-logo-png-transparent-amp-svg-vector-pluspng-2400x665_1760732850877.png';
-import { CheckoutModal } from "@/components/checkout-modal";
 
 // Institution list for scrolling banner
 const INSTITUTIONS = [
@@ -113,7 +112,6 @@ function Landing() {
   });
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [dashboardPreviewOpen, setDashboardPreviewOpen] = useState(false);
-  const [checkoutPlanId, setCheckoutPlanId] = useState<string | null>(null);
   const { toast } = useToast();
 
   // Track section views
@@ -126,22 +124,36 @@ function Landing() {
     });
   });
 
-  // Handle CTA clicks - opens Whop checkout in modal
+  // Handle CTA clicks - redirects to Whop checkout
   const handleCTAClick = async (ctaId: string, price: string) => {
     trackEvent('click_cta', { cta_id: ctaId, price });
     
     try {
-      // Get checkout plan ID from backend (Whop)
-      const response = await fetch(`/api/whop/checkout/${ctaId}${formData.email ? `?email=${encodeURIComponent(formData.email)}` : ''}`);
+      // Parse tier and billing period from ctaId (e.g., 'basic-monthly', 'pro-yearly')
+      const [tier, billingPeriod] = ctaId.split('-') as ['basic' | 'pro' | 'premium', 'monthly' | 'yearly'];
+      
+      // Create checkout session via backend
+      const response = await fetch('/api/whop/create-checkout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          tier,
+          billingPeriod,
+          email: formData.email || undefined,
+        }),
+      });
+      
       const data = await response.json();
       
-      if (data.planId) {
-        // Open checkout in modal with Whop embed
-        setCheckoutPlanId(data.planId);
+      if (data.purchaseUrl) {
+        // Redirect to Whop's hosted checkout page
+        window.location.href = data.purchaseUrl;
       } else {
         toast({
           title: "Error",
-          description: "Unable to open checkout. Please try again.",
+          description: data.error || "Unable to open checkout. Please try again.",
           variant: "destructive"
         });
       }
@@ -1391,14 +1403,6 @@ function Landing() {
         </div>
       </footer>
       
-      {/* Checkout Modal */}
-      {checkoutPlanId && (
-        <CheckoutModal 
-          planId={checkoutPlanId} 
-          onClose={() => setCheckoutPlanId(null)}
-          email={formData.email}
-        />
-      )}
       
       {/* JSON-LD Schema */}
       <script type="application/ld+json" dangerouslySetInnerHTML={{

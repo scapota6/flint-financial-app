@@ -32,6 +32,103 @@ const validateWhopWebhook = webhookSecret
     }) 
   : null;
 
+// Create checkout session using Whop API
+router.post('/create-checkout', async (req, res) => {
+  try {
+    const { tier, billingPeriod = 'monthly', email } = req.body;
+
+    // Validate tier
+    if (!tier || !['basic', 'pro', 'premium'].includes(tier)) {
+      return res.status(400).json({ 
+        error: 'Invalid tier. Must be basic, pro, or premium' 
+      });
+    }
+
+    // Validate billing period
+    if (!['monthly', 'yearly'].includes(billingPeriod)) {
+      return res.status(400).json({ 
+        error: 'Invalid billing period. Must be monthly or yearly' 
+      });
+    }
+
+    // Map tier + billing period to CTA ID
+    const ctaId = `${tier}-${billingPeriod}`;
+    const product = getProductByCTA(ctaId);
+
+    if (!product || !product.planId) {
+      logger.error('No plan ID found for tier/billing period', {
+        metadata: { tier, billingPeriod, ctaId }
+      });
+      return res.status(400).json({ 
+        error: 'Invalid pricing configuration' 
+      });
+    }
+
+    // Build redirect URL (where Whop sends user after payment)
+    const redirectUrl = `${process.env.APP_URL || 'https://flint-investing.com'}/payment-success`;
+
+    // Create checkout configuration using Whop REST API
+    const response = await fetch('https://api.whop.com/v5/checkout_configurations', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${whopApiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        plan_id: product.planId,
+        redirect_url: redirectUrl,
+        metadata: {
+          tier,
+          billing_period: billingPeriod,
+          source: 'landing_page',
+        },
+      }),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      logger.error('Whop API error creating checkout', {
+        metadata: {
+          status: response.status,
+          statusText: response.statusText,
+          error: errorText,
+          planId: product.planId,
+        }
+      });
+      throw new Error(`Whop API error: ${response.status} ${errorText}`);
+    }
+
+    const checkoutConfig = await response.json();
+
+    logger.info('Checkout configuration created', {
+      metadata: {
+        checkoutId: checkoutConfig.id,
+        planId: product.planId,
+        tier,
+        billingPeriod,
+        purchaseUrl: checkoutConfig.purchase_url,
+      }
+    });
+
+    // Return the purchase URL for redirect
+    res.json({
+      purchaseUrl: checkoutConfig.purchase_url,
+      checkoutId: checkoutConfig.id,
+    });
+  } catch (error: any) {
+    logger.error('Failed to create checkout configuration', { 
+      error: error.message,
+      metadata: {
+        tier: req.body?.tier,
+        billingPeriod: req.body?.billingPeriod,
+      }
+    });
+    res.status(500).json({ 
+      error: 'Failed to create checkout session' 
+    });
+  }
+});
+
 // Get checkout URL for a specific plan
 router.get('/checkout/:ctaId', async (req, res) => {
   try {
