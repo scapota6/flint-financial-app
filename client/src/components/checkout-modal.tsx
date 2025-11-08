@@ -8,9 +8,10 @@ import { WhopCheckoutEmbed } from "@whop/checkout/react";
 interface CheckoutModalProps {
   planId: string | null;
   onClose: () => void;
+  email?: string;
 }
 
-export function CheckoutModal({ planId, onClose }: CheckoutModalProps) {
+export function CheckoutModal({ planId, onClose, email }: CheckoutModalProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
@@ -29,16 +30,10 @@ export function CheckoutModal({ planId, onClose }: CheckoutModalProps) {
   };
 
   return (
-    <Dialog open={isOpen} modal={true}>
+    <Dialog open={isOpen} onOpenChange={(open) => !open && handleClose()}>
       <DialogContent 
-        className="max-w-[95vw] w-full max-h-[95vh] h-[90vh] md:max-w-2xl p-6 overflow-auto bg-black"
+        className="max-w-[95vw] w-full max-h-[95vh] h-[90vh] md:max-w-2xl p-6 overflow-auto bg-black [&>button]:hidden"
         aria-describedby="whop-checkout-description"
-        onInteractOutside={(e) => {
-          e.preventDefault();
-        }}
-        onEscapeKeyDown={(e) => {
-          e.preventDefault();
-        }}
       >
         <VisuallyHidden>
           <DialogTitle>Checkout</DialogTitle>
@@ -63,6 +58,7 @@ export function CheckoutModal({ planId, onClose }: CheckoutModalProps) {
               theme="dark"
               skipRedirect={true}
               onComplete={handleComplete}
+              prefill={email ? { email } : undefined}
               fallback={
                 <div className="flex flex-col items-center justify-center h-96 gap-4">
                   <div className="relative w-16 h-16">

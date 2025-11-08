@@ -60,7 +60,7 @@
     "@typescript-eslint/eslint-plugin": "^8.39.1",
     "@typescript-eslint/parser": "^8.39.1",
     "@whop/api": "^0.0.51",
-    "@whop/checkout": "^0.0.41",
+    "@whop/checkout": "^0.0.44",
     "argon2": "^0.44.0",
     "bcrypt": "^6.0.0",
     "class-variance-authority": "^0.7.1",

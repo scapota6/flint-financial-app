@@ -1395,7 +1395,8 @@ function Landing() {
       {checkoutPlanId && (
         <CheckoutModal 
           planId={checkoutPlanId} 
-          onClose={() => setCheckoutPlanId(null)} 
+          onClose={() => setCheckoutPlanId(null)}
+          email={formData.email}
         />
       )}
       
