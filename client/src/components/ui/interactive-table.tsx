@@ -56,8 +56,8 @@ export function InteractiveTable({
       return <ArrowUpDown className="h-3 w-3 opacity-40" />;
     }
     return sortConfig.direction === 'asc' 
-      ? <ChevronUp className="h-3 w-3 text-purple-400" />
-      : <ChevronDown className="h-3 w-3 text-purple-400" />;
+      ? <ChevronUp className="h-3 w-3 text-blue-400" />
+      : <ChevronDown className="h-3 w-3 text-blue-400" />;
   };
 
   return (

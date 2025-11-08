@@ -68,7 +68,7 @@ export default function ResetPassword() {
       <Card className="w-full max-w-md bg-gray-800 border-gray-700">
         <CardHeader className="space-y-1">
           <div className="flex items-center justify-center mb-4">
-            <div className="text-3xl font-bold text-purple-500">Flint</div>
+            <div className="text-3xl font-bold text-blue-500">Flint</div>
           </div>
           <CardTitle className="text-2xl text-center text-white">
             Reset Your Password
@@ -107,7 +107,7 @@ export default function ResetPassword() {
                 
                 <a
                   href="/api/login"
-                  className="flex items-center justify-center w-full h-10 px-4 rounded-md text-sm font-medium bg-purple-600 text-white hover:bg-purple-700 transition-colors"
+                  className="flex items-center justify-center w-full h-10 px-4 rounded-md text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 transition-colors"
                   data-testid="link-login"
                 >
                   <ArrowLeft className="mr-2 h-4 w-4" />
@@ -145,7 +145,7 @@ export default function ResetPassword() {
 
                   <Button
                     type="submit"
-                    className="w-full bg-purple-600 hover:bg-purple-700"
+                    className="w-full bg-blue-600 hover:bg-blue-700"
                     disabled={isSubmitting}
                     data-testid="button-submit"
                   >
@@ -176,7 +176,7 @@ export default function ResetPassword() {
                     Remember your password?{" "}
                     <a 
                       href="/api/login" 
-                      className="text-purple-400 hover:text-purple-300 font-medium"
+                      className="text-blue-400 hover:text-blue-300 font-medium"
                       data-testid="link-login-alt"
                     >
                       Log in
@@ -186,7 +186,7 @@ export default function ResetPassword() {
                     Don't have an account?{" "}
                     <a 
                       href="/" 
-                      className="text-purple-400 hover:text-purple-300 font-medium"
+                      className="text-blue-400 hover:text-blue-300 font-medium"
                       data-testid="link-home"
                     >
                       Go to home

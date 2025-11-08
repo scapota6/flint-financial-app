@@ -71,7 +71,7 @@ export default function SearchBar({ className = '' }: SearchBarProps) {
             setIsOpen(true);
           }}
           onFocus={() => setIsOpen(true)}
-          className="pl-10 pr-4 py-2 bg-gray-800 border-gray-700 text-white placeholder-gray-400 focus:ring-purple-500 focus:border-purple-500 rounded-xl w-full"
+          className="pl-10 pr-4 py-2 bg-gray-800 border-gray-700 text-white placeholder-gray-400 focus:ring-blue-500 focus:border-blue-500 rounded-xl w-full"
         />
       </div>
 
@@ -97,7 +97,7 @@ export default function SearchBar({ className = '' }: SearchBarProps) {
                         }}
                       >
                         <div className={`flex items-center justify-center w-8 h-8 rounded-lg ${
-                          isCrypto ? 'bg-orange-600' : 'bg-purple-600'
+                          isCrypto ? 'bg-orange-600' : 'bg-blue-600'
                         }`}>
                           <TrendingUp className="h-4 w-4 text-white" />
                         </div>

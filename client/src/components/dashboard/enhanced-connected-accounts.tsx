@@ -71,7 +71,7 @@ export function EnhancedConnectedAccounts({ accounts, onConnectBank, onConnectBr
           </Button>
           <Button
             onClick={onConnectBrokerage}
-            className="flex-1 bg-purple-600 hover:bg-purple-700 text-white h-12 rounded-xl font-medium
+            className="flex-1 bg-blue-600 hover:bg-blue-700 text-white h-12 rounded-xl font-medium
               shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-[1.02]"
           >
             <Plus className="h-5 w-5 mr-2" />
@@ -84,18 +84,18 @@ export function EnhancedConnectedAccounts({ accounts, onConnectBank, onConnectBr
           {mockAccounts.map((account) => (
             <Card
               key={account.id}
-              className="group relative bg-gray-800/50 border-gray-700 hover:border-purple-500/50 
+              className="group relative bg-gray-800/50 border-gray-700 hover:border-blue-500/50 
                 rounded-2xl transition-all duration-300 transform hover:scale-[1.03]
-                shadow-lg hover:shadow-[0_0_20px_rgba(142,68,173,0.4)]
+                shadow-lg hover:shadow-[0_0_20px_rgba(10,132,255,0.4)]
                 min-w-[240px] max-w-[300px]"
               style={{ 
-                boxShadow: '0 0 8px rgba(142,68,173,0.4)',
+                boxShadow: '0 0 8px rgba(10,132,255,0.4)',
               }}
             >
               <CardContent className="p-4">
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-purple-600 rounded-lg flex items-center justify-center">
+                    <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
                       {account.type === 'bank' ? (
                         <Building2 className="h-5 w-5 text-white" />
                       ) : (
@@ -124,7 +124,7 @@ export function EnhancedConnectedAccounts({ accounts, onConnectBank, onConnectBr
                       size="sm"
                       variant="ghost"
                       onClick={() => handleAccountDetails(account)}
-                      className="text-purple-400 hover:text-purple-300 hover:bg-purple-500/10 h-8 px-2"
+                      className="text-blue-400 hover:text-blue-300 hover:bg-blue-500/10 h-8 px-2"
                     >
                       <Eye className="h-4 w-4 mr-1" />
                       Details

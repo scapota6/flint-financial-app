@@ -100,7 +100,7 @@ export default function AccountCard({ account }: AccountCardProps) {
   };
 
   const getProviderBadgeColor = () => {
-    return account.provider === 'teller' ? 'bg-blue-600/20 text-blue-400' : 'bg-purple-600/20 text-purple-400';
+    return account.provider === 'teller' ? 'bg-blue-600/20 text-blue-400' : 'bg-blue-600/20 text-blue-400';
   };
 
   const getAccountTypeColor = () => {

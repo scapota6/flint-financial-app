@@ -48,7 +48,7 @@ export function TransferModal({ isOpen, onClose, accounts = [] }: TransferModalP
   };
 
   const getAccountColor = (type: string, provider: string) => {
-    if (provider === 'snaptrade' || type === 'investment') return 'bg-purple-600';
+    if (provider === 'snaptrade' || type === 'investment') return 'bg-cyan-600';
     if (type === 'checking') return 'bg-blue-600';
     if (type === 'savings') return 'bg-green-600';
     if (type === 'credit') return 'bg-orange-600';
@@ -167,7 +167,7 @@ export function TransferModal({ isOpen, onClose, accounts = [] }: TransferModalP
         <DialogHeader className="pb-4">
           <div className="flex items-center justify-between">
             <DialogTitle className="text-xl text-white flex items-center gap-2">
-              <ArrowRightLeft className="h-5 w-5 text-purple-400" />
+              <ArrowRightLeft className="h-5 w-5 text-blue-400" />
               Transfer Funds
             </DialogTitle>
             <Button
@@ -256,7 +256,7 @@ export function TransferModal({ isOpen, onClose, accounts = [] }: TransferModalP
                   variant="link"
                   size="sm"
                   onClick={() => handleInputChange('amount', maxAmount.toString())}
-                  className="text-purple-400 hover:text-purple-300 p-0 h-auto"
+                  className="text-blue-400 hover:text-blue-300 p-0 h-auto"
                 >
                   Use Max
                 </Button>
@@ -309,7 +309,7 @@ export function TransferModal({ isOpen, onClose, accounts = [] }: TransferModalP
             <Button
               onClick={handleSubmit}
               disabled={isSubmitting || !formData.fromAccount || !formData.toAccount || !formData.amount}
-              className="flex-1 bg-purple-600 hover:bg-purple-700 text-white"
+              className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
             >
               {isSubmitting ? 'Processing...' : 'Transfer Funds'}
             </Button>

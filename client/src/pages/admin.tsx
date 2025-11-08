@@ -131,7 +131,7 @@ export default function AdminDashboard() {
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-black">
-        <div className="animate-spin w-8 h-8 border-4 border-purple-500 border-t-transparent rounded-full" />
+        <div className="animate-spin w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full" />
       </div>
     );
   }
@@ -155,10 +155,10 @@ export default function AdminDashboard() {
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
-              <Shield className="h-6 w-6 text-purple-400" />
+              <Shield className="h-6 w-6 text-blue-400" />
               <h1 className="text-2xl font-bold">Admin Dashboard</h1>
             </div>
-            <Badge className="bg-purple-600/20 border border-purple-500/50" data-testid="badge-admin-role">Administrator</Badge>
+            <Badge className="bg-blue-600/20 border border-blue-500/50" data-testid="badge-admin-role">Administrator</Badge>
           </div>
         </div>
       </div>
@@ -170,7 +170,7 @@ export default function AdminDashboard() {
             <TabsTrigger 
               value="overview" 
               data-testid="tab-overview"
-              className="data-[state=active]:bg-purple-600/20 hover:bg-purple-600/10"
+              className="data-[state=active]:bg-blue-600/20 hover:bg-blue-600/10"
             >
               <BarChart3 className="h-4 w-4 mr-2" />
               Overview
@@ -178,7 +178,7 @@ export default function AdminDashboard() {
             <TabsTrigger 
               value="applications" 
               data-testid="tab-applications"
-              className="data-[state=active]:bg-purple-600/20 hover:bg-purple-600/10"
+              className="data-[state=active]:bg-blue-600/20 hover:bg-blue-600/10"
             >
               <FileText className="h-4 w-4 mr-2" />
               Applications
@@ -186,7 +186,7 @@ export default function AdminDashboard() {
             <TabsTrigger 
               value="users" 
               data-testid="tab-users"
-              className="data-[state=active]:bg-purple-600/20 hover:bg-purple-600/10"
+              className="data-[state=active]:bg-blue-600/20 hover:bg-blue-600/10"
             >
               <Users className="h-4 w-4 mr-2" />
               Users
@@ -194,7 +194,7 @@ export default function AdminDashboard() {
             <TabsTrigger 
               value="connections" 
               data-testid="tab-connections"
-              className="data-[state=active]:bg-purple-600/20 hover:bg-purple-600/10"
+              className="data-[state=active]:bg-blue-600/20 hover:bg-blue-600/10"
             >
               <Activity className="h-4 w-4 mr-2" />
               Connections
@@ -202,7 +202,7 @@ export default function AdminDashboard() {
             <TabsTrigger 
               value="analytics" 
               data-testid="tab-analytics"
-              className="data-[state=active]:bg-purple-600/20 hover:bg-purple-600/10"
+              className="data-[state=active]:bg-blue-600/20 hover:bg-blue-600/10"
             >
               <BarChart3 className="h-4 w-4 mr-2" />
               Analytics
@@ -210,7 +210,7 @@ export default function AdminDashboard() {
             <TabsTrigger 
               value="logs" 
               data-testid="tab-logs"
-              className="data-[state=active]:bg-purple-600/20 hover:bg-purple-600/10"
+              className="data-[state=active]:bg-blue-600/20 hover:bg-blue-600/10"
             >
               <AlertTriangle className="h-4 w-4 mr-2" />
               Error Logs
@@ -218,7 +218,7 @@ export default function AdminDashboard() {
             <TabsTrigger 
               value="features" 
               data-testid="tab-features"
-              className="data-[state=active]:bg-purple-600/20 hover:bg-purple-600/10"
+              className="data-[state=active]:bg-blue-600/20 hover:bg-blue-600/10"
             >
               <Flag className="h-4 w-4 mr-2" />
               Feature Flags
@@ -226,7 +226,7 @@ export default function AdminDashboard() {
             <TabsTrigger 
               value="audit" 
               data-testid="tab-audit"
-              className="data-[state=active]:bg-purple-600/20 hover:bg-purple-600/10"
+              className="data-[state=active]:bg-blue-600/20 hover:bg-blue-600/10"
             >
               <Shield className="h-4 w-4 mr-2" />
               Audit Trail
@@ -234,7 +234,7 @@ export default function AdminDashboard() {
             <TabsTrigger 
               value="error-tracking" 
               data-testid="tab-error-tracking"
-              className="data-[state=active]:bg-purple-600/20 hover:bg-purple-600/10"
+              className="data-[state=active]:bg-blue-600/20 hover:bg-blue-600/10"
             >
               <AlertTriangle className="h-4 w-4 mr-2" />
               Error Tracking
@@ -242,7 +242,7 @@ export default function AdminDashboard() {
             <TabsTrigger 
               value="snaptrade" 
               data-testid="tab-snaptrade"
-              className="data-[state=active]:bg-purple-600/20 hover:bg-purple-600/10"
+              className="data-[state=active]:bg-blue-600/20 hover:bg-blue-600/10"
             >
               <TrendingUp className="h-4 w-4 mr-2" />
               SnapTrade
@@ -250,7 +250,7 @@ export default function AdminDashboard() {
             <TabsTrigger 
               value="orphaned-accounts" 
               data-testid="tab-orphaned-accounts"
-              className="data-[state=active]:bg-purple-600/20 hover:bg-purple-600/10"
+              className="data-[state=active]:bg-blue-600/20 hover:bg-blue-600/10"
             >
               <UserX className="h-4 w-4 mr-2" />
               Orphaned Accounts
@@ -325,7 +325,7 @@ function OverviewTab() {
       <Card className="bg-slate-900/40 backdrop-blur-xl border border-slate-700/50">
         <CardHeader className="flex flex-row items-center justify-between pb-2">
           <CardTitle className="text-sm font-medium text-gray-400">Total Users</CardTitle>
-          <Users className="h-4 w-4 text-purple-400" />
+          <Users className="h-4 w-4 text-blue-400" />
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold" data-testid="text-total-users">{overview?.totalUsers || 0}</div>
@@ -695,7 +695,7 @@ function UsersTab() {
                     {user.firstName} {user.lastName}
                   </TableCell>
                   <TableCell>
-                    <Badge data-testid={`badge-tier-${user.id}`} className="bg-purple-600">
+                    <Badge data-testid={`badge-tier-${user.id}`} className="bg-blue-600">
                       {user.subscriptionTier}
                     </Badge>
                   </TableCell>
@@ -800,7 +800,7 @@ function UsersTab() {
 
       {/* Action Dialogs */}
       <Dialog open={actionDialog === 'delete'} onOpenChange={() => setActionDialog(null)}>
-        <DialogContent className="bg-slate-900/40 backdrop-blur-xl border border-slate-700/50">
+        <DialogContent className="bg-slate-900/40 border border-slate-700/50">
           <DialogHeader>
             <DialogTitle className="text-red-500">Permanently Delete User</DialogTitle>
             <DialogDescription className="space-y-2">
@@ -842,7 +842,7 @@ function UsersTab() {
         setActionDialog(null);
         setResetLink(null);
       }}>
-        <DialogContent className="bg-slate-900/40 backdrop-blur-xl border border-slate-700/50">
+        <DialogContent className="bg-slate-900/40 border border-slate-700/50">
           <DialogHeader>
             <DialogTitle>Reset Password</DialogTitle>
             <DialogDescription>
@@ -906,7 +906,7 @@ function UsersTab() {
       </Dialog>
 
       <Dialog open={actionDialog === 'tier'} onOpenChange={() => setActionDialog(null)}>
-        <DialogContent className="bg-slate-900/95 backdrop-blur-xl border border-slate-700/50 text-white">
+        <DialogContent className="bg-slate-900/95 border border-slate-700/50 text-white">
           <DialogHeader>
             <DialogTitle className="text-white">Change Subscription Tier</DialogTitle>
             <DialogDescription className="text-gray-400">
@@ -947,7 +947,7 @@ function UsersTab() {
         setActionDialog(null);
         setNewPassword('');
       }}>
-        <DialogContent className="bg-slate-900/40 backdrop-blur-xl border border-slate-700/50">
+        <DialogContent className="bg-slate-900/40 border border-slate-700/50">
           <DialogHeader>
             <DialogTitle>Set Password</DialogTitle>
             <DialogDescription>
@@ -987,7 +987,7 @@ function UsersTab() {
       </Dialog>
 
       <Dialog open={actionDialog === 'ban'} onOpenChange={() => setActionDialog(null)}>
-        <DialogContent className="bg-slate-900/40 backdrop-blur-xl border border-slate-700/50">
+        <DialogContent className="bg-slate-900/40 border border-slate-700/50">
           <DialogHeader>
             <DialogTitle>{selectedUser?.isBanned ? 'Unban' : 'Ban'} User</DialogTitle>
             <DialogDescription>
@@ -1125,7 +1125,7 @@ function ConnectionsTab() {
                 setConnectionFilter('all');
                 setPage(1);
               }}
-              className={connectionFilter === 'all' ? 'bg-purple-600 hover:bg-purple-700' : ''}
+              className={connectionFilter === 'all' ? 'bg-blue-600 hover:bg-blue-700' : ''}
               data-testid="button-filter-all"
             >
               All
@@ -1137,7 +1137,7 @@ function ConnectionsTab() {
                 setConnectionFilter('over_limit');
                 setPage(1);
               }}
-              className={connectionFilter === 'over_limit' ? 'bg-purple-600 hover:bg-purple-700' : ''}
+              className={connectionFilter === 'over_limit' ? 'bg-blue-600 hover:bg-blue-700' : ''}
               data-testid="button-filter-over-limit"
             >
               <AlertTriangle className="h-4 w-4 mr-1" />
@@ -1150,7 +1150,7 @@ function ConnectionsTab() {
                 setConnectionFilter('within_limit');
                 setPage(1);
               }}
-              className={connectionFilter === 'within_limit' ? 'bg-purple-600 hover:bg-purple-700' : ''}
+              className={connectionFilter === 'within_limit' ? 'bg-blue-600 hover:bg-blue-700' : ''}
               data-testid="button-filter-within-limit"
             >
               Within Limit
@@ -1162,7 +1162,7 @@ function ConnectionsTab() {
                 setConnectionFilter('zero_connections');
                 setPage(1);
               }}
-              className={connectionFilter === 'zero_connections' ? 'bg-purple-600 hover:bg-purple-700' : ''}
+              className={connectionFilter === 'zero_connections' ? 'bg-blue-600 hover:bg-blue-700' : ''}
               data-testid="button-filter-zero-connections"
             >
               0 Connections
@@ -1188,7 +1188,7 @@ function ConnectionsTab() {
                         <div className="flex items-center gap-2">
                           <p className="font-medium text-white" data-testid={`text-email-${group.userId}`}>{group.email}</p>
                           {isUnlimited && (
-                            <Badge className="bg-purple-600 text-xs" data-testid={`badge-admin-${group.userId}`}>
+                            <Badge className="bg-blue-600 text-xs" data-testid={`badge-admin-${group.userId}`}>
                               Admin
                             </Badge>
                           )}
@@ -1345,7 +1345,7 @@ function AnalyticsTab() {
               {data?.teller?.byStatus?.map((stat: any) => (
                 <div key={stat.status} className="flex items-center justify-between">
                   <span className="text-gray-400 capitalize">{stat.status}</span>
-                  <Badge className="bg-purple-600" data-testid={`badge-teller-${stat.status}`}>
+                  <Badge className="bg-blue-600" data-testid={`badge-teller-${stat.status}`}>
                     {stat.count}
                   </Badge>
                 </div>
@@ -1573,7 +1573,7 @@ function AuditTrailTab() {
                   </TableCell>
                   <TableCell data-testid={`text-admin-${log.id}`}>{log.adminEmail}</TableCell>
                   <TableCell>
-                    <Badge className="bg-purple-600" data-testid={`badge-action-${log.id}`}>
+                    <Badge className="bg-blue-600" data-testid={`badge-action-${log.id}`}>
                       {log.action}
                     </Badge>
                   </TableCell>
@@ -1748,7 +1748,7 @@ function SnapTradeTab() {
 
       {/* Delete User Confirmation Dialog */}
       <Dialog open={deleteUserDialogOpen} onOpenChange={setDeleteUserDialogOpen}>
-        <DialogContent className="bg-slate-900/40 backdrop-blur-xl border border-slate-700/50 text-white">
+        <DialogContent className="bg-slate-900/40 border border-slate-700/50 text-white">
           <DialogHeader>
             <DialogTitle className="text-red-500">Delete SnapTrade User</DialogTitle>
             <DialogDescription className="text-gray-400">
@@ -1963,7 +1963,7 @@ function ErrorTrackingTab() {
 
       {/* Error Details Dialog */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="bg-slate-900/40 backdrop-blur-xl border border-slate-700/50 max-w-3xl max-h-[80vh] overflow-y-auto">
+        <DialogContent className="bg-slate-900/40 border border-slate-700/50 max-w-3xl max-h-[80vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Error Details</DialogTitle>
             <DialogDescription>

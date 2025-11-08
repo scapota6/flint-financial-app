@@ -74,7 +74,7 @@ export function DepositModal({ isOpen, onClose, accounts = [] }: DepositModalPro
   };
 
   const getAccountColor = (type: string, provider: string) => {
-    if (provider === 'snaptrade' || type === 'investment') return 'bg-purple-600';
+    if (provider === 'snaptrade' || type === 'investment') return 'bg-cyan-600';
     if (type === 'checking') return 'bg-blue-600';
     if (type === 'savings') return 'bg-green-600';
     return 'bg-gray-600';
@@ -288,7 +288,7 @@ export function DepositModal({ isOpen, onClose, accounts = [] }: DepositModalPro
                   key={method.id}
                   className={`cursor-pointer transition-all ${
                     formData.method === method.id 
-                      ? 'border-purple-500 bg-purple-900/20' 
+                      ? 'border-blue-500 bg-blue-900/20' 
                       : 'border-gray-600 bg-gray-800 hover:border-gray-500'
                   }`}
                   onClick={() => handleInputChange('method', method.id)}
@@ -296,7 +296,7 @@ export function DepositModal({ isOpen, onClose, accounts = [] }: DepositModalPro
                   <CardContent className="p-4">
                     <div className="flex items-center gap-3">
                       <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                        formData.method === method.id ? 'bg-purple-600' : 'bg-gray-600'
+                        formData.method === method.id ? 'bg-blue-600' : 'bg-gray-600'
                       }`}>
                         {method.icon}
                       </div>
@@ -307,7 +307,7 @@ export function DepositModal({ isOpen, onClose, accounts = [] }: DepositModalPro
                       <div className="text-right">
                         <div className="text-sm text-white">{method.time}</div>
                         {formData.method === method.id && (
-                          <div className="w-2 h-2 bg-purple-500 rounded-full ml-auto"></div>
+                          <div className="w-2 h-2 bg-blue-500 rounded-full ml-auto"></div>
                         )}
                       </div>
                     </div>

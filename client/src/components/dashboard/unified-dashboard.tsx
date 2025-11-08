@@ -40,7 +40,7 @@ interface DashboardData {
 
 const COLORS = {
   bank: '#10b981', // green
-  investment: '#8b5cf6', // purple
+  investment: '#0A84FF', // blue
   crypto: '#f59e0b', // orange
   debt: '#ef4444', // red
 };
@@ -110,8 +110,8 @@ export default function UnifiedDashboard() {
   if (isEmptyState) {
     return (
       <div className="text-center py-12">
-        <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-gradient-to-r from-purple-500/20 to-blue-500/20 flex items-center justify-center">
-          <Wallet className="h-8 w-8 text-purple-400" />
+        <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-gradient-to-r from-blue-500/20 to-cyan-500/20 flex items-center justify-center">
+          <Wallet className="h-8 w-8 text-blue-400" />
         </div>
         <h3 className="text-xl font-semibold text-white mb-2">
           No accounts connected
@@ -185,7 +185,7 @@ export default function UnifiedDashboard() {
             onClick={() => setSelectedView(view.key as any)}
             className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
               selectedView === view.key
-                ? 'bg-purple-600 text-white'
+                ? 'bg-blue-600 text-white'
                 : 'bg-gray-800 text-gray-400 hover:text-white hover:bg-gray-700'
             }`}
           >
@@ -205,10 +205,10 @@ export default function UnifiedDashboard() {
               {typeBreakdown.length > 0 ? (
                 <div className="chart-container chart-glow relative overflow-hidden">
                   {/* Animated background effects */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 via-green-500/5 to-blue-500/10 rounded-lg blur-2xl animate-pulse"></div>
-                  <div className="floating-element absolute top-0 left-0 w-24 h-24 bg-purple-500/20 rounded-full blur-3xl"></div>
+                  <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 via-green-500/5 to-cyan-500/10 rounded-lg blur-2xl animate-pulse"></div>
+                  <div className="floating-element absolute top-0 left-0 w-24 h-24 bg-blue-500/20 rounded-full blur-3xl"></div>
                   <div className="floating-element absolute bottom-0 right-0 w-20 h-20 bg-green-500/20 rounded-full blur-2xl" style={{animationDelay: '2s'}}></div>
-                  <div className="floating-element absolute top-1/2 right-1/4 w-16 h-16 bg-blue-500/15 rounded-full blur-2xl" style={{animationDelay: '1s'}}></div>
+                  <div className="floating-element absolute top-1/2 right-1/4 w-16 h-16 bg-cyan-500/15 rounded-full blur-2xl" style={{animationDelay: '1s'}}></div>
                   <ResponsiveContainer width="100%" height={300}>
                     <PieChart>
                       <defs>
@@ -219,9 +219,9 @@ export default function UnifiedDashboard() {
                           <stop offset="100%" stopColor="#047857" stopOpacity={0.9}/>
                         </radialGradient>
                         <radialGradient id="investmentGradient3D" cx="30%" cy="30%">
-                          <stop offset="0%" stopColor="#c084fc" stopOpacity={1}/>
-                          <stop offset="50%" stopColor="#8b5cf6" stopOpacity={1}/>
-                          <stop offset="100%" stopColor="#6d28d9" stopOpacity={0.9}/>
+                          <stop offset="0%" stopColor="#60a5fa" stopOpacity={1}/>
+                          <stop offset="50%" stopColor="#0A84FF" stopOpacity={1}/>
+                          <stop offset="100%" stopColor="#1d4ed8" stopOpacity={0.9}/>
                         </radialGradient>
                         <radialGradient id="cryptoGradient3D" cx="30%" cy="30%">
                           <stop offset="0%" stopColor="#fbbf24" stopOpacity={1}/>
@@ -260,7 +260,7 @@ export default function UnifiedDashboard() {
                             stroke="rgba(255,255,255,0.2)"
                             strokeWidth={3}
                             style={{
-                              filter: 'drop-shadow(0 8px 16px rgba(0,0,0,0.3)) drop-shadow(0 0 20px rgba(139, 92, 246, 0.3))',
+                              filter: 'drop-shadow(0 8px 16px rgba(0,0,0,0.3)) drop-shadow(0 0 20px rgba(10, 132, 255, 0.3))',
                               cursor: 'pointer'
                             }}
                           />
@@ -357,7 +357,7 @@ export default function UnifiedDashboard() {
                   <Button 
                     variant="ghost" 
                     size="sm" 
-                    className="text-purple-400 hover:text-purple-300 mt-2"
+                    className="text-blue-400 hover:text-blue-300 mt-2"
                     onClick={() => setSelectedAccountId(account.id)}
                   >
                     <Eye className="h-3 w-3 mr-1" />

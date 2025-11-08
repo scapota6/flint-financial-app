@@ -379,7 +379,7 @@ Flint Admin Team`;
                 Copy to Clipboard
               </Button>
               <Button
-                className="bg-purple-600 hover:bg-purple-700"
+                className="bg-blue-600 hover:bg-blue-700"
                 onClick={openMailClient}
                 data-testid="button-open-mail-client"
               >

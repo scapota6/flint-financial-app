@@ -611,15 +611,15 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-      <div className="w-full max-w-6xl max-h-[95vh] rounded-2xl bg-gradient-to-br from-white via-white to-purple-50 dark:from-gray-900 dark:via-gray-900 dark:to-purple-950/20 border border-purple-100 dark:border-purple-800/30 shadow-2xl shadow-purple-500/10 overflow-hidden">
-        <div className="flex items-center justify-between p-6 border-b border-purple-100 dark:border-purple-800/30 bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-950/30 dark:to-blue-950/30">
+      <div className="w-full max-w-6xl max-h-[95vh] rounded-2xl bg-gradient-to-br from-white via-white to-blue-50 dark:from-gray-900 dark:via-gray-900 dark:to-blue-950/20 border border-blue-100 dark:border-blue-800/30 shadow-2xl shadow-blue-500/10 overflow-hidden">
+        <div className="flex items-center justify-between p-6 border-b border-blue-100 dark:border-blue-800/30 bg-gradient-to-r from-blue-50 to-blue-50 dark:from-blue-950/30 dark:to-blue-950/30">
           <div>
-            <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">Account Details</h2>
+            <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-600 bg-clip-text text-transparent">Account Details</h2>
             <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">Real-time account information and holdings</p>
           </div>
           <button 
             onClick={onClose} 
-            className="rounded-xl border border-purple-200 dark:border-purple-700 bg-white/80 dark:bg-gray-800/80 px-4 py-2 hover:bg-purple-50 dark:hover:bg-purple-900/30 text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 transition-all duration-200 shadow-sm hover:shadow-md backdrop-blur-sm"
+            className="rounded-xl border border-blue-200 dark:border-blue-700 bg-white/80 dark:bg-gray-800/80 px-4 py-2 hover:bg-blue-50 dark:hover:bg-blue-900/30 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-200 shadow-sm hover:shadow-md backdrop-blur-sm"
           >
             <X className="h-5 w-5" />
           </button>
@@ -628,8 +628,8 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
         {isLoading && (
           <div className="flex items-center justify-center p-12">
             <div className="relative">
-              <div className="animate-spin rounded-full h-12 w-12 border-4 border-purple-200 dark:border-purple-800"></div>
-              <div className="animate-spin rounded-full h-12 w-12 border-4 border-t-purple-600 absolute top-0 left-0"></div>
+              <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-200 dark:border-blue-800"></div>
+              <div className="animate-spin rounded-full h-12 w-12 border-4 border-t-blue-600 absolute top-0 left-0"></div>
             </div>
             <span className="ml-4 text-gray-600 dark:text-gray-400 font-medium">
               {isSnapTradeAccount ? 'Loading account details...' : 'Loading account details...'}
@@ -643,7 +643,7 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
             {/* Account Header with skeleton */}
             <section>
               <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center">
-                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white font-bold text-sm mr-3">1</div>
+                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-blue-500 flex items-center justify-center text-white font-bold text-sm mr-3">1</div>
                 Account Information
               </h3>
               
@@ -796,7 +796,7 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
             {/* Orders Section with skeleton */}
             <section>
               <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center">
-                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-indigo-500 flex items-center justify-center text-white font-bold text-sm mr-3">📋</div>
+                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center text-white font-bold text-sm mr-3">📋</div>
                 Orders
               </h3>
               
@@ -836,7 +836,7 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
             {/* Activities Section with skeleton */}
             <section>
               <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center">
-                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center text-white font-bold text-sm mr-3">🏛️</div>
+                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-500 to-blue-500 flex items-center justify-center text-white font-bold text-sm mr-3">🏛️</div>
                 Activity and Transactions
               </h3>
               
@@ -874,11 +874,11 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
             </section>
 
             {/* Footer */}
-            <div className="mt-8 pt-6 border-t border-gradient-to-r from-purple-200 to-blue-200 dark:from-purple-800 dark:to-blue-800 bg-gradient-to-r from-purple-50/50 to-blue-50/50 dark:from-purple-950/30 dark:to-blue-950/30 rounded-xl p-4">
+            <div className="mt-8 pt-6 border-t border-gradient-to-r from-blue-200 to-blue-200 dark:from-blue-800 dark:to-blue-800 bg-gradient-to-r from-blue-50/50 to-blue-50/50 dark:from-blue-950/30 dark:to-blue-950/30 rounded-xl p-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-6 text-xs text-gray-600 dark:text-gray-400">
                   <div className="flex items-center gap-2 bg-white dark:bg-gray-800 px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700">
-                    <Clock className="h-4 w-4 text-purple-500" />
+                    <Clock className="h-4 w-4 text-blue-500" />
                     <span className="font-medium">Updated: {fmtTime(data.metadata?.fetched_at || new Date().toISOString())}</span>
                   </div>
                 </div>
@@ -957,7 +957,7 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
               </div>
             ) : errorDetails?.status >= 500 ? (
               /* Network/server errors */
-              <div className="p-4 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border border-blue-200 dark:border-blue-700 rounded-xl">
+              <div className="p-4 bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20 border border-blue-200 dark:border-blue-700 rounded-xl">
                 <div className="flex items-center">
                   <div className="flex-shrink-0">
                     <RefreshCw className="h-5 w-5 text-blue-400" />
@@ -1033,7 +1033,7 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
         )}
 
         {data && (
-          <div className="space-y-8 overflow-y-auto max-h-[75vh] p-6 bg-gradient-to-b from-transparent to-purple-50/30 dark:to-purple-950/10">
+          <div className="space-y-8 overflow-y-auto max-h-[75vh] p-6 bg-gradient-to-b from-transparent to-blue-50/30 dark:to-blue-950/10">
             
             {/* CREDIT CARD LAYOUT - Teller credit cards get special treatment */}
             {data.provider === 'teller' && data.creditCardInfo ? (
@@ -1041,7 +1041,7 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
                 {/* 1. Credit Card Overview (FIRST for credit cards) */}
                 <section>
                   <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center">
-                    <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-indigo-500 flex items-center justify-center text-white font-bold text-sm mr-3">💳</div>
+                    <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center text-white font-bold text-sm mr-3">💳</div>
                     Credit Card Overview
                   </h3>
                   
@@ -1103,7 +1103,7 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
                 {/* 2. Account Information */}
                 <section>
                   <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center">
-                    <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center text-white font-bold text-sm mr-3">ℹ️</div>
+                    <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-blue-500 flex items-center justify-center text-white font-bold text-sm mr-3">ℹ️</div>
                     Account Information
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
@@ -1164,7 +1164,7 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
                 {/* 2. Account Identifiers */}
                 <section>
                   <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center">
-                    <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-500 flex items-center justify-center text-white font-bold text-sm mr-3">🔒</div>
+                    <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center text-white font-bold text-sm mr-3">🔒</div>
                     Account Identifiers
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -1176,7 +1176,7 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
                 {/* 3. Account Information */}
                 <section>
                   <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center">
-                    <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center text-white font-bold text-sm mr-3">ℹ️</div>
+                    <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-blue-500 flex items-center justify-center text-white font-bold text-sm mr-3">ℹ️</div>
                     Account Information
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -1191,7 +1191,7 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
                 {/* 1. Account Information */}
                 <section>
                   <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center">
-                    <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center text-white font-bold text-sm mr-3">1</div>
+                    <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-blue-500 flex items-center justify-center text-white font-bold text-sm mr-3">1</div>
                     Account Information
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
@@ -1223,12 +1223,12 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
                 {data.transactions && data.transactions.length > 0 && (
                   <section>
                     <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center">
-                      <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-indigo-500 flex items-center justify-center text-white font-bold text-sm mr-3">🏪</div>
+                      <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center text-white font-bold text-sm mr-3">🏪</div>
                       Recent Transactions
                     </h3>
                     <div className="overflow-x-auto overflow-y-auto max-h-[400px] rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm">
                       <table className="w-full text-sm">
-                        <thead className="bg-gradient-to-r from-purple-50 to-indigo-50 dark:from-purple-900/30 dark:to-indigo-900/30">
+                        <thead className="bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-blue-900/30 dark:to-cyan-900/30">
                           <tr>
                             <th className="text-left p-3 font-semibold text-gray-900 dark:text-white">Date</th>
                             <th className="text-left p-3 font-semibold text-gray-900 dark:text-white">Description</th>
@@ -1245,7 +1245,7 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
                               <td className="p-3 text-gray-900 dark:text-white">
                                 <div className="font-medium">{txn.description || txn.merchant || 'Unknown'}</div>
                                 {txn.category && (
-                                  <span className="inline-block mt-1 px-2 py-0.5 bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300 text-xs font-medium rounded-full">
+                                  <span className="inline-block mt-1 px-2 py-0.5 bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 text-xs font-medium rounded-full">
                                     {txn.category}
                                   </span>
                                 )}
@@ -1287,7 +1287,7 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
                   Card Payments
                 </h3>
                 <div className="p-6 bg-gradient-to-r from-gray-50 to-slate-50 dark:from-gray-800/20 dark:to-slate-800/20 rounded-xl border border-gray-200 dark:border-gray-700 text-center">
-                  <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-purple-100 to-blue-100 dark:from-purple-900/30 dark:to-blue-900/30 flex items-center justify-center">
+                  <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-blue-100 to-blue-100 dark:from-blue-900/30 dark:to-blue-900/30 flex items-center justify-center">
                     <span className="text-2xl">💳</span>
                   </div>
                   <h4 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2">COMING SOON</h4>
@@ -1302,12 +1302,12 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
             {data.provider === 'teller' && !data.creditCardInfo && data.statements && data.statements.length > 0 && (
               <section>
                 <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center">
-                  <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center text-white font-bold text-sm mr-3">📄</div>
+                  <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-500 to-blue-500 flex items-center justify-center text-white font-bold text-sm mr-3">📄</div>
                   Statements
                 </h3>
                 <div className="overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm">
                   <table className="w-full text-sm">
-                    <thead className="bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/30 dark:to-purple-900/30">
+                    <thead className="bg-gradient-to-r from-cyan-50 to-blue-50 dark:from-cyan-900/30 dark:to-blue-900/30">
                       <tr>
                         <th className="text-left p-3 font-semibold text-gray-900 dark:text-white">Period</th>
                         <th className="text-left p-3 font-semibold text-gray-900 dark:text-white">Start Date</th>
@@ -1475,7 +1475,7 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
                 Trading Actions
               </h3>
               <div className="p-6 bg-gradient-to-r from-gray-50 to-slate-50 dark:from-gray-800/20 dark:to-slate-800/20 rounded-xl border border-gray-200 dark:border-gray-700 text-center">
-                <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-purple-100 to-blue-100 dark:from-purple-900/30 dark:to-blue-900/30 flex items-center justify-center">
+                <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-blue-100 to-blue-100 dark:from-blue-900/30 dark:to-blue-900/30 flex items-center justify-center">
                   <span className="text-2xl">🚀</span>
                 </div>
                 <h4 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2">COMING SOON</h4>
@@ -1488,7 +1488,7 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
             {/* 5. Activity and Transactions */}
             <section>
               <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center">
-                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center text-white font-bold text-sm mr-3">5</div>
+                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-500 to-blue-500 flex items-center justify-center text-white font-bold text-sm mr-3">5</div>
                 Activity and Transactions
               </h3>
               <Card title="Recent Activity">
@@ -1507,11 +1507,11 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
             )}
 
             {/* Footer with metadata */}
-            <div className="mt-8 pt-6 border-t border-gradient-to-r from-purple-200 to-blue-200 dark:from-purple-800 dark:to-blue-800 bg-gradient-to-r from-purple-50/50 to-blue-50/50 dark:from-purple-950/30 dark:to-blue-950/30 rounded-xl p-4">
+            <div className="mt-8 pt-6 border-t border-gradient-to-r from-blue-200 to-blue-200 dark:from-blue-800 dark:to-blue-800 bg-gradient-to-r from-blue-50/50 to-blue-50/50 dark:from-blue-950/30 dark:to-blue-950/30 rounded-xl p-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-6 text-xs text-gray-600 dark:text-gray-400">
                   <div className="flex items-center gap-2 bg-white dark:bg-gray-800 px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700">
-                    <Clock className="h-4 w-4 text-purple-500" />
+                    <Clock className="h-4 w-4 text-blue-500" />
                     <span className="font-medium">Updated: {fmtTime(data.metadata?.fetched_at || new Date().toISOString())}</span>
                   </div>
                   <div className="flex items-center gap-2 bg-white dark:bg-gray-800 px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700">

@@ -64,7 +64,7 @@ const GlobalNavbar = memo(function GlobalNavbar() {
             <Link href="/dashboard">
               <div className="flex items-center space-x-2 cursor-pointer">
                 <div className="text-2xl font-bold">
-                  <span className="bg-gradient-to-r from-purple-400 via-pink-500 to-purple-600 bg-clip-text text-transparent">
+                  <span className="bg-gradient-to-r from-blue-400 via-cyan-500 to-blue-600 bg-clip-text text-transparent">
                     FLINT
                   </span>
                 </div>
@@ -86,8 +86,8 @@ const GlobalNavbar = memo(function GlobalNavbar() {
                 <Link key={link.href} href={link.href}>
                   <span className={`text-sm font-medium transition-all duration-200 cursor-pointer relative
                     ${isActiveLink(link.href)
-                      ? 'text-white after:absolute after:bottom-[-4px] after:left-0 after:right-0 after:h-0.5 after:bg-[#8e44ad] after:rounded-full'
-                      : 'text-gray-300 hover:text-white hover:drop-shadow-[0_0_8px_rgba(142,68,173,0.6)]'
+                      ? 'text-white after:absolute after:bottom-[-4px] after:left-0 after:right-0 after:h-0.5 after:bg-blue-500 after:rounded-full'
+                      : 'text-gray-300 hover:text-white hover:drop-shadow-[0_0_8px_rgba(10,132,255,0.6)]'
                     }`}>
                     {link.label}
                   </span>
@@ -105,7 +105,7 @@ const GlobalNavbar = memo(function GlobalNavbar() {
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" className="relative h-8 w-8 rounded-full">
                     <Avatar className="h-8 w-8">
-                      <AvatarFallback className="bg-[#8e44ad] text-white">
+                      <AvatarFallback className="bg-blue-600 text-white">
                         {user?.email?.charAt(0).toUpperCase() || 'U'}
                       </AvatarFallback>
                     </Avatar>
@@ -170,7 +170,7 @@ const GlobalNavbar = memo(function GlobalNavbar() {
                   <span
                     className={`block px-3 py-2 text-base font-medium transition-colors duration-200 cursor-pointer
                       ${isActiveLink(link.href)
-                        ? 'text-white bg-[#8e44ad]/20 border-l-4 border-[#8e44ad]'
+                        ? 'text-white bg-blue-600/20 border-l-4 border-blue-600'
                         : 'text-gray-300 hover:text-white hover:bg-gray-800'
                       }`}
                   >
@@ -183,7 +183,7 @@ const GlobalNavbar = memo(function GlobalNavbar() {
               <div className="flex items-center px-5">
                 <div className="flex-shrink-0">
                   <Avatar className="h-10 w-10">
-                    <AvatarFallback className="bg-[#8e44ad] text-white">
+                    <AvatarFallback className="bg-blue-600 text-white">
                       {user?.email?.charAt(0).toUpperCase() || 'U'}
                     </AvatarFallback>
                   </Avatar>

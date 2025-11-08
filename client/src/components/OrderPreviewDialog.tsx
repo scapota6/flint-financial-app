@@ -289,9 +289,9 @@ export default function OrderPreviewDialog({
     return (
       <div className="space-y-6">
         {/* Order Summary */}
-        <div className="bg-purple-50 dark:bg-purple-900/20 p-4 rounded-lg border">
+        <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg border">
           <div className="flex items-center gap-2 mb-3">
-            <TrendingUp className="h-5 w-5 text-purple-600" />
+            <TrendingUp className="h-5 w-5 text-blue-600" />
             <h3 className="font-semibold text-gray-900 dark:text-gray-100">Order Summary</h3>
           </div>
           

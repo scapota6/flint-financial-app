@@ -180,7 +180,7 @@ export default function AssetDetail() {
               <div className="flex items-center space-x-3">
                 <Badge 
                   variant="outline" 
-                  className={assetData.type === 'crypto' ? 'text-orange-400 border-orange-400' : 'text-purple-400 border-purple-400'}
+                  className={assetData.type === 'crypto' ? 'text-orange-400 border-orange-400' : 'text-blue-400 border-blue-400'}
                 >
                   {assetData.symbol}
                 </Badge>
@@ -234,13 +234,13 @@ export default function AssetDetail() {
           <div className="lg:col-span-2">
             <Tabs value={selectedTab} onValueChange={setSelectedTab}>
               <TabsList className="grid w-full grid-cols-3 bg-gray-800 mb-6">
-                <TabsTrigger value="overview" className="data-[state=active]:bg-purple-600">
+                <TabsTrigger value="overview" className="data-[state=active]:bg-blue-600">
                   Overview
                 </TabsTrigger>
-                <TabsTrigger value="chart" className="data-[state=active]:bg-purple-600">
+                <TabsTrigger value="chart" className="data-[state=active]:bg-blue-600">
                   Chart
                 </TabsTrigger>
-                <TabsTrigger value="news" className="data-[state=active]:bg-purple-600">
+                <TabsTrigger value="news" className="data-[state=active]:bg-blue-600">
                   News
                 </TabsTrigger>
               </TabsList>
@@ -324,7 +324,7 @@ export default function AssetDetail() {
                       <div className="space-y-4">
                         {newsData.slice(0, 5).map((news, index) => (
                           <div key={index} className="border-b border-gray-800 pb-4 last:border-b-0">
-                            <h4 className="font-semibold mb-2 hover:text-purple-400 cursor-pointer">
+                            <h4 className="font-semibold mb-2 hover:text-blue-400 cursor-pointer">
                               {news.title}
                             </h4>
                             <p className="text-sm text-gray-400 mb-2">{news.summary}</p>

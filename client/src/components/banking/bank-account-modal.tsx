@@ -228,7 +228,7 @@ export function BankAccountModal({ account, isOpen, onClose }: BankAccountModalP
             <Card className="bg-gray-800/50 border-gray-700">
               <CardHeader>
                 <CardTitle className="text-white flex items-center gap-2">
-                  <Activity className="h-5 w-5 text-purple-400" />
+                  <Activity className="h-5 w-5 text-blue-400" />
                   Recent Transactions
                   <Badge variant="outline" className="ml-auto">{displayTransactions.length} transactions</Badge>
                 </CardTitle>
@@ -290,7 +290,7 @@ export function BankAccountModal({ account, isOpen, onClose }: BankAccountModalP
             <Card className="bg-gray-800/50 border-gray-700">
               <CardHeader>
                 <CardTitle className="text-white flex items-center gap-2">
-                  <CreditCard className="h-5 w-5 text-purple-400" />
+                  <CreditCard className="h-5 w-5 text-blue-400" />
                   Account Information
                 </CardTitle>
               </CardHeader>

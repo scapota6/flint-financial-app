@@ -122,8 +122,8 @@ export function SnapTradeAccountManager() {
           accounts.map((account: SnapTradeAccount) => (
             <Card 
               key={account.id} 
-              className={`flint-card cursor-pointer transition-all duration-200 hover:border-purple-500/50 ${
-                selectedAccountId === account.id ? 'border-purple-500 bg-purple-500/5' : ''
+              className={`flint-card cursor-pointer transition-all duration-200 hover:border-blue-500/50 ${
+                selectedAccountId === account.id ? 'border-blue-500 bg-blue-500/5' : ''
               }`}
               onClick={() => setSelectedAccountId(account.id)}
             >
@@ -164,7 +164,7 @@ export function SnapTradeAccountManager() {
           <Card className="flint-card">
             <CardHeader>
               <CardTitle className="text-white flex items-center gap-2">
-                <BarChart3 className="h-5 w-5 text-purple-400" />
+                <BarChart3 className="h-5 w-5 text-blue-400" />
                 Positions
               </CardTitle>
             </CardHeader>
@@ -208,7 +208,7 @@ export function SnapTradeAccountManager() {
           <Card className="flint-card">
             <CardHeader>
               <CardTitle className="text-white flex items-center gap-2">
-                <TrendingUp className="h-5 w-5 text-purple-400" />
+                <TrendingUp className="h-5 w-5 text-blue-400" />
                 Recent Orders
               </CardTitle>
             </CardHeader>

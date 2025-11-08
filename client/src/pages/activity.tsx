@@ -65,7 +65,7 @@ export default function Activity() {
       case 'watchlist_remove':
         return { icon: Trash2, color: 'bg-red-500' };
       case 'account_connected':
-        return { icon: Building, color: 'bg-purple-500' };
+        return { icon: Building, color: 'bg-blue-500' };
       case 'login':
         return { icon: LogIn, color: 'bg-gray-500' };
       case 'user_created':
@@ -199,7 +199,7 @@ export default function Activity() {
           <Card className="trade-card">
             <CardContent className="p-4">
               <div className="text-center">
-                <p className="text-2xl font-bold text-purple-500">{activityStats.logins}</p>
+                <p className="text-2xl font-bold text-blue-500">{activityStats.logins}</p>
                 <p className="text-gray-400 text-sm">Logins</p>
               </div>
             </CardContent>

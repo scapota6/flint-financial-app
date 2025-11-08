@@ -30,7 +30,7 @@ export default function ActivityFeed({ activities }: ActivityFeedProps) {
       case 'WITHDRAWAL':
         return { icon: ArrowDown, color: 'bg-red-600' };
       case 'login':
-        return { icon: ArrowDown, color: 'bg-purple-500' };
+        return { icon: ArrowDown, color: 'bg-blue-500' };
       default:
         return { icon: Bitcoin, color: 'bg-orange-500' };
     }

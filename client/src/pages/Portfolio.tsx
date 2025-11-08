@@ -57,7 +57,7 @@ interface PortfolioHistory {
 
 // Color palette for charts
 const CHART_COLORS = {
-  stocks: "#8b5cf6",  // Purple
+  stocks: "#0A84FF",  // Apple Blue
   crypto: "#f59e0b",  // Amber
   cash: "#10b981",    // Emerald
   debt: "#ef4444"     // Red
@@ -157,7 +157,7 @@ export default function Portfolio() {
   // Initial loading state - only on first load
   if (isPageLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900/20 to-slate-900">
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900/20 to-slate-900">
         <div className="container mx-auto px-4 pt-24 pb-12 max-w-7xl">
           <div className="animate-pulse space-y-6">
             <div className="h-10 bg-slate-800/50 rounded w-1/3"></div>
@@ -190,13 +190,13 @@ export default function Portfolio() {
   // Empty state when no accounts are connected
   if (isEmptyState) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900/20 to-slate-900">
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900/20 to-slate-900">
         <div className="container mx-auto px-4 pt-24 pb-12 max-w-7xl">
           <div className="text-center py-12">
-            <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-gradient-to-r from-purple-500/20 to-blue-500/20 flex items-center justify-center">
-              <AlertCircle className="h-8 w-8 text-purple-400" />
+            <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-gradient-to-r from-blue-500/20 to-cyan-500/20 flex items-center justify-center">
+              <AlertCircle className="h-8 w-8 text-blue-400" />
             </div>
-            <h1 className="h1 bg-gradient-to-r from-white via-purple-200 to-purple-400 bg-clip-text text-transparent mb-4">
+            <h1 className="h1 bg-gradient-to-r from-white via-cyan-200 to-blue-400 bg-clip-text text-transparent mb-4">
               No Portfolio Data
             </h1>
             <p className="text-slate-400 mb-8 max-w-md mx-auto">
@@ -223,13 +223,13 @@ export default function Portfolio() {
   const isPositive = dayValue >= 0;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900/20 to-slate-900">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900/20 to-slate-900">
       <div className="container mx-auto px-4 pt-24 pb-12 max-w-7xl">
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="h1 bg-gradient-to-r from-white via-purple-200 to-purple-400 bg-clip-text text-transparent">
+              <h1 className="h1 bg-gradient-to-r from-white via-cyan-200 to-blue-400 bg-clip-text text-transparent">
                 Portfolio Overview
               </h1>
               <p className="text-slate-400 mt-2">
@@ -242,7 +242,7 @@ export default function Portfolio() {
         {/* Data freshness indicator */}
         {summary?.metadata?.dataDelayed && (
           <Alert className="mb-8 bg-slate-800/50 border-slate-700 backdrop-blur-sm">
-            <Info className="h-4 w-4 text-purple-400" />
+            <Info className="h-4 w-4 text-blue-400" />
             <AlertDescription className="text-slate-300">
               Some market data may be delayed. Last updated: {new Date(summary.metadata.lastUpdated).toLocaleTimeString()}
             </AlertDescription>
@@ -340,18 +340,18 @@ export default function Portfolio() {
             {chartData.length > 0 ? (
               <div className="chart-container chart-glow relative overflow-hidden">
                 {/* Animated background effects */}
-                <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 via-blue-500/5 to-emerald-500/10 rounded-lg blur-2xl animate-pulse"></div>
-                <div className="floating-element absolute top-0 left-0 w-32 h-32 bg-purple-500/20 rounded-full blur-3xl"></div>
-                <div className="floating-element absolute bottom-0 right-0 w-24 h-24 bg-blue-500/20 rounded-full blur-2xl" style={{animationDelay: '2s'}}></div>
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 via-cyan-500/5 to-emerald-500/10 rounded-lg blur-2xl animate-pulse"></div>
+                <div className="floating-element absolute top-0 left-0 w-32 h-32 bg-blue-500/20 rounded-full blur-3xl"></div>
+                <div className="floating-element absolute bottom-0 right-0 w-24 h-24 bg-cyan-500/20 rounded-full blur-2xl" style={{animationDelay: '2s'}}></div>
                 <div className="floating-element absolute top-1/3 right-1/4 w-16 h-16 bg-emerald-500/15 rounded-full blur-2xl" style={{animationDelay: '1s'}}></div>
                 <ResponsiveContainer width="100%" height={380}>
                   <PieChart>
                     <defs>
                       {/* 3D Effect Gradients */}
                       <radialGradient id="stocksGrad3D" cx="30%" cy="30%">
-                        <stop offset="0%" stopColor="#c084fc" stopOpacity={1}/>
-                        <stop offset="50%" stopColor="#8b5cf6" stopOpacity={1}/>
-                        <stop offset="100%" stopColor="#6d28d9" stopOpacity={0.9}/>
+                        <stop offset="0%" stopColor="#60a5fa" stopOpacity={1}/>
+                        <stop offset="50%" stopColor="#0A84FF" stopOpacity={1}/>
+                        <stop offset="100%" stopColor="#0070DD" stopOpacity={0.9}/>
                       </radialGradient>
                       <radialGradient id="cryptoGrad3D" cx="30%" cy="30%">
                         <stop offset="0%" stopColor="#60a5fa" stopOpacity={1}/>
@@ -401,7 +401,7 @@ export default function Portfolio() {
                           stroke="rgba(255,255,255,0.2)"
                           strokeWidth={3}
                           style={{
-                            filter: 'drop-shadow(0 8px 16px rgba(0,0,0,0.3)) drop-shadow(0 0 20px rgba(139, 92, 246, 0.3))',
+                            filter: 'drop-shadow(0 8px 16px rgba(0,0,0,0.3)) drop-shadow(0 0 20px rgba(10, 132, 255, 0.3))',
                             cursor: 'pointer'
                           }}
                         />
@@ -425,8 +425,8 @@ export default function Portfolio() {
             ) : (
               <div className="h-[350px] flex items-center justify-center">
                 <div className="text-center">
-                  <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-r from-purple-500/20 to-blue-500/20 flex items-center justify-center">
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-r from-purple-500 to-blue-500"></div>
+                  <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-r from-blue-500/20 to-cyan-500/20 flex items-center justify-center">
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-500 to-cyan-500"></div>
                   </div>
                   <p className="text-slate-400">No portfolio data available</p>
                 </div>
@@ -460,25 +460,25 @@ export default function Portfolio() {
             {history?.dataPoints ? (
               <div className="chart-container chart-glow relative overflow-hidden">
                 {/* Dynamic background effects */}
-                <div className="absolute inset-0 bg-gradient-to-r from-purple-500/5 via-transparent to-blue-500/5 rounded-lg"></div>
-                <div className="floating-element absolute top-0 left-1/4 w-16 h-16 bg-gradient-to-br from-purple-400/30 to-transparent rounded-full blur-xl"></div>
-                <div className="floating-element absolute bottom-0 right-1/3 w-20 h-20 bg-gradient-to-tl from-blue-400/25 to-transparent rounded-full blur-2xl" style={{animationDelay: '1.5s'}}></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 via-transparent to-cyan-500/5 rounded-lg"></div>
+                <div className="floating-element absolute top-0 left-1/4 w-16 h-16 bg-gradient-to-br from-blue-400/30 to-transparent rounded-full blur-xl"></div>
+                <div className="floating-element absolute bottom-0 right-1/3 w-20 h-20 bg-gradient-to-tl from-cyan-400/25 to-transparent rounded-full blur-2xl" style={{animationDelay: '1.5s'}}></div>
                 <div className="floating-element absolute top-1/2 left-1/2 w-12 h-12 bg-gradient-to-r from-cyan-400/20 to-transparent rounded-full blur-xl" style={{animationDelay: '3s'}}></div>
                 <ResponsiveContainer width="100%" height={380}>
                   <AreaChart data={history.dataPoints} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
                     <defs>
                       {/* 3D Area Chart Gradients */}
                       <linearGradient id="areaGradient3D" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="#c084fc" stopOpacity={0.6}/>
-                        <stop offset="25%" stopColor="#8b5cf6" stopOpacity={0.4}/>
-                        <stop offset="75%" stopColor="#7c3aed" stopOpacity={0.2}/>
-                        <stop offset="100%" stopColor="#5b21b6" stopOpacity={0.05}/>
+                        <stop offset="0%" stopColor="#60a5fa" stopOpacity={0.6}/>
+                        <stop offset="25%" stopColor="#0A84FF" stopOpacity={0.4}/>
+                        <stop offset="75%" stopColor="#0070DD" stopOpacity={0.2}/>
+                        <stop offset="100%" stopColor="#0055AA" stopOpacity={0.05}/>
                       </linearGradient>
                       {/* Enhanced glow effect */}
                       <filter id="areaGlow" x="-20%" y="-20%" width="140%" height="140%">
                         <feGaussianBlur stdDeviation="5" result="coloredBlur"/>
                         <feOffset dx="0" dy="0" result="offsetBlur"/>
-                        <feFlood floodColor="#8b5cf6" floodOpacity="0.3"/>
+                        <feFlood floodColor="#0A84FF" floodOpacity="0.3"/>
                         <feComposite in2="offsetBlur" operator="in"/>
                         <feMerge> 
                           <feMergeNode/>
@@ -487,12 +487,12 @@ export default function Portfolio() {
                       </filter>
                       {/* Grid line effect */}
                       <pattern id="gridPattern" patternUnits="userSpaceOnUse" width="40" height="40">
-                        <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(139, 92, 246, 0.05)" strokeWidth="1"/>
+                        <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(10, 132, 255, 0.05)" strokeWidth="1"/>
                       </pattern>
                     </defs>
                     <CartesianGrid 
                       strokeDasharray="8 4" 
-                      stroke="rgba(139, 92, 246, 0.15)" 
+                      stroke="rgba(10, 132, 255, 0.15)" 
                       horizontal={true}
                       vertical={false}
                       className="recharts-cartesian-grid-horizontal"
@@ -527,14 +527,14 @@ export default function Portfolio() {
                     <Area
                       type="monotone"
                       dataKey="value"
-                      stroke="#8b5cf6"
+                      stroke="#0A84FF"
                       strokeWidth={4}
                       fill="url(#areaGradient3D)"
                       filter="url(#areaGlow)"
                       animationDuration={1500}
                       animationEasing="ease-out"
-                      dot={{ fill: '#8b5cf6', stroke: '#fff', strokeWidth: 2, r: 0 }}
-                      activeDot={{ r: 8, fill: '#8b5cf6', stroke: '#fff', strokeWidth: 3, filter: 'drop-shadow(0 0 10px rgba(139, 92, 246, 0.8))' }}
+                      dot={{ fill: '#0A84FF', stroke: '#fff', strokeWidth: 2, r: 0 }}
+                      activeDot={{ r: 8, fill: '#0A84FF', stroke: '#fff', strokeWidth: 3, filter: 'drop-shadow(0 0 10px rgba(10, 132, 255, 0.8))' }}
                     />
                   </AreaChart>
                 </ResponsiveContainer>
@@ -542,8 +542,8 @@ export default function Portfolio() {
             ) : (
               <div className="h-[350px] flex items-center justify-center">
                 <div className="text-center">
-                  <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-r from-purple-500/20 to-blue-500/20 flex items-center justify-center">
-                    <div className="w-2 h-8 bg-gradient-to-t from-purple-500 to-blue-500 rounded-full animate-pulse"></div>
+                  <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-r from-blue-500/20 to-cyan-500/20 flex items-center justify-center">
+                    <div className="w-2 h-8 bg-gradient-to-t from-blue-500 to-cyan-500 rounded-full animate-pulse"></div>
                   </div>
                   <p className="text-slate-400">Loading performance data...</p>
                 </div>

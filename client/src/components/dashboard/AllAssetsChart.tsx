@@ -52,7 +52,7 @@ export function AllAssetsChart({ totalValue, changePercent, marketCap }: AllAsse
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <CardTitle className="text-lg font-semibold text-white flex items-center space-x-2">
-            <Activity className="h-5 w-5 text-purple-400" />
+            <Activity className="h-5 w-5 text-blue-400" />
             <span>All Assets Summary</span>
           </CardTitle>
           <div className={`flex items-center space-x-1 text-sm ${
@@ -147,7 +147,7 @@ export function AllAssetsChart({ totalValue, changePercent, marketCap }: AllAsse
             <span>1D</span>
             <span>1W</span>
             <span>1M</span>
-            <span className="text-purple-400 font-medium">3M</span>
+            <span className="text-blue-400 font-medium">3M</span>
             <span>6M</span>
             <span>1Y</span>
           </div>

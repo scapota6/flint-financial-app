@@ -79,7 +79,7 @@ export function AccountDetailsModal({ isOpen, onClose, account }: AccountDetails
       <DialogContent className="max-w-4xl w-[80vw] h-[80vh] bg-gray-900 border-gray-700 text-white overflow-hidden">
         <DialogHeader>
           <DialogTitle className="text-xl font-semibold flex items-center gap-3">
-            <div className="w-10 h-10 bg-purple-600 rounded-lg flex items-center justify-center">
+            <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
               {account.type === 'bank' ? <Building2 className="h-5 w-5" /> : <CreditCard className="h-5 w-5" />}
             </div>
             {account.name}
@@ -93,29 +93,29 @@ export function AccountDetailsModal({ isOpen, onClose, account }: AccountDetails
           <TabsList className="grid w-full grid-cols-3 bg-gray-800">
             <TabsTrigger 
               value="overview" 
-              className="data-[state=active]:bg-purple-600 data-[state=active]:text-white relative"
+              className="data-[state=active]:bg-blue-600 data-[state=active]:text-white relative"
             >
               Overview
               {activeTab === 'overview' && (
-                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-purple-400 rounded-full" />
+                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-400 rounded-full" />
               )}
             </TabsTrigger>
             <TabsTrigger 
               value="holdings" 
-              className="data-[state=active]:bg-purple-600 data-[state=active]:text-white relative"
+              className="data-[state=active]:bg-blue-600 data-[state=active]:text-white relative"
             >
               Holdings
               {activeTab === 'holdings' && (
-                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-purple-400 rounded-full" />
+                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-400 rounded-full" />
               )}
             </TabsTrigger>
             <TabsTrigger 
               value="transactions" 
-              className="data-[state=active]:bg-purple-600 data-[state=active]:text-white relative"
+              className="data-[state=active]:bg-blue-600 data-[state=active]:text-white relative"
             >
               Transactions
               {activeTab === 'transactions' && (
-                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-purple-400 rounded-full" />
+                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-400 rounded-full" />
               )}
             </TabsTrigger>
           </TabsList>

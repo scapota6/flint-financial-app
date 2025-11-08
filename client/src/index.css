@@ -246,6 +246,9 @@
   --chart-4: 199 100% 70%;    /* Apple teal #64D2FF */
   --chart-5: 49 100% 52%;     /* Apple yellow #FFD60A */
   --radius: 0.75rem;          /* 12px border radius */
+  --radius-lg: 1.75rem;       /* 28px large radius */
+  --radius-md: 1.25rem;       /* 20px medium radius */
+  --radius-sm: 0.875rem;      /* 14px small radius */
 }
 
 .dark {
@@ -280,6 +283,9 @@
   --chart-3: 211 100% 52%;     /* Apple blue #0A84FF */
   --chart-4: 199 100% 70%;     /* Apple teal #64D2FF */
   --chart-5: 49 100% 52%;      /* Apple yellow #FFD60A */
+  --radius-lg: 1.75rem;        /* 28px large radius */
+  --radius-md: 1.25rem;        /* 20px medium radius */
+  --radius-sm: 0.875rem;       /* 14px small radius */
 }
 
 @layer base {

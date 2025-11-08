@@ -142,7 +142,7 @@ export default function TransactionHistory() {
             <Receipt className="h-5 w-5" />
             Transaction History
           </CardTitle>
-          <Badge variant="secondary" className="bg-purple-600/20 text-purple-400">
+          <Badge variant="secondary" className="bg-blue-600/20 text-blue-400">
             {transactions.length} Transactions
           </Badge>
         </div>

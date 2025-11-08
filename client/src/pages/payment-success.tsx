@@ -104,9 +104,9 @@ export default function PaymentSuccessPage() {
               className="relative"
               data-testid="icon-success-checkmark"
             >
-              <div className="absolute inset-0 bg-purple-600/20 rounded-full blur-2xl animate-pulse" />
+              <div className="absolute inset-0 bg-blue-600/20 rounded-full blur-2xl animate-pulse" />
               <CheckCircle2 
-                className="h-20 w-20 text-purple-500 relative z-10" 
+                className="h-20 w-20 text-blue-500 relative z-10" 
                 strokeWidth={2}
               />
             </div>
@@ -131,11 +131,11 @@ export default function PaymentSuccessPage() {
           {/* Email Display */}
           {email && (
             <div 
-              className="mt-6 p-4 bg-gray-800/50 border border-purple-600/30 rounded-lg"
+              className="mt-6 p-4 bg-gray-800/50 border border-blue-600/30 rounded-lg"
               data-testid="container-email-display"
             >
               <div className="flex items-center gap-3">
-                <Mail className="h-5 w-5 text-purple-400 flex-shrink-0" />
+                <Mail className="h-5 w-5 text-blue-400 flex-shrink-0" />
                 <div className="flex-1 min-w-0">
                   <p className="text-xs text-gray-400 mb-1">Setup link sent to:</p>
                   <p 
@@ -153,7 +153,7 @@ export default function PaymentSuccessPage() {
           <div className="mt-8 space-y-3">
             <Button
               onClick={handleContinue}
-              className="w-full bg-purple-600 hover:bg-purple-700 text-white py-6 text-lg font-semibold"
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white py-6 text-lg font-semibold"
               data-testid="button-continue-setup"
             >
               Continue to Account Setup
@@ -163,7 +163,7 @@ export default function PaymentSuccessPage() {
             <p className="text-xs text-gray-500 text-center">
               Didn't receive the email?{' '}
               <button 
-                className="text-purple-400 hover:text-purple-300 underline disabled:opacity-50 disabled:cursor-not-allowed"
+                className="text-blue-400 hover:text-blue-300 underline disabled:opacity-50 disabled:cursor-not-allowed"
                 onClick={handleResendEmail}
                 disabled={resendEmailMutation.isPending || !email}
                 data-testid="button-resend-email"
@@ -179,7 +179,7 @@ export default function PaymentSuccessPage() {
               Need help? Contact{' '}
               <a 
                 href="mailto:support@flint.com" 
-                className="text-purple-400 hover:text-purple-300"
+                className="text-blue-400 hover:text-blue-300"
                 data-testid="link-support-email"
               >
                 support@flint.com

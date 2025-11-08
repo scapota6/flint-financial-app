@@ -132,7 +132,7 @@ export default function RecurringSubscriptions() {
       'Utilities': 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30',
       'Software': 'bg-blue-500/20 text-blue-400 border-blue-500/30',
       'Fitness': 'bg-green-500/20 text-green-400 border-green-500/30',
-      'Financial': 'bg-purple-500/20 text-purple-400 border-purple-500/30',
+      'Financial': 'bg-blue-500/20 text-blue-400 border-blue-500/30',
       'Other': 'bg-gray-500/20 text-gray-400 border-gray-500/30'
     };
     return colors[category as keyof typeof colors] || colors.Other;
@@ -198,7 +198,7 @@ export default function RecurringSubscriptions() {
         <CardTitle className="flex items-center justify-between">
           <span>Recurring Subscriptions</span>
           <div className="flex items-center gap-2">
-            <Badge variant="secondary" className="bg-purple-600/20 text-purple-400" data-testid="badge-active-count">
+            <Badge variant="secondary" className="bg-blue-600/20 text-blue-400" data-testid="badge-active-count">
               {subscriptions.length} Active
             </Badge>
             {monthlyRounded > 0 && !isFreeTier && (
@@ -265,10 +265,10 @@ export default function RecurringSubscriptions() {
           {/* Upgrade Overlay for Free Tier */}
           {isFreeTier && (
             <div className="absolute inset-0 flex items-center justify-center z-10" data-testid="upgrade-overlay">
-              <div className="text-center p-6 bg-gray-900/95 rounded-lg border-2 border-purple-500/50 backdrop-blur-sm max-w-md">
+              <div className="text-center p-6 bg-gray-900/95 rounded-lg border-2 border-blue-500/50 backdrop-blur-sm max-w-md">
                 <div className="flex items-center justify-center mb-4">
-                  <div className="p-3 bg-purple-600/20 rounded-full">
-                    <Crown className="h-8 w-8 text-purple-400" />
+                  <div className="p-3 bg-blue-600/20 rounded-full">
+                    <Crown className="h-8 w-8 text-blue-400" />
                   </div>
                 </div>
                 <h3 className="text-xl font-bold text-white mb-2">Unlock Subscription Tracking</h3>
@@ -276,7 +276,7 @@ export default function RecurringSubscriptions() {
                   Upgrade to Basic, Pro, or Premium to automatically detect and track your recurring subscriptions from bank transactions, including merchant names, amounts, and billing dates.
                 </p>
                 <a href="https://28036d48-949d-4fd5-9e63-54ed8b7fd662-00-1i1qwnyczdy9x.kirk.replit.dev/subscribe" target="_blank" rel="noopener noreferrer">
-                  <Button className="bg-purple-600 hover:bg-purple-700 text-white" data-testid="button-upgrade">
+                  <Button className="bg-blue-600 hover:bg-blue-700 text-white" data-testid="button-upgrade">
                     <Crown className="h-4 w-4 mr-2" />
                     Upgrade Plan
                   </Button>

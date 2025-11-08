@@ -301,15 +301,15 @@ const STOCK_COLORS: Record<string, { bgClass: string; textClass: string }> = {
   'GS': { bgClass: 'bg-blue-600/20', textClass: 'text-blue-600' },
   
   // Default
-  'default': { bgClass: 'bg-purple-500/20', textClass: 'text-purple-500' },
+  'default': { bgClass: 'bg-blue-500/20', textClass: 'text-blue-500' },
 };
 
 export function getStockLogo(symbol: string, name?: string) {
   if (!symbol) {
     return {
-      logo: <TrendingUp className="h-10 w-10 text-purple-500" />,
-      bgClass: 'bg-purple-500/20',
-      textClass: 'text-purple-500'
+      logo: <TrendingUp className="h-10 w-10 text-blue-500" />,
+      bgClass: 'bg-blue-500/20',
+      textClass: 'text-blue-500'
     };
   }
 

@@ -31,7 +31,7 @@ export default function Navigation() {
           {/* Logo */}
           <div className="flex items-center">
             <Link href="/">
-              <span className="text-2xl font-bold text-transparent bg-gradient-to-r from-purple-400 to-purple-600 bg-clip-text font-mono cursor-pointer">
+              <span className="text-2xl font-bold text-transparent bg-gradient-to-r from-blue-400 to-blue-600 bg-clip-text font-mono cursor-pointer">
                 FLINT
               </span>
             </Link>
@@ -49,8 +49,8 @@ export default function Navigation() {
                 <span
                   className={`pb-1 px-1 text-sm font-medium transition-all duration-200 cursor-pointer ${
                     item.active
-                      ? "text-purple-400 border-b-2 border-purple-400"
-                      : "text-gray-400 hover:text-white hover:border-b-2 hover:border-purple-300"
+                      ? "text-blue-400 border-b-2 border-blue-400"
+                      : "text-gray-400 hover:text-white hover:border-b-2 hover:border-blue-300"
                   }`}
                 >
                   {item.label}
@@ -70,7 +70,7 @@ export default function Navigation() {
             </Button>
             <Link href="/profile">
               <div className="flex items-center space-x-2 cursor-pointer hover:opacity-80">
-                <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-purple-600 rounded-full flex items-center justify-center">
+                <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full flex items-center justify-center">
                   <span className="text-white text-sm font-medium">
                     {user?.email?.[0]?.toUpperCase() || 'U'}
                   </span>
@@ -112,7 +112,7 @@ export default function Navigation() {
                   <div
                     className={`block px-3 py-2 rounded-md text-base font-medium transition-colors ${
                       item.active
-                        ? "bg-purple-600 text-white"
+                        ? "bg-blue-600 text-white"
                         : "text-gray-300 hover:bg-gray-700 hover:text-white"
                     }`}
                     onClick={() => setMobileMenuOpen(false)}

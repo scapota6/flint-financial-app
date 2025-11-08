@@ -143,7 +143,7 @@ export function BrokerageAccountModal({
   const renderHeader = () => (
     <div className="space-y-4">
       <div className="flex items-center gap-3">
-        <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg flex items-center justify-center">
+        <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
           <span className="text-white font-bold text-sm">
             {accountDetails?.brokerage?.charAt(0).toUpperCase() || 'B'}
           </span>
@@ -207,7 +207,7 @@ export function BrokerageAccountModal({
           </div>
           <div>
             <span className="text-slate-400 text-sm">Buying Power</span>
-            <p className="font-bold text-xl text-purple-400">
+            <p className="font-bold text-xl text-blue-400">
               {formatCurrency(balances?.buyingPower, accountDetails?.currency)}
             </p>
           </div>
@@ -499,11 +499,11 @@ export function BrokerageAccountModal({
             {/* Tabs Section */}
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
               <TabsList className="grid w-full grid-cols-5 bg-slate-800/50">
-                <TabsTrigger value="overview" className="data-[state=active]:bg-purple-600/20">Overview</TabsTrigger>
-                <TabsTrigger value="holdings" className="data-[state=active]:bg-purple-600/20">Holdings</TabsTrigger>
-                <TabsTrigger value="orders" className="data-[state=active]:bg-purple-600/20">Orders</TabsTrigger>
-                <TabsTrigger value="activity" className="data-[state=active]:bg-purple-600/20">Activity</TabsTrigger>
-                <TabsTrigger value="options" className="data-[state=active]:bg-purple-600/20">Options</TabsTrigger>
+                <TabsTrigger value="overview" className="data-[state=active]:bg-blue-600/20">Overview</TabsTrigger>
+                <TabsTrigger value="holdings" className="data-[state=active]:bg-blue-600/20">Holdings</TabsTrigger>
+                <TabsTrigger value="orders" className="data-[state=active]:bg-blue-600/20">Orders</TabsTrigger>
+                <TabsTrigger value="activity" className="data-[state=active]:bg-blue-600/20">Activity</TabsTrigger>
+                <TabsTrigger value="options" className="data-[state=active]:bg-blue-600/20">Options</TabsTrigger>
               </TabsList>
               
               <TabsContent value="overview" className="space-y-6 mt-6">

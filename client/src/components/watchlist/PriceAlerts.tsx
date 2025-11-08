@@ -185,7 +185,7 @@ export default function PriceAlerts() {
               <Button
                 variant="outline"
                 size="sm"
-                className="bg-purple-600/10 border-purple-500 hover:bg-purple-600/20"
+                className="bg-blue-600/10 border-blue-500 hover:bg-blue-600/20"
               >
                 <Plus className="w-4 h-4 mr-1" />
                 New Alert
@@ -233,7 +233,7 @@ export default function PriceAlerts() {
                 <Button
                   onClick={handleCreateAlert}
                   disabled={!newAlert.symbol || (!newAlert.abovePrice && !newAlert.belowPrice)}
-                  className="w-full bg-purple-600 hover:bg-purple-700"
+                  className="w-full bg-blue-600 hover:bg-blue-700"
                 >
                   Create Alert
                 </Button>

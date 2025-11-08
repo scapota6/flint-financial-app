@@ -77,7 +77,7 @@ export default function AccountCard({ account, currentUserId }: AccountCardProps
                 <Button 
                   variant="ghost" 
                   size="sm" 
-                  className="text-purple-400 hover:text-purple-300 flex-shrink-0"
+                  className="text-blue-400 hover:text-blue-300 flex-shrink-0"
                   onClick={() => setShowDetails(true)}
                 >
                   <Eye className="h-3 w-3 mr-1" />

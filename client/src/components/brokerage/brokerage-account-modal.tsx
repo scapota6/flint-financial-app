@@ -65,11 +65,11 @@ export function BrokerageAccountModal({ account, isOpen, onClose }: BrokerageAcc
       <DialogContent className="max-w-4xl w-[90vw] h-[85vh] bg-gray-900 border-gray-700 text-white overflow-hidden">
         <DialogHeader>
           <DialogTitle className="text-xl font-semibold flex items-center gap-3">
-            <div className="w-10 h-10 bg-purple-600 rounded-lg flex items-center justify-center">
+            <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
               <TrendingUp className="h-5 w-5" />
             </div>
             {account.name || account.institution_name}
-            <Badge variant="outline" className="border-purple-400 text-purple-400 ml-auto">
+            <Badge variant="outline" className="border-blue-400 text-blue-400 ml-auto">
               Brokerage
             </Badge>
           </DialogTitle>
@@ -77,13 +77,13 @@ export function BrokerageAccountModal({ account, isOpen, onClose }: BrokerageAcc
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col">
           <TabsList className="grid grid-cols-3 bg-gray-800">
-            <TabsTrigger value="overview" className="data-[state=active]:bg-purple-600">
+            <TabsTrigger value="overview" className="data-[state=active]:bg-blue-600">
               Overview
             </TabsTrigger>
-            <TabsTrigger value="holdings" className="data-[state=active]:bg-purple-600">
+            <TabsTrigger value="holdings" className="data-[state=active]:bg-blue-600">
               Holdings
             </TabsTrigger>
-            <TabsTrigger value="orders" className="data-[state=active]:bg-purple-600">
+            <TabsTrigger value="orders" className="data-[state=active]:bg-blue-600">
               Order History
             </TabsTrigger>
           </TabsList>
@@ -95,7 +95,7 @@ export function BrokerageAccountModal({ account, isOpen, onClose }: BrokerageAcc
                 <Card className="bg-gray-800 border-gray-700">
                   <CardHeader>
                     <CardTitle className="text-white text-lg flex items-center gap-2">
-                      <Building2 className="h-5 w-5 text-purple-400" />
+                      <Building2 className="h-5 w-5 text-blue-400" />
                       Account Information
                     </CardTitle>
                   </CardHeader>
@@ -191,14 +191,14 @@ export function BrokerageAccountModal({ account, isOpen, onClose }: BrokerageAcc
               <Card className="bg-gray-800 border-gray-700">
                 <CardHeader>
                   <CardTitle className="text-white flex items-center gap-2">
-                    <TrendingUp className="h-5 w-5 text-purple-400" />
+                    <TrendingUp className="h-5 w-5 text-blue-400" />
                     Current Holdings
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   {positionsLoading ? (
                     <div className="text-center py-8">
-                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-500 mx-auto"></div>
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto"></div>
                       <p className="text-gray-400 mt-2">Loading holdings...</p>
                     </div>
                   ) : displayHoldings.length === 0 ? (

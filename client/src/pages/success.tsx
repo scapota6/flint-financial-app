@@ -31,7 +31,7 @@ export default function SuccessPage() {
         </p>
         <div className="space-y-4">
           <Button 
-            className="w-full bg-purple-600 hover:bg-purple-700"
+            className="w-full bg-blue-600 hover:bg-blue-700"
             onClick={() => window.location.href = '/app'}
           >
             Go to Dashboard

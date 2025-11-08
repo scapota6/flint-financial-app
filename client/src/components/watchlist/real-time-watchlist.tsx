@@ -195,13 +195,13 @@ export default function RealTimeWatchlist({
                   addToWatchlist(newSymbol.trim());
                 }
               }}
-              className="flex-1 px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:border-purple-500 focus:outline-none"
+              className="flex-1 px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:border-blue-500 focus:outline-none"
             />
             <Button
               onClick={() => newSymbol.trim() && addToWatchlist(newSymbol.trim())}
               disabled={!newSymbol.trim() || isAdding}
               size="sm"
-              className="bg-purple-600 hover:bg-purple-700"
+              className="bg-blue-600 hover:bg-blue-700"
             >
               <Plus className="h-4 w-4" />
             </Button>
@@ -250,7 +250,7 @@ export default function RealTimeWatchlist({
                       e.stopPropagation();
                       onStockClick?.(item.symbol, item.name);
                     }}
-                    className="h-8 w-8 p-0 text-purple-400 hover:text-purple-300"
+                    className="h-8 w-8 p-0 text-blue-400 hover:text-blue-300"
                   >
                     <Eye className="h-4 w-4" />
                   </Button>

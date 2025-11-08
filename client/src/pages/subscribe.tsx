@@ -102,7 +102,7 @@ export default function Subscribe() {
       case 'plus':
         return 'text-blue-500';
       case 'pro':
-        return 'text-purple-500';
+        return 'text-blue-500';
       case 'unlimited':
         return 'text-yellow-500';
       default:
@@ -119,7 +119,7 @@ export default function Subscribe() {
         <div className="mb-8 text-center space-y-6">
           <div>
             <h2 className="text-3xl sm:text-4xl font-bold mb-4">
-              Choose your <span className="text-purple-400">plan</span>
+              Choose your <span className="text-blue-400">plan</span>
             </h2>
             <p className="text-gray-400 text-lg">Unlock the full potential of Flint with our premium features</p>
           </div>
@@ -132,7 +132,7 @@ export default function Subscribe() {
             <Switch 
               checked={isAnnual} 
               onCheckedChange={setIsAnnual}
-              className="data-[state=checked]:bg-purple-600 data-[state=unchecked]:bg-gray-600 border-2 border-gray-500"
+              className="data-[state=checked]:bg-blue-600 data-[state=unchecked]:bg-gray-600 border-2 border-gray-500"
               data-testid="switch-billing-toggle"
             />
             <span className={`text-lg ${isAnnual ? 'text-white font-semibold' : 'text-gray-400'}`}>
@@ -185,7 +185,7 @@ export default function Subscribe() {
               <Card 
                 key={tier.id}
                 className={`relative ${
-                  tier.id === 'unlimited' ? 'bg-purple-900 border-purple-600' : 'bg-gray-800 border-gray-700'
+                  tier.id === 'unlimited' ? 'bg-blue-900 border-blue-600' : 'bg-gray-800 border-gray-700'
                 }`}
                 data-testid={`card-pricing-${tier.id}`}
               >
@@ -214,7 +214,7 @@ export default function Subscribe() {
                     disabled={isProcessing || currentTier === tier.id}
                     className={`w-full ${
                       tier.id === 'unlimited' 
-                        ? 'bg-purple-600 hover:bg-purple-700' 
+                        ? 'bg-blue-600 hover:bg-blue-700' 
                         : tier.id === 'pro'
                         ? 'bg-blue-600 hover:bg-blue-700'
                         : 'bg-gray-700 hover:bg-gray-600'

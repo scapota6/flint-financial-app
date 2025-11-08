@@ -271,7 +271,7 @@ const MERCHANT_COLORS: Record<string, { bgClass: string; textClass: string }> = 
   // Payment Services
   'paypal': { bgClass: 'bg-blue-500/20', textClass: 'text-blue-500' },
   'venmo': { bgClass: 'bg-blue-400/20', textClass: 'text-blue-400' },
-  'zelle': { bgClass: 'bg-purple-500/20', textClass: 'text-purple-500' },
+  'zelle': { bgClass: 'bg-blue-500/20', textClass: 'text-blue-500' },
   'cash app': { bgClass: 'bg-green-600/20', textClass: 'text-green-600' },
   
   // Gas stations
@@ -292,15 +292,15 @@ const MERCHANT_COLORS: Record<string, { bgClass: string; textClass: string }> = 
   'nintendo': { bgClass: 'bg-red-600/20', textClass: 'text-red-600' },
   
   // Default
-  'default': { bgClass: 'bg-indigo-500/20', textClass: 'text-indigo-500' },
+  'default': { bgClass: 'bg-cyan-500/20', textClass: 'text-cyan-500' },
 };
 
 export function getMerchantLogo(merchantName: string, accountProvider?: string) {
   if (!merchantName) {
     return {
-      logo: <Package className="h-10 w-10 text-indigo-500" />,
-      bgClass: 'bg-indigo-500/20',
-      textClass: 'text-indigo-500'
+      logo: <Package className="h-10 w-10 text-cyan-500" />,
+      bgClass: 'bg-cyan-500/20',
+      textClass: 'text-cyan-500'
     };
   }
 

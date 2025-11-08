@@ -137,7 +137,7 @@ export function ComplianceDisclaimer({
       icon: Shield,
       content: (
         <div className="space-y-4 text-sm">
-          <div className="font-semibold text-purple-600 dark:text-purple-400">
+          <div className="font-semibold text-blue-600 dark:text-blue-400">
             Understanding Flint's Role
           </div>
           
@@ -176,7 +176,7 @@ export function ComplianceDisclaimer({
             </div>
           </div>
 
-          <div className="p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg border border-purple-200 dark:border-purple-800">
+          <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
             <p className="text-xs font-medium mb-2">What Flint DOES provide:</p>
             <ul className="text-xs space-y-1 list-disc list-inside text-gray-600 dark:text-gray-400">
               <li>Unified dashboard for viewing accounts</li>

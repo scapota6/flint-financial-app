@@ -31,7 +31,7 @@ export function SparkleTitle({ className = "", children }: SparkleProps) {
       {sparkles.map((sparkle) => (
         <div
           key={sparkle.id}
-          className="absolute w-1 h-1 bg-purple-400 rounded-full animate-ping pointer-events-none sparkle-animation"
+          className="absolute w-1 h-1 bg-blue-400 rounded-full animate-ping pointer-events-none sparkle-animation"
           style={{
             left: `${sparkle.x}%`,
             top: `${sparkle.y}%`,

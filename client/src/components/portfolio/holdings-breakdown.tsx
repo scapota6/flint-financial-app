@@ -136,14 +136,14 @@ export default function HoldingsBreakdown() {
   return (
     <div className="space-y-6">
       {/* Portfolio Summary */}
-      <Card className="bg-gray-900 border-purple-600/20">
+      <Card className="bg-gray-900 border-blue-600/20">
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
             <span className="flex items-center gap-2">
               <BarChart3 className="h-5 w-5" />
               Portfolio Summary
             </span>
-            <Badge variant="secondary" className="bg-purple-600/20 text-purple-400">
+            <Badge variant="secondary" className="bg-blue-600/20 text-blue-400">
               {summary.positionCount} Positions • {summary.accountCount} Accounts
             </Badge>
           </CardTitle>

@@ -34,7 +34,7 @@ const SummaryCards = memo(function SummaryCards({
           change={change24h}
           changeType={isPositive ? 'positive' : 'negative'}
           icon={TrendingUp}
-          iconColor="text-purple-400"
+          iconColor="text-blue-400"
           prefix="$"
           className="relative overflow-hidden"
         />
@@ -44,7 +44,7 @@ const SummaryCards = memo(function SummaryCards({
           <ChartPlaceholder 
             data={balanceChartData} 
             height={24} 
-            color="#8e44ad"
+            color="#0A84FF"
             animated={true}
           />
         </div>

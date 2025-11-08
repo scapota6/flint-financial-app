@@ -46,7 +46,7 @@ export function AnimatedBadge({
       case 'info':
         return 'shadow-lg shadow-blue-500/25';
       default:
-        return 'shadow-lg shadow-purple-500/25';
+        return 'shadow-lg shadow-blue-500/25';
     }
   };
 

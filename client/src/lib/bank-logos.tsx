@@ -68,8 +68,8 @@ export function getInstitutionLogo(accountName: string) {
         alt={displayName}
         className="h-full w-full object-cover scale-105"
       />,
-      bgClass: 'bg-indigo-600/20',
-      textClass: 'text-indigo-600'
+      bgClass: 'bg-cyan-600/20',
+      textClass: 'text-cyan-600'
     };
   }
   
@@ -80,8 +80,8 @@ export function getInstitutionLogo(accountName: string) {
         alt={displayName}
         className="h-full w-full object-cover scale-105"
       />,
-      bgClass: 'bg-purple-600/20',
-      textClass: 'text-purple-600'
+      bgClass: 'bg-blue-600/20',
+      textClass: 'text-blue-600'
     };
   }
   
@@ -189,8 +189,8 @@ export function getInstitutionLogo(accountName: string) {
         alt={displayName}
         className="h-full w-full object-cover scale-105"
       />,
-      bgClass: 'bg-purple-700/20',
-      textClass: 'text-purple-700'
+      bgClass: 'bg-blue-700/20',
+      textClass: 'text-blue-700'
     };
   }
   
@@ -322,8 +322,8 @@ export function getInstitutionLogo(accountName: string) {
         alt={displayName}
         className="h-full w-full object-cover scale-105"
       />,
-      bgClass: 'bg-purple-500/20',
-      textClass: 'text-purple-500'
+      bgClass: 'bg-blue-500/20',
+      textClass: 'text-blue-500'
     };
   }
   
@@ -370,8 +370,8 @@ export function getInstitutionLogo(accountName: string) {
         alt={displayName}
         className="h-full w-full object-cover scale-105"
       />,
-      bgClass: 'bg-indigo-500/20',
-      textClass: 'text-indigo-500'
+      bgClass: 'bg-cyan-500/20',
+      textClass: 'text-cyan-500'
     };
   }
   
@@ -419,8 +419,8 @@ export function getInstitutionLogo(accountName: string) {
         alt={displayName}
         className="h-full w-full object-cover scale-105"
       />,
-      bgClass: 'bg-purple-600/20',
-      textClass: 'text-purple-600'
+      bgClass: 'bg-blue-600/20',
+      textClass: 'text-blue-600'
     };
   }
   

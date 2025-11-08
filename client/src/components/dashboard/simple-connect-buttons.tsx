@@ -358,7 +358,7 @@ export default function SimpleConnectButtons({ accounts, userTier, isAdmin }: Si
             {/* Brokerage/Crypto Connection */}
             <div className="p-4 bg-gray-800 rounded-lg">
               <div className="flex items-center space-x-3 mb-3">
-                <div className="w-10 h-10 bg-purple-600 rounded-full flex items-center justify-center">
+                <div className="w-10 h-10 bg-cyan-600 rounded-full flex items-center justify-center">
                   <TrendingUp className="h-5 w-5 text-white" />
                 </div>
                 <div>
@@ -382,7 +382,7 @@ export default function SimpleConnectButtons({ accounts, userTier, isAdmin }: Si
                     snapTradeConnectMutation.mutate();
                   }}
                   disabled={snapTradeConnectMutation.isPending}
-                  className="w-full bg-purple-600 hover:bg-purple-700 text-white"
+                  className="w-full bg-cyan-600 hover:bg-cyan-700 text-white"
                 >
                   {snapTradeConnectMutation.isPending ? (
                     "Connecting..."

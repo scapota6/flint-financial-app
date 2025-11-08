@@ -226,10 +226,10 @@ export default function TradeModal({
           {/* Order Mode Tabs */}
           <Tabs value={orderMode} onValueChange={(value: 'shares' | 'dollars') => setOrderMode(value)}>
             <TabsList className="grid w-full grid-cols-2 bg-gray-800">
-              <TabsTrigger value="shares" className="data-[state=active]:bg-purple-600">
+              <TabsTrigger value="shares" className="data-[state=active]:bg-blue-600">
                 By Shares
               </TabsTrigger>
-              <TabsTrigger value="dollars" className="data-[state=active]:bg-purple-600">
+              <TabsTrigger value="dollars" className="data-[state=active]:bg-blue-600">
                 By Dollar Amount
               </TabsTrigger>
             </TabsList>

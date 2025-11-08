@@ -27,7 +27,7 @@ export function SparkleAnimation({ children, className = "" }: SparkleProps) {
       {sparkles.map((sparkle) => (
         <motion.div
           key={sparkle.id}
-          className="absolute w-1 h-1 bg-purple-400 rounded-full pointer-events-none"
+          className="absolute w-1 h-1 bg-blue-400 rounded-full pointer-events-none"
           style={{
             left: `${sparkle.x}%`,
             top: `${sparkle.y}%`,
@@ -48,7 +48,7 @@ export function SparkleAnimation({ children, className = "" }: SparkleProps) {
       
       {/* Sliding shimmer effect */}
       <motion.div
-        className="absolute inset-0 bg-gradient-to-r from-transparent via-purple-400/10 to-transparent"
+        className="absolute inset-0 bg-gradient-to-r from-transparent via-blue-400/10 to-transparent"
         initial={{ x: "-100%" }}
         animate={{ x: "100%" }}
         transition={{
@@ -70,7 +70,7 @@ export function SparkleTitle({ children }: { children: React.ReactNode }) {
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
-        className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-white via-purple-200 to-white bg-clip-text text-transparent"
+        className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-white via-blue-200 to-white bg-clip-text text-transparent"
       >
         {children}
       </motion.div>

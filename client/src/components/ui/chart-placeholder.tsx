@@ -12,7 +12,7 @@ interface ChartPlaceholderProps {
 export function ChartPlaceholder({
   data = [65, 68, 72, 70, 75, 78, 82, 79, 85, 88, 92, 90],
   height = 60,
-  color = "#8e44ad",
+  color = "#0A84FF",
   animated = true,
   className = ""
 }: ChartPlaceholderProps) {
@@ -169,7 +169,7 @@ export function ChartPlaceholder({
       </div>
 
       {/* Interactive overlay */}
-      <div className={`absolute inset-0 bg-gradient-to-r from-transparent via-purple-500/5 to-transparent 
+      <div className={`absolute inset-0 bg-gradient-to-r from-transparent via-blue-500/5 to-transparent 
         opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded`} />
     </div>
   );

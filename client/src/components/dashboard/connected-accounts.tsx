@@ -99,7 +99,7 @@ export default function ConnectedAccounts({
       case 'teller':
         return <Building2 className="h-5 w-5 text-blue-400" />;
       case 'snaptrade':
-        return <TrendingUp className="h-5 w-5 text-purple-400" />;
+        return <TrendingUp className="h-5 w-5 text-blue-400" />;
       default:
         return <Building2 className="h-5 w-5 text-gray-400" />;
     }
@@ -113,7 +113,7 @@ export default function ConnectedAccounts({
       case 'teller':
         return <Badge variant="outline" className="border-blue-400 text-blue-400">Bank</Badge>;
       case 'snaptrade':
-        return <Badge variant="outline" className="border-purple-400 text-purple-400">Brokerage</Badge>;
+        return <Badge variant="outline" className="border-blue-400 text-blue-400">Brokerage</Badge>;
       default:
         return <Badge variant="outline">{provider}</Badge>;
     }
@@ -146,7 +146,7 @@ export default function ConnectedAccounts({
             <Button 
               onClick={handleConnectBrokerage}
               disabled={loadingConnect === 'brokerage'}
-              className="btn-standard flex-1 bg-purple-600 hover:bg-purple-700 text-white btn-glow-hover focus-visible:outline-purple-400"
+              className="btn-standard flex-1 bg-blue-600 hover:bg-blue-700 text-white btn-glow-hover focus-visible:outline-blue-400"
             >
               {loadingConnect === 'brokerage' ? (
                 <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -164,7 +164,7 @@ export default function ConnectedAccounts({
             {accounts.map((account) => (
               <div 
                 key={account.id}
-                className={`account-card ${account.provider.toLowerCase()} relative purple-glow-border card-hover-lift`}
+                className={`account-card ${account.provider.toLowerCase()} relative blue-glow-border card-hover-lift`}
                 style={{ borderRadius: '16px', minWidth: '240px' }}
               >
                 {/* Disconnect Button */}
@@ -215,7 +215,7 @@ export default function ConnectedAccounts({
                         <Button 
                           variant="ghost" 
                           size="sm" 
-                          className="text-purple-400 hover:text-purple-300 interactive-glow focus-visible:outline-purple-400"
+                          className="text-blue-400 hover:text-blue-300 interactive-glow focus-visible:outline-blue-400"
                           onClick={() => handleAccountDetails(account)}
                         >
                           Details <Eye className="h-3 w-3 ml-1" />

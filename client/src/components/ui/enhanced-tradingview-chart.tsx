@@ -104,7 +104,7 @@ export function EnhancedTradingViewChart({
       <div className="relative" style={{ height: `${height}px` }}>
         {isLoading ? (
           <div className="flex items-center justify-center h-full">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-500"></div>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
           </div>
         ) : (
           <svg

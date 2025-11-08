@@ -17,7 +17,7 @@ export default function QuickTransfer({ accounts }: QuickTransferProps) {
     to: 'Savings',
     available: account.balance,
     icon: account.accountType === 'bank' ? Building : TrendingUp,
-    iconColor: account.accountType === 'bank' ? 'bg-blue-500' : 'bg-purple-500',
+    iconColor: account.accountType === 'bank' ? 'bg-blue-500' : 'bg-cyan-500',
   })) : [
     {
       from: 'Chase',
@@ -31,7 +31,7 @@ export default function QuickTransfer({ accounts }: QuickTransferProps) {
       to: 'Robinhood',
       available: '32,779.87',
       icon: TrendingUp,
-      iconColor: 'bg-purple-500',
+      iconColor: 'bg-cyan-500',
     },
   ];
 

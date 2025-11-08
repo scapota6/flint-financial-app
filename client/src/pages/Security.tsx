@@ -73,7 +73,7 @@ export default function Security() {
   return (
     <div className="container mx-auto p-4 max-w-6xl">
       <div className="mb-6">
-        <h1 className="text-3xl font-bold mb-2 bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent">
+        <h1 className="text-3xl font-bold mb-2 bg-gradient-to-r from-blue-400 to-cyan-500 bg-clip-text text-transparent">
           Security & Compliance
         </h1>
         <p className="text-gray-600 dark:text-gray-400">
@@ -160,7 +160,7 @@ export default function Security() {
 
                   <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-900 rounded-lg">
                     <div className="flex items-center gap-3">
-                      <Server className="w-5 h-5 text-purple-500" />
+                      <Server className="w-5 h-5 text-blue-500" />
                       <div>
                         <p className="font-medium">API Token Encryption</p>
                         <p className="text-sm text-gray-500">Provider tokens encrypted</p>
@@ -288,10 +288,10 @@ export default function Security() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                <div className="p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg border border-purple-200 dark:border-purple-800">
+                <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
                   <div className="flex items-center justify-between mb-2">
                     <span className="font-medium">Current Tier</span>
-                    <Badge className="bg-purple-600">{securityStatus?.userTier || 'Free'}</Badge>
+                    <Badge className="bg-blue-600">{securityStatus?.userTier || 'Free'}</Badge>
                   </div>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
                     Your account has access to the following features based on your subscription

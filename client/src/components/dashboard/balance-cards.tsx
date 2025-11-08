@@ -38,7 +38,7 @@ export default function BalanceCards({ data }: BalanceCardsProps) {
       change: "+5.7%",
       changeAmount: "+$4,123.45",
       icon: TrendingUp,
-      iconColor: "bg-purple-600",
+      iconColor: "bg-blue-600",
       isPositive: true,
     },
   ];

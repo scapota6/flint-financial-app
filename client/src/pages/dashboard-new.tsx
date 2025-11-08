@@ -254,7 +254,7 @@ export default function Dashboard() {
               </Tooltip>
               
               <Tooltip content="Move funds between accounts" position="top">
-                <button className="group flex items-center justify-center px-6 py-3 bg-purple-600 hover:bg-purple-500 rounded-lg transition-all duration-200 hover:shadow-lg hover:shadow-purple-500/25 hover:scale-105 btn-standard focus-visible:outline-purple-400">
+                <button className="group flex items-center justify-center px-6 py-3 bg-blue-600 hover:bg-blue-500 rounded-lg transition-all duration-200 hover:shadow-lg hover:shadow-blue-500/25 hover:scale-105 btn-standard focus-visible:outline-blue-400">
                   <RefreshCw className="h-5 w-5 mr-2 group-hover:animate-pulse" />
                   <span className="font-semibold text-white">Transfer Funds</span>
                 </button>
@@ -271,10 +271,10 @@ export default function Dashboard() {
         {/* Enhanced Watchlist & Holdings with Micro-interactions */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
           {/* Watchlist with Interactive Elements */}
-          <Card className="flint-card group hover:border-purple-500/50 transition-all duration-300">
+          <Card className="flint-card group hover:border-blue-500/50 transition-all duration-300">
             <CardHeader>
               <CardTitle className="text-white font-mono flex items-center gap-2">
-                <TrendingUp className="h-5 w-5 text-purple-400 group-hover:scale-110 transition-transform duration-200" />
+                <TrendingUp className="h-5 w-5 text-blue-400 group-hover:scale-110 transition-transform duration-200" />
                 Watchlist
                 <AnimatedBadge variant="info" className="ml-auto">3 items</AnimatedBadge>
               </CardTitle>

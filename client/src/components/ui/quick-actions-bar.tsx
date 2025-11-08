@@ -67,9 +67,9 @@ export function QuickActionsBar({ className = '', accounts = [] }: QuickActionsB
           
           <Button
             onClick={handleTransfer}
-            className="bg-purple-600 hover:bg-purple-700 text-white h-12 rounded-xl font-medium
+            className="bg-blue-600 hover:bg-blue-700 text-white h-12 rounded-xl font-medium
               shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-[1.02]
-              hover:shadow-[0_0_20px_rgba(142,68,173,0.4)] group"
+              hover:shadow-[0_0_20px_rgba(10,132,255,0.4)] group"
           >
             <ArrowUpDown className="h-5 w-5 mr-2 group-hover:animate-pulse" />
             Transfer

@@ -135,7 +135,7 @@ export default function WatchlistPanel() {
           variant="outline"
           size="sm"
           onClick={() => setIsAdding(!isAdding)}
-          className="bg-purple-600/10 border-purple-500 hover:bg-purple-600/20"
+          className="bg-blue-600/10 border-blue-500 hover:bg-blue-600/20"
         >
           <Plus className="w-4 h-4 mr-1" />
           Add Symbol
@@ -162,7 +162,7 @@ export default function WatchlistPanel() {
               <Button
                 onClick={handleAdd}
                 disabled={!newSymbol.trim() || addMutation.isPending}
-                className="bg-purple-600 hover:bg-purple-700"
+                className="bg-blue-600 hover:bg-blue-700"
               >
                 Add
               </Button>
@@ -214,7 +214,7 @@ export default function WatchlistPanel() {
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="text-gray-400 hover:text-purple-400"
+                    className="text-gray-400 hover:text-blue-400"
                     title="Set price alert"
                   >
                     <Bell className="w-4 h-4" />

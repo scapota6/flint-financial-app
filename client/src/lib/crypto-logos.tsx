@@ -70,15 +70,15 @@ const CRYPTO_TO_DOMAIN: Record<string, string> = {
 // Color mapping for different crypto types
 const CRYPTO_COLORS: Record<string, { bgClass: string; textClass: string }> = {
   'BTC': { bgClass: 'bg-orange-500/20', textClass: 'text-orange-500' },
-  'ETH': { bgClass: 'bg-indigo-500/20', textClass: 'text-indigo-500' },
+  'ETH': { bgClass: 'bg-cyan-500/20', textClass: 'text-cyan-500' },
   'USDT': { bgClass: 'bg-green-500/20', textClass: 'text-green-500' },
   'USDC': { bgClass: 'bg-blue-500/20', textClass: 'text-blue-500' },
   'BNB': { bgClass: 'bg-yellow-500/20', textClass: 'text-yellow-500' },
-  'SOL': { bgClass: 'bg-purple-500/20', textClass: 'text-purple-500' },
+  'SOL': { bgClass: 'bg-blue-500/20', textClass: 'text-blue-500' },
   'XRP': { bgClass: 'bg-blue-400/20', textClass: 'text-blue-400' },
   'ADA': { bgClass: 'bg-blue-600/20', textClass: 'text-blue-600' },
   'DOGE': { bgClass: 'bg-yellow-400/20', textClass: 'text-yellow-400' },
-  'MATIC': { bgClass: 'bg-purple-600/20', textClass: 'text-purple-600' },
+  'MATIC': { bgClass: 'bg-blue-600/20', textClass: 'text-blue-600' },
   'DOT': { bgClass: 'bg-pink-500/20', textClass: 'text-pink-500' },
   'AVAX': { bgClass: 'bg-red-500/20', textClass: 'text-red-500' },
   'LINK': { bgClass: 'bg-blue-500/20', textClass: 'text-blue-500' },

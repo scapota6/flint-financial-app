@@ -33,7 +33,7 @@ const COLORS = {
   stocks: '#10B981', // green
   crypto: '#F59E0B', // orange
   bank: '#3B82F6',   // blue
-  cash: '#8B5CF6'    // purple
+  cash: '#0A84FF'    // Apple blue
 };
 
 export function PortfolioBreakdown({ 
@@ -230,8 +230,8 @@ export function PortfolioBreakdown({
               <h3 className="text-white font-medium mb-4 text-center">Asset Allocation</h3>
               <div className="chart-container chart-glow relative overflow-hidden h-80">
                 {/* Animated background effects */}
-                <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 via-green-500/5 to-orange-500/10 rounded-lg blur-2xl animate-pulse"></div>
-                <div className="floating-element absolute top-0 left-0 w-32 h-32 bg-purple-500/20 rounded-full blur-3xl"></div>
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 via-green-500/5 to-orange-500/10 rounded-lg blur-2xl animate-pulse"></div>
+                <div className="floating-element absolute top-0 left-0 w-32 h-32 bg-blue-500/20 rounded-full blur-3xl"></div>
                 <div className="floating-element absolute bottom-0 right-0 w-24 h-24 bg-green-500/20 rounded-full blur-2xl" style={{animationDelay: '2s'}}></div>
                 <div className="floating-element absolute top-1/3 right-1/4 w-16 h-16 bg-orange-500/15 rounded-full blur-2xl" style={{animationDelay: '1s'}}></div>
                 <ResponsiveContainer width="100%" height="100%">

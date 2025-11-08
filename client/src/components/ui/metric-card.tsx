@@ -22,7 +22,7 @@ export function MetricCard({
   change,
   changeType = 'neutral',
   icon: Icon,
-  iconColor = "text-purple-400",
+  iconColor = "text-blue-400",
   prefix = "",
   suffix = "",
   showProgress = false,
@@ -44,7 +44,7 @@ export function MetricCard({
 
   return (
     <div className={`group bg-gray-900/50 backdrop-blur-sm border border-gray-700 rounded-lg p-6 
-      hover:border-purple-500/50 hover:shadow-lg hover:shadow-purple-500/10 
+      hover:border-blue-500/50 hover:shadow-lg hover:shadow-blue-500/10 
       transform hover:scale-[1.02] transition-all duration-300 ${className}`}>
       
       {/* Header */}
@@ -86,7 +86,7 @@ export function MetricCard({
         <ProgressBar 
           value={value} 
           max={progressMax} 
-          color="bg-gradient-to-r from-purple-500 to-purple-400"
+          color="bg-gradient-to-r from-blue-500 to-cyan-400"
           height="h-1.5"
           animated={true}
         />
@@ -94,9 +94,9 @@ export function MetricCard({
 
       {/* Micro-interaction sparkles */}
       <div className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-        <div className="absolute top-2 right-2 w-1 h-1 bg-purple-400 rounded-full animate-ping" 
+        <div className="absolute top-2 right-2 w-1 h-1 bg-blue-400 rounded-full animate-ping" 
              style={{ animationDelay: '0.2s' }} />
-        <div className="absolute bottom-3 left-3 w-0.5 h-0.5 bg-purple-300 rounded-full animate-ping" 
+        <div className="absolute bottom-3 left-3 w-0.5 h-0.5 bg-cyan-400 rounded-full animate-ping" 
              style={{ animationDelay: '0.5s' }} />
       </div>
     </div>

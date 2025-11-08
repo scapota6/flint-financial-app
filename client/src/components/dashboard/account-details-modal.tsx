@@ -655,7 +655,7 @@ export function AccountDetailsModal({ isOpen, onClose, accountId, accountName }:
             <Card className="bg-slate-800/50 border-slate-700 backdrop-blur-sm">
               <CardHeader>
                 <CardTitle className="text-white flex items-center gap-2">
-                  <Search className="h-5 w-5 text-purple-400" />
+                  <Search className="h-5 w-5 text-blue-400" />
                   Symbol Search
                 </CardTitle>
               </CardHeader>
@@ -671,7 +671,7 @@ export function AccountDetailsModal({ isOpen, onClose, accountId, accountName }:
                   />
                   <Button 
                     onClick={handleSymbolSearch}
-                    className="bg-purple-600 hover:bg-purple-700"
+                    className="bg-blue-600 hover:bg-blue-700"
                     data-testid="button-search-symbol"
                   >
                     <Search className="h-4 w-4" />
@@ -816,14 +816,14 @@ export function AccountDetailsModal({ isOpen, onClose, accountId, accountName }:
                   >
                     <ToggleGroupItem 
                       value="MARKET" 
-                      className="flex-1 data-[state=on]:bg-purple-600 data-[state=on]:text-white bg-slate-700 text-slate-300 hover:bg-slate-600 transition-all duration-200"
+                      className="flex-1 data-[state=on]:bg-blue-600 data-[state=on]:text-white bg-slate-700 text-slate-300 hover:bg-slate-600 transition-all duration-200"
                       data-testid="button-market"
                     >
                       MARKET
                     </ToggleGroupItem>
                     <ToggleGroupItem 
                       value="LIMIT" 
-                      className="flex-1 data-[state=on]:bg-purple-600 data-[state=on]:text-white bg-slate-700 text-slate-300 hover:bg-slate-600 transition-all duration-200"
+                      className="flex-1 data-[state=on]:bg-blue-600 data-[state=on]:text-white bg-slate-700 text-slate-300 hover:bg-slate-600 transition-all duration-200"
                       data-testid="button-limit"
                     >
                       LIMIT
@@ -864,14 +864,14 @@ export function AccountDetailsModal({ isOpen, onClose, accountId, accountName }:
                   >
                     <ToggleGroupItem 
                       value="DAY" 
-                      className="flex-1 data-[state=on]:bg-purple-600 data-[state=on]:text-white bg-slate-700 text-slate-300 hover:bg-slate-600 transition-all duration-200"
+                      className="flex-1 data-[state=on]:bg-blue-600 data-[state=on]:text-white bg-slate-700 text-slate-300 hover:bg-slate-600 transition-all duration-200"
                       data-testid="button-day"
                     >
                       DAY
                     </ToggleGroupItem>
                     <ToggleGroupItem 
                       value="GTC" 
-                      className="flex-1 data-[state=on]:bg-purple-600 data-[state=on]:text-white bg-slate-700 text-slate-300 hover:bg-slate-600 transition-all duration-200"
+                      className="flex-1 data-[state=on]:bg-blue-600 data-[state=on]:text-white bg-slate-700 text-slate-300 hover:bg-slate-600 transition-all duration-200"
                       data-testid="button-gtc"
                     >
                       GTC
@@ -883,7 +883,7 @@ export function AccountDetailsModal({ isOpen, onClose, accountId, accountName }:
                 <Button
                   onClick={handlePreviewOrder}
                   disabled={!selectedSymbol || !orderQuantity || previewMutation.isPending}
-                  className="w-full bg-purple-600 hover:bg-purple-700 text-white transition-all duration-200"
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white transition-all duration-200"
                   data-testid="button-preview-order"
                 >
                   {previewMutation.isPending ? (
@@ -905,7 +905,7 @@ export function AccountDetailsModal({ isOpen, onClose, accountId, accountName }:
           <DialogContent className="bg-slate-800 border-slate-700 text-white" data-testid="modal-order-preview">
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
-                <CheckCircle className="h-5 w-5 text-purple-400" />
+                <CheckCircle className="h-5 w-5 text-blue-400" />
                 Order Preview
               </DialogTitle>
               <DialogDescription className="text-slate-400">
@@ -994,7 +994,7 @@ export function AccountDetailsModal({ isOpen, onClose, accountId, accountName }:
               <Button
                 onClick={handleConfirmOrder}
                 disabled={placeMutation.isPending || !previewData?.impact?.accepted}
-                className="bg-purple-600 hover:bg-purple-700 text-white"
+                className="bg-blue-600 hover:bg-blue-700 text-white"
                 data-testid="button-confirm-order"
               >
                 {placeMutation.isPending ? (

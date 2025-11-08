@@ -10,7 +10,7 @@ export default function TermsOfService() {
   return (
     <div className="min-h-screen bg-black text-white">
       <div className="max-w-4xl mx-auto px-6 py-12">
-        <Link href="/" className="inline-flex items-center gap-2 text-purple-400 hover:text-purple-300 mb-8">
+        <Link href="/" className="inline-flex items-center gap-2 text-blue-400 hover:text-blue-300 mb-8">
           <ArrowLeft className="h-4 w-4" />
           Back to Home
         </Link>
@@ -198,7 +198,7 @@ export default function TermsOfService() {
                 For support or questions about these Terms, contact us at:
               </p>
               <p className="text-gray-300 leading-relaxed mt-3">
-                📧 <a href="mailto:support@flint-investing.com" className="text-purple-400 hover:text-purple-300">support@flint-investing.com</a>
+                📧 <a href="mailto:support@flint-investing.com" className="text-blue-400 hover:text-blue-300">support@flint-investing.com</a>
               </p>
             </div>
           </div>

@@ -205,28 +205,28 @@ function Landing() {
   return (
     <div className="min-h-screen bg-black text-white relative overflow-hidden">
       {/* Animated gradient background */}
-      <div className="fixed inset-0 bg-gradient-to-br from-purple-900/30 via-black to-blue-900/30 pointer-events-none" />
+      <div className="fixed inset-0 bg-gradient-to-br from-blue-900/30 via-black to-blue-900/30 pointer-events-none" />
       
       {/* Animated floating orbs */}
       <div className="fixed inset-0 pointer-events-none">
-        {/* Purple orb - top left */}
-        <div className="absolute top-20 left-10 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl animate-pulse" 
+        {/* Blue orb - top left */}
+        <div className="absolute top-20 left-10 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl animate-pulse" 
              style={{ animationDuration: '4s' }} />
         
         {/* Blue orb - top right */}
         <div className="absolute top-40 right-20 w-80 h-80 bg-blue-500/20 rounded-full blur-3xl animate-pulse" 
              style={{ animationDuration: '5s', animationDelay: '1s' }} />
         
-        {/* Pink orb - middle */}
-        <div className="absolute top-1/2 left-1/3 w-72 h-72 bg-pink-500/15 rounded-full blur-3xl animate-pulse" 
+        {/* Cyan orb - middle */}
+        <div className="absolute top-1/2 left-1/3 w-72 h-72 bg-cyan-500/15 rounded-full blur-3xl animate-pulse" 
              style={{ animationDuration: '6s', animationDelay: '2s' }} />
         
         {/* Cyan orb - bottom left */}
         <div className="absolute bottom-40 left-20 w-64 h-64 bg-cyan-500/20 rounded-full blur-3xl animate-pulse" 
              style={{ animationDuration: '5s', animationDelay: '1.5s' }} />
         
-        {/* Purple orb - bottom right */}
-        <div className="absolute bottom-20 right-32 w-96 h-96 bg-purple-600/15 rounded-full blur-3xl animate-pulse" 
+        {/* Blue orb - bottom right */}
+        <div className="absolute bottom-20 right-32 w-96 h-96 bg-blue-600/15 rounded-full blur-3xl animate-pulse" 
              style={{ animationDuration: '7s', animationDelay: '0.5s' }} />
       </div>
       
@@ -244,11 +244,11 @@ function Landing() {
             />
           </div>
           <div className="flex items-center space-x-4">
-            <div className="flex flex-col items-end space-y-1 bg-gray-800/50 border border-purple-600/30 rounded-lg px-4 py-3">
+            <div className="flex flex-col items-end space-y-1 bg-gray-800/50 border border-blue-600/30 rounded-lg px-4 py-3">
               <Link href="/login">
                 <Button 
                   variant="ghost" 
-                  className="text-white hover:text-purple-300 hover:bg-purple-600/20"
+                  className="text-white hover:text-blue-300 hover:bg-blue-600/20"
                   data-testid="button-login"
                 >
                   Log in
@@ -256,7 +256,7 @@ function Landing() {
               </Link>
               <Link 
                 href="/reset-password"
-                className="text-xs text-gray-400 hover:text-purple-400 transition-colors"
+                className="text-xs text-gray-400 hover:text-blue-400 transition-colors"
                 data-testid="link-forgot-password"
               >
                 Forgot password?
@@ -271,9 +271,9 @@ function Landing() {
         <section className="py-20 text-center space-y-8">
           <div className="space-y-6">
             <h2 className="h1 tracking-tight">
-              Feel confident with your{' '}
-              <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 bg-clip-text text-transparent">
-                money again.
+              See all your money in one place.{' '}
+              <span className="bg-gradient-to-r from-blue-400 via-cyan-400 to-blue-500 bg-clip-text text-transparent">
+                Save money. Reach your goals.
               </span>
             </h2>
             <p className="text-xl lg:text-2xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
@@ -284,7 +284,7 @@ function Landing() {
             {/* Visual elements */}
             <div className="flex items-center justify-center gap-8 pt-8">
               <div className="flex items-center gap-3 text-gray-300">
-                <div className="h-12 w-12 rounded-full bg-gradient-to-br from-purple-500 to-purple-700 flex items-center justify-center">
+                <div className="h-12 w-12 rounded-full bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center">
                   <TrendingUp className="h-6 w-6 text-white" />
                 </div>
                 <span className="text-sm font-medium">Track Growth</span>
@@ -374,7 +374,7 @@ function Landing() {
                 {/* First set of logos */}
                 {INSTITUTIONS.map((institution, idx) => (
                   <div key={`logo-${idx}`} className="flex-shrink-0 flex items-center justify-center" data-testid={`institution-${institution.name.toLowerCase().replace(/[^a-z0-9]/g, '-')}`}>
-                    <div className="h-16 w-16 rounded-full bg-gray-800/60 border border-gray-700/50 flex items-center justify-center overflow-hidden hover:border-purple-500/50 transition-all duration-300">
+                    <div className="h-16 w-16 rounded-full bg-gray-800/60 border border-gray-700/50 flex items-center justify-center overflow-hidden hover:border-blue-500/50 transition-all duration-300">
                       <img 
                         src={`https://cdn.brandfetch.io/${institution.domain}?c=${import.meta.env.VITE_BRANDFETCH_CLIENT_ID || ''}`}
                         alt={institution.name}
@@ -395,7 +395,7 @@ function Landing() {
                 {/* Second set for seamless loop */}
                 {INSTITUTIONS.map((institution, idx) => (
                   <div key={`logo-dup-${idx}`} className="flex-shrink-0 flex items-center justify-center">
-                    <div className="h-16 w-16 rounded-full bg-gray-800/60 border border-gray-700/50 flex items-center justify-center overflow-hidden hover:border-purple-500/50 transition-all duration-300">
+                    <div className="h-16 w-16 rounded-full bg-gray-800/60 border border-gray-700/50 flex items-center justify-center overflow-hidden hover:border-blue-500/50 transition-all duration-300">
                       <img 
                         src={`https://cdn.brandfetch.io/${institution.domain}?c=${import.meta.env.VITE_BRANDFETCH_CLIENT_ID || ''}`}
                         alt={institution.name}
@@ -416,7 +416,7 @@ function Landing() {
                 {/* Third set for longer scroll */}
                 {INSTITUTIONS.map((institution, idx) => (
                   <div key={`logo-dup2-${idx}`} className="flex-shrink-0 flex items-center justify-center">
-                    <div className="h-16 w-16 rounded-full bg-gray-800/60 border border-gray-700/50 flex items-center justify-center overflow-hidden hover:border-purple-500/50 transition-all duration-300">
+                    <div className="h-16 w-16 rounded-full bg-gray-800/60 border border-gray-700/50 flex items-center justify-center overflow-hidden hover:border-blue-500/50 transition-all duration-300">
                       <img 
                         src={`https://cdn.brandfetch.io/${institution.domain}?c=${import.meta.env.VITE_BRANDFETCH_CLIENT_ID || ''}`}
                         alt={institution.name}
@@ -448,10 +448,10 @@ function Landing() {
           <div className="max-w-6xl mx-auto space-y-12">
             <div className="text-center space-y-4">
               <h2 className="h2 tracking-tight text-white">
-                The hidden cost of scattered finances
+                Your money is spread out.
               </h2>
               <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-                Every day, millions waste time and money juggling disconnected financial apps
+                This costs you time and money.
               </p>
             </div>
 
@@ -513,7 +513,7 @@ function Landing() {
 
             <div className="text-center pt-8">
               <p className="text-2xl text-gray-200 font-semibold">
-                There's a <span className="text-purple-400">better way</span>
+                There's a <span className="text-blue-400">better way</span>
               </p>
             </div>
           </div>
@@ -524,91 +524,91 @@ function Landing() {
           <div className="max-w-6xl mx-auto space-y-12">
             <div className="text-center space-y-4">
               <h2 className="text-4xl lg:text-5xl font-bold tracking-tight">
-                Everything you need in{' '}
-                <span className="bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
+                Everything in{' '}
+                <span className="bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">
                   one place
                 </span>
               </h2>
               <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-                Stop juggling multiple apps and spreadsheets. Flint gives you the complete picture of your finances.
+                Stop jumping between apps. See all your money at once.
               </p>
             </div>
 
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {/* Unified Dashboard */}
-              <Card className="bg-gray-900/80 border-gray-700 hover:border-purple-500/50 transition-all duration-300">
+              <Card className="bg-gray-900/80 border-gray-700 hover:border-blue-500/50 transition-all duration-300">
                 <CardHeader>
-                  <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-purple-500 to-purple-700 flex items-center justify-center mb-4">
+                  <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center mb-4">
                     <Building className="h-6 w-6 text-white" />
                   </div>
                   <CardTitle className="text-white">Unified Dashboard</CardTitle>
                   <CardDescription className="text-gray-400">
-                    All your bank accounts, credit cards, crypto and stock brokerages accounts in one comprehensive view
+                    See all your banks and cards in one place.
                   </CardDescription>
                 </CardHeader>
               </Card>
 
               {/* Account Syncing */}
-              <Card className="bg-gray-900/80 border-gray-700 hover:border-purple-500/50 transition-all duration-300">
+              <Card className="bg-gray-900/80 border-gray-700 hover:border-blue-500/50 transition-all duration-300">
                 <CardHeader>
                   <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center mb-4">
                     <Zap className="h-6 w-6 text-white" />
                   </div>
                   <CardTitle className="text-white">Synced Balances</CardTitle>
                   <CardDescription className="text-gray-400">
-                    Your account balances and portfolio values stay up-to-date with regular automatic syncing
+                    Your balances stay up to date.
                   </CardDescription>
                 </CardHeader>
               </Card>
 
               {/* Trading */}
-              <Card className="bg-gray-900/80 border-gray-700 hover:border-purple-500/50 transition-all duration-300">
+              <Card className="bg-gray-900/80 border-gray-700 hover:border-blue-500/50 transition-all duration-300">
                 <CardHeader>
                   <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-green-500 to-green-700 flex items-center justify-center mb-4">
                     <TrendingUp className="h-6 w-6 text-white" />
                   </div>
                   <CardTitle className="text-white">Active Trading</CardTitle>
                   <CardDescription className="text-gray-400">
-                    Send buy and sell requests to your brokerages for stocks and crypto directly from Flint
+                    Buy and sell stocks right from Flint.
                   </CardDescription>
                 </CardHeader>
               </Card>
 
               {/* Money Movement */}
-              <Card className="bg-gray-900/80 border-gray-700 hover:border-purple-500/50 transition-all duration-300">
+              <Card className="bg-gray-900/80 border-gray-700 hover:border-blue-500/50 transition-all duration-300">
                 <CardHeader>
-                  <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-pink-500 to-pink-700 flex items-center justify-center mb-4">
+                  <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-cyan-500 to-cyan-700 flex items-center justify-center mb-4">
                     <DollarSign className="h-6 w-6 text-white" />
                   </div>
                   <CardTitle className="text-white">Money Movement</CardTitle>
                   <CardDescription className="text-gray-400">
-                    Track spending patterns, analyze merchants, and transfer money between your accounts
+                    See where your money goes. Move it between accounts.
                   </CardDescription>
                 </CardHeader>
               </Card>
 
               {/* Portfolio Analytics */}
-              <Card className="bg-gray-900/80 border-gray-700 hover:border-purple-500/50 transition-all duration-300">
+              <Card className="bg-gray-900/80 border-gray-700 hover:border-blue-500/50 transition-all duration-300">
                 <CardHeader>
                   <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-cyan-500 to-cyan-700 flex items-center justify-center mb-4">
                     <Star className="h-6 w-6 text-white" />
                   </div>
                   <CardTitle className="text-white">Portfolio Analytics</CardTitle>
                   <CardDescription className="text-gray-400">
-                    Monitor your investment performance, track growth, and understand your financial picture
+                    Watch your money grow over time.
                   </CardDescription>
                 </CardHeader>
               </Card>
 
               {/* Security */}
-              <Card className="bg-gray-900/80 border-gray-700 hover:border-purple-500/50 transition-all duration-300">
+              <Card className="bg-gray-900/80 border-gray-700 hover:border-blue-500/50 transition-all duration-300">
                 <CardHeader>
                   <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-orange-500 to-orange-700 flex items-center justify-center mb-4">
                     <Shield className="h-6 w-6 text-white" />
                   </div>
                   <CardTitle className="text-white">Bank-Grade Security</CardTitle>
                   <CardDescription className="text-gray-400">
-                    Your data is encrypted and protected with the same security standards as major banks
+                    Your data is safe. Bank-level protection.
                   </CardDescription>
                 </CardHeader>
               </Card>
@@ -624,7 +624,7 @@ function Landing() {
                 How it works
               </h2>
               <p className="text-xl text-gray-300 max-w-2xl mx-auto">
-                Get started in minutes and take control of your financial life
+                Get started in just 3 minutes.
               </p>
             </div>
 
@@ -632,19 +632,19 @@ function Landing() {
               {/* Step 1 */}
               <div className="relative space-y-4 text-center">
                 <div className="flex items-center justify-center mb-6">
-                  <div className="h-20 w-20 rounded-full bg-gradient-to-br from-purple-500 to-purple-700 flex items-center justify-center">
+                  <div className="h-20 w-20 rounded-full bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center">
                     <span className="text-3xl font-bold text-white">1</span>
                   </div>
                 </div>
                 <h3 className="text-2xl font-bold text-white">Connect Your Accounts</h3>
                 <p className="text-gray-400">
-                  Securely link your bank and brokerage accounts in just a few clicks
+                  Connect your accounts in seconds.
                 </p>
               </div>
 
               {/* Arrow */}
               <div className="hidden md:flex items-center justify-center">
-                <ArrowRight className="h-8 w-8 text-purple-400" />
+                <ArrowRight className="h-8 w-8 text-blue-400" />
               </div>
 
               {/* Step 2 */}
@@ -656,13 +656,13 @@ function Landing() {
                 </div>
                 <h3 className="text-2xl font-bold text-white">See Everything Unified</h3>
                 <p className="text-gray-400">
-                  View all your accounts, balances, and investments in one dashboard
+                  See all your money in one place.
                 </p>
               </div>
 
               {/* Arrow */}
               <div className="hidden md:flex items-center justify-center">
-                <ArrowRight className="h-8 w-8 text-purple-400" />
+                <ArrowRight className="h-8 w-8 text-blue-400" />
               </div>
 
               {/* Step 3 */}
@@ -674,7 +674,7 @@ function Landing() {
                 </div>
                 <h3 className="text-2xl font-bold text-white">Trade, Transfer, Analyze</h3>
                 <p className="text-gray-400">
-                  Manage your finances, execute trades, and track your progress all in one place
+                  Buy stocks. Move money. Track it all.
                 </p>
               </div>
             </div>
@@ -686,14 +686,14 @@ function Landing() {
           <div className="max-w-6xl mx-auto">
             <div className="grid lg:grid-cols-2 gap-8 items-center">
               <div className="space-y-4">
-                <div className="text-sm text-purple-400 font-semibold">Dashboard Preview</div>
+                <div className="text-sm text-blue-400 font-semibold">Dashboard Preview</div>
                 <h3 className="text-2xl font-bold text-white">See Your Complete Financial Picture</h3>
                 <p className="text-gray-300">
-                  View all your Bank, Credit, Stock and Crypto accounts in one unified dashboard. Track your net worth, monitor balances, and manage your finances with ease.
+                  See all your accounts in one place. Track your total worth. Stay on top of your money.
                 </p>
                 <button
                   onClick={() => setDashboardPreviewOpen(true)}
-                  className="relative group cursor-pointer overflow-hidden rounded-lg border border-gray-700 hover:border-purple-500 transition-all duration-300"
+                  className="relative group cursor-pointer overflow-hidden rounded-lg border border-gray-700 hover:border-blue-500 transition-all duration-300"
                   data-testid="button-dashboard-preview"
                 >
                   <img 
@@ -702,7 +702,7 @@ function Landing() {
                     className="w-full h-auto rounded-lg transition-transform duration-300 group-hover:scale-105"
                   />
                   <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-300 flex items-center justify-center">
-                    <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-purple-600 text-white px-4 py-2 rounded-lg">
+                    <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-blue-600 text-white px-4 py-2 rounded-lg">
                       Click to enlarge
                     </div>
                   </div>
@@ -723,10 +723,10 @@ function Landing() {
           <div className="max-w-2xl mx-auto">
             <div className="text-center space-y-6 mb-12">
               <h2 className="h2">
-                Apply for <span className="text-purple-400">Flint Free</span>
+                Try <span className="text-blue-400">Flint for free</span>
               </h2>
               <p className="text-xl text-gray-300">
-                Tell us about your accounts and we'll let you know if you qualify.
+                Tell us what you want to connect.
               </p>
             </div>
 
@@ -805,7 +805,7 @@ function Landing() {
                     
                     <Button 
                       type="submit" 
-                      className="w-full bg-purple-600 hover:bg-purple-700 text-white py-3"
+                      className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3"
                       disabled={!formData.firstName || !formData.email || !formData.accountCount || !formData.connectType}
                       data-testid="button-submit-application"
                     >
@@ -856,7 +856,7 @@ function Landing() {
               
               <Button 
                 size="lg" 
-                className="w-full lg:w-auto bg-purple-600 hover:bg-purple-700 text-white px-8 py-4 text-lg"
+                className="w-full lg:w-auto bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 text-lg"
                 data-cta="annual-unlimited"
                 data-testid="button-cta-annual-unlimited"
                 onClick={() => handleCTAClick('unlimited-yearly', '$499.99')}
@@ -884,7 +884,7 @@ function Landing() {
                     <span className="font-semibold">Trusted financial infrastructure</span>
                   </div>
                   <div className="flex items-center space-x-3">
-                    <Lock className="h-6 w-6 text-purple-400" />
+                    <Lock className="h-6 w-6 text-blue-400" />
                     <span className="font-semibold">No ads or selling data</span>
                   </div>
                 </CardContent>
@@ -920,7 +920,7 @@ function Landing() {
           <div className="max-w-4xl mx-auto text-center space-y-8">
             <div className="space-y-4">
               <h2 className="text-4xl lg:text-5xl font-bold">
-                A year feels <span className="text-purple-400">too long?</span>
+                A year feels <span className="text-blue-400">too long?</span>
               </h2>
               <p className="text-xl text-gray-300">
                 Get one month free when you invest for 6 months.
@@ -933,7 +933,7 @@ function Landing() {
               
               <Button 
                 size="lg" 
-                className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-4 text-lg"
+                className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 text-lg"
                 data-cta="unlimited-6mo"
                 onClick={() => handleCTAClick('unlimited-6mo', '$249.99')}
               >
@@ -974,7 +974,7 @@ function Landing() {
           <div className="max-w-4xl mx-auto text-center space-y-8">
             <div className="space-y-4">
               <h2 className="text-4xl lg:text-5xl font-bold">
-                Don't need <span className="text-purple-400">unlimited accounts?</span>
+                Don't need <span className="text-blue-400">unlimited accounts?</span>
               </h2>
               <p className="text-xl text-gray-300">
                 Get 2 free months when you choose Flint Plus on the yearly plan.
@@ -990,7 +990,7 @@ function Landing() {
               
               <Button 
                 size="lg" 
-                className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-4 text-lg"
+                className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 text-lg"
                 data-cta="basic-yearly"
                 onClick={() => handleCTAClick('basic-yearly', '$199.99')}
               >
@@ -1078,7 +1078,7 @@ function Landing() {
           <div className="max-w-6xl mx-auto space-y-12">
             <div className="text-center space-y-6">
               <h2 className="text-4xl lg:text-5xl font-bold">
-                Choose your <span className="text-purple-400">plan</span>
+                Choose your <span className="text-blue-400">plan</span>
               </h2>
               
               {/* Monthly/Yearly Toggle */}
@@ -1089,7 +1089,7 @@ function Landing() {
                 <Switch 
                   checked={isYearly} 
                   onCheckedChange={setIsYearly}
-                  className="data-[state=checked]:bg-purple-600 data-[state=unchecked]:bg-gray-600 border-2 border-gray-500"
+                  className="data-[state=checked]:bg-blue-600 data-[state=unchecked]:bg-gray-600 border-2 border-gray-500"
                 />
                 <span className={`text-lg ${isYearly ? 'text-white font-semibold' : 'text-gray-400'}`}>
                   Yearly
@@ -1163,7 +1163,7 @@ function Landing() {
               </Card>
               
               {/* Unlimited - Most Popular */}
-              <Card className="bg-purple-900 border-purple-600 relative">
+              <Card className="bg-blue-900 border-blue-600 relative">
                 <Badge className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-yellow-500 text-black">
                   ⭐ Most Popular
                 </Badge>
@@ -1183,7 +1183,7 @@ function Landing() {
                 </CardHeader>
                 <CardContent className="text-center">
                   <Button 
-                    className="w-full bg-purple-600 hover:bg-purple-700 text-white"
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white"
                     data-cta={isYearly ? 'unlimited-yearly' : 'unlimited-monthly'}
                     data-testid={isYearly ? 'button-cta-unlimited-yearly' : 'button-cta-unlimited-monthly'}
                     onClick={() => handleCTAClick(
@@ -1286,7 +1286,7 @@ function Landing() {
           <div className="grid md:grid-cols-2 gap-8">
             <div className="space-y-4">
               <div className="flex items-center space-x-2">
-                <div className="w-8 h-8 bg-purple-600 rounded-lg flex items-center justify-center">
+                <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
                   <span className="text-white font-bold text-lg">F</span>
                 </div>
                 <span className="text-white font-bold text-xl">Flint</span>
@@ -1300,9 +1300,9 @@ function Landing() {
             <div className="space-y-4">
               <h4 className="text-white font-semibold">Legal</h4>
               <div className="flex flex-wrap gap-6 text-sm">
-                <a href="/tos" className="text-gray-300 hover:text-purple-400 transition-colors">Terms of Service</a>
-                <a href="/privacy-policy" className="text-gray-300 hover:text-purple-400 transition-colors">Privacy Policy</a>
-                <span className="text-gray-300">contact us at <a href="mailto:support@flint-investing.com" className="text-purple-400 hover:text-purple-300 transition-colors">support@flint-investing.com</a></span>
+                <a href="/tos" className="text-gray-300 hover:text-blue-400 transition-colors">Terms of Service</a>
+                <a href="/privacy-policy" className="text-gray-300 hover:text-blue-400 transition-colors">Privacy Policy</a>
+                <span className="text-gray-300">contact us at <a href="mailto:support@flint-investing.com" className="text-blue-400 hover:text-blue-300 transition-colors">support@flint-investing.com</a></span>
               </div>
             </div>
           </div>
@@ -1377,7 +1377,7 @@ export function SuccessPage() {
           Thank you for choosing {plan}. Check your email for next steps.
         </p>
         <Button 
-          className="bg-purple-600 hover:bg-purple-700"
+          className="bg-blue-600 hover:bg-blue-700"
           onClick={() => window.location.href = '/app'}
         >
           Go to Dashboard

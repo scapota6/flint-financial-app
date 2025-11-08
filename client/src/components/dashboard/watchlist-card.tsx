@@ -26,7 +26,7 @@ export default function WatchlistCard({ data, onAccountDetail }: WatchlistCardPr
       'AAPL': 'bg-blue-500',
       'TSLA': 'bg-green-500',
       'BTC': 'bg-orange-500',
-      'ETH': 'bg-purple-500',
+      'ETH': 'bg-cyan-500',
       'NFLX': 'bg-red-500',
       'GOOGL': 'bg-yellow-500',
     };

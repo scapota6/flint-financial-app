@@ -154,7 +154,7 @@ export default function Monitoring() {
     <div className="container mx-auto p-4 max-w-7xl">
       <div className="mb-6">
         <div className="flex items-center justify-between mb-2">
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent">
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-400 to-cyan-500 bg-clip-text text-transparent">
             System Monitoring
           </h1>
           <div className="flex items-center gap-2">

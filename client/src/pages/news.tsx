@@ -149,7 +149,7 @@ export default function News() {
                 <div className="flex gap-4">
                   {article.imageUrl && (
                     <div className="flex-shrink-0 w-24 h-24 bg-gray-800 rounded-lg overflow-hidden">
-                      <div className="w-full h-full bg-gradient-to-br from-blue-600 to-purple-600"></div>
+                      <div className="w-full h-full bg-gradient-to-br from-blue-600 to-cyan-600"></div>
                     </div>
                   )}
                   

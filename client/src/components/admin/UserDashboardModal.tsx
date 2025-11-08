@@ -101,7 +101,7 @@ export default function UserDashboardModal({
 
         {isLoading && (
           <div className="flex items-center justify-center py-12" data-testid="loading-dashboard">
-            <Loader2 className="h-8 w-8 animate-spin text-purple-500" />
+            <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
           </div>
         )}
 
@@ -137,7 +137,7 @@ export default function UserDashboardModal({
                     </div>
                     <div>
                       <p className="text-sm text-gray-400">Subscription Tier</p>
-                      <Badge className="bg-purple-600 mt-1" data-testid="badge-subscription-tier">
+                      <Badge className="bg-blue-600 mt-1" data-testid="badge-subscription-tier">
                         {data.user?.subscriptionTier || 'Unknown'}
                       </Badge>
                     </div>
