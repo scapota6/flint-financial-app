@@ -858,31 +858,31 @@ function Landing() {
           </div>
         </section>
 
-        {/* Hero Section - CTA 1: Unlimited Annual */}
+        {/* Hero Section - CTA 1: Pro Annual */}
         <section id="annual" data-section="annual" className="grid lg:grid-cols-2 gap-12 py-20 items-center">
           <div className="space-y-8">
             <div className="space-y-4">
               <p className="text-xl text-gray-300 leading-relaxed">
                 Or get started right now with <strong>2 free months</strong> (20% savings) 
-                when you invest upfront in Flint Unlimited.
+                when you invest upfront in Flint Pro.
               </p>
             </div>
             
             <div className="space-y-6">
               <div className="flex items-baseline space-x-2">
-                <span className="text-5xl font-bold text-white">$499.99</span>
-                <span className="text-lg text-gray-400 line-through">$600</span>
+                <span className="text-5xl font-bold text-white">$399.99</span>
+                <span className="text-lg text-gray-400 line-through">$480</span>
                 <span className="text-lg text-gray-300">/year</span>
               </div>
               
               <Button 
                 size="lg" 
                 className="w-full lg:w-auto bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 text-lg"
-                data-cta="annual-unlimited"
-                data-testid="button-cta-annual-unlimited"
-                onClick={() => handleCTAClick('unlimited-yearly', '$499.99')}
+                data-cta="annual-pro"
+                data-testid="button-cta-annual-pro"
+                onClick={() => handleCTAClick('pro-yearly', '$399.99')}
               >
-                Start with Unlimited Annual – $499.99
+                Start with Pro Annual – $399.99
               </Button>
               
               <p className="text-sm text-gray-400">
@@ -970,7 +970,7 @@ function Landing() {
             <div className="space-y-3">
               <h3 className="text-2xl font-bold text-white">Total Savings Over Time</h3>
               <p className="text-xl text-gray-300">
-                Flint Plus users save on average <strong className="text-green-400">$127/month</strong> by tracking 
+                Flint Basic users save on average <strong className="text-green-400">$127/month</strong> by tracking 
                 subscriptions and reducing hidden fees.
               </p>
             </div>
@@ -1062,32 +1062,63 @@ function Landing() {
             
             {/* Pricing Cards */}
             <div className="grid md:grid-cols-3 gap-8">
-              {/* Plus */}
+              {/* Free */}
               <Card className="bg-gray-800 border-gray-700">
                 <CardHeader className="text-center space-y-4">
-                  <CardTitle className="text-2xl">Flint Plus</CardTitle>
+                  <CardTitle className="text-2xl">Flint Free</CardTitle>
                   <div className="space-y-2">
                     <div className="text-4xl font-bold">
-                      ${isYearly ? '16.67' : '19.99'}
+                      $0
                     </div>
                     <div className="text-gray-400">
-                      {isYearly ? '/mo (billed yearly)' : '/month'}
+                      forever
                     </div>
                   </div>
                   <CardDescription className="text-gray-300">
-                    Best for individuals who just want to see everything in one place.
+                    Perfect for getting started with your financial overview.
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="text-center">
                   <Button 
                     className="w-full bg-gray-700 hover:bg-gray-600 text-white"
-                    data-cta={isYearly ? 'plus-yearly' : 'plus-monthly'}
+                    data-cta="free"
+                    onClick={() => handleCTAClick('free', '$0')}
+                  >
+                    Get Started Free
+                  </Button>
+                </CardContent>
+              </Card>
+              
+              {/* Basic - Most Popular */}
+              <Card className="bg-blue-900 border-blue-600 relative">
+                <Badge className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-yellow-500 text-black">
+                  ⭐ Most Popular
+                </Badge>
+                <CardHeader className="text-center space-y-4 pt-8">
+                  <CardTitle className="text-2xl">Flint Basic</CardTitle>
+                  <div className="space-y-2">
+                    <div className="text-4xl font-bold">
+                      ${isYearly ? '16.67' : '19.99'}
+                    </div>
+                    <div className="text-gray-300">
+                      {isYearly ? '/mo (billed yearly)' : '/month'}
+                    </div>
+                  </div>
+                  <CardDescription className="text-gray-300">
+                    Best for managing unlimited accounts and subscriptions.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="text-center">
+                  <Button 
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                    data-cta={isYearly ? 'basic-yearly' : 'basic-monthly'}
+                    data-testid={isYearly ? 'button-cta-basic-yearly' : 'button-cta-basic-monthly'}
                     onClick={() => handleCTAClick(
-                      isYearly ? 'plus-yearly' : 'plus-monthly', 
+                      isYearly ? 'basic-yearly' : 'basic-monthly', 
                       isYearly ? '$199.99' : '$19.99'
                     )}
                   >
-                    Choose Plus {isYearly ? 'Yearly' : 'Monthly'}
+                    Choose Basic {isYearly ? 'Yearly' : 'Monthly'}
                   </Button>
                 </CardContent>
               </Card>
@@ -1105,7 +1136,7 @@ function Landing() {
                     </div>
                   </div>
                   <CardDescription className="text-gray-300">
-                    Best for individuals who want to manage money and simplify payments.
+                    Complete control with trading and transfer capabilities.
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="text-center">
@@ -1118,40 +1149,6 @@ function Landing() {
                     )}
                   >
                     Choose Pro {isYearly ? 'Yearly' : 'Monthly'}
-                  </Button>
-                </CardContent>
-              </Card>
-              
-              {/* Unlimited - Most Popular */}
-              <Card className="bg-blue-900 border-blue-600 relative">
-                <Badge className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-yellow-500 text-black">
-                  ⭐ Most Popular
-                </Badge>
-                <CardHeader className="text-center space-y-4 pt-8">
-                  <CardTitle className="text-2xl">Flint Unlimited</CardTitle>
-                  <div className="space-y-2">
-                    <div className="text-4xl font-bold">
-                      ${isYearly ? '41.67' : '49.99'}
-                    </div>
-                    <div className="text-gray-300">
-                      {isYearly ? '/mo (billed yearly)' : '/month'}
-                    </div>
-                  </div>
-                  <CardDescription className="text-gray-300">
-                    Best for individuals who want complete control and future features.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="text-center">
-                  <Button 
-                    className="w-full bg-blue-600 hover:bg-blue-700 text-white"
-                    data-cta={isYearly ? 'unlimited-yearly' : 'unlimited-monthly'}
-                    data-testid={isYearly ? 'button-cta-unlimited-yearly' : 'button-cta-unlimited-monthly'}
-                    onClick={() => handleCTAClick(
-                      isYearly ? 'unlimited-yearly' : 'unlimited-monthly', 
-                      isYearly ? '$499.99' : '$49.99'
-                    )}
-                  >
-                    Choose Unlimited {isYearly ? 'Yearly' : 'Monthly'}
                   </Button>
                 </CardContent>
               </Card>
@@ -1180,20 +1177,20 @@ function Landing() {
                     <thead>
                       <tr className="border-b border-gray-700">
                         <th className="text-left py-3 text-gray-400">Feature</th>
-                        <th className="text-center py-3 text-gray-400">Plus</th>
+                        <th className="text-center py-3 text-gray-400">Free</th>
+                        <th className="text-center py-3 text-gray-400">Basic</th>
                         <th className="text-center py-3 text-gray-400">Pro</th>
-                        <th className="text-center py-3 text-gray-400">Unlimited</th>
                       </tr>
                     </thead>
                     <tbody>
                       <tr className="border-b border-gray-800">
                         <td className="py-3 text-white">Account Connections</td>
-                        <td className="text-center py-3 text-gray-400">3</td>
-                        <td className="text-center py-3 text-gray-400">5</td>
+                        <td className="text-center py-3 text-gray-400">4</td>
+                        <td className="text-center py-3 text-gray-400">Unlimited</td>
                         <td className="text-center py-3 text-gray-400">Unlimited</td>
                       </tr>
                       <tr className="border-b border-gray-800">
-                        <td className="py-3 text-white">Recurring Subscription Management</td>
+                        <td className="py-3 text-white">Money In/Out Flow</td>
                         <td className="text-center py-3">
                           <Check className="h-5 w-5 text-green-500 mx-auto" />
                         </td>
@@ -1205,7 +1202,39 @@ function Landing() {
                         </td>
                       </tr>
                       <tr className="border-b border-gray-800">
-                        <td className="py-3 text-white">Transfer Funds (Coming Soon)</td>
+                        <td className="py-3 text-white">Dashboard & Transaction History</td>
+                        <td className="text-center py-3">
+                          <Check className="h-5 w-5 text-green-500 mx-auto" />
+                        </td>
+                        <td className="text-center py-3">
+                          <Check className="h-5 w-5 text-green-500 mx-auto" />
+                        </td>
+                        <td className="text-center py-3">
+                          <Check className="h-5 w-5 text-green-500 mx-auto" />
+                        </td>
+                      </tr>
+                      <tr className="border-b border-gray-800">
+                        <td className="py-3 text-white">Recurring Subscription Management</td>
+                        <td className="text-center py-3 text-gray-600">-</td>
+                        <td className="text-center py-3">
+                          <Check className="h-5 w-5 text-green-500 mx-auto" />
+                        </td>
+                        <td className="text-center py-3">
+                          <Check className="h-5 w-5 text-green-500 mx-auto" />
+                        </td>
+                      </tr>
+                      <tr className="border-b border-gray-800">
+                        <td className="py-3 text-white">Credit Card Management</td>
+                        <td className="text-center py-3 text-gray-600">-</td>
+                        <td className="text-center py-3">
+                          <Check className="h-5 w-5 text-green-500 mx-auto" />
+                        </td>
+                        <td className="text-center py-3">
+                          <Check className="h-5 w-5 text-green-500 mx-auto" />
+                        </td>
+                      </tr>
+                      <tr className="border-b border-gray-800">
+                        <td className="py-3 text-white">Stock Charts (Coming Soon)</td>
                         <td className="text-center py-3 text-gray-600">-</td>
                         <td className="text-center py-3">
                           <Check className="h-5 w-5 text-green-500 mx-auto" />
@@ -1223,7 +1252,7 @@ function Landing() {
                         </td>
                       </tr>
                       <tr>
-                        <td className="py-3 text-white">Priority Support</td>
+                        <td className="py-3 text-white">Transfer Funds (Coming Soon)</td>
                         <td className="text-center py-3 text-gray-600">-</td>
                         <td className="text-center py-3 text-gray-600">-</td>
                         <td className="text-center py-3">
@@ -1258,7 +1287,7 @@ function Landing() {
                       Is my financial data secure?
                     </AccordionTrigger>
                     <AccordionContent className="text-gray-300">
-                      Yes! We use bank-level encryption (AES-256) to protect your data. We never store your bank login credentials - we use secure, read-only connections through industry-standard providers. Your information is encrypted both in transit and at rest.
+                      Yes! We use bank-level encryption to protect your data. We never store your bank login credentials - we use secure, read-only connections through industry-standard providers. Your information is encrypted both in transit and at rest.
                     </AccordionContent>
                   </AccordionItem>
 
@@ -1267,16 +1296,16 @@ function Landing() {
                       How many accounts can I connect?
                     </AccordionTrigger>
                     <AccordionContent className="text-gray-300">
-                      It depends on your plan. Plus allows 3 connections, Pro allows 5, and Unlimited gives you unlimited account connections. You can connect banks, credit cards, investment accounts, and crypto wallets.
+                      It depends on your plan. Free allows 4 connections, while Basic and Pro both offer unlimited account connections. You can connect banks, credit cards, investment accounts, and crypto wallets.
                     </AccordionContent>
                   </AccordionItem>
 
                   <AccordionItem value="item-3" className="border-gray-700">
                     <AccordionTrigger className="text-white hover:text-blue-400">
-                      Can I cancel anytime?
+                      Can I cancel my monthly subscription anytime?
                     </AccordionTrigger>
                     <AccordionContent className="text-gray-300">
-                      Absolutely. You can cancel your monthly subscription at any time from your account settings. There are no long-term commitments or cancellation fees.
+                      Absolutely. You can cancel your monthly subscription at any time from your account settings with no cancellation fees. If you have a yearly subscription, you can cancel anytime, but we cannot provide refunds for the unused portion of your annual plan.
                     </AccordionContent>
                   </AccordionItem>
 
@@ -1294,16 +1323,16 @@ function Landing() {
                       How does trading work?
                     </AccordionTrigger>
                     <AccordionContent className="text-gray-300">
-                      With the Unlimited plan, you can buy and sell stocks directly through your connected brokerage accounts. We provide real-time quotes, market data, and a simple trading interface. Trading is available for only supported brokerages
+                      With the Pro plan, you can buy and sell stocks directly through your connected brokerage accounts. We provide real-time quotes, market data, and a simple trading interface. Trading is available for only supported brokerages.
                     </AccordionContent>
                   </AccordionItem>
 
                   <AccordionItem value="item-6" className="border-gray-700">
                     <AccordionTrigger className="text-white hover:text-blue-400">
-                      Do you offer a free trial?
+                      Is there a free plan?
                     </AccordionTrigger>
                     <AccordionContent className="text-gray-300">
-                      We currently don't offer a traditional free trial, but you can apply for a free account to test the platform. Approved applicants get access to explore Flint before committing to a paid plan.
+                      Yes! Flint Free allows you to connect up to 4 accounts and includes money flow tracking, dashboard, and transaction history at no cost. It's a great way to get started with Flint.
                     </AccordionContent>
                   </AccordionItem>
 
@@ -1312,7 +1341,7 @@ function Landing() {
                       What's the difference between the plans?
                     </AccordionTrigger>
                     <AccordionContent className="text-gray-300">
-                      The main differences are the number of account connections and available features. Plus (3 accounts) is great for basic tracking, Pro (5 accounts) adds fund transfers, and Unlimited offers unlimited connections plus trading capabilities and priority support.
+                      Free (4 connections) includes money flow tracking, dashboard, and transaction history. Basic (unlimited connections) adds recurring subscriptions, credit card management, and stock charts. Pro (unlimited connections) includes everything in Basic plus trading and transfer capabilities.
                     </AccordionContent>
                   </AccordionItem>
                 </Accordion>
