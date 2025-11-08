@@ -5,13 +5,12 @@
  * Goal: Convert visitors through tiered CTA funnel
  */
 
-import React, { useState, useEffect, lazy, Suspense } from 'react';
+import React, { useState, useEffect } from 'react';
 import forbesLogo from '@assets/forbes-logo-white_1760732850878.png';
 import wsjLogo from '@assets/12450_65f1b42317bb1_3142_1760732860674.png';
 import entrepreneurLogo from '@assets/images_1760732961328.png';
 import bloombergLogo from '@assets/bloomberg-logo-png-bloomberg-logo-png-transparent-amp-svg-vector-pluspng-2400x665_1760732850877.png';
-
-const CheckoutModal = lazy(() => import("@/components/checkout-modal").then(module => ({ default: module.CheckoutModal })));
+import { CheckoutModal } from "@/components/checkout-modal";
 
 // Institution list for scrolling banner
 const INSTITUTIONS = [
@@ -1419,12 +1418,10 @@ function Landing() {
       
       {/* Checkout Modal */}
       {checkoutPlanId && (
-        <Suspense fallback={null}>
-          <CheckoutModal 
-            planId={checkoutPlanId} 
-            onClose={() => setCheckoutPlanId(null)} 
-          />
-        </Suspense>
+        <CheckoutModal 
+          planId={checkoutPlanId} 
+          onClose={() => setCheckoutPlanId(null)} 
+        />
       )}
       
       {/* JSON-LD Schema */}
