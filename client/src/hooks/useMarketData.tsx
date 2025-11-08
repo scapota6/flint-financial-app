@@ -26,8 +26,8 @@ export function useMarketData(symbol: string, enabled: boolean = true) {
       return response.json();
     },
     enabled: enabled && !!symbol,
-    staleTime: 4000, // Consider data stale after 4 seconds
-    refetchInterval: 5000, // Refetch every 5 seconds
+    staleTime: 500, // Live data: Consider stale after 0.5 seconds
+    refetchInterval: 1000, // Live data: Refetch every second
     retry: 2,
   });
 
@@ -45,7 +45,7 @@ export function useMarketData(symbol: string, enabled: boolean = true) {
       queryClient.invalidateQueries({ 
         queryKey: ["/api/market-data", symbol] 
       });
-    }, 5000);
+    }, 1000); // Live data: Update every second
 
     return () => {
       if (intervalRef.current) {
@@ -85,8 +85,8 @@ export function useBulkMarketData(symbols: string[], enabled: boolean = true) {
       return response.json();
     },
     enabled: enabled && symbols.length > 0,
-    staleTime: 4000,
-    refetchInterval: 5000,
+    staleTime: 500, // Live data: Consider stale after 0.5 seconds
+    refetchInterval: 1000, // Live data: Refetch every second
     retry: 2,
   });
 
@@ -102,7 +102,7 @@ export function useBulkMarketData(symbols: string[], enabled: boolean = true) {
       queryClient.invalidateQueries({ 
         queryKey: ["/api/market-data/bulk", symbols.sort().join(",")] 
       });
-    }, 5000);
+    }, 1000); // Live data: Update every second
 
     return () => {
       if (intervalRef.current) {
@@ -133,8 +133,8 @@ export function useWatchlistMarketData() {
       }
       return response.json();
     },
-    staleTime: 4000,
-    refetchInterval: 5000,
+    staleTime: 500, // Live data: Consider stale after 0.5 seconds
+    refetchInterval: 1000, // Live data: Refetch every second
     retry: 2,
   });
 
@@ -148,7 +148,7 @@ export function useWatchlistMarketData() {
       queryClient.invalidateQueries({ 
         queryKey: ["/api/market-data/watchlist"] 
       });
-    }, 5000);
+    }, 1000); // Live data: Update every second
 
     return () => {
       if (intervalRef.current) {
