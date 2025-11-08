@@ -87,8 +87,8 @@ class TradingViewDataSync {
       }
     };
 
-    // Extract data every 5 seconds
-    const interval = setInterval(extractData, 5000);
+    // Live data: Extract every second
+    const interval = setInterval(extractData, 1000);
     
     // Initial extraction
     setTimeout(extractData, 2000); // Wait for widget to load

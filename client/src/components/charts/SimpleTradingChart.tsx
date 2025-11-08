@@ -49,7 +49,7 @@ export default function SimpleTradingChart({
 
   useEffect(() => {
     fetchQuote();
-    const interval = setInterval(fetchQuote, 5000); // Update every 5 seconds
+    const interval = setInterval(fetchQuote, 1000); // Live data: Update every second
     return () => clearInterval(interval);
   }, [symbol]);
 
@@ -90,8 +90,8 @@ export default function SimpleTradingChart({
               </div>
               
               <div className="text-center text-sm text-gray-600 dark:text-gray-400">
-                <p>Real-time price for {symbol}</p>
-                <p className="text-xs mt-1">Updates every 5 seconds</p>
+                <p>Live price for {symbol}</p>
+                <p className="text-xs mt-1">Updates every second</p>
               </div>
             </>
           ) : (
