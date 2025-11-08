@@ -233,7 +233,10 @@ function Landing() {
       {/* Subtle grid overlay */}
       <div className="fixed inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0icmdiYSgyNTUsMjU1LDI1NSwwLjAzKSIgc3Ryb2tlLXdpZHRoPSIxIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2dyaWQpIi8+PC9zdmc+')] opacity-40 pointer-events-none" />
       {/* Sticky Header */}
-      <header className="sticky top-0 z-50 px-4 lg:px-8 py-4 bg-black/80 backdrop-blur-md border-b border-gray-800">
+      <header 
+        className="sticky top-0 z-50 px-4 lg:px-8 py-4 border-b border-gray-800"
+        style={{ background: 'var(--surface-glass)', backdropFilter: 'blur(16px) saturate(140%)' }}
+      >
         <nav className="mx-auto flex max-w-7xl items-center justify-between">
           <div className="flex items-center space-x-3">
             <img 
@@ -1281,7 +1284,10 @@ function Landing() {
       </main>
 
       {/* Legal Footer */}
-      <footer className="mt-20 bg-black/80 border-t border-gray-700 relative z-10">
+      <footer 
+        className="mt-20 border-t border-gray-700 relative z-10"
+        style={{ background: 'var(--surface-glass)', backdropFilter: 'blur(16px) saturate(140%)' }}
+      >
         <div className="mx-auto max-w-7xl px-4 py-12 lg:px-8">
           <div className="grid md:grid-cols-2 gap-8">
             <div className="space-y-4">
