@@ -1276,7 +1276,7 @@ function Landing() {
                       Can I cancel anytime?
                     </AccordionTrigger>
                     <AccordionContent className="text-gray-300">
-                      Absolutely. You can cancel your subscription at any time from your account settings. There are no long-term commitments or cancellation fees.
+                      Absolutely. You can cancel your monthly subscription at any time from your account settings. There are no long-term commitments or cancellation fees.
                     </AccordionContent>
                   </AccordionItem>
 
