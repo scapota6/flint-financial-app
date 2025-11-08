@@ -193,6 +193,7 @@ export default function SimpleConnectButtons({ accounts, userTier, isAdmin }: Si
                 // Refresh data - invalidate all dashboard-related queries
                 queryClient.invalidateQueries({ queryKey: ['dashboard'] });
                 queryClient.invalidateQueries({ queryKey: ['/api/accounts'] });
+                queryClient.invalidateQueries({ queryKey: ['/api/banks'] });
                 queryClient.invalidateQueries({ queryKey: ['/api/dashboard'] });
                 
                 resolve({ success: true });
