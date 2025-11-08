@@ -17,7 +17,7 @@ export default function TradingLayout({ initialSymbol = 'AAPL' }: TradingLayoutP
 
   const { data: quote, refetch } = useQuery({
     queryKey: [`/api/quotes/${symbol}`],
-    refetchInterval: 5000,
+    refetchInterval: 1000, // Live data: Update every second
   });
 
   const { data: accounts } = useQuery({

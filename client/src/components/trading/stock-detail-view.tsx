@@ -18,7 +18,7 @@ interface Position {
 export default function StockDetailView({ symbol }: StockDetailViewProps) {
   const { data: quote } = useQuery({
     queryKey: [`/api/quotes/${symbol}`],
-    refetchInterval: 5000,
+    refetchInterval: 1000, // Live data: Update every second
   });
 
   const { data: portfolioData } = useQuery({

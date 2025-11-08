@@ -101,7 +101,7 @@ export default function EnhancedTradeModal({
   const { data: quote } = useQuery({
     queryKey: [`/api/quotes/${symbol}`],
     enabled: isOpen && !!symbol,
-    refetchInterval: 5000, // Refresh every 5 seconds
+    refetchInterval: 1000, // Live data: Update every second
   });
 
   const executeTrade = useMutation({
