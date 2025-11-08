@@ -64,56 +64,23 @@ router.post('/create-checkout', async (req, res) => {
       });
     }
 
-    // Build redirect URL (where Whop sends user after payment)
-    const redirectUrl = `${process.env.APP_URL || 'https://flint-investing.com'}/payment-success`;
+    // Use the direct Whop product URL (simpler and more reliable)
+    // The product URLs are pre-configured in whop-config.ts
+    const purchaseUrl = product.url;
 
-    // Create checkout configuration using Whop REST API
-    const response = await fetch('https://api.whop.com/v5/checkout_configurations', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${whopApiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        plan_id: product.planId,
-        redirect_url: redirectUrl,
-        metadata: {
-          tier,
-          billing_period: billingPeriod,
-          source: 'landing_page',
-        },
-      }),
-    });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      logger.error('Whop API error creating checkout', {
-        metadata: {
-          status: response.status,
-          statusText: response.statusText,
-          error: errorText,
-          planId: product.planId,
-        }
-      });
-      throw new Error(`Whop API error: ${response.status} ${errorText}`);
-    }
-
-    const checkoutConfig = await response.json();
-
-    logger.info('Checkout configuration created', {
+    logger.info('Returning Whop product URL for checkout', {
       metadata: {
-        checkoutId: checkoutConfig.id,
         planId: product.planId,
         tier,
         billingPeriod,
-        purchaseUrl: checkoutConfig.purchase_url,
+        purchaseUrl,
       }
     });
 
     // Return the purchase URL for redirect
     res.json({
-      purchaseUrl: checkoutConfig.purchase_url,
-      checkoutId: checkoutConfig.id,
+      purchaseUrl,
+      planId: product.planId,
     });
   } catch (error: any) {
     logger.error('Failed to create checkout configuration', { 
