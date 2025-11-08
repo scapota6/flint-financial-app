@@ -20,6 +20,7 @@ export function installCsrf(app: Express) {
     '/api/teller/webhook',
     '/api/snaptrade/webhooks',
     '/api/lemonsqueezy/webhook',  // Lemon Squeezy payment webhooks
+    '/api/whop/create-checkout',  // Whop checkout creation from public landing page
     '/api/applications/submit',
     '/api/auth/setup-password',
     '/api/auth/request-reset',
