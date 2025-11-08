@@ -918,34 +918,6 @@ function Landing() {
           </section>
         )}
 
-        {/* CTA 2: 6-Month Commitment */}
-        <section id="six" data-section="six" className="py-20">
-          <div className="max-w-4xl mx-auto text-center space-y-8">
-            <div className="space-y-4">
-              <h2 className="text-4xl lg:text-5xl font-bold">
-                A year feels <span className="text-blue-400">too long?</span>
-              </h2>
-              <p className="text-xl text-gray-300">
-                Get one month free when you invest for 6 months.
-              </p>
-            </div>
-            
-            <div className="space-y-6">
-              <div className="text-5xl font-bold text-white">$249.99</div>
-              <p className="text-lg text-gray-300">6 months</p>
-              
-              <Button 
-                size="lg" 
-                className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 text-lg"
-                data-cta="unlimited-6mo"
-                onClick={() => handleCTAClick('unlimited-6mo', '$249.99')}
-              >
-                Start with Unlimited – 6 Months for $249.99
-              </Button>
-            </div>
-          </div>
-        </section>
-
         {/* Dashboard Preview Modal */}
         <Dialog open={dashboardPreviewOpen} onOpenChange={setDashboardPreviewOpen}>
           <DialogContent className="max-w-7xl w-full p-0 bg-black border-gray-800">
@@ -971,41 +943,6 @@ function Landing() {
             </div>
           </DialogContent>
         </Dialog>
-
-        {/* CTA 3: Plus Annual */}
-        <section id="plus-annual" data-section="plus-annual" className="py-20">
-          <div className="max-w-4xl mx-auto text-center space-y-8">
-            <div className="space-y-4">
-              <h2 className="text-4xl lg:text-5xl font-bold">
-                Don't need <span className="text-blue-400">unlimited accounts?</span>
-              </h2>
-              <p className="text-xl text-gray-300">
-                Get 2 free months when you choose Flint Plus on the yearly plan.
-              </p>
-            </div>
-            
-            <div className="space-y-6">
-              <div className="flex items-baseline justify-center space-x-2">
-                <span className="text-5xl font-bold text-white">$199.99</span>
-                <span className="text-lg text-gray-400 line-through">$240</span>
-                <span className="text-lg text-gray-300">/year</span>
-              </div>
-              
-              <Button 
-                size="lg" 
-                className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 text-lg"
-                data-cta="basic-yearly"
-                onClick={() => handleCTAClick('basic-yearly', '$199.99')}
-              >
-                Start with Plus Annual – $199.99
-              </Button>
-              
-              <p className="text-sm text-gray-400">
-                Great for 3 accounts connections & core insights.
-              </p>
-            </div>
-          </div>
-        </section>
 
         {/* Social Proof Block #3 - Savings Chart */}
         <section className="py-16 bg-gray-900/30">
