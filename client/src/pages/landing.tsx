@@ -124,7 +124,7 @@ function Landing() {
     });
   });
 
-  // Handle CTA clicks - redirects to Whop checkout
+  // Handle CTA clicks - opens Whop checkout in popup window
   const handleCTAClick = async (ctaId: string, price: string) => {
     trackEvent('click_cta', { cta_id: ctaId, price });
     
@@ -148,8 +148,40 @@ function Landing() {
       const data = await response.json();
       
       if (data.purchaseUrl) {
-        // Redirect to Whop's hosted checkout page
-        window.location.href = data.purchaseUrl;
+        // Open checkout in centered popup window
+        const width = 600;
+        const height = 800;
+        const left = (window.screen.width - width) / 2;
+        const top = (window.screen.height - height) / 2;
+        
+        const popup = window.open(
+          data.purchaseUrl,
+          'WhopCheckout',
+          `width=${width},height=${height},left=${left},top=${top},resizable=yes,scrollbars=yes,status=yes`
+        );
+        
+        if (!popup) {
+          toast({
+            title: "Popup Blocked",
+            description: "Please allow popups for this site to complete checkout.",
+            variant: "destructive"
+          });
+        } else {
+          // Focus the popup window
+          popup.focus();
+          
+          // Listen for popup close and show helpful message
+          const checkPopup = setInterval(() => {
+            if (popup.closed) {
+              clearInterval(checkPopup);
+              toast({
+                title: "Checkout Window Closed",
+                description: "If you completed your purchase, check your email for account setup instructions.",
+                variant: "default"
+              });
+            }
+          }, 1000);
+        }
       } else {
         toast({
           title: "Error",
