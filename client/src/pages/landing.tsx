@@ -863,8 +863,8 @@ function Landing() {
           <div className="space-y-8">
             <div className="space-y-4">
               <p className="text-xl text-gray-300 leading-relaxed">
-                Or get started right now with <strong>2 free months</strong> (20% savings) 
-                when you invest upfront in Flint Pro.
+                Or get started right now and <strong>save 20%</strong> 
+                when you pay yearly for Flint Pro.
               </p>
             </div>
             
