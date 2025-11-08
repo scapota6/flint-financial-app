@@ -104,14 +104,17 @@ export function usePlaceEquityOrder() {
         variant: "default"
       });
       
-      // Refetch orders (10s stale) and positions after successful trade
-      setTimeout(() => {
-        queryClient.invalidateQueries({ queryKey: ['accounts.orders'] });
-        queryClient.invalidateQueries({ queryKey: ['accounts.positions'] });
-      }, 1000); // 1s delay for order processing
-      
+      // Comprehensive cache invalidation for instant live data updates
+      queryClient.invalidateQueries({ queryKey: ['accounts.orders'] });
+      queryClient.invalidateQueries({ queryKey: ['accounts.positions'] });
+      queryClient.invalidateQueries({ queryKey: ['accounts.balances'] });
       queryClient.invalidateQueries({ queryKey: ['accounts.list'] });
       queryClient.invalidateQueries({ queryKey: ['/api/dashboard'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/holdings'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/portfolio-holdings'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/portfolio/summary'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/wallet/balance'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/trading/positions'] });
     },
     onError: (error: Error | ErrorResponse) => {
       const toastMessage = getErrorToastMessage(error);
@@ -140,14 +143,17 @@ export function usePlaceCryptoOrder() {
         variant: "default"
       });
       
-      // Refetch orders (10s stale) and positions after successful trade
-      setTimeout(() => {
-        queryClient.invalidateQueries({ queryKey: ['accounts.orders'] });
-        queryClient.invalidateQueries({ queryKey: ['accounts.positions'] });
-      }, 1000); // 1s delay for order processing
-      
+      // Comprehensive cache invalidation for instant live data updates
+      queryClient.invalidateQueries({ queryKey: ['accounts.orders'] });
+      queryClient.invalidateQueries({ queryKey: ['accounts.positions'] });
+      queryClient.invalidateQueries({ queryKey: ['accounts.balances'] });
       queryClient.invalidateQueries({ queryKey: ['accounts.list'] });
       queryClient.invalidateQueries({ queryKey: ['/api/dashboard'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/holdings'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/portfolio-holdings'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/portfolio/summary'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/wallet/balance'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/trading/positions'] });
     },
     onError: (error: Error | ErrorResponse) => {
       const toastMessage = getErrorToastMessage(error);
@@ -177,9 +183,16 @@ export function useCancelOrder() {
         variant: "default"
       });
       
-      // Refresh orders after cancellation
+      // Comprehensive cache invalidation for instant live data updates
       queryClient.invalidateQueries({ queryKey: ['accounts.orders'] });
       queryClient.invalidateQueries({ queryKey: ['accounts.positions'] });
+      queryClient.invalidateQueries({ queryKey: ['accounts.balances'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/holdings'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/portfolio-holdings'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/portfolio/summary'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/dashboard'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/wallet/balance'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/trading/positions'] });
     },
     onError: (error: Error | ErrorResponse) => {
       const toastMessage = getErrorToastMessage(error);

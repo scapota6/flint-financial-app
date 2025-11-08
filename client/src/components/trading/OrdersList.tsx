@@ -76,8 +76,17 @@ export default function OrdersList({ accountId, onOrderCancelled }: OrdersListPr
         description: 'Your order has been cancelled successfully'
       });
       
-      // Refetch orders
-      refetch();
+      // Comprehensive cache invalidation for instant live data updates
+      queryClient.invalidateQueries({ queryKey: ['/api/trade/orders'] });
+      queryClient.invalidateQueries({ queryKey: ['accounts.orders'] });
+      queryClient.invalidateQueries({ queryKey: ['accounts.positions'] });
+      queryClient.invalidateQueries({ queryKey: ['accounts.balances'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/holdings'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/portfolio-holdings'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/portfolio/summary'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/dashboard'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/wallet/balance'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/trading/positions'] });
       
       if (onOrderCancelled) {
         onOrderCancelled();

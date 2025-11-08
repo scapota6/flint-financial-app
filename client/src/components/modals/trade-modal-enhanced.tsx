@@ -69,10 +69,18 @@ export function TradeModalEnhanced({
         accountId: ''
       });
       
-      // Invalidate relevant queries to refresh data
+      // Comprehensive cache invalidation for instant live data updates
       queryClient.invalidateQueries({ queryKey: ["/api/trades"] });
       queryClient.invalidateQueries({ queryKey: ["/api/activity"] });
       queryClient.invalidateQueries({ queryKey: ["/api/dashboard"] });
+      queryClient.invalidateQueries({ queryKey: ['/api/holdings'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/portfolio-holdings'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/portfolio/summary'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/wallet/balance'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/trading/positions'] });
+      queryClient.invalidateQueries({ queryKey: ['accounts.positions'] });
+      queryClient.invalidateQueries({ queryKey: ['accounts.balances'] });
+      queryClient.invalidateQueries({ queryKey: ['accounts.orders'] });
       
       onClose();
     },
