@@ -64,8 +64,8 @@ export default function Connections() {
   // Fetch connected accounts
   const { data: holdingsData, isLoading: isLoadingAccounts } = useQuery<HoldingsResponse>({
     queryKey: ['/api/holdings'],
-    refetchInterval: 1000, // Live data: Update every second
-    staleTime: 500 // Live data: Consider stale after 0.5 seconds
+    refetchInterval: 5000, // Refresh every 5 seconds (holdings aggregate)
+    staleTime: 2000 // Fresh for 2 seconds
   });
 
   // Fetch current user data for account details

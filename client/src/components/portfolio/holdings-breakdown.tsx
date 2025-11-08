@@ -48,8 +48,8 @@ export default function HoldingsBreakdown() {
       if (!response.ok) throw new Error('Failed to fetch holdings');
       return response.json();
     },
-    refetchInterval: 1000, // Live data: Update every second
-    staleTime: 500, // Live data: Consider stale after 0.5 seconds
+    refetchInterval: 5000, // Refresh every 5 seconds (holdings aggregate)
+    staleTime: 2000, // Fresh for 2 seconds
   });
 
   const holdings: Holding[] = data?.holdings || [];

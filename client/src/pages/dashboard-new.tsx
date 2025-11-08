@@ -50,8 +50,8 @@ export default function Dashboard() {
       if (!response.ok) throw new Error('Failed to fetch dashboard data');
       return response.json();
     },
-    refetchInterval: 1000, // Live data: Update every second
-    staleTime: 500, // Live data: Consider stale after 0.5 seconds
+    refetchInterval: 10000, // Refresh every 10 seconds (heavy dashboard aggregate)
+    staleTime: 5000, // Fresh for 5 seconds
   });
 
   // Log user login
@@ -80,7 +80,7 @@ export default function Dashboard() {
     };
 
     fetchLiveQuotes();
-    const interval = setInterval(fetchLiveQuotes, 1000); // Live data: Update every second
+    const interval = setInterval(fetchLiveQuotes, 5000); // Refresh every 5 seconds
 
     return () => clearInterval(interval);
   }, []);

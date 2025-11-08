@@ -15,8 +15,8 @@ export default function DashboardSimple() {
   const { data: dashboardData, isLoading, error } = useQuery({
     queryKey: ["/api/dashboard"],
     queryFn: FinancialAPI.getDashboardData,
-    refetchInterval: 1000, // Live data: Update every second
-    staleTime: 500, // Live data: Consider stale after 0.5 seconds
+    refetchInterval: 10000, // Refresh every 10 seconds (heavy dashboard aggregate)
+    staleTime: 5000, // Fresh for 5 seconds
   });
 
   // Log user login

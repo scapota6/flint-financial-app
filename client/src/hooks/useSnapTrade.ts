@@ -21,8 +21,8 @@ export function useAccountPositions(accountId: string | null) {
     queryKey: ['accounts.positions', accountId],
     queryFn: () => accountId ? apiRequest(`/api/snaptrade/accounts/${accountId}/positions`).then(r => r.json()) : Promise.resolve({ data: { accountId: '', positions: [], lastUpdated: null }, lastUpdated: null }),
     enabled: !!accountId,
-    refetchInterval: 1000, // Live data: Update every second
-    staleTime: 500, // Live data: Consider stale after 0.5 seconds
+    refetchInterval: 5000, // Refresh every 5 seconds (positions aggregate)
+    staleTime: 2000, // Fresh for 2 seconds
     retry: 1 // retry once
   });
 }
@@ -33,8 +33,8 @@ export function useAccountOrders(accountId: string | null, status: 'open' | 'all
     queryKey: ['accounts.orders', accountId, status],
     queryFn: () => accountId ? apiRequest(`/api/snaptrade/accounts/${accountId}/orders?status=${status}`).then(r => r.json()) : Promise.resolve({ data: { accountId: '', orders: [], lastUpdated: null }, lastUpdated: null }),
     enabled: !!accountId,
-    refetchInterval: 1000, // Live data: Update every second for order fills
-    staleTime: 500, // Live data: Consider stale after 0.5 seconds
+    refetchInterval: 2000, // Refresh every 2 seconds (orders - need quick fill updates)
+    staleTime: 1000, // Fresh for 1 second
     retry: 1 // retry once
   });
 }
@@ -56,8 +56,8 @@ export function useAccountBalances(accountId: string | null) {
     queryKey: ['accounts.balances', accountId],
     queryFn: () => accountId ? apiRequest(`/api/snaptrade/accounts/${accountId}/balances`).then(r => r.json()) : Promise.resolve({ data: null, lastUpdated: null }),
     enabled: !!accountId,
-    refetchInterval: 1000, // Live data: Update every second for buying power
-    staleTime: 500, // Live data: Consider stale after 0.5 seconds
+    refetchInterval: 10000, // Refresh every 10 seconds (balance aggregate)
+    staleTime: 5000, // Fresh for 5 seconds
     retry: 1 // retry once
   });
 }
