@@ -83,7 +83,8 @@ export default function OrderStatusDialog({
       return data;
     },
     enabled: isOpen,
-    refetchInterval: 5000, // Auto-refresh every 5 seconds
+    refetchInterval: 1000, // Live data: Update every second for order fills
+    staleTime: 500, // Live data: Consider stale after 0.5 seconds
   });
 
   // Cancel order mutation

@@ -58,7 +58,8 @@ export default function OrdersList({ accountId, onOrderCancelled }: OrdersListPr
       return response.json();
     },
     enabled: !!accountId,
-    refetchInterval: 10000 // Refresh every 10 seconds
+    refetchInterval: 1000, // Live data: Update every second for order fills
+    staleTime: 500 // Live data: Consider stale after 0.5 seconds
   });
 
   // Cancel order mutation
