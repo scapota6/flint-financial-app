@@ -323,6 +323,8 @@ function Landing() {
                   alt="Forbes"
                   className="h-16 w-auto object-contain"
                   style={{ mixBlendMode: 'lighten' }}
+                  loading="lazy"
+                  decoding="async"
                   data-testid="logo-forbes"
                 />
               </div>
@@ -333,6 +335,8 @@ function Landing() {
                   alt="Wall Street Journal"
                   className="h-16 w-auto object-contain"
                   style={{ mixBlendMode: 'lighten' }}
+                  loading="lazy"
+                  decoding="async"
                   data-testid="logo-wsj"
                 />
               </div>
@@ -343,6 +347,8 @@ function Landing() {
                   alt="Entrepreneur"
                   className="h-16 w-auto object-contain"
                   style={{ mixBlendMode: 'lighten' }}
+                  loading="lazy"
+                  decoding="async"
                   data-testid="logo-entrepreneur"
                 />
               </div>
@@ -353,6 +359,8 @@ function Landing() {
                   alt="Bloomberg"
                   className="h-16 w-auto object-contain"
                   style={{ mixBlendMode: 'lighten' }}
+                  loading="lazy"
+                  decoding="async"
                   data-testid="logo-bloomberg"
                 />
               </div>
@@ -383,6 +391,8 @@ function Landing() {
                         src={`https://cdn.brandfetch.io/${institution.domain}?c=${import.meta.env.VITE_BRANDFETCH_CLIENT_ID || ''}`}
                         alt={institution.name}
                         className="h-full w-full object-cover scale-125"
+                        loading="lazy"
+                        decoding="async"
                         title={institution.name}
                         onError={(e) => {
                           const target = e.target as HTMLImageElement;
@@ -404,6 +414,8 @@ function Landing() {
                         src={`https://cdn.brandfetch.io/${institution.domain}?c=${import.meta.env.VITE_BRANDFETCH_CLIENT_ID || ''}`}
                         alt={institution.name}
                         className="h-full w-full object-cover scale-125"
+                        loading="lazy"
+                        decoding="async"
                         title={institution.name}
                         onError={(e) => {
                           const target = e.target as HTMLImageElement;
@@ -425,6 +437,8 @@ function Landing() {
                         src={`https://cdn.brandfetch.io/${institution.domain}?c=${import.meta.env.VITE_BRANDFETCH_CLIENT_ID || ''}`}
                         alt={institution.name}
                         className="h-full w-full object-cover scale-125"
+                        loading="lazy"
+                        decoding="async"
                         title={institution.name}
                         onError={(e) => {
                           const target = e.target as HTMLImageElement;
@@ -704,6 +718,8 @@ function Landing() {
                     src={dashboardPreview} 
                     alt="Flint Dashboard Preview" 
                     className="w-full h-auto rounded-lg transition-transform duration-300 group-hover:scale-105"
+                    loading="lazy"
+                    decoding="async"
                   />
                   <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-300 flex items-center justify-center">
                     <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-blue-600 text-white px-4 py-2 rounded-lg">
@@ -903,11 +919,11 @@ function Landing() {
             <div className="max-w-4xl mx-auto text-center space-y-6">
               <div className="flex items-center justify-center space-x-2">
                 <div className="flex -space-x-2">
-                  <img src={avatar1} alt="User avatar" className="w-10 h-10 rounded-full border-2 border-black object-cover" />
-                  <img src={avatar2} alt="User avatar" className="w-10 h-10 rounded-full border-2 border-black object-cover" />
-                  <img src={avatar3} alt="User avatar" className="w-10 h-10 rounded-full border-2 border-black object-cover" />
-                  <img src={avatar4} alt="User avatar" className="w-10 h-10 rounded-full border-2 border-black object-cover" />
-                  <img src={avatar5} alt="User avatar" className="w-10 h-10 rounded-full border-2 border-black object-cover" />
+                  <img src={avatar1} alt="User avatar" className="w-10 h-10 rounded-full border-2 border-black object-cover" loading="lazy" decoding="async" />
+                  <img src={avatar2} alt="User avatar" className="w-10 h-10 rounded-full border-2 border-black object-cover" loading="lazy" decoding="async" />
+                  <img src={avatar3} alt="User avatar" className="w-10 h-10 rounded-full border-2 border-black object-cover" loading="lazy" decoding="async" />
+                  <img src={avatar4} alt="User avatar" className="w-10 h-10 rounded-full border-2 border-black object-cover" loading="lazy" decoding="async" />
+                  <img src={avatar5} alt="User avatar" className="w-10 h-10 rounded-full border-2 border-black object-cover" loading="lazy" decoding="async" />
                 </div>
                 <span className="text-lg font-semibold">2,847+ users</span>
               </div>
@@ -940,6 +956,8 @@ function Landing() {
                 src={dashboardPreview} 
                 alt="Flint Dashboard Full Preview" 
                 className="w-full h-auto"
+                loading="lazy"
+                decoding="async"
               />
             </div>
           </DialogContent>
