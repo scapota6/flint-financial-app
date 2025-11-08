@@ -1082,7 +1082,9 @@ function Landing() {
                   <Button 
                     className="w-full bg-gray-700 hover:bg-gray-600 text-white"
                     data-cta="free"
-                    onClick={() => handleCTAClick('free', '$0')}
+                    onClick={() => {
+                      document.getElementById('apply')?.scrollIntoView({ behavior: 'smooth' });
+                    }}
                   >
                     Get Started Free
                   </Button>
@@ -1384,7 +1386,7 @@ function Landing() {
           
           <div className="border-t border-gray-700 pt-8 mt-8">
             <p className="text-sm text-gray-300 text-center">
-              &copy; 2025 Flint Financial Management Platform. All rights reserved.
+              &copy; 2025 Flint Tech Inc. All rights reserved.
             </p>
           </div>
         </div>
