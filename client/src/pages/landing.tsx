@@ -5,11 +5,13 @@
  * Goal: Convert visitors through tiered CTA funnel
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
 import forbesLogo from '@assets/forbes-logo-white_1760732850878.png';
 import wsjLogo from '@assets/12450_65f1b42317bb1_3142_1760732860674.png';
 import entrepreneurLogo from '@assets/images_1760732961328.png';
 import bloombergLogo from '@assets/bloomberg-logo-png-bloomberg-logo-png-transparent-amp-svg-vector-pluspng-2400x665_1760732850877.png';
+
+const CheckoutModal = lazy(() => import("@/components/checkout-modal").then(module => ({ default: module.CheckoutModal })));
 
 // Institution list for scrolling banner
 const INSTITUTIONS = [
@@ -56,7 +58,6 @@ import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { ArrowRight, Shield, TrendingUp, Zap, CheckCircle, Star, Users, DollarSign, Lock, Building, CreditCard, Check, X } from "lucide-react";
 import { Link } from "wouter";
 import { useToast } from "@/hooks/use-toast";
-import { CheckoutModal } from "@/components/checkout-modal";
 import flintLogo from "@assets/flint-logo.png";
 import dashboardPreview from "@assets/dashboard-preview.png";
 import avatar1 from "@assets/generated_images/Professional_Asian_woman_headshot_526eadc3.png";
@@ -1361,10 +1362,14 @@ function Landing() {
       </footer>
       
       {/* Checkout Modal */}
-      <CheckoutModal 
-        planId={checkoutPlanId} 
-        onClose={() => setCheckoutPlanId(null)} 
-      />
+      {checkoutPlanId && (
+        <Suspense fallback={null}>
+          <CheckoutModal 
+            planId={checkoutPlanId} 
+            onClose={() => setCheckoutPlanId(null)} 
+          />
+        </Suspense>
+      )}
       
       {/* JSON-LD Schema */}
       <script type="application/ld+json" dangerouslySetInnerHTML={{
