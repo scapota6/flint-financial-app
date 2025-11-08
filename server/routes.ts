@@ -510,11 +510,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
                   amountSpent: amountSpent
                 });
               } else if (accountResponse.status === 401 || accountResponse.status === 403) {
-                // Account access expired - show stored balance and mark for reconnection
-                console.log(`[Dashboard] Teller account ${account.id} access expired, using stored balance`);
+                // Account access expired - mark for reconnection but DON'T include in totals
+                console.log(`[Dashboard] Teller account ${account.id} access expired, excluding from totals`);
                 
                 const storedBalance = parseFloat(account.balance) || 0;
                 
+                // Add to enrichedAccounts with needsReconnection flag but don't add to totals
                 if (account.accountType === 'card') {
                   enrichedAccounts.push({
                     id: account.id,
@@ -527,9 +528,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
                     needsReconnection: true
                   });
                 } else {
-                  bankBalance += storedBalance;
-                  totalBalance += storedBalance;
-                  
+                  // Don't add to bankBalance or totalBalance for disconnected accounts
                   enrichedAccounts.push({
                     id: account.id,
                     provider: 'teller',
@@ -544,7 +543,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
               }
             } catch (fetchError) {
               console.error(`Error validating Teller account ${account.id}:`, fetchError);
-              // Include stored balance for accounts we can't access
+              // Don't include in totals if we can't access the account
               const storedBalance = parseFloat(account.balance) || 0;
               
               if (account.accountType === 'card') {
@@ -559,9 +558,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
                   needsReconnection: true
                 });
               } else {
-                bankBalance += storedBalance;
-                totalBalance += storedBalance;
-                
+                // Don't add to bankBalance or totalBalance for inaccessible accounts
                 enrichedAccounts.push({
                   id: account.id,
                   provider: 'teller',
@@ -575,7 +572,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
               }
             }
           } else {
-            // No access token - show stored balance
+            // No access token - don't include in totals
             const storedBalance = parseFloat(account.balance) || 0;
             
             if (account.accountType === 'card') {
@@ -590,9 +587,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
                 needsReconnection: true
               });
             } else {
-              bankBalance += storedBalance;
-              totalBalance += storedBalance;
-              
+              // Don't add to bankBalance or totalBalance for accounts without access token
               enrichedAccounts.push({
                 id: account.id,
                 provider: 'teller',
