@@ -1459,6 +1459,12 @@ function Landing() {
           planId={selectedCheckout.planId}
           email={selectedCheckout.email}
           planName={selectedCheckout.planName}
+          onSuccess={(planId, receiptId) => {
+            // Refresh the page to update UI with new subscription status
+            setTimeout(() => {
+              window.location.href = '/dashboard';
+            }, 1500);
+          }}
         />
       )}
     </div>
