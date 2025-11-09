@@ -1,0 +1,39 @@
+React vs HTML/data-attribute embed
+
+From the Whop documentation:
+
+They provide a “vanilla” embed approach using attributes like data-whop-checkout-plan-id, data-whop-checkout-session, etc., on a <div> and loading the script https://js.whop.com/static/checkout/loader.js. 
+Whop Help Center
++1
+
+For React (or modern JS frameworks) the docs recommend using their iframe SDK (@whop/react + @whop/iframe) which gives you typed communication via window.postMessage. 
+dev.whop.com
++1
+
+Because you’re using React, yes, you’re better off using the React-specific integration (the SDK) rather than purely relying on data attributes. The data-attribute approach can still work (you can mount a <div> inside a React component) but you lose some of the React/SDK benefits (callbacks, better event handling, typed API).
+
+So:
+
+If you’re comfortable with React and want robust behavior (modal, callbacks, session management) → use the SDK (@whop/react).
+
+If you want a quick embed and don’t need full SDK features → data attributes can work.
+Since you’re implementing more complex flow (session creation → modal overlay → callback) I suggest using the SDK.
+
+🔍 Key “props” / attributes / config to check
+
+Here are the major pieces you need to ensure are covered. Whether using SDK or embed, these need to be present:
+
+planId: The ID for the plan the user is buying (e.g., "plan_XXXXXXXX").
+
+sessionId / sessionKey: The session created via your backend must be passed to the embed/SDK so the checkout knows which session. The “sessionKey is a required property” error indicates you omitted this.
+
+skipRedirect (or equivalent): So when checkout completes you stay in your app/modal rather than a full redirect.
+
+callback / onComplete / event listener: To know when user completes purchase so you can update UI / backend.
+
+Modal / overlay wrapper: Because you want the pop-up UI not full page, so the embed or SDK call must run within a modal component in React.
+
+SDK Provider: In React, you likely need to wrap your app or component in WhopIframeSdkProvider from @whop/react according to docs. 
+dev.whop.com
+
+Example snippet for React (pseudo):
