@@ -1,0 +1,50 @@
+Test a minimal example:
+Create a stripped‐down version of the component just to isolate the session issue:
+
+import { WhopCheckoutEmbed } from "@whop/checkout/react";
+
+function TestEmbed({ planId, sessionId }) {
+  return (
+    <WhopCheckoutEmbed
+      planId={planId}
+      sessionId={sessionId}
+    />
+  );
+}
+
+
+See if that renders (and maybe redirects) — if this fails with same error, then the core session property issue remains.
+
+Check the backend creation endpoint:
+Your backend flow creates a session via POST https://api.whop.com/api/v2/checkout_sessions. The docs confirm that endpoint is correct. 
+Whop Docs
++1
+
+Confirm you pass required fields (e.g., plan_id, maybe metadata) and you parse the returned id field and deliver that to frontend.
+The response model shows id field holds the session. 
+Whop Docs
+
+🔧 Next steps / fix suggestions for you
+
+In your component props list, try adding sessionKey={sessionId} in addition to sessionId. See if the error goes away.
+
+Log sessionId right before the component render to confirm it’s exactly the value returned from backend and not mutated.
+
+Check network/console logs to see if any wrapper script complaining about required property — maybe also inspect the iframe’s query parameters (if possible) and see if session_key or sessionId param is present.
+
+If you imported @whop/checkout/react, make sure you’re not also manually including the loader script <script src="https://js.whop.com/static/checkout/loader.js">, unless the docs for React version still require it. Remove redundant script if present.
+
+Check the official example: docs show minimal usage with just planId and optionally sessionId. 
+Whop Docs
+
+As a fallback, consider switching temporarily to the vanilla embed approach (non-React) to verify isolate whether the session property issue is React-SDK specific:
+
+<div
+  data-whop-checkout-plan-id="plan_XXXXXXXXX"
+  data-whop-checkout-session="ch_XXXXXXXXX"
+  data-whop-checkout-skip-redirect="true"
+></div>
+<script async defer src="https://js.whop.com/static/checkout/loader.js"></script>
+
+
+If that works (with session property), then you know the issue lies in React wrapper props mapping.
