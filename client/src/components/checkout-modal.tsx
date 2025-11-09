@@ -6,11 +6,10 @@ interface CheckoutModalProps {
   isOpen: boolean;
   onClose: () => void;
   planId: string;
-  sessionId: string;
   planName: string;
 }
 
-export function CheckoutModal({ isOpen, onClose, planId, sessionId, planName }: CheckoutModalProps) {
+export function CheckoutModal({ isOpen, onClose, planId, planName }: CheckoutModalProps) {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl p-0 bg-transparent border-none">
@@ -21,7 +20,6 @@ export function CheckoutModal({ isOpen, onClose, planId, sessionId, planName }: 
         <div className="w-full h-[600px] rounded-lg overflow-hidden bg-white dark:bg-gray-900">
           <WhopCheckoutEmbed
             planId={planId}
-            sessionId={sessionId}
             theme="dark"
             skipRedirect={true}
             onComplete={(plan_id, receipt_id) => {
