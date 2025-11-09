@@ -114,7 +114,7 @@ function Landing() {
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [dashboardPreviewOpen, setDashboardPreviewOpen] = useState(false);
   const [checkoutModalOpen, setCheckoutModalOpen] = useState(false);
-  const [selectedCheckout, setSelectedCheckout] = useState<{ planId: string; email?: string; planName: string } | null>(null);
+  const [selectedCheckout, setSelectedCheckout] = useState<{ sessionId: string; planId?: string; email?: string; planName: string } | null>(null);
   const { toast } = useToast();
 
   // Track section views
@@ -150,7 +150,7 @@ function Landing() {
       
       const data = await response.json();
       
-      if (!data.planId) {
+      if (!data.sessionId) {
         toast({
           title: "Error",
           description: data.error || "Unable to open checkout. Please try again.",
@@ -159,8 +159,9 @@ function Landing() {
         return;
       }
 
-      // Open embedded checkout modal
+      // Open embedded checkout modal with sessionId
       setSelectedCheckout({
+        sessionId: data.sessionId,
         planId: data.planId,
         email: data.email || formData.email,
         planName: data.planName || `${tier} ${billingPeriod}`,
@@ -1456,6 +1457,7 @@ function Landing() {
             setCheckoutModalOpen(false);
             setSelectedCheckout(null);
           }}
+          sessionId={selectedCheckout.sessionId}
           planId={selectedCheckout.planId}
           email={selectedCheckout.email}
           planName={selectedCheckout.planName}

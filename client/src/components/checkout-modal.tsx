@@ -8,18 +8,19 @@ import { Loader2 } from "lucide-react";
 interface CheckoutModalProps {
   isOpen: boolean;
   onClose: () => void;
-  planId: string;
+  sessionId: string;
+  planId?: string;
   email?: string;
   planName: string;
   onSuccess?: (planId: string, receiptId: string) => void;
 }
 
-export function CheckoutModal({ isOpen, onClose, planId, email, planName, onSuccess }: CheckoutModalProps) {
+export function CheckoutModal({ isOpen, onClose, sessionId, planId, email, planName, onSuccess }: CheckoutModalProps) {
   const { toast } = useToast();
   const [, setLocation] = useLocation();
 
   const handleComplete = async (completedPlanId: string, receiptId?: string) => {
-    console.log('[Whop] Checkout completed:', { completedPlanId, receiptId });
+    console.log('[Whop] Checkout completed:', { sessionId, completedPlanId, receiptId });
     
     if (!receiptId) {
       console.error('[Whop] No receipt ID received');
@@ -101,7 +102,8 @@ export function CheckoutModal({ isOpen, onClose, planId, email, planName, onSucc
           data-testid="whop-checkout-container"
         >
           <WhopCheckoutEmbed
-            planId={planId}
+            sessionId={sessionId}
+            planId={planId || ''}
             theme="dark"
             onComplete={handleComplete}
             prefill={email ? { email } : undefined}

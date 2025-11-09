@@ -65,8 +65,34 @@ router.post('/create-checkout', async (req, res) => {
       });
     }
 
-    logger.info('Returning plan ID for embedded checkout', {
+    // Create checkout session via Whop API
+    // This is required for the React embed component
+    const checkoutSessionResponse = await fetch('https://api.whop.com/api/v2/checkout_sessions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${whopApiKey}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        plan_id: product.planId,
+        metadata: {
+          tier,
+          billingPeriod,
+          source: 'flint-landing-page'
+        }
+      })
+    });
+
+    if (!checkoutSessionResponse.ok) {
+      const errorText = await checkoutSessionResponse.text();
+      throw new Error(`Whop API error: ${checkoutSessionResponse.status} - ${errorText}`);
+    }
+
+    const checkoutSession = await checkoutSessionResponse.json();
+
+    logger.info('Created Whop checkout session', {
       metadata: {
+        sessionId: checkoutSession.id,
         planId: product.planId,
         tier,
         billingPeriod,
@@ -75,10 +101,9 @@ router.post('/create-checkout', async (req, res) => {
       }
     });
 
-    // Return plan ID for embedded checkout
-    // Note: sessionId is optional and only needed if you want to attach metadata
-    // The Whop embed works fine with just planId
+    // Return session ID for embedded checkout
     res.json({
+      sessionId: checkoutSession.id,
       planId: product.planId,
       planName: product.name,
       ...(email && { email }) // Pass email for prefill
@@ -92,7 +117,8 @@ router.post('/create-checkout', async (req, res) => {
       }
     });
     res.status(500).json({ 
-      error: 'Failed to create checkout session' 
+      error: 'Failed to create checkout session',
+      details: error.message
     });
   }
 });
