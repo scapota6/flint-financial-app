@@ -87,6 +87,32 @@ export function CheckoutModal({ isOpen, onClose, sessionId, planId, email, planN
 
   if (!isOpen) return null;
 
+  // DEBUG: Log sessionId details to diagnose prop name issue
+  console.log('[Whop Debug] CheckoutModal rendering with:', {
+    sessionId,
+    sessionIdType: typeof sessionId,
+    sessionIdLength: sessionId?.length,
+    sessionIdFormat: sessionId?.startsWith('ch_') ? 'valid (ch_*)' : 'INVALID FORMAT',
+    planId,
+    planName,
+    email
+  });
+
+  // Safety check - ensure sessionId exists and has correct format
+  if (!sessionId || !sessionId.startsWith('ch_')) {
+    console.error('[Whop Error] Invalid or missing sessionId:', sessionId);
+    return (
+      <Dialog open={isOpen} onOpenChange={onClose}>
+        <DialogContent className="max-w-md">
+          <DialogTitle>Error</DialogTitle>
+          <DialogDescription>
+            Invalid checkout session. Please try again.
+          </DialogDescription>
+        </DialogContent>
+      </Dialog>
+    );
+  }
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl max-h-[90vh] p-0 bg-transparent border-none overflow-hidden">
@@ -103,6 +129,7 @@ export function CheckoutModal({ isOpen, onClose, sessionId, planId, email, planN
         >
           <WhopCheckoutEmbed
             sessionId={sessionId}
+            sessionKey={sessionId}
             planId={planId || ''}
             theme="dark"
             skipRedirect={true}
