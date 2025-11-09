@@ -138,7 +138,7 @@ export function CheckoutModal({ isOpen, onClose, sessionId, planId, email, planN
   return (
     <Dialog open={isOpen} onOpenChange={handleOpenChange} modal={true}>
       <DialogContent 
-        className="max-w-2xl max-h-[90vh] p-6 bg-gray-950 border-gray-800 overflow-hidden z-[70]"
+        className="max-w-2xl max-h-[90vh] p-6 bg-gray-950 border-gray-800 overflow-y-auto z-[70] flex flex-col"
       >
         <Button
           variant="ghost"
@@ -159,7 +159,7 @@ export function CheckoutModal({ isOpen, onClose, sessionId, planId, email, planN
         </VisuallyHidden>
         
         <div 
-          className="w-full h-[600px] rounded-lg overflow-hidden"
+          className="w-full min-h-[600px] max-h-[700px] rounded-lg overflow-auto flex-1"
           data-testid="whop-checkout-container"
         >
           <WhopCheckoutEmbed
