@@ -65,14 +65,6 @@ import avatar4 from "@assets/generated_images/Professional_Caucasian_man_headsho
 import avatar5 from "@assets/generated_images/Professional_Middle_Eastern_woman_headshot_5f778eae.png";
 import { CheckoutModal } from "@/components/checkout-modal";
 
-// Temporary import for direct Whop URLs workaround
-const WHOP_PRODUCTS: Record<string, any> = {
-  'pro-yearly': { url: 'https://whop.com/flint-2289/flint-pro-monthly-copy/', planId: 'plan_eK9OYHEBv6qac' },
-  'pro-monthly': { url: 'https://whop.com/flint-2289/flint-pro-monthly/', planId: 'plan_n0ViyXRIGl5q4' },
-  'basic-monthly': { url: 'https://whop.com/flint-2289/flint-basic-7f/', planId: 'plan_McZjMF8v2N655' },
-  'basic-yearly': { url: 'https://whop.com/flint-2289/flint-basic-copy/', planId: 'plan_1ZXWf1eqiwjcT' },
-};
-
 // Removed Lemon Squeezy - now using Whop for payment processing
 
 // Analytics tracking
@@ -137,7 +129,6 @@ function Landing() {
 
   // Handle CTA clicks - opens Whop checkout in embedded modal
   const handleCTAClick = async (ctaId: string, price: string) => {
-    console.log('handleCTAClick called', { ctaId, price });
     trackEvent('click_cta', { cta_id: ctaId, price });
     
     try {
@@ -158,7 +149,6 @@ function Landing() {
       });
       
       const data = await response.json();
-      console.log('Checkout response:', data);
       
       if (!data.planId) {
         toast({
