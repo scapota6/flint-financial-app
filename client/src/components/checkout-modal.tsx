@@ -115,7 +115,15 @@ export function CheckoutModal({ isOpen, onClose, sessionId, planId, email, planN
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl max-h-[90vh] p-0 bg-transparent border-none overflow-hidden">
+      <DialogContent 
+        className="max-w-2xl max-h-[90vh] p-0 bg-transparent border-none overflow-hidden"
+        onInteractOutside={(e) => {
+          e.preventDefault();
+        }}
+        onPointerDownOutside={(e) => {
+          e.preventDefault();
+        }}
+      >
         <VisuallyHidden>
           <DialogTitle>{planName} Checkout</DialogTitle>
           <DialogDescription>
@@ -128,10 +136,7 @@ export function CheckoutModal({ isOpen, onClose, sessionId, planId, email, planN
           data-testid="whop-checkout-container"
         >
           <WhopCheckoutEmbed
-            {...({
-              sessionId: sessionId,
-              sessionKey: sessionId,
-            } as any)}
+            sessionId={sessionId}
             planId={planId || ''}
             theme="dark"
             skipRedirect={true}
