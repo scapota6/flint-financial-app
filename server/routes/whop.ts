@@ -64,8 +64,36 @@ router.post('/create-checkout', async (req, res) => {
       });
     }
 
-    logger.info('Returning Whop plan ID for embedded checkout', {
+    // Create checkout session via Whop API (direct fetch since SDK doesn't have this method yet)
+    const whopResponse = await fetch('https://api.whop.com/v5/checkout_configurations', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${whopApiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        plan_id: product.planId,
+        ...(email && { metadata: { email } })
+      })
+    });
+
+    if (!whopResponse.ok) {
+      const errorText = await whopResponse.text();
+      logger.error('Whop API error creating checkout session', {
+        metadata: {
+          status: whopResponse.status,
+          error: errorText,
+          planId: product.planId,
+        }
+      });
+      throw new Error(`Whop API error: ${whopResponse.status}`);
+    }
+
+    const checkoutSession = await whopResponse.json();
+
+    logger.info('Created Whop checkout session', {
       metadata: {
+        sessionId: checkoutSession.id,
         planId: product.planId,
         tier,
         billingPeriod,
@@ -73,13 +101,14 @@ router.post('/create-checkout', async (req, res) => {
       }
     });
 
-    // Return the plan ID for embedded checkout
+    // Return the session ID for embedded checkout
     res.json({
+      sessionId: checkoutSession.id,
       planId: product.planId,
       planName: product.name,
     });
   } catch (error: any) {
-    logger.error('Failed to create checkout configuration', { 
+    logger.error('Failed to create checkout session', { 
       error: error.message,
       metadata: {
         tier: req.body?.tier,
