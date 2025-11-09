@@ -9,6 +9,7 @@ import { sendApprovalEmail } from '../services/email';
 import { generateSecureToken, hashToken } from '../lib/token-utils';
 import { whopSdk } from '../lib/whop-sdk';
 import { makeWebhookValidator } from '@whop/api';
+import { requireAuth } from '../middleware/jwt-auth';
 
 const router = Router();
 
@@ -97,10 +98,12 @@ router.post('/create-checkout', async (req, res) => {
 });
 
 // Activate subscription after successful payment
-router.post('/activate-subscription', async (req, res) => {
+// SECURITY: This endpoint requires authentication and verifies payment with Whop API
+router.post('/activate-subscription', requireAuth, async (req, res) => {
   try {
     const { planId, receiptId } = req.body;
-    const userId = (req as any).user?.id;
+    const userId = req.user?.userId;
+    const userEmail = req.user?.email;
 
     // Validate inputs
     if (!planId || !receiptId) {
@@ -110,52 +113,166 @@ router.post('/activate-subscription', async (req, res) => {
       });
     }
 
-    logger.info('Activating subscription', {
+    // Ensure user is authenticated (requireAuth middleware should handle this, but double-check)
+    if (!userId || !userEmail) {
+      logger.error('Activate subscription called without authenticated user', {
+        metadata: { hasUserId: !!userId, hasUserEmail: !!userEmail }
+      });
+      return res.status(401).json({ 
+        success: false,
+        error: 'Authentication required' 
+      });
+    }
+
+    logger.info('Activating subscription with verification', {
       metadata: {
         planId,
         receiptId,
-        userId: userId || 'unauthenticated',
+        userId,
+        userEmail,
       }
     });
 
-    // Get tier from plan ID
+    // STEP 1: Verify payment with Whop API
+    // Using direct REST API call since the SDK version doesn't expose payments.retrievePayment
+    let payment;
+    try {
+      const whopApiUrl = `https://api.whop.com/api/v5/payments/${receiptId}`;
+      const response = await fetch(whopApiUrl, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${whopApiKey}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        logger.error('Whop API payment retrieval failed', {
+          metadata: {
+            status: response.status,
+            statusText: response.statusText,
+            error: errorText,
+            receiptId,
+          }
+        });
+        return res.status(400).json({ 
+          success: false,
+          error: 'Invalid receipt ID - payment not found' 
+        });
+      }
+
+      payment = await response.json();
+    } catch (error: any) {
+      logger.error('Failed to retrieve payment from Whop API', { 
+        error: error.message,
+        metadata: { receiptId, userId }
+      });
+      return res.status(400).json({ 
+        success: false,
+        error: 'Invalid receipt ID - payment not found' 
+      });
+    }
+
+    // STEP 2: Verify payment belongs to the authenticated user
+    const paymentUserEmail = payment.email;
+    if (paymentUserEmail !== userEmail) {
+      logger.error('Payment email does not match authenticated user', {
+        metadata: {
+          receiptId,
+          userId,
+          authenticatedEmail: userEmail,
+          paymentEmail: paymentUserEmail,
+        }
+      });
+      return res.status(403).json({ 
+        success: false,
+        error: 'Payment does not belong to authenticated user' 
+      });
+    }
+
+    // STEP 3: Verify payment status is completed
+    if (payment.status !== 'paid') {
+      logger.error('Payment status is not paid', {
+        metadata: {
+          receiptId,
+          userId,
+          status: payment.status,
+        }
+      });
+      return res.status(400).json({ 
+        success: false,
+        error: `Payment not completed - status: ${payment.status}` 
+      });
+    }
+
+    // STEP 4: Verify payment has not been refunded
+    if (payment.refunded_at) {
+      logger.error('Payment has been refunded', {
+        metadata: {
+          receiptId,
+          userId,
+          refundedAt: payment.refunded_at,
+        }
+      });
+      return res.status(400).json({ 
+        success: false,
+        error: 'Payment has been refunded' 
+      });
+    }
+
+    // STEP 5: Verify plan ID matches what was actually paid for
+    const paidPlanId = payment.plan_id;
+    if (paidPlanId !== planId) {
+      logger.error('Plan ID mismatch between request and payment', {
+        metadata: {
+          receiptId,
+          userId,
+          requestedPlanId: planId,
+          paidPlanId,
+        }
+      });
+      return res.status(403).json({ 
+        success: false,
+        error: 'Plan ID does not match payment' 
+      });
+    }
+
+    // STEP 6: Get tier from verified plan ID
     const tier = getTierByPlanId(planId);
     
     if (!tier) {
-      logger.error('Unknown plan ID', { metadata: { planId } });
+      logger.error('Unknown plan ID after verification', { 
+        metadata: { planId, receiptId, userId } 
+      });
       return res.status(400).json({ 
         success: false,
         error: 'Invalid plan ID' 
       });
     }
 
-    // If user is authenticated, update their subscription status
-    if (userId) {
-      await db.update(users)
-        .set({ 
-          subscriptionTier: tier,
-          subscriptionStatus: 'active',
-          updatedAt: new Date(),
-        })
-        .where(eq(users.id, userId));
+    // STEP 7: All verifications passed - update user subscription
+    await db.update(users)
+      .set({ 
+        subscriptionTier: tier,
+        subscriptionStatus: 'active',
+        whopMembershipId: payment.membership_id || null,
+        whopCustomerId: payment.user_id || null,
+        whopPlanId: planId,
+        updatedAt: new Date(),
+      })
+      .where(eq(users.id, userId));
 
-      logger.info('Subscription activated for authenticated user', {
-        metadata: {
-          userId,
-          tier,
-          planId,
-          receiptId,
-        }
-      });
-    } else {
-      // For unauthenticated users, we'll handle activation via webhook
-      logger.info('Subscription activation pending webhook for unauthenticated user', {
-        metadata: {
-          planId,
-          receiptId,
-        }
-      });
-    }
+    logger.info('Subscription activated successfully after verification', {
+      metadata: {
+        userId,
+        userEmail,
+        tier,
+        planId,
+        receiptId,
+        membershipId: payment.membership_id,
+      }
+    });
 
     res.json({ 
       success: true,
@@ -169,11 +286,12 @@ router.post('/activate-subscription', async (req, res) => {
       metadata: {
         planId: req.body?.planId,
         receiptId: req.body?.receiptId,
+        userId: req.user?.userId,
       }
     });
     res.status(500).json({ 
       success: false,
-      error: 'Failed to activate subscription' 
+      error: 'Failed to activate subscription - please contact support' 
     });
   }
 });
