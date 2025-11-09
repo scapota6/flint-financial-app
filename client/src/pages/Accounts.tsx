@@ -184,7 +184,7 @@ export default function Accounts() {
                         <CardHeader className="pb-3">
                           <div className="flex justify-between items-center">
                             <div className="flex items-center gap-3">
-                              <div className="w-12 h-12 rounded-lg bg-gray-800/60 border border-gray-700/50 flex items-center justify-center overflow-hidden hover:border-blue-500/50 transition-all duration-300">
+                              <div className="w-3 h-3 rounded-lg bg-gray-800/60 border border-gray-700/50 flex items-center justify-center overflow-hidden hover:border-blue-500/50 transition-all duration-300">
                                 {logo}
                               </div>
                               <div>
@@ -257,7 +257,7 @@ export default function Accounts() {
                         <CardHeader className="pb-3">
                           <div className="flex justify-between items-center">
                             <div className="flex items-center gap-3">
-                              <div className="w-12 h-12 rounded-lg bg-gray-800/60 border border-gray-700/50 flex items-center justify-center overflow-hidden hover:border-blue-500/50 transition-all duration-300">
+                              <div className="w-3 h-3 rounded-lg bg-gray-800/60 border border-gray-700/50 flex items-center justify-center overflow-hidden hover:border-blue-500/50 transition-all duration-300">
                                 {logo}
                               </div>
                               <div>
