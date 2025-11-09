@@ -105,6 +105,7 @@ export function CheckoutModal({ isOpen, onClose, sessionId, planId, email, planN
             sessionId={sessionId}
             planId={planId || ''}
             theme="dark"
+            skipRedirect={true}
             onComplete={handleComplete}
             prefill={email ? { email } : undefined}
             fallback={
