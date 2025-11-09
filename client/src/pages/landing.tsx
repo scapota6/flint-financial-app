@@ -114,7 +114,7 @@ function Landing() {
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [dashboardPreviewOpen, setDashboardPreviewOpen] = useState(false);
   const [checkoutModalOpen, setCheckoutModalOpen] = useState(false);
-  const [selectedCheckout, setSelectedCheckout] = useState<{ planId: string; sessionId?: string; planName: string } | null>(null);
+  const [selectedCheckout, setSelectedCheckout] = useState<{ planId: string; email?: string; planName: string } | null>(null);
   const { toast } = useToast();
 
   // Track section views
@@ -164,7 +164,7 @@ function Landing() {
       // Open embedded checkout modal
       setSelectedCheckout({
         planId: data.planId,
-        sessionId: data.sessionId,
+        email: data.email || formData.email,
         planName: data.planName || `${tier} ${billingPeriod}`,
       });
       setCheckoutModalOpen(true);
@@ -1459,7 +1459,7 @@ function Landing() {
             setSelectedCheckout(null);
           }}
           planId={selectedCheckout.planId}
-          sessionId={selectedCheckout.sessionId}
+          email={selectedCheckout.email}
           planName={selectedCheckout.planName}
         />
       )}
