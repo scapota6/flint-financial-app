@@ -64,8 +64,37 @@ router.post('/create-checkout', async (req, res) => {
       });
     }
 
-    logger.info('Returning plan ID for embedded checkout', {
+    // Create checkout configuration via Whop API
+    const whopResponse = await fetch('https://api.whop.com/v5/checkout_configurations', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${whopApiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        plan_id: product.planId,
+        ...(email && { prefill: { email } })
+      })
+    });
+
+    if (!whopResponse.ok) {
+      const errorData = await whopResponse.json().catch(() => ({ error: 'Unknown error' }));
+      logger.error('Whop API error creating checkout configuration', {
+        metadata: {
+          status: whopResponse.status,
+          statusText: whopResponse.statusText,
+          error: errorData,
+          planId: product.planId,
+        }
+      });
+      throw new Error(`Whop API error: ${whopResponse.status} - ${JSON.stringify(errorData)}`);
+    }
+
+    const checkoutConfig = await whopResponse.json();
+
+    logger.info('Created Whop checkout configuration', {
       metadata: {
+        configId: checkoutConfig.id,
         planId: product.planId,
         tier,
         billingPeriod,
@@ -73,9 +102,10 @@ router.post('/create-checkout', async (req, res) => {
       }
     });
 
-    // Return the plan ID for embedded checkout (sessionId is optional)
+    // Return both planId and sessionId for embedded checkout
     res.json({
       planId: product.planId,
+      sessionId: checkoutConfig.id,
       planName: product.name,
     });
   } catch (error: any) {
