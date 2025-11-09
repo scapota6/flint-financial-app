@@ -169,19 +169,13 @@ function Landing() {
         return;
       }
 
-      // TEMPORARY: Use direct Whop URL until domain is whitelisted
       // Open embedded checkout modal
-      const whopProduct = Object.values(WHOP_PRODUCTS).find(p => p.planId === data.planId);
-      if (whopProduct?.url) {
-        window.open(whopProduct.url, '_blank');
-      } else {
-        setSelectedCheckout({
-          planId: data.planId,
-          email: data.email || formData.email,
-          planName: data.planName || `${tier} ${billingPeriod}`,
-        });
-        setCheckoutModalOpen(true);
-      }
+      setSelectedCheckout({
+        planId: data.planId,
+        email: data.email || formData.email,
+        planName: data.planName || `${tier} ${billingPeriod}`,
+      });
+      setCheckoutModalOpen(true);
     } catch (error) {
       console.error('Checkout error:', error);
       toast({
