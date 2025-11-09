@@ -1,4 +1,4 @@
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { WhopCheckoutEmbed } from "@whop/checkout/react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -29,11 +29,24 @@ export function CheckoutModal({ isOpen, onClose, planId, planName }: CheckoutMod
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-[#0B0D11]/95 backdrop-blur-xl border-white/10">
+      <DialogContent 
+        className="max-w-2xl max-h-[90vh] overflow-y-auto bg-[#0B0D11]/95 backdrop-blur-xl border-white/10"
+        onInteractOutside={(e) => {
+          // Prevent modal from closing when clicking inside the iframe
+          e.preventDefault();
+        }}
+        onEscapeKeyDown={(e) => {
+          // Prevent ESC key from closing during checkout
+          e.preventDefault();
+        }}
+      >
         <DialogHeader>
           <DialogTitle className="text-xl font-semibold text-[#F2F4F6]">
             Complete Your Purchase - {planName}
           </DialogTitle>
+          <DialogDescription className="text-[#A7ADBA]">
+            Enter your payment details to complete your subscription
+          </DialogDescription>
         </DialogHeader>
         
         <div className="w-full min-h-[600px]">
