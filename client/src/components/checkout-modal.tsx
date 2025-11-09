@@ -114,13 +114,17 @@ export function CheckoutModal({ isOpen, onClose, sessionId, planId, email, planN
   }
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen} onOpenChange={onClose} modal={true}>
       <DialogContent 
         className="max-w-2xl max-h-[90vh] p-0 bg-transparent border-none overflow-hidden"
         onInteractOutside={(e) => {
-          e.preventDefault();
-        }}
-        onPointerDownOutside={(e) => {
+          const target = e.target as HTMLElement;
+          const checkoutContainer = document.querySelector('[data-testid="whop-checkout-container"]');
+          
+          if (checkoutContainer && checkoutContainer.contains(target)) {
+            return;
+          }
+          
           e.preventDefault();
         }}
       >
