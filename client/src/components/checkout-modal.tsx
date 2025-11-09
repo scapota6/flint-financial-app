@@ -1,7 +1,9 @@
-import { useEffect, useRef } from "react";
-import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { WhopCheckoutEmbed } from "@whop/checkout/react";
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { useToast } from "@/hooks/use-toast";
+import { useLocation } from "wouter";
+import { Loader2 } from "lucide-react";
 
 interface CheckoutModalProps {
   isOpen: boolean;
@@ -13,135 +15,106 @@ interface CheckoutModalProps {
 }
 
 export function CheckoutModal({ isOpen, onClose, planId, email, planName, onSuccess }: CheckoutModalProps) {
-  const containerRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
+  const [, setLocation] = useLocation();
 
-  useEffect(() => {
-    if (!isOpen || !containerRef.current) return;
-
-    // Wait for Whop loader to be available
-    const initializeCheckout = () => {
-      if (!containerRef.current) return;
-
-      // Create the Whop checkout container using vanilla JS approach
-      const checkoutDiv = document.createElement('div');
-      checkoutDiv.setAttribute('data-whop-checkout-plan-id', planId);
-      checkoutDiv.setAttribute('data-whop-checkout-skip-redirect', 'true');
-      checkoutDiv.setAttribute('data-whop-checkout-theme', 'dark');
-      
-      if (email) {
-        checkoutDiv.setAttribute('data-whop-checkout-prefill-email', email);
-      }
-
-      // Clear and append
-      containerRef.current.innerHTML = '';
-      containerRef.current.appendChild(checkoutDiv);
-
-      // Manually initialize Whop checkout for dynamically added elements
-      if ((window as any).WhopCheckout && (window as any).WhopCheckout.initEmbeds) {
-        console.log('[Whop] Initializing checkout embed for plan:', planId);
-        (window as any).WhopCheckout.initEmbeds();
-      } else {
-        console.warn('[Whop] WhopCheckout.initEmbeds not available yet');
-      }
-    };
-
-    // Listen for Whop checkout events
-    const handleCheckoutComplete = (event: CustomEvent) => {
-      const { plan_id, receipt_id } = event.detail || {};
-      
-      if (plan_id && receipt_id) {
-        console.log('[Whop] Checkout completed:', { plan_id, receipt_id });
-        
-        // Call the backend to activate subscription
-        fetch('/api/whop/activate-subscription', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            planId: plan_id,
-            receiptId: receipt_id,
-          }),
-        })
-          .then(res => res.json())
-          .then(data => {
-            if (data.success) {
-              toast({
-                title: "Success!",
-                description: "Your subscription has been activated.",
-              });
-              
-              if (onSuccess) {
-                onSuccess(plan_id, receipt_id);
-              }
-              
-              onClose();
-            } else {
-              toast({
-                title: "Error",
-                description: data.error || "Failed to activate subscription",
-                variant: "destructive",
-              });
-            }
-          })
-          .catch(error => {
-            console.error('Activation error:', error);
-            toast({
-              title: "Error",
-              description: "Failed to activate subscription",
-              variant: "destructive",
-            });
-          });
-      }
-    };
-
-    // Add event listener for checkout completion
-    window.addEventListener('whop-checkout-complete' as any, handleCheckoutComplete);
-
-    // Wait for Whop loader if not ready yet
-    if ((window as any).WhopCheckout) {
-      initializeCheckout();
-    } else {
-      // Poll for WhopCheckout to be available (loader is async)
-      const checkWhopReady = setInterval(() => {
-        if ((window as any).WhopCheckout) {
-          clearInterval(checkWhopReady);
-          initializeCheckout();
-        }
-      }, 100);
-
-      // Cleanup interval if modal closes
-      return () => {
-        clearInterval(checkWhopReady);
-        window.removeEventListener('whop-checkout-complete' as any, handleCheckoutComplete);
-        if (containerRef.current) {
-          containerRef.current.innerHTML = '';
-        }
-      };
+  const handleComplete = async (completedPlanId: string, receiptId?: string) => {
+    console.log('[Whop] Checkout completed:', { completedPlanId, receiptId });
+    
+    if (!receiptId) {
+      console.error('[Whop] No receipt ID received');
+      toast({
+        title: "Error",
+        description: "No receipt ID received from Whop",
+        variant: "destructive",
+      });
+      return;
     }
+    
+    try {
+      // Call the backend to activate subscription
+      const response = await fetch('/api/whop/activate-subscription', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': document.cookie
+            .split('; ')
+            .find((row) => row.startsWith('flint_csrf='))
+            ?.split('=')[1] || '',
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          planId: completedPlanId,
+          receiptId: receiptId,
+        }),
+      });
 
-    // Cleanup
-    return () => {
-      window.removeEventListener('whop-checkout-complete' as any, handleCheckoutComplete);
-      if (containerRef.current) {
-        containerRef.current.innerHTML = '';
+      const data = await response.json();
+
+      if (data.success) {
+        toast({
+          title: "Success!",
+          description: "Your subscription has been activated.",
+        });
+        
+        if (onSuccess) {
+          onSuccess(completedPlanId, receiptId);
+        }
+        
+        onClose();
+        
+        // Redirect to dashboard after a brief delay
+        setTimeout(() => {
+          setLocation('/dashboard');
+        }, 500);
+      } else {
+        toast({
+          title: "Error",
+          description: data.error || "Failed to activate subscription",
+          variant: "destructive",
+        });
       }
-    };
-  }, [isOpen, planId, email, onClose, onSuccess, toast]);
+    } catch (error) {
+      console.error('Activation error:', error);
+      toast({
+        title: "Error",
+        description: "Failed to activate subscription",
+        variant: "destructive",
+      });
+    }
+  };
+
+  if (!isOpen) return null;
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl p-0 bg-transparent border-none">
+      <DialogContent className="max-w-2xl max-h-[90vh] p-0 bg-transparent border-none overflow-hidden">
         <VisuallyHidden>
           <DialogTitle>{planName} Checkout</DialogTitle>
+          <DialogDescription>
+            Complete your purchase for {planName}
+          </DialogDescription>
         </VisuallyHidden>
         
         <div 
-          ref={containerRef}
-          className="w-full h-[600px] rounded-lg overflow-hidden bg-white dark:bg-gray-900"
+          className="w-full h-[600px] rounded-lg overflow-hidden"
           data-testid="whop-checkout-container"
-        />
+        >
+          <WhopCheckoutEmbed
+            planId={planId}
+            theme="dark"
+            onComplete={handleComplete}
+            prefill={email ? { email } : undefined}
+            fallback={
+              <div className="w-full h-full flex items-center justify-center bg-gray-900">
+                <div className="flex flex-col items-center gap-3">
+                  <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
+                  <p className="text-gray-400">Loading checkout...</p>
+                </div>
+              </div>
+            }
+          />
+        </div>
       </DialogContent>
     </Dialog>
   );
