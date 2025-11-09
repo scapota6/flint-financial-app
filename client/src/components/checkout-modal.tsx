@@ -128,7 +128,10 @@ export function CheckoutModal({ isOpen, onClose, sessionId, planId, email, planN
           data-testid="whop-checkout-container"
         >
           <WhopCheckoutEmbed
-            sessionId={sessionId}
+            {...({
+              sessionId: sessionId,
+              sessionKey: sessionId,
+            } as any)}
             planId={planId || ''}
             theme="dark"
             skipRedirect={true}
