@@ -55,27 +55,27 @@ router.post('/create-checkout', async (req, res) => {
     const ctaId = `${tier}-${billingPeriod}`;
     const product = getProductByCTA(ctaId);
 
-    if (!product || !product.planId) {
-      logger.error('No plan ID found for tier/billing period', {
-        metadata: { tier, billingPeriod, ctaId }
+    if (!product || !product.productId) {
+      logger.error('No product ID found for tier/billing period', {
+        metadata: { tier, billingPeriod, ctaId, hasProductId: !!product?.productId }
       });
       return res.status(400).json({ 
         error: 'Invalid pricing configuration' 
       });
     }
 
-    logger.info('Returning Whop plan ID for embedded checkout', {
+    logger.info('Returning Whop product ID for embedded checkout', {
       metadata: {
-        planId: product.planId,
+        productId: product.productId,
         tier,
         billingPeriod,
         planName: product.name,
       }
     });
 
-    // Return the plan ID for embedded checkout
+    // Return the product ID for embedded checkout (not plan ID)
     res.json({
-      planId: product.planId,
+      planId: product.productId, // Frontend expects 'planId' but we send product ID
       planName: product.name,
     });
   } catch (error: any) {
