@@ -138,7 +138,7 @@ export function CheckoutModal({ isOpen, onClose, sessionId, planId, email, planN
   return (
     <Dialog open={isOpen} onOpenChange={handleOpenChange} modal={true}>
       <DialogContent 
-        className="max-w-2xl max-h-[90vh] p-6 bg-gray-950 border-gray-800 overflow-hidden"
+        className="max-w-2xl max-h-[90vh] p-6 bg-gray-950 border-gray-800 overflow-hidden z-[70]"
       >
         <Button
           variant="ghost"
