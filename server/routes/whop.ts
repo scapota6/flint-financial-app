@@ -96,6 +96,88 @@ router.post('/create-checkout', async (req, res) => {
   }
 });
 
+// Activate subscription after successful payment
+router.post('/activate-subscription', async (req, res) => {
+  try {
+    const { planId, receiptId } = req.body;
+    const userId = (req as any).user?.id;
+
+    // Validate inputs
+    if (!planId || !receiptId) {
+      return res.status(400).json({ 
+        success: false,
+        error: 'Missing planId or receiptId' 
+      });
+    }
+
+    logger.info('Activating subscription', {
+      metadata: {
+        planId,
+        receiptId,
+        userId: userId || 'unauthenticated',
+      }
+    });
+
+    // Get tier from plan ID
+    const tier = getTierByPlanId(planId);
+    
+    if (!tier) {
+      logger.error('Unknown plan ID', { metadata: { planId } });
+      return res.status(400).json({ 
+        success: false,
+        error: 'Invalid plan ID' 
+      });
+    }
+
+    // If user is authenticated, update their subscription status
+    if (userId) {
+      await db.update(users)
+        .set({ 
+          subscriptionTier: tier,
+          subscriptionStatus: 'active',
+          updatedAt: new Date(),
+        })
+        .where(eq(users.id, userId));
+
+      logger.info('Subscription activated for authenticated user', {
+        metadata: {
+          userId,
+          tier,
+          planId,
+          receiptId,
+        }
+      });
+    } else {
+      // For unauthenticated users, we'll handle activation via webhook
+      logger.info('Subscription activation pending webhook for unauthenticated user', {
+        metadata: {
+          planId,
+          receiptId,
+        }
+      });
+    }
+
+    res.json({ 
+      success: true,
+      tier,
+      message: 'Subscription activated successfully'
+    });
+
+  } catch (error: any) {
+    logger.error('Failed to activate subscription', { 
+      error: error.message,
+      metadata: {
+        planId: req.body?.planId,
+        receiptId: req.body?.receiptId,
+      }
+    });
+    res.status(500).json({ 
+      success: false,
+      error: 'Failed to activate subscription' 
+    });
+  }
+});
+
 // Get checkout URL for a specific plan
 router.get('/checkout/:ctaId', async (req, res) => {
   try {
