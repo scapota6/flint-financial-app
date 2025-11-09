@@ -128,6 +128,31 @@ function Landing() {
   const handleCTAClick = async (ctaId: string, price: string) => {
     trackEvent('click_cta', { cta_id: ctaId, price });
     
+    // Open popup IMMEDIATELY to maintain user gesture context
+    // (browsers block popups opened after async operations)
+    const width = 600;
+    const height = 800;
+    const left = (window.screen.width - width) / 2;
+    const top = (window.screen.height - height) / 2;
+    
+    const popup = window.open(
+      'about:blank',
+      'WhopCheckout',
+      `width=${width},height=${height},left=${left},top=${top},resizable=yes,scrollbars=yes,status=yes`
+    );
+    
+    if (!popup) {
+      toast({
+        title: "Popup Blocked",
+        description: "Please allow popups for this site to complete checkout.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    // Show loading message in popup
+    popup.document.write('<html><body style="margin:0;padding:40px;font-family:system-ui,-apple-system,sans-serif;background:#0B0D11;color:#F2F4F6;display:flex;align-items:center;justify-content:center;height:100vh;text-align:center;"><div><div style="font-size:24px;margin-bottom:16px;">Loading checkout...</div><div style="color:#A7ADBA;">Please wait</div></div></body></html>');
+    
     try {
       // Parse tier and billing period from ctaId (e.g., 'basic-monthly', 'pro-yearly')
       const [tier, billingPeriod] = ctaId.split('-') as ['basic' | 'pro' | 'premium', 'monthly' | 'yearly'];
@@ -148,40 +173,21 @@ function Landing() {
       const data = await response.json();
       
       if (data.purchaseUrl) {
-        // Open checkout in centered popup window
-        const width = 600;
-        const height = 800;
-        const left = (window.screen.width - width) / 2;
-        const top = (window.screen.height - height) / 2;
+        // Navigate popup to checkout URL
+        popup.location.href = data.purchaseUrl;
         
-        const popup = window.open(
-          data.purchaseUrl,
-          'WhopCheckout',
-          `width=${width},height=${height},left=${left},top=${top},resizable=yes,scrollbars=yes,status=yes`
-        );
-        
-        if (!popup) {
-          toast({
-            title: "Popup Blocked",
-            description: "Please allow popups for this site to complete checkout.",
-            variant: "destructive"
-          });
-        } else {
-          // Focus the popup window
-          popup.focus();
-          
-          // Monitor popup for close
-          const checkPopup = setInterval(() => {
-            if (popup.closed) {
-              clearInterval(checkPopup);
-              toast({
-                title: "Checkout Window Closed",
-                description: "If you completed your purchase, check your email for account setup instructions.",
-              });
-            }
-          }, 1000);
-        }
+        // Monitor popup for close
+        const checkPopup = setInterval(() => {
+          if (popup.closed) {
+            clearInterval(checkPopup);
+            toast({
+              title: "Checkout Window Closed",
+              description: "If you completed your purchase, check your email for account setup instructions.",
+            });
+          }
+        }, 1000);
       } else {
+        popup.close();
         toast({
           title: "Error",
           description: data.error || "Unable to open checkout. Please try again.",
@@ -190,6 +196,7 @@ function Landing() {
       }
     } catch (error) {
       console.error('Checkout error:', error);
+      popup.close();
       toast({
         title: "Error",
         description: "Unable to open checkout. Please try again.",
