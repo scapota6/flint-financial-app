@@ -330,7 +330,7 @@ export default function UnifiedDashboard() {
               <CardContent className="p-4">
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center space-x-2">
-                    <div className={`p-2 rounded-lg ${bgClass} ${textClass}`}>
+                    <div className={`w-12 h-12 p-2 rounded-lg ${bgClass} ${textClass} flex items-center justify-center overflow-hidden`}>
                       {logo}
                     </div>
                     <div>
