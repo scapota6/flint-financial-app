@@ -3,7 +3,9 @@ import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/compone
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { useToast } from "@/hooks/use-toast";
 import { useLocation } from "wouter";
-import { Loader2 } from "lucide-react";
+import { Loader2, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useRef, useEffect } from "react";
 
 interface CheckoutModalProps {
   isOpen: boolean;
@@ -18,6 +20,25 @@ interface CheckoutModalProps {
 export function CheckoutModal({ isOpen, onClose, sessionId, planId, email, planName, onSuccess }: CheckoutModalProps) {
   const { toast } = useToast();
   const [, setLocation] = useLocation();
+  const allowCloseRef = useRef(false);
+
+  useEffect(() => {
+    if (isOpen) {
+      allowCloseRef.current = false;
+    }
+  }, [isOpen]);
+
+  const handleClose = () => {
+    allowCloseRef.current = true;
+    onClose();
+  };
+
+  const handleOpenChange = (open: boolean) => {
+    if (!open && allowCloseRef.current) {
+      allowCloseRef.current = false;
+      onClose();
+    }
+  };
 
   const handleComplete = async (completedPlanId: string, receiptId?: string) => {
     console.log('[Whop] Checkout completed:', { sessionId, completedPlanId, receiptId });
@@ -62,6 +83,7 @@ export function CheckoutModal({ isOpen, onClose, sessionId, planId, email, planN
           onSuccess(completedPlanId, receiptId);
         }
         
+        allowCloseRef.current = true;
         onClose();
         
         // Redirect to dashboard after a brief delay
@@ -114,20 +136,21 @@ export function CheckoutModal({ isOpen, onClose, sessionId, planId, email, planN
   }
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose} modal={true}>
+    <Dialog open={isOpen} onOpenChange={handleOpenChange} modal={true}>
       <DialogContent 
-        className="max-w-2xl max-h-[90vh] p-0 bg-transparent border-none overflow-hidden"
-        onInteractOutside={(e) => {
-          const target = e.target as HTMLElement;
-          const checkoutContainer = document.querySelector('[data-testid="whop-checkout-container"]');
-          
-          if (checkoutContainer && checkoutContainer.contains(target)) {
-            return;
-          }
-          
-          e.preventDefault();
-        }}
+        className="max-w-2xl max-h-[90vh] p-6 bg-gray-950 border-gray-800 overflow-hidden"
       >
+        <Button
+          variant="ghost"
+          size="icon"
+          className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground z-50"
+          onClick={handleClose}
+          data-testid="button-close-checkout"
+        >
+          <X className="h-4 w-4" />
+          <span className="sr-only">Close</span>
+        </Button>
+        
         <VisuallyHidden>
           <DialogTitle>{planName} Checkout</DialogTitle>
           <DialogDescription>
