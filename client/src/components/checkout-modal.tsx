@@ -129,7 +129,6 @@ export function CheckoutModal({ isOpen, onClose, sessionId, planId, email, planN
         >
           <WhopCheckoutEmbed
             sessionId={sessionId}
-            sessionKey={sessionId}
             planId={planId || ''}
             theme="dark"
             skipRedirect={true}
