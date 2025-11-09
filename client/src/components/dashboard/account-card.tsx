@@ -57,45 +57,45 @@ export default function AccountCard({ account }: AccountCardProps) {
     
     // Bank-specific logos
     if (institution.includes('capitalone') || institution.includes('capital one')) {
-      return <SiCapitalone className="h-5 w-5 text-red-500" />;
+      return <SiCapitalone className="h-3 w-3 text-red-500" />;
     }
     if (institution.includes('chase')) {
-      return <SiChase className="h-5 w-5 text-blue-600" />;
+      return <SiChase className="h-3 w-3 text-blue-600" />;
     }
     if (institution.includes('american express') || institution.includes('amex')) {
-      return <SiAmericanexpress className="h-5 w-5 text-blue-700" />;
+      return <SiAmericanexpress className="h-3 w-3 text-blue-700" />;
     }
     if (institution.includes('bank of america') || institution.includes('boa')) {
-      return <SiBankofamerica className="h-5 w-5 text-red-600" />;
+      return <SiBankofamerica className="h-3 w-3 text-red-600" />;
     }
     if (institution.includes('wells fargo')) {
-      return <SiWellsfargo className="h-5 w-5 text-yellow-600" />;
+      return <SiWellsfargo className="h-3 w-3 text-yellow-600" />;
     }
     if (institution.includes('citi')) {
-      return <SiCitibank className="h-5 w-5 text-blue-600" />;
+      return <SiCitibank className="h-3 w-3 text-blue-600" />;
     }
     if (institution.includes('us bank')) {
-      return <SiUsbank className="h-5 w-5 text-blue-700" />;
+      return <SiUsbank className="h-3 w-3 text-blue-700" />;
     }
     if (institution.includes('robinhood')) {
-      return <SiRobinhood className="h-5 w-5 text-green-500" />;
+      return <SiRobinhood className="h-3 w-3 text-green-500" />;
     }
     if (institution.includes('coinbase')) {
-      return <SiCoinbase className="h-5 w-5 text-blue-500" />;
+      return <SiCoinbase className="h-3 w-3 text-blue-500" />;
     }
     
     // Fallback to generic icons by type
     switch (account.type) {
       case 'bank':
-        return <Building2 className="h-5 w-5 text-green-500" />;
+        return <Building2 className="h-3 w-3 text-green-500" />;
       case 'investment':
-        return <TrendingUp className="h-5 w-5 text-orange-500" />;
+        return <TrendingUp className="h-3 w-3 text-orange-500" />;
       case 'crypto':
-        return <Wallet className="h-5 w-5 text-yellow-500" />;
+        return <Wallet className="h-3 w-3 text-yellow-500" />;
       case 'credit':
-        return <DollarSign className="h-5 w-5 text-red-500" />;
+        return <DollarSign className="h-3 w-3 text-red-500" />;
       default:
-        return <DollarSign className="h-5 w-5" />;
+        return <DollarSign className="h-3 w-3" />;
     }
   };
 

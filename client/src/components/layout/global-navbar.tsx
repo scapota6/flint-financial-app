@@ -106,7 +106,7 @@ const GlobalNavbar = memo(function GlobalNavbar() {
             <div className="ml-4 flex items-center md:ml-6">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+                  <Button variant="ghost" className="relative h-8 w-8 rounded-full" data-testid="button-profile-menu">
                     <Avatar className="h-8 w-8">
                       <AvatarFallback className="bg-blue-600 text-white">
                         {user?.email?.charAt(0).toUpperCase() || 'U'}
@@ -114,7 +114,7 @@ const GlobalNavbar = memo(function GlobalNavbar() {
                     </Avatar>
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-56 bg-[#1e1e1e] border-gray-700" align="end">
+                <DropdownMenuContent className="w-56 bg-[#1e1e1e] border-gray-700 z-[200]" align="end" sideOffset={8}>
                   <div className="flex items-center justify-start gap-2 p-2">
                     <div className="flex flex-col space-y-1 leading-none">
                       <p className="font-medium text-white">{user?.email}</p>
