@@ -126,38 +126,15 @@ function Landing() {
 
   // Handle CTA clicks - opens Whop checkout in popup window
   const handleCTAClick = async (ctaId: string, price: string) => {
+    console.log('handleCTAClick called', { ctaId, price });
     trackEvent('click_cta', { cta_id: ctaId, price });
-    
-    // Open popup IMMEDIATELY to maintain user gesture context
-    // (browsers block popups opened after async operations)
-    const width = 600;
-    const height = 800;
-    const left = (window.screen.width - width) / 2;
-    const top = (window.screen.height - height) / 2;
-    
-    const popup = window.open(
-      'about:blank',
-      'WhopCheckout',
-      `width=${width},height=${height},left=${left},top=${top},resizable=yes,scrollbars=yes,status=yes`
-    );
-    
-    if (!popup) {
-      toast({
-        title: "Popup Blocked",
-        description: "Please allow popups for this site to complete checkout.",
-        variant: "destructive"
-      });
-      return;
-    }
-    
-    // Show loading message in popup
-    popup.document.write('<html><body style="margin:0;padding:40px;font-family:system-ui,-apple-system,sans-serif;background:#0B0D11;color:#F2F4F6;display:flex;align-items:center;justify-content:center;height:100vh;text-align:center;"><div><div style="font-size:24px;margin-bottom:16px;">Loading checkout...</div><div style="color:#A7ADBA;">Please wait</div></div></body></html>');
     
     try {
       // Parse tier and billing period from ctaId (e.g., 'basic-monthly', 'pro-yearly')
       const [tier, billingPeriod] = ctaId.split('-') as ['basic' | 'pro' | 'premium', 'monthly' | 'yearly'];
       
-      // Create checkout session via backend
+      // Create checkout session via backend FIRST
+      console.log('Fetching checkout URL...');
       const response = await fetch('/api/whop/create-checkout', {
         method: 'POST',
         headers: {
@@ -171,32 +148,61 @@ function Landing() {
       });
       
       const data = await response.json();
+      console.log('Checkout response:', data);
       
-      if (data.purchaseUrl) {
-        // Navigate popup to checkout URL
-        popup.location.href = data.purchaseUrl;
-        
-        // Monitor popup for close
-        const checkPopup = setInterval(() => {
-          if (popup.closed) {
-            clearInterval(checkPopup);
-            toast({
-              title: "Checkout Window Closed",
-              description: "If you completed your purchase, check your email for account setup instructions.",
-            });
-          }
-        }, 1000);
-      } else {
-        popup.close();
+      if (!data.purchaseUrl) {
         toast({
           title: "Error",
           description: data.error || "Unable to open checkout. Please try again.",
           variant: "destructive"
         });
+        return;
+      }
+
+      // Now open popup with the actual URL
+      // Using smaller window and toolbar=no to force popup behavior
+      const width = 600;
+      const height = 800;
+      const left = (window.screen.width - width) / 2;
+      const top = (window.screen.height - height) / 2;
+      
+      console.log('Opening popup window...');
+      const popup = window.open(
+        data.purchaseUrl,
+        '_blank',
+        `width=${width},height=${height},left=${left},top=${top},toolbar=no,location=no,status=yes,menubar=no,scrollbars=yes,resizable=yes`
+      );
+      
+      if (!popup || popup.closed || typeof popup.closed === 'undefined') {
+        console.error('Popup was blocked');
+        toast({
+          title: "Popup Blocked",
+          description: "Please allow popups for this site to complete checkout. We'll open it in a new tab instead.",
+          variant: "destructive"
+        });
+        // Fallback: open in new tab
+        window.open(data.purchaseUrl, '_blank');
+      } else {
+        console.log('Popup opened successfully');
+        popup.focus();
+        
+        // Monitor popup for close
+        const checkPopup = setInterval(() => {
+          try {
+            if (popup.closed) {
+              clearInterval(checkPopup);
+              toast({
+                title: "Checkout Window Closed",
+                description: "If you completed your purchase, check your email for account setup instructions.",
+              });
+            }
+          } catch (e) {
+            // Ignore cross-origin errors when checking if window is closed
+          }
+        }, 1000);
       }
     } catch (error) {
       console.error('Checkout error:', error);
-      popup.close();
       toast({
         title: "Error",
         description: "Unable to open checkout. Please try again.",
