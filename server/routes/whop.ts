@@ -64,23 +64,19 @@ router.post('/create-checkout', async (req, res) => {
       });
     }
 
-    // Use the direct Whop product URL (simpler and more reliable)
-    // The product URLs are pre-configured in whop-config.ts
-    const purchaseUrl = product.url;
-
-    logger.info('Returning Whop product URL for checkout', {
+    logger.info('Returning Whop plan ID for embedded checkout', {
       metadata: {
         planId: product.planId,
         tier,
         billingPeriod,
-        purchaseUrl,
+        planName: product.name,
       }
     });
 
-    // Return the purchase URL for redirect
+    // Return the plan ID for embedded checkout
     res.json({
-      purchaseUrl,
       planId: product.planId,
+      planName: product.name,
     });
   } catch (error: any) {
     logger.error('Failed to create checkout configuration', { 

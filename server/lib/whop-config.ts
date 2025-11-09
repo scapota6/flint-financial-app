@@ -11,6 +11,7 @@ export interface WhopProductConfig {
   ctaId: string;
   isOneTime?: boolean;
   planId?: string; // Whop plan ID (to be filled from webhook)
+  productId?: string; // Whop product ID (for embedded checkout)
 }
 
 // Whop App Configuration
@@ -41,6 +42,7 @@ export const WHOP_PRODUCTS: Record<string, WhopProductConfig> = {
     price: '$19.99',
     ctaId: 'basic-monthly',
     planId: 'plan_VLgIrzlR2KDI0',
+    productId: 'prod_3MKtU8x9IHAEw',
   },
   
   // Basic Yearly (Plus Year Special)
@@ -51,6 +53,7 @@ export const WHOP_PRODUCTS: Record<string, WhopProductConfig> = {
     price: '$199.99',
     ctaId: 'basic-yearly',
     planId: 'plan_e3uHPGOF9BxLL',
+    productId: 'prod_OgQRS19ljYw6N',
   },
   
   // Basic 6-Month Special (Plus 6 Month Special)
@@ -71,6 +74,7 @@ export const WHOP_PRODUCTS: Record<string, WhopProductConfig> = {
     price: '$39.99',
     ctaId: 'pro-monthly',
     planId: 'plan_A5pqK3NW80scw',
+    productId: 'prod_kNrAAxyPkLfuN',
   },
   
   // Pro Yearly
@@ -81,6 +85,7 @@ export const WHOP_PRODUCTS: Record<string, WhopProductConfig> = {
     price: '$399.99',
     ctaId: 'pro-yearly',
     planId: 'plan_eyVOdb1vQIUg9',
+    productId: 'prod_DOqriggmULL56',
   },
   
   // Unlimited Monthly

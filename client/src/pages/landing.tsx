@@ -63,6 +63,7 @@ import avatar2 from "@assets/generated_images/Professional_Black_man_headshot_4c
 import avatar3 from "@assets/generated_images/Professional_Hispanic_woman_headshot_e62bf380.png";
 import avatar4 from "@assets/generated_images/Professional_Caucasian_man_headshot_f922a01f.png";
 import avatar5 from "@assets/generated_images/Professional_Middle_Eastern_woman_headshot_5f778eae.png";
+import { CheckoutModal } from "@/components/checkout-modal";
 
 // Removed Lemon Squeezy - now using Whop for payment processing
 
@@ -112,6 +113,8 @@ function Landing() {
   });
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [dashboardPreviewOpen, setDashboardPreviewOpen] = useState(false);
+  const [checkoutModalOpen, setCheckoutModalOpen] = useState(false);
+  const [selectedCheckout, setSelectedCheckout] = useState<{ planId: string; planName: string } | null>(null);
   const { toast } = useToast();
 
   // Track section views
@@ -124,7 +127,7 @@ function Landing() {
     });
   });
 
-  // Handle CTA clicks - opens Whop checkout in popup window
+  // Handle CTA clicks - opens Whop checkout in embedded modal
   const handleCTAClick = async (ctaId: string, price: string) => {
     console.log('handleCTAClick called', { ctaId, price });
     trackEvent('click_cta', { cta_id: ctaId, price });
@@ -133,8 +136,7 @@ function Landing() {
       // Parse tier and billing period from ctaId (e.g., 'basic-monthly', 'pro-yearly')
       const [tier, billingPeriod] = ctaId.split('-') as ['basic' | 'pro' | 'premium', 'monthly' | 'yearly'];
       
-      // Create checkout session via backend FIRST
-      console.log('Fetching checkout URL...');
+      // Fetch product ID from backend
       const response = await fetch('/api/whop/create-checkout', {
         method: 'POST',
         headers: {
@@ -148,9 +150,9 @@ function Landing() {
       });
       
       const data = await response.json();
-      console.log('Checkout response:', data);
+      console.log('Checkout response (planId):', data);
       
-      if (!data.purchaseUrl) {
+      if (!data.planId) {
         toast({
           title: "Error",
           description: data.error || "Unable to open checkout. Please try again.",
@@ -159,48 +161,12 @@ function Landing() {
         return;
       }
 
-      // Now open popup with the actual URL
-      // Using smaller window and toolbar=no to force popup behavior
-      const width = 600;
-      const height = 800;
-      const left = (window.screen.width - width) / 2;
-      const top = (window.screen.height - height) / 2;
-      
-      console.log('Opening popup window...');
-      const popup = window.open(
-        data.purchaseUrl,
-        '_blank',
-        `width=${width},height=${height},left=${left},top=${top},toolbar=no,location=no,status=yes,menubar=no,scrollbars=yes,resizable=yes`
-      );
-      
-      if (!popup || popup.closed || typeof popup.closed === 'undefined') {
-        console.error('Popup was blocked');
-        toast({
-          title: "Popup Blocked",
-          description: "Please allow popups for this site to complete checkout. We'll open it in a new tab instead.",
-          variant: "destructive"
-        });
-        // Fallback: open in new tab
-        window.open(data.purchaseUrl, '_blank');
-      } else {
-        console.log('Popup opened successfully');
-        popup.focus();
-        
-        // Monitor popup for close
-        const checkPopup = setInterval(() => {
-          try {
-            if (popup.closed) {
-              clearInterval(checkPopup);
-              toast({
-                title: "Checkout Window Closed",
-                description: "If you completed your purchase, check your email for account setup instructions.",
-              });
-            }
-          } catch (e) {
-            // Ignore cross-origin errors when checking if window is closed
-          }
-        }, 1000);
-      }
+      // Open embedded checkout modal
+      setSelectedCheckout({
+        planId: data.planId,
+        planName: data.planName || `${tier} ${billingPeriod}`,
+      });
+      setCheckoutModalOpen(true);
     } catch (error) {
       console.error('Checkout error:', error);
       toast({
@@ -1482,6 +1448,19 @@ function Landing() {
           }
         })
       }} />
+      
+      {/* Checkout Modal */}
+      {selectedCheckout && (
+        <CheckoutModal
+          isOpen={checkoutModalOpen}
+          onClose={() => {
+            setCheckoutModalOpen(false);
+            setSelectedCheckout(null);
+          }}
+          planId={selectedCheckout.planId}
+          planName={selectedCheckout.planName}
+        />
+      )}
     </div>
   );
 }
