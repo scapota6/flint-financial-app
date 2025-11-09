@@ -41,7 +41,7 @@ export const WHOP_PRODUCTS: Record<string, WhopProductConfig> = {
     tier: 'basic',
     price: '$19.99',
     ctaId: 'basic-monthly',
-    planId: 'plan_VLgIrzlR2KDI0',
+    planId: 'plan_McZjMF8v2N655',
     productId: 'prod_3MKtU8x9IHAEw',
   },
   
@@ -52,7 +52,7 @@ export const WHOP_PRODUCTS: Record<string, WhopProductConfig> = {
     tier: 'basic',
     price: '$199.99',
     ctaId: 'basic-yearly',
-    planId: 'plan_e3uHPGOF9BxLL',
+    planId: 'plan_1ZXWf1eqiwjcT',
     productId: 'prod_OgQRS19ljYw6N',
   },
   
@@ -73,7 +73,7 @@ export const WHOP_PRODUCTS: Record<string, WhopProductConfig> = {
     tier: 'pro',
     price: '$39.99',
     ctaId: 'pro-monthly',
-    planId: 'plan_A5pqK3NW80scw',
+    planId: 'plan_n0ViyXRIGl5q4',
     productId: 'prod_kNrAAxyPkLfuN',
   },
   
@@ -84,7 +84,7 @@ export const WHOP_PRODUCTS: Record<string, WhopProductConfig> = {
     tier: 'pro',
     price: '$399.99',
     ctaId: 'pro-yearly',
-    planId: 'plan_eyVOdb1vQIUg9',
+    planId: 'plan_eK9OYHEBv6qac',
     productId: 'prod_DOqriggmULL56',
   },
   
@@ -137,14 +137,14 @@ export const PLAN_ID_TO_TIER: Record<string, 'free' | 'basic' | 'pro' | 'premium
   // Fast Track - One-time payment (bypasses waitlist)
   'plan_LoIr4OqtbFsGf': 'free',
   
-  // Basic/Plus Plans
-  'plan_VLgIrzlR2KDI0': 'basic', // Basic Monthly
-  'plan_e3uHPGOF9BxLL': 'basic', // Plus Year Special (Basic Yearly)
+  // Basic/Plus Plans (NEW)
+  'plan_McZjMF8v2N655': 'basic', // Basic Monthly
+  'plan_1ZXWf1eqiwjcT': 'basic', // Basic Yearly
   'plan_gTe1wqkhsxMl6': 'basic', // Plus 6 Month Special
   
-  // Pro Plans
-  'plan_A5pqK3NW80scw': 'pro', // Pro Monthly
-  'plan_eyVOdb1vQIUg9': 'pro',    // Pro Yearly
+  // Pro Plans (NEW)
+  'plan_n0ViyXRIGl5q4': 'pro', // Pro Monthly
+  'plan_eK9OYHEBv6qac': 'pro', // Pro Yearly
   
   // Premium/Unlimited Plans
   'plan_iBNFQGQBLHWAh': 'premium', // Unlimited Monthly
