@@ -3895,11 +3895,11 @@ export function getAccountLimit(tier: string, isAdmin?: boolean): number | null 
   }
   
   switch (tier) {
-    case 'free': return 2;
-    case 'basic': return 3;
-    case 'pro': return 5;
+    case 'free': return 4;
+    case 'basic': return null; // Unlimited
+    case 'pro': return null; // Unlimited
     case 'premium': return null; // Unlimited
-    default: return 2;
+    default: return 4;
   }
 }
 

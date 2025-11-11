@@ -83,11 +83,11 @@ export default function SimpleConnectButtons({ accounts, userTier, isAdmin }: Si
     if (isAdmin) return Infinity;
     
     switch (tier) {
-      case 'free': return 2;
-      case 'basic': return 3;
-      case 'pro': return 10;
+      case 'free': return 4;
+      case 'basic': return Infinity;
+      case 'pro': return Infinity;
       case 'premium': return Infinity;
-      default: return 2;
+      default: return 4;
     }
   };
 
