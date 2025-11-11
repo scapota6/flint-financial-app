@@ -173,20 +173,28 @@ const app = express();
   });
   
   // Add webhook routes before CSRF to allow external calls
-  app.post('/api/snaptrade/webhooks', async (req: Request, res: Response) => {
+  // SnapTrade webhook endpoint (configured in SnapTrade dashboard)
+  app.post('/api/webhooks/snaptrade', async (req: Request, res: Response) => {
     try {
       // Import webhook handler dynamically
       const { handleSnapTradeWebhook } = await import('./routes/snaptrade-webhooks');
       await handleSnapTradeWebhook(req, res);
     } catch (error) {
-      console.error('[Webhook] Error:', error);
-      res.status(500).json({ 
-        error: { 
-          code: 'WEBHOOK_ERROR', 
-          message: 'Webhook processing failed',
-          requestId: req.headers['x-request-id'] as string || 'unknown'
-        } 
-      });
+      console.error('[SnapTrade Webhook] Fatal error in webhook route:', error);
+      // Always return 200 to prevent SnapTrade from retrying
+      res.status(200).json({ ok: true, error: 'Internal error logged' });
+    }
+  });
+  
+  // Legacy webhook path (keeping for backward compatibility)
+  app.post('/api/snaptrade/webhooks', async (req: Request, res: Response) => {
+    try {
+      const { handleSnapTradeWebhook } = await import('./routes/snaptrade-webhooks');
+      await handleSnapTradeWebhook(req, res);
+    } catch (error) {
+      console.error('[SnapTrade Webhook] Fatal error in webhook route:', error);
+      // Always return 200 to prevent SnapTrade from retrying
+      res.status(200).json({ ok: true, error: 'Internal error logged' });
     }
   });
 
