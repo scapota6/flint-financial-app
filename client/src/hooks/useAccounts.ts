@@ -8,6 +8,8 @@ export interface Account {
   accountNumber?: string;
   balance: number;
   type: 'bank' | 'investment' | 'crypto' | 'credit';
+  subtype?: string | null;
+  rawType?: string | null;
   institution: string;
   lastUpdated: string;
   currency?: string;
@@ -71,6 +73,8 @@ export function useAccounts() {
           accountNumber: account.accountNumber,
           balance: account.balance,
           type: account.type,
+          subtype: account.subtype || null,
+          rawType: account.rawType || null,
           institution: account.institution || account.provider,
           lastUpdated: account.lastUpdated,
           currency: account.currency || 'USD',

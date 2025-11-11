@@ -34,6 +34,8 @@ interface AccountCardProps {
     accountNumber?: string;
     balance: number;
     type: 'bank' | 'investment' | 'crypto' | 'credit';
+    subtype?: string | null;
+    rawType?: string | null;
     institution: string;
     lastUpdated: string;
     currency?: string;
@@ -130,10 +132,19 @@ export default function AccountCard({ account }: AccountCardProps) {
               <div>
                 <CardTitle className="text-lg font-semibold">
                   {account.accountName}
+                  {account.provider === 'snaptrade' && account.accountNumber && ` (****${account.accountNumber.slice(-4)})`}
                 </CardTitle>
                 <p className="text-sm text-muted-foreground">
-                  {account.institution}
-                  {account.accountNumber && ` • ****${account.accountNumber.slice(-4)}`}
+                  {account.provider === 'snaptrade' && account.rawType ? (
+                    <>
+                      {account.rawType} • {account.type}
+                    </>
+                  ) : (
+                    <>
+                      {account.institution}
+                      {account.accountNumber && ` • ****${account.accountNumber.slice(-4)}`}
+                    </>
+                  )}
                 </p>
               </div>
             </div>

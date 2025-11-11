@@ -735,6 +735,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
                 accountNumber: account.number,
                 balance: balance,
                 type: 'investment' as const,
+                subtype: account.meta?.type || account.raw_type || null,
+                rawType: account.raw_type || null,
                 institution: account.institution_name || 'Brokerage',
                 lastUpdated: account.sync_status?.holdings?.last_successful_sync || account.sync_status?.last_successful_sync || new Date().toISOString(),
                 cash: cash,
