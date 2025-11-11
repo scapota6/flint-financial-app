@@ -1650,25 +1650,53 @@ router.get("/money-movement", requireAuth, async (req: any, res) => {
           const merchantLower = merchant.toLowerCase();
           const provider = account.institutionName || 'Bank';
           
-          // Teller API transaction amounts from account holder perspective:
-          // Positive amount = Money IN (deposits, refunds, credits)
-          // Negative amount = Money OUT (purchases, withdrawals, fees, debits)
+          // Check if this is a credit card account (Teller stores as 'card')
+          const isCreditCard = account.accountType === 'card';
           
-          if (amount > 0) {
-            // Positive amount = Money IN (deposits, refunds, etc.)
-            moneyIn += amount;
-            if (!sources[merchant]) {
-              sources[merchant] = { amount: 0, provider };
+          // Teller API transaction amounts:
+          // For BANK ACCOUNTS:
+          //   Positive amount = Money IN (deposits, refunds)
+          //   Negative amount = Money OUT (purchases, withdrawals)
+          // For CREDIT CARDS (reversed):
+          //   Positive amount = Charges/Purchases (Money OUT - increases debt)
+          //   Negative amount = Payments/Refunds (Money IN - decreases debt)
+          
+          if (isCreditCard) {
+            // Credit card logic (reversed)
+            if (amount > 0) {
+              // Positive = Charge/Purchase (Money OUT)
+              moneyOut += amount;
+              if (!spend[merchant]) {
+                spend[merchant] = { amount: 0, provider };
+              }
+              spend[merchant].amount += amount;
+            } else if (amount < 0) {
+              // Negative = Payment/Refund (Money IN)
+              const inAmount = Math.abs(amount);
+              moneyIn += inAmount;
+              if (!sources[merchant]) {
+                sources[merchant] = { amount: 0, provider };
+              }
+              sources[merchant].amount += inAmount;
             }
-            sources[merchant].amount += amount;
-          } else if (amount < 0) {
-            // Negative amount = Money OUT (purchases, withdrawals, fees, etc.)
-            const outAmount = Math.abs(amount);
-            moneyOut += outAmount;
-            if (!spend[merchant]) {
-              spend[merchant] = { amount: 0, provider };
+          } else {
+            // Bank account logic (normal)
+            if (amount > 0) {
+              // Positive amount = Money IN (deposits, refunds, etc.)
+              moneyIn += amount;
+              if (!sources[merchant]) {
+                sources[merchant] = { amount: 0, provider };
+              }
+              sources[merchant].amount += amount;
+            } else if (amount < 0) {
+              // Negative amount = Money OUT (purchases, withdrawals, fees, etc.)
+              const outAmount = Math.abs(amount);
+              moneyOut += outAmount;
+              if (!spend[merchant]) {
+                spend[merchant] = { amount: 0, provider };
+              }
+              spend[merchant].amount += outAmount;
             }
-            spend[merchant].amount += outAmount;
           }
         });
       } catch (error) {
@@ -1716,11 +1744,24 @@ router.get("/money-movement", requireAuth, async (req: any, res) => {
             if (txDate < monthStart || txDate > monthEnd) return;
             
             const amount = parseFloat(tx.amount || '0');
-            // Teller API: Positive = Money IN, Negative = Money OUT
-            if (amount > 0) {
-              threeMonthTotals.moneyIn += amount;
-            } else if (amount < 0) {
-              threeMonthTotals.moneyOut += Math.abs(amount);
+            
+            // Check if this is a credit card account (Teller stores as 'card')
+            const isCreditCard = account.accountType === 'card';
+            
+            if (isCreditCard) {
+              // Credit card: Positive = OUT (charges), Negative = IN (payments)
+              if (amount > 0) {
+                threeMonthTotals.moneyOut += amount;
+              } else if (amount < 0) {
+                threeMonthTotals.moneyIn += Math.abs(amount);
+              }
+            } else {
+              // Bank account: Positive = IN, Negative = OUT
+              if (amount > 0) {
+                threeMonthTotals.moneyIn += amount;
+              } else if (amount < 0) {
+                threeMonthTotals.moneyOut += Math.abs(amount);
+              }
             }
           });
         } catch (error) {
