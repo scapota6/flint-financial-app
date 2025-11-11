@@ -445,8 +445,17 @@ export async function generatePortfolioHistory(
       return [];
     }
 
-    // Aggregate all account histories
-    const allAccountHistories: Map<number, number> = new Map(); // timestamp -> total value
+    // CRITICAL FIX: Use Map to aggregate by timestamp for proper cross-account summation
+    const referenceNow = Math.floor(Date.now() / config.intervalMs) * config.intervalMs;
+    const portfolioMap = new Map<string, number>(); // ISO timestamp -> total value
+    
+    // Pre-create normalized timestamps for all buckets
+    const normalizedTimestamps: string[] = [];
+    for (let i = config.bucketCount; i >= 0; i--) {
+      const timestamp = new Date(referenceNow - (i * config.intervalMs)).toISOString();
+      normalizedTimestamps.push(timestamp);
+      portfolioMap.set(timestamp, 0); // Initialize with 0
+    }
     
     // Process each account
     for (const account of connectedAccounts) {
@@ -476,56 +485,67 @@ export async function generatePortfolioHistory(
           }
         }
         
-        // Calculate historical balances for this account
-        const accountHistory = calculateHistoricalBalances(transactions, currentBalance);
-        
-        // Aggregate into total portfolio value
-        accountHistory.forEach(point => {
-          const timestamp = new Date(point.timestamp).getTime();
-          const currentTotal = allAccountHistories.get(timestamp) || 0;
-          allAccountHistories.set(timestamp, currentTotal + point.value);
-        });
+        // CRITICAL FIX: For each normalized timestamp, determine this account's balance at that point
+        if (transactions.length === 0) {
+          // No transactions: flat line at current balance
+          normalizedTimestamps.forEach(timestamp => {
+            const currentTotal = portfolioMap.get(timestamp) || 0;
+            portfolioMap.set(timestamp, currentTotal + currentBalance);
+          });
+        } else {
+          // Has transactions: calculate historical balances
+          const rawHistory = calculateHistoricalBalances(transactions, currentBalance);
+          
+          // Sort historical points chronologically for efficient lookup
+          const sortedHistory = rawHistory
+            .map(point => ({
+              time: new Date(point.timestamp).getTime(),
+              value: point.value
+            }))
+            .sort((a, b) => a.time - b.time);
+          
+          // Find the earliest balance (for buckets before first transaction)
+          const earliestBalance = sortedHistory.length > 0 ? sortedHistory[0].value : currentBalance;
+          
+          // For each normalized bucket, find the account's balance at that time
+          let lastKnownValue = earliestBalance; // Start with earliest known balance
+          let historyIndex = 0; // Pointer for sorted history
+          
+          normalizedTimestamps.forEach(timestamp => {
+            const bucketTime = new Date(timestamp).getTime();
+            
+            // Update lastKnownValue by consuming all history points up to this bucket
+            while (historyIndex < sortedHistory.length && sortedHistory[historyIndex].time <= bucketTime) {
+              lastKnownValue = sortedHistory[historyIndex].value;
+              historyIndex++;
+            }
+            
+            // Always add the last known value (never skip buckets)
+            const currentTotal = portfolioMap.get(timestamp) || 0;
+            portfolioMap.set(timestamp, currentTotal + lastKnownValue);
+          });
+        }
         
       } catch (accountError) {
-        logger.error('Error processing account history', {
-          error: accountError as Error
+        logger.error('Error processing account for portfolio history', { 
+          error: accountError instanceof Error ? accountError.message : String(accountError)
         });
         // Continue with other accounts
       }
     }
     
-    // Convert aggregated map to sorted data points
-    const aggregatedPoints: HistoricalDataPoint[] = Array.from(allAccountHistories.entries())
-      .map(([timestamp, value]) => ({
-        timestamp: new Date(timestamp).toISOString(),
-        value: Math.round(value * 100) / 100
-      }))
-      .sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
+    // Convert map to array, maintaining chronological order
+    const result: HistoricalDataPoint[] = normalizedTimestamps.map(timestamp => ({
+      timestamp,
+      value: Math.round((portfolioMap.get(timestamp) || 0) * 100) / 100
+    }));
     
-    // If no transactions, create a flat line at current total
-    if (aggregatedPoints.length === 0) {
-      const currentTotal = connectedAccounts.reduce((sum, acc) => sum + parseFloat(acc.balance), 0);
-      const now = Date.now();
-      
-      for (let i = config.bucketCount; i >= 0; i--) {
-        aggregatedPoints.push({
-          timestamp: new Date(now - (i * config.intervalMs)).toISOString(),
-          value: Math.round(currentTotal * 100) / 100
-        });
-      }
-      
-      return aggregatedPoints;
-    }
+    logger.info('Portfolio history generated', { 
+      dataPoints: result.length,
+      period 
+    });
     
-    // Bucket by time interval
-    const bucketed = bucketByTimeInterval(aggregatedPoints, period);
-    
-    // Fill gaps with last known balance
-    const filled = fillInactiveGaps(bucketed, period);
-    
-    logger.info(`Portfolio history generated: ${filled.length} data points for ${period}`, { userId });
-    
-    return filled;
+    return result;
     
   } catch (error) {
     logger.error('Error generating portfolio history', { error: error as Error });

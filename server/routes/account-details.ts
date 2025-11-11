@@ -446,11 +446,12 @@ router.get("/accounts/:accountId/details", async (req: any, res) => {
             accountId: externalId,
           }).catch(() => ({ data: [] })),
           
-          // 5. Get pending orders
+          // 5. Get orders (365 days for full trade history)
           accountsApi.getUserAccountOrders({
             userId: snapUser.userId,
             userSecret: snapUser.userSecret,
             accountId: externalId,
+            days: 365 // Full year of order history
           }).catch(() => ({ data: [] })),
           
           // 6. Get recent activities/transactions
