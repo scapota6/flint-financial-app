@@ -231,7 +231,7 @@ export default function Accounts() {
 
             <TabsContent value="brokerages" className="space-y-4">
               {isLoading ? (
-                <div className="space-y-4" data-testid="skeleton-brokerages-grid">
+                <div className="space-y-4" data-testid="skeleton-brokerages-grid-0">
                   {[1, 2, 3].map((i) => (
                     <Card key={i} className="bg-slate-800/50 border-slate-700" data-testid={`skeleton-brokerage-card-${i}`}>
                       <CardHeader className="pb-3">
@@ -316,7 +316,7 @@ export default function Accounts() {
 
             <TabsContent value="banks" className="space-y-4">
               {isLoading ? (
-                <div className="space-y-4" data-testid="skeleton-banks-grid">
+                <div className="space-y-4" data-testid="skeleton-banks-grid-0">
                   {[1, 2, 3].map((i) => (
                     <Card key={i} className="bg-slate-800/50 border-slate-700" data-testid={`skeleton-bank-card-${i}`}>
                       <CardHeader className="pb-3">
