@@ -86,12 +86,12 @@ export default function Subscribe() {
 
   const getTierIcon = (tierId: string) => {
     switch (tierId) {
-      case 'plus':
+      case 'free':
+        return <Check className="h-6 w-6" />;
+      case 'basic':
         return <Star className="h-6 w-6" />;
       case 'pro':
         return <Zap className="h-6 w-6" />;
-      case 'unlimited':
-        return <Crown className="h-6 w-6" />;
       default:
         return <Star className="h-6 w-6" />;
     }
@@ -99,12 +99,12 @@ export default function Subscribe() {
 
   const getTierColor = (tierId: string) => {
     switch (tierId) {
-      case 'plus':
+      case 'free':
+        return 'text-gray-500';
+      case 'basic':
         return 'text-blue-500';
       case 'pro':
         return 'text-blue-500';
-      case 'unlimited':
-        return 'text-yellow-500';
       default:
         return 'text-gray-500';
     }
@@ -176,25 +176,25 @@ export default function Subscribe() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
           {SUBSCRIPTION_TIERS.map((tier) => {
             const tierDescriptions = {
-              plus: "Best for individuals who just want to see everything in one place.",
-              pro: "Best for individuals who want to manage money and simplify payments.",
-              unlimited: "Best for individuals who want complete control and future features."
+              free: "Get started with essential financial tracking features.",
+              basic: "Best for individuals who just want to see everything in one place.",
+              pro: "Best for individuals who want to manage money and simplify payments."
             };
             
             return (
               <Card 
                 key={tier.id}
                 className={`relative ${
-                  tier.id === 'unlimited' ? 'bg-blue-900 border-blue-600' : 'bg-gray-800 border-gray-700'
+                  tier.id === 'pro' ? 'bg-blue-900 border-blue-600' : 'bg-gray-800 border-gray-700'
                 }`}
                 data-testid={`card-pricing-${tier.id}`}
               >
-                {tier.id === 'unlimited' && (
+                {tier.id === 'pro' && (
                   <Badge className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-yellow-500 text-black">
                     ⭐ Most Popular
                   </Badge>
                 )}
-                <CardHeader className={`text-center space-y-4 ${tier.id === 'unlimited' ? 'pt-8' : ''}`}>
+                <CardHeader className={`text-center space-y-4 ${tier.id === 'pro' ? 'pt-8' : ''}`}>
                   <CardTitle className="text-2xl">{tier.name}</CardTitle>
                   <div className="space-y-2">
                     <div className="text-4xl font-bold" data-testid={`text-price-${tier.id}`}>
@@ -210,18 +210,20 @@ export default function Subscribe() {
                 </CardHeader>
                 <CardContent className="text-center">
                   <Button
-                    onClick={() => handleSelectTier(tier.id)}
-                    disabled={isProcessing || currentTier === tier.id}
+                    onClick={() => tier.id !== 'free' ? handleSelectTier(tier.id) : null}
+                    disabled={isProcessing || currentTier === tier.id || tier.id === 'free'}
                     className={`w-full ${
-                      tier.id === 'unlimited' 
-                        ? 'bg-blue-600 hover:bg-blue-700' 
-                        : tier.id === 'pro'
+                      tier.id === 'pro'
                         ? 'bg-blue-600 hover:bg-blue-700'
+                        : tier.id === 'free'
+                        ? 'bg-gray-600 cursor-not-allowed'
                         : 'bg-gray-700 hover:bg-gray-600'
                     } text-white`}
                     data-testid={`button-select-${tier.id}`}
                   >
-                    {isProcessing ? (
+                    {tier.id === 'free' ? (
+                      'Free Forever'
+                    ) : isProcessing ? (
                       'Processing...'
                     ) : currentTier === tier.id ? (
                       'Current Plan'
@@ -255,23 +257,65 @@ export default function Subscribe() {
                   <thead>
                     <tr className="border-b border-gray-700">
                       <th className="text-left py-3 text-gray-400">Feature</th>
-                      <th className="text-center py-3 text-gray-400">Plus</th>
+                      <th className="text-center py-3 text-gray-400">Free</th>
+                      <th className="text-center py-3 text-gray-400">FlintBasic</th>
                       <th className="text-center py-3 text-gray-400">Pro</th>
-                      <th className="text-center py-3 text-gray-400">Unlimited</th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr className="border-b border-gray-800">
                       <td className="py-3 text-white">Account Connections</td>
-                      <td className="text-center py-3 text-gray-400">3</td>
-                      <td className="text-center py-3 text-gray-400">5</td>
+                      <td className="text-center py-3 text-gray-400">4</td>
+                      <td className="text-center py-3 text-gray-400">Unlimited</td>
                       <td className="text-center py-3 text-gray-400">Unlimited</td>
                     </tr>
                     <tr className="border-b border-gray-800">
-                      <td className="py-3 text-white">Recurring Subscription Management</td>
+                      <td className="py-3 text-white">Money In/Out Flow</td>
                       <td className="text-center py-3">
                         <Check className="h-5 w-5 text-green-500 mx-auto" />
                       </td>
+                      <td className="text-center py-3">
+                        <Check className="h-5 w-5 text-green-500 mx-auto" />
+                      </td>
+                      <td className="text-center py-3">
+                        <Check className="h-5 w-5 text-green-500 mx-auto" />
+                      </td>
+                    </tr>
+                    <tr className="border-b border-gray-800">
+                      <td className="py-3 text-white">Dashboard & Transaction History</td>
+                      <td className="text-center py-3">
+                        <Check className="h-5 w-5 text-green-500 mx-auto" />
+                      </td>
+                      <td className="text-center py-3">
+                        <Check className="h-5 w-5 text-green-500 mx-auto" />
+                      </td>
+                      <td className="text-center py-3">
+                        <Check className="h-5 w-5 text-green-500 mx-auto" />
+                      </td>
+                    </tr>
+                    <tr className="border-b border-gray-800">
+                      <td className="py-3 text-white">Recurring Subscription Tracking</td>
+                      <td className="text-center py-3 text-gray-600">-</td>
+                      <td className="text-center py-3">
+                        <Check className="h-5 w-5 text-green-500 mx-auto" />
+                      </td>
+                      <td className="text-center py-3">
+                        <Check className="h-5 w-5 text-green-500 mx-auto" />
+                      </td>
+                    </tr>
+                    <tr className="border-b border-gray-800">
+                      <td className="py-3 text-white">Credit Card Management</td>
+                      <td className="text-center py-3 text-gray-600">-</td>
+                      <td className="text-center py-3">
+                        <Check className="h-5 w-5 text-green-500 mx-auto" />
+                      </td>
+                      <td className="text-center py-3">
+                        <Check className="h-5 w-5 text-green-500 mx-auto" />
+                      </td>
+                    </tr>
+                    <tr className="border-b border-gray-800">
+                      <td className="py-3 text-white">Stock Charts (Coming Soon)</td>
+                      <td className="text-center py-3 text-gray-600">-</td>
                       <td className="text-center py-3">
                         <Check className="h-5 w-5 text-green-500 mx-auto" />
                       </td>
@@ -282,9 +326,7 @@ export default function Subscribe() {
                     <tr className="border-b border-gray-800">
                       <td className="py-3 text-white">Transfer Funds (Coming Soon)</td>
                       <td className="text-center py-3 text-gray-600">-</td>
-                      <td className="text-center py-3">
-                        <Check className="h-5 w-5 text-green-500 mx-auto" />
-                      </td>
+                      <td className="text-center py-3 text-gray-600">-</td>
                       <td className="text-center py-3">
                         <Check className="h-5 w-5 text-green-500 mx-auto" />
                       </td>

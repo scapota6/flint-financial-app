@@ -10,15 +10,28 @@ export interface SubscriptionTier {
 
 export const SUBSCRIPTION_TIERS: SubscriptionTier[] = [
   {
-    id: 'plus',
-    name: 'Plus',
+    id: 'free',
+    name: 'Free',
+    monthlyPrice: 0,
+    annualPrice: 0,
+    features: [
+      '4 account connections',
+      'Money in/out flow tracking',
+      'Dashboard & transaction history',
+      'Email support',
+    ],
+  },
+  {
+    id: 'basic',
+    name: 'FlintBasic',
     monthlyPrice: 19.99,
     annualPrice: 199.99,
     features: [
-      '1-4 accounts',
+      'Unlimited account connections',
+      'Recurring subscription tracking',
+      'Credit card management',
       'Portfolio tracking',
-      'Email support',
-      'Mobile app access',
+      'Stock charts (coming soon)',
     ],
   },
   {
@@ -27,25 +40,12 @@ export const SUBSCRIPTION_TIERS: SubscriptionTier[] = [
     monthlyPrice: 39.99,
     annualPrice: 399.99,
     features: [
-      'Up to 10 accounts',
+      'Everything in FlintBasic',
+      'Transfer funds (coming soon)',
+      'Trading & brokerage access (coming soon)',
       'Advanced analytics',
       'Real-time alerts',
       'Priority support',
-      'API access',
-    ],
-  },
-  {
-    id: 'unlimited',
-    name: 'Unlimited',
-    monthlyPrice: 49.99,
-    annualPrice: 499.99,
-    features: [
-      'Unlimited accounts',
-      'Advanced trading tools',
-      'Custom alerts',
-      'Phone support',
-      'Early access to features',
-      'Tax optimization tools',
     ],
   },
 ];
