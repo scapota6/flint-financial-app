@@ -130,6 +130,19 @@ export const connectedAccounts = pgTable("connected_accounts", {
   uniqueAccountConstraint: unique("connected_accounts_user_provider_external_unique").on(table.userId, table.provider, table.externalAccountId),
 }));
 
+// Account snapshots cache table for SnapTrade API responses
+export const accountSnapshots = pgTable("account_snapshots", {
+  id: serial("id").primaryKey(),
+  accountId: varchar("account_id").notNull(),
+  userId: varchar("user_id").notNull(),
+  snapshotData: jsonb("snapshot_data").notNull(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  expiresAt: timestamp("expires_at").notNull(),
+}, (table) => ({
+  accountUserUnique: unique("account_snapshots_account_user_unique").on(table.accountId, table.userId),
+  expiresIdx: index("account_snapshots_expires_idx").on(table.expiresAt),
+}));
+
 // SnapTrade accounts table per specification: snaptrade_accounts(id PK, connection_id, institution, name, number_masked, raw_type, status, currency, total_balance_amount, last_holdings_sync_at)
 export const snaptradeAccounts = pgTable('snaptrade_accounts', {
   id: varchar('id').primaryKey(), // account UUID
@@ -675,3 +688,11 @@ export const insertErrorLogSchema = createInsertSchema(errorLogs).omit({
 
 export type ErrorLog = typeof errorLogs.$inferSelect;
 export type InsertErrorLog = z.infer<typeof insertErrorLogSchema>;
+
+export const insertAccountSnapshotSchema = createInsertSchema(accountSnapshots).omit({
+  id: true,
+  createdAt: true,
+});
+
+export type AccountSnapshot = typeof accountSnapshots.$inferSelect;
+export type InsertAccountSnapshot = z.infer<typeof insertAccountSnapshotSchema>;

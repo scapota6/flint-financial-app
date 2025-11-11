@@ -302,6 +302,8 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
     details: useQuery({
       queryKey: ['snaptrade-account-details', accountId],
       enabled: open && isSnapTradeAccount && isAuthenticated && !authLoading && !!accountId,
+      staleTime: 5 * 60 * 1000, // 5 minutes - matches backend cache TTL
+      gcTime: 10 * 60 * 1000,   // 10 minutes garbage collection
       queryFn: async () => {
         const resp = await fetch(`/api/snaptrade/accounts/${accountId}/details`, {
           headers: { 'x-request-id': `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}` },
@@ -324,6 +326,8 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
     balances: useQuery({
       queryKey: ['snaptrade-account-balances', accountId],
       enabled: open && isSnapTradeAccount && isAuthenticated && !authLoading && !!accountId,
+      staleTime: 5 * 60 * 1000, // 5 minutes - matches backend cache TTL
+      gcTime: 10 * 60 * 1000,   // 10 minutes garbage collection
       queryFn: async () => {
         const resp = await fetch(`/api/snaptrade/accounts/${accountId}/balances`, {
           headers: { 'x-request-id': `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}` },
@@ -346,6 +350,8 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
     positions: useQuery({
       queryKey: ['snaptrade-account-positions', accountId],
       enabled: open && isSnapTradeAccount && isAuthenticated && !authLoading && !!accountId,
+      staleTime: 5 * 60 * 1000, // 5 minutes - matches backend cache TTL
+      gcTime: 10 * 60 * 1000,   // 10 minutes garbage collection
       queryFn: async () => {
         const resp = await fetch(`/api/snaptrade/accounts/${accountId}/positions`, {
           headers: { 'x-request-id': `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}` },
@@ -368,6 +374,8 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
     orders: useQuery({
       queryKey: ['snaptrade-account-orders', accountId],
       enabled: open && isSnapTradeAccount && isAuthenticated && !authLoading && !!accountId,
+      staleTime: 5 * 60 * 1000, // 5 minutes - matches backend cache TTL
+      gcTime: 10 * 60 * 1000,   // 10 minutes garbage collection
       queryFn: async () => {
         const resp = await fetch(`/api/snaptrade/accounts/${accountId}/orders`, {
           headers: { 'x-request-id': `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}` },
@@ -390,6 +398,8 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
     activities: useQuery({
       queryKey: ['snaptrade-account-activities', accountId],
       enabled: open && isSnapTradeAccount && isAuthenticated && !authLoading && !!accountId,
+      staleTime: 5 * 60 * 1000, // 5 minutes - matches backend cache TTL
+      gcTime: 10 * 60 * 1000,   // 10 minutes garbage collection
       queryFn: async () => {
         const resp = await fetch(`/api/snaptrade/accounts/${accountId}/activities`, {
           headers: { 'x-request-id': `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}` },
@@ -881,6 +891,16 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
                     <Clock className="h-4 w-4 text-blue-500" />
                     <span className="font-medium">Updated: {fmtTime(data.metadata?.fetched_at || new Date().toISOString())}</span>
                   </div>
+                  {(snapTradeQueries.details.data?.fromCache || 
+                    snapTradeQueries.balances.data?.fromCache || 
+                    snapTradeQueries.positions.data?.fromCache || 
+                    snapTradeQueries.orders.data?.fromCache || 
+                    snapTradeQueries.activities.data?.fromCache) && (
+                    <div className="flex items-center gap-1 bg-blue-50 dark:bg-blue-900/30 px-3 py-2 rounded-lg border border-blue-200 dark:border-blue-700" data-testid="cache-indicator">
+                      <Clock className="h-3 w-3 text-blue-600 dark:text-blue-400" />
+                      <span className="text-blue-700 dark:text-blue-300 font-medium">Cached data (updates every 5 min)</span>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -928,21 +948,56 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
                   Refresh and try again
                 </Button>
               </div>
-            ) : errorDetails?.isDisconnected ? (
-              <div className="p-8 text-center bg-gradient-to-br from-orange-50 to-yellow-50 dark:from-orange-900/20 dark:to-yellow-900/20 border border-orange-200 dark:border-orange-700 rounded-xl">
-                <div className="mx-auto w-16 h-16 mb-6 bg-gradient-to-br from-orange-500 to-yellow-500 rounded-full flex items-center justify-center">
+            ) : errorDetails?.isTransient || errorDetails?.shouldRetry || errorDetails?.status === 503 || errorDetails?.code === 'TEMPORARY_ERROR' || errorDetails?.code === 'TEMPORARY_UNAVAILABLE' ? (
+              /* Transient errors - show yellow Retry button */
+              <div className="p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded-xl">
+                <div className="flex items-center gap-3">
+                  <RefreshCw className="h-5 w-5 text-yellow-600" />
+                  <div>
+                    <h4 className="font-semibold text-yellow-900 dark:text-yellow-100">
+                      Temporarily Unavailable
+                    </h4>
+                    <p className="text-sm text-yellow-700 dark:text-yellow-300 mt-1">
+                      {errorDetails?.message || 'Service temporarily unavailable. Please try again in a moment.'}
+                    </p>
+                  </div>
+                </div>
+                <Button
+                  onClick={() => {
+                    if (isSnapTradeAccount) {
+                      // Refetch all SnapTrade queries
+                      snapTradeQueries.details.refetch();
+                      snapTradeQueries.balances.refetch();
+                      snapTradeQueries.positions.refetch();
+                      snapTradeQueries.orders.refetch();
+                      snapTradeQueries.activities.refetch();
+                    } else {
+                      refetch();
+                    }
+                  }}
+                  className="mt-3 bg-yellow-600 hover:bg-yellow-700 text-white"
+                  data-testid="button-retry"
+                >
+                  <RefreshCw className="h-4 w-4 mr-2" />
+                  Retry
+                </Button>
+              </div>
+            ) : errorDetails?.isDisconnected || errorDetails?.code === 'DISCONNECTED' || errorDetails?.code === 'AUTH_EXPIRED' || errorDetails?.status === 410 ? (
+              /* Permanent disconnection - show red Reconnect button */
+              <div className="p-8 text-center bg-gradient-to-br from-red-50 to-red-100 dark:from-red-900/20 dark:to-red-800/20 border border-red-200 dark:border-red-700 rounded-xl">
+                <div className="mx-auto w-16 h-16 mb-6 bg-gradient-to-br from-red-500 to-red-600 rounded-full flex items-center justify-center">
                   <AlertCircle className="h-8 w-8 text-white" />
                 </div>
                 <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-                  This account needs to be reconnected
+                  Account Disconnected
                 </h3>
                 <p className="text-gray-600 dark:text-gray-400 mb-6 max-w-md mx-auto">
-                  It looks like access expired or was revoked. Reconnect to view your account details and continue managing your finances.
+                  {errorDetails?.message || 'It looks like access expired or was revoked. Reconnect to view your account details and continue managing your finances.'}
                 </p>
                 <Button
                   onClick={handleReconnectAccount}
                   disabled={isReconnecting}
-                  className="bg-gradient-to-r from-orange-500 to-yellow-500 hover:from-orange-600 hover:to-yellow-600 text-white px-6 py-3 text-base font-medium"
+                  className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white px-6 py-3 text-base font-medium"
                   data-testid="button-reconnect"
                 >
                   {isReconnecting ? (
@@ -955,78 +1010,56 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
                   )}
                 </Button>
               </div>
-            ) : errorDetails?.status >= 500 ? (
-              /* Network/server errors */
-              <div className="p-4 bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20 border border-blue-200 dark:border-blue-700 rounded-xl">
-                <div className="flex items-center">
-                  <div className="flex-shrink-0">
-                    <RefreshCw className="h-5 w-5 text-blue-400" />
-                  </div>
-                  <div className="ml-3 flex-1">
-                    <p className="text-blue-800 dark:text-blue-200 font-medium">Temporary issue</p>
-                    <p className="text-blue-600 dark:text-blue-300 text-sm mt-1">
-                      Please try again in a moment.
-                    </p>
-                    <Button
-                      onClick={() => refetch()}
-                      variant="outline"
-                      size="sm"
-                      className="mt-2 text-blue-600 border-blue-200 hover:bg-blue-50"
-                    >
-                      Try again
-                    </Button>
-                  </div>
-                </div>
-              </div>
             ) : (
-              /* Other errors including TELLER_RECONNECT_REQUIRED */
-              <div className="p-4 bg-gradient-to-r from-red-50 to-red-100 dark:from-red-900/20 dark:to-red-800/20 border border-red-200 dark:border-red-700 rounded-xl">
-                <div className="flex items-center">
-                  <div className="flex-shrink-0">
-                    <X className="h-5 w-5 text-red-400" />
-                  </div>
-                  <div className="ml-3 flex-1">
-                    <p className="text-red-800 dark:text-red-200 font-medium">Failed to load account details</p>
-                    <p className="text-red-600 dark:text-red-300 text-sm mt-1">
-                      {errorDetails?.code === 'TELLER_RECONNECT_REQUIRED' 
-                        ? 'Account reconnection required. Please reconnect your account.'
-                        : 'Please check your connection and try again.'}
+              /* Generic errors - show gray Try Again button */
+              <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
+                <div className="flex items-center gap-3 mb-3">
+                  <AlertCircle className="h-5 w-5 text-gray-600 dark:text-gray-400" />
+                  <div>
+                    <h4 className="font-semibold text-gray-900 dark:text-white">
+                      Failed to load account details
+                    </h4>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                      {errorDetails?.message || 'Please check your connection and try again.'}
                     </p>
-                    {errorDetails?.code === 'TELLER_RECONNECT_REQUIRED' && (
-                      <button
-                        onClick={handleReconnectAccount}
-                        disabled={isReconnecting}
-                        className="mt-3 inline-flex items-center px-4 py-2 bg-red-600 hover:bg-red-700 disabled:bg-red-400 text-white font-medium rounded-lg transition-colors text-sm"
-                        data-testid="button-reconnect"
-                      >
-                        {isReconnecting ? (
-                          <>
-                            <RefreshCw className="animate-spin h-4 w-4 mr-2" />
-                            Reconnecting...
-                          </>
-                        ) : (
-                          'Reconnect Account'
-                        )}
-                      </button>
-                    )}
-                    {isDev && (
-                      <button
-                        onClick={() => setShowErrorDetails(!showErrorDetails)}
-                        className="text-xs text-red-500 dark:text-red-400 underline mt-2"
-                      >
-                        {showErrorDetails ? 'Hide' : 'View'} error details
-                      </button>
-                    )}
-                    {isDev && showErrorDetails && (
-                      <div className="mt-2 p-2 bg-red-100 dark:bg-red-900/30 rounded text-xs font-mono text-red-700 dark:text-red-300">
-                        <div>Code: {errorDetails?.code || 'Unknown'}</div>
-                        <div>Message: {errorDetails?.message || 'No message'}</div>
-                        <div>Status: {errorDetails?.status || 'Unknown'}</div>
-                        {errorDetails?.accountId && <div>Account: {errorDetails.accountId}</div>}
-                      </div>
-                    )}
                   </div>
                 </div>
+                <Button
+                  onClick={() => {
+                    if (isSnapTradeAccount) {
+                      // Refetch all SnapTrade queries
+                      snapTradeQueries.details.refetch();
+                      snapTradeQueries.balances.refetch();
+                      snapTradeQueries.positions.refetch();
+                      snapTradeQueries.orders.refetch();
+                      snapTradeQueries.activities.refetch();
+                    } else {
+                      refetch();
+                    }
+                  }}
+                  className="mt-3"
+                  data-testid="button-retry"
+                >
+                  Try Again
+                </Button>
+                {isDev && (
+                  <button
+                    onClick={() => setShowErrorDetails(!showErrorDetails)}
+                    className="text-xs text-gray-500 dark:text-gray-400 underline mt-2 ml-2"
+                  >
+                    {showErrorDetails ? 'Hide' : 'View'} error details
+                  </button>
+                )}
+                {isDev && showErrorDetails && (
+                  <div className="mt-2 p-2 bg-gray-100 dark:bg-gray-900/30 rounded text-xs font-mono text-gray-700 dark:text-gray-300">
+                    <div>Code: {errorDetails?.code || 'Unknown'}</div>
+                    <div>Message: {errorDetails?.message || 'No message'}</div>
+                    <div>Status: {errorDetails?.status || 'Unknown'}</div>
+                    <div>isTransient: {String(errorDetails?.isTransient || false)}</div>
+                    <div>shouldRetry: {String(errorDetails?.shouldRetry || false)}</div>
+                    {errorDetails?.accountId && <div>Account: {errorDetails.accountId}</div>}
+                  </div>
+                )}
               </div>
             )}
           </div>

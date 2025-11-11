@@ -2,6 +2,7 @@ import {
   users,
   snaptradeUsers,
   connectedAccounts,
+  accountSnapshots,
   holdings,
   watchlist,
   trades,
@@ -32,7 +33,7 @@ import {
   type InsertErrorLog,
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, and, desc, asc, isNotNull, gte, lte } from "drizzle-orm";
+import { eq, and, desc, asc, isNotNull, gte, lte, gt } from "drizzle-orm";
 // Removed encryption import - storing plaintext for debugging
 
 export interface IStorage {
@@ -131,6 +132,11 @@ export interface IStorage {
   getErrorsByDateRange(userId: string, startDate: Date, endDate: Date): Promise<ErrorLog[]>;
   getAllErrors(limit?: number, offset?: number): Promise<ErrorLog[]>;
   getErrorsByType(errorType: string, limit?: number): Promise<ErrorLog[]>;
+  
+  // Account snapshots caching
+  saveAccountSnapshot(accountId: string, userId: string, snapshotData: any, ttlMinutes: number): Promise<void>;
+  getAccountSnapshot(accountId: string): Promise<{ data: any, expiresAt: Date } | null>;
+  updateAccountConnectionStatus(accountId: number, status: string): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -758,6 +764,51 @@ export class DatabaseStorage implements IStorage {
       .where(eq(errorLogs.errorType, errorType))
       .orderBy(desc(errorLogs.timestamp))
       .limit(limit);
+  }
+
+  // Account snapshots caching methods
+  async saveAccountSnapshot(accountId: string, userId: string, snapshotData: any, ttlMinutes: number): Promise<void> {
+    const expiresAt = new Date();
+    expiresAt.setMinutes(expiresAt.getMinutes() + ttlMinutes);
+
+    await db
+      .insert(accountSnapshots)
+      .values({
+        accountId,
+        userId,
+        snapshotData,
+        expiresAt,
+      })
+      .onConflictDoUpdate({
+        target: accountSnapshots.accountId,
+        set: {
+          snapshotData,
+          expiresAt,
+          createdAt: new Date(),
+        },
+      });
+  }
+
+  async getAccountSnapshot(accountId: string): Promise<{ data: any, expiresAt: Date } | null> {
+    const [snapshot] = await db
+      .select()
+      .from(accountSnapshots)
+      .where(
+        and(
+          eq(accountSnapshots.accountId, accountId),
+          gt(accountSnapshots.expiresAt, new Date())
+        )
+      )
+      .limit(1);
+
+    if (!snapshot) {
+      return null;
+    }
+
+    return {
+      data: snapshot.snapshotData,
+      expiresAt: snapshot.expiresAt,
+    };
   }
 }
 

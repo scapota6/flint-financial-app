@@ -378,6 +378,18 @@ router.get("/accounts/:accountId/details", async (req: any, res) => {
       }
     } else if (provider === 'snaptrade') {
       try {
+        // Check cache first
+        const cached = await storage.getAccountSnapshot(externalId);
+        if (cached && new Date() < cached.expiresAt) {
+          console.log('[Account Details API] Returning cached data:', {
+            userId,
+            accountId: externalId,
+            cacheAge: Math.round((new Date().getTime() - new Date(cached.data.metadata?.fetched_at).getTime()) / 1000),
+            expiresIn: Math.round((cached.expiresAt.getTime() - new Date().getTime()) / 1000)
+          });
+          return res.json({ ...cached.data, fromCache: true });
+        }
+        
         // Get SnapTrade user credentials
         const { getSnapUser } = await import('../store/snapUsers');
         const snapUser = await getSnapUser(userId);
@@ -500,8 +512,8 @@ router.get("/accounts/:accountId/details", async (req: any, res) => {
           httpStatus: 200
         });
         
-        // Transform data to match AccountDetails interface expected by frontend
-        res.json({
+        // Build response data
+        const responseData = {
           provider: 'snaptrade',
           accountInformation: {
             id: account.id || externalId,
@@ -559,9 +571,17 @@ router.get("/accounts/:accountId/details", async (req: any, res) => {
             cash_restrictions: account.cash_restrictions || [],
             account_created: account.created_date || null
           }
-        });
+        };
+        
+        // Cache for 5 minutes
+        await storage.saveAccountSnapshot(externalId, userId, responseData, 5);
+        
+        return res.json(responseData);
         
       } catch (error: any) {
+        const { classifySnapTradeError } = await import('../lib/snaptrade-error-classifier');
+        const classified = classifySnapTradeError(error);
+        
         const statusCode = error.response?.status || error.statusCode || 500;
         const errorMessage = error.message || 'SnapTrade API error';
         
@@ -572,10 +592,15 @@ router.get("/accounts/:accountId/details", async (req: any, res) => {
           snaptradeHttpStatus: statusCode,
           reason: errorMessage,
           provider: 'snaptrade',
-          errorData: error.response?.data
+          errorData: error.response?.data,
+          classifiedError: {
+            isTransient: classified.isTransient,
+            shouldMarkDisconnected: classified.shouldMarkDisconnected,
+            errorCode: classified.errorCode
+          }
         });
         
-        // Handle specific SnapTrade error cases
+        // Handle special case for not registered
         if (statusCode === 428 || error.response?.data?.code === 'SNAPTRADE_NOT_REGISTERED') {
           return res.status(428).json({ 
             code: 'SNAPTRADE_NOT_REGISTERED',
@@ -584,31 +609,20 @@ router.get("/accounts/:accountId/details", async (req: any, res) => {
           });
         }
         
-        if (statusCode === 401 || statusCode === 403) {
-          return res.status(403).json({ 
-            code: 'SNAPTRADE_AUTH_ERROR',
-            message: 'SnapTrade authentication failed. Please reconnect your account.',
-            provider: 'snaptrade'
-          });
+        // Only mark disconnected if classifier says so
+        if (classified.shouldMarkDisconnected && dbId) {
+          await storage.updateAccountConnectionStatus(dbId, 'disconnected');
         }
         
-        if (statusCode === 404) {
-          // Mark account as disconnected
-          if (dbId) {
-            await storage.updateAccountConnectionStatus(dbId, 'disconnected');
-          }
-          
-          return res.status(410).json({ 
-            code: 'DISCONNECTED',
-            reconnectUrl: '/connections',
-            message: 'Account connection has been lost. Please reconnect your account.',
-            provider: 'snaptrade'
-          });
-        }
+        // Return error with appropriate status code
+        const httpStatus = classified.shouldMarkDisconnected ? 410 : (classified.isTransient ? 503 : 500);
         
-        return res.status(500).json({ 
-          code: 'SNAPTRADE_FETCH_FAILED',
-          message: 'Failed to fetch account details from SnapTrade'
+        return res.status(httpStatus).json({
+          code: classified.errorCode,
+          message: classified.userMessage,
+          isTransient: classified.isTransient,
+          shouldRetry: classified.shouldRetry,
+          provider: 'snaptrade'
         });
       }
     } else {
