@@ -132,12 +132,16 @@ router.post("/save-account", requireAuth, async (req: any, res) => {
     });
     logger.info("Teller enrollment saved/updated", { userId, metadata: { enrollmentId: actualEnrollmentId } });
     
-    // Get user and calculate limits
+    // Get user and calculate limits using proper connection counting
     const user = await storage.getUser(userId);
-    const existingAccounts = await storage.getConnectedAccounts(userId);
-    const accountLimit = getAccountLimit(user?.subscriptionTier || 'free');
+    const { getConnectionCount } = await import('../routes');
+    const currentConnections = await getConnectionCount(userId);
+    const accountLimit = getAccountLimit(user?.subscriptionTier || 'free', user?.isAdmin === true ? true : undefined);
     const isUnlimited = accountLimit === null;
-    const availableSlots = isUnlimited ? Infinity : Math.max(0, accountLimit - existingAccounts.length);
+    const availableSlots = isUnlimited ? Infinity : Math.max(0, accountLimit - currentConnections);
+    
+    // Get existing accounts for duplicate checking
+    const existingAccounts = await storage.getConnectedAccounts(userId);
     
     // Get set of already-connected Teller account IDs
     const existingTellerIds = new Set(
@@ -155,7 +159,7 @@ router.post("/save-account", requireAuth, async (req: any, res) => {
       metadata: {
         tier: user?.subscriptionTier || 'free',
         limit: accountLimit,
-        existingCount: existingAccounts.length,
+        currentConnections: currentConnections,
         availableSlots: isUnlimited ? 'unlimited' : availableSlots,
         totalFromTeller: accounts.length,
         newAccounts: newAccounts.length,
@@ -172,8 +176,8 @@ router.post("/save-account", requireAuth, async (req: any, res) => {
         accountsRejected: newAccounts.length,
         duplicates: duplicateCount,
         limit: accountLimit,
-        current: existingAccounts.length,
-        message: `Account limit reached (${accountLimit}). Upgrade your plan to connect more accounts.`
+        current: currentConnections,
+        message: `Connection limit reached (${accountLimit}). Upgrade your plan to connect more accounts.`
       });
     }
     
@@ -252,7 +256,7 @@ router.post("/save-account", requireAuth, async (req: any, res) => {
       accountsRejected: rejectedCount,
       duplicates: duplicateCount,
       limit: accountLimit,
-      current: existingAccounts.length + accountsToSave.length,
+      current: currentConnections + accountsToSave.length,
       message: rejectedCount > 0
         ? `Connected ${accountsToSave.length} of ${newAccounts.length} new accounts. ${rejectedCount} rejected due to tier limit. Upgrade to connect more.`
         : accountsToSave.length === 0 && duplicateCount > 0
@@ -326,12 +330,16 @@ router.post("/exchange-token", requireAuth, async (req: any, res) => {
     const accounts = await tellerResponse.json();
     logger.info(`Teller accounts fetched: ${accounts.length} accounts`);
     
-    // Get user and calculate limits
+    // Get user and calculate limits using proper connection counting
     const user = await storage.getUser(userId);
-    const existingAccounts = await storage.getConnectedAccounts(userId);
-    const accountLimit = getAccountLimit(user?.subscriptionTier || 'free');
+    const { getConnectionCount } = await import('../routes');
+    const currentConnections = await getConnectionCount(userId);
+    const accountLimit = getAccountLimit(user?.subscriptionTier || 'free', user?.isAdmin === true ? true : undefined);
     const isUnlimited = accountLimit === null;
-    const availableSlots = isUnlimited ? Infinity : Math.max(0, accountLimit - existingAccounts.length);
+    const availableSlots = isUnlimited ? Infinity : Math.max(0, accountLimit - currentConnections);
+    
+    // Get existing accounts for duplicate checking
+    const existingAccounts = await storage.getConnectedAccounts(userId);
     
     // Get set of already-connected Teller account IDs
     const existingTellerIds = new Set(
@@ -349,7 +357,7 @@ router.post("/exchange-token", requireAuth, async (req: any, res) => {
       metadata: {
         tier: user?.subscriptionTier || 'free',
         limit: accountLimit,
-        existingCount: existingAccounts.length,
+        currentConnections: currentConnections,
         availableSlots: isUnlimited ? 'unlimited' : availableSlots,
         totalFromTeller: accounts.length,
         newAccounts: newAccounts.length,
@@ -366,8 +374,8 @@ router.post("/exchange-token", requireAuth, async (req: any, res) => {
         accountsRejected: newAccounts.length,
         duplicates: duplicateCount,
         limit: accountLimit,
-        current: existingAccounts.length,
-        message: `Account limit reached (${accountLimit}). Upgrade your plan to connect more accounts.`
+        current: currentConnections,
+        message: `Connection limit reached (${accountLimit}). Upgrade your plan to connect more accounts.`
       });
     }
     
@@ -415,7 +423,7 @@ router.post("/exchange-token", requireAuth, async (req: any, res) => {
       accountsRejected: rejectedCount,
       duplicates: duplicateCount,
       limit: accountLimit,
-      current: existingAccounts.length + accountsToSave.length,
+      current: currentConnections + accountsToSave.length,
       message: rejectedCount > 0
         ? `Connected ${accountsToSave.length} of ${newAccounts.length} new accounts. ${rejectedCount} rejected due to tier limit. Upgrade to connect more.`
         : accountsToSave.length === 0 && duplicateCount > 0

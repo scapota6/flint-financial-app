@@ -188,6 +188,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
               const flintUserId = snapUser.flintUserId;
               console.log(`📝 Resolved Flint user ID: ${flintUserId} for SnapTrade ID: ${userId}`);
               
+              // Check connection limits before syncing
+              const user = await storage.getUser(flintUserId);
+              const currentConnections = await getConnectionCount(flintUserId);
+              const connectionLimit = getAccountLimit(user?.subscriptionTier || 'free', user?.isAdmin === true ? true : undefined);
+              const isUnlimited = connectionLimit === null;
+              
+              console.log(`📊 Connection limit check: ${currentConnections}/${connectionLimit === null ? '∞' : connectionLimit}`);
+              
               // Fetch authorizations from SnapTrade API
               const authorizationsResponse = await listBrokerageAuthorizations(
                 userId as string,
@@ -198,8 +206,56 @@ export async function registerRoutes(app: Express): Promise<Server> {
               
               console.log(`📥 Found ${authorizations.length} authorizations to sync`);
               
-              // Sync each authorization to database
-              for (const auth of authorizations) {
+              // Get existing authorization IDs to avoid counting them again
+              const existingAuths = await db
+                .select()
+                .from(snaptradeConnections)
+                .where(eq(snaptradeConnections.flintUserId, flintUserId));
+              
+              const existingAuthIds = new Set(existingAuths.map(a => a.brokerageAuthorizationId));
+              
+              // Filter new authorizations (not yet in database)
+              const newAuths = authorizations.filter(auth => !existingAuthIds.has(auth.id));
+              const existingAuthsToUpdate = authorizations.filter(auth => existingAuthIds.has(auth.id));
+              console.log(`🆕 New authorizations: ${newAuths.length}, 🔄 Existing to update: ${existingAuthsToUpdate.length}`);
+              
+              // Check if new authorizations would exceed limit
+              let authsToSync = authorizations;
+              if (!isUnlimited && newAuths.length > 0) {
+                const availableSlots = Math.max(0, connectionLimit! - currentConnections);
+                
+                if (availableSlots === 0) {
+                  console.warn(`⚠️ Connection limit reached (${connectionLimit}), rejecting new authorizations`);
+                  logger.warn('SnapTrade authorization limit reached', {
+                    flintUserId,
+                    currentConnections,
+                    limit: connectionLimit,
+                    attempted: newAuths.length,
+                    rejected: newAuths.length
+                  });
+                  // Only sync existing authorizations (updates), skip new ones
+                  authsToSync = existingAuthsToUpdate;
+                } else if (newAuths.length > availableSlots) {
+                  console.warn(`⚠️ Partial limit: accepting ${availableSlots}/${newAuths.length} new authorizations`);
+                  logger.warn('SnapTrade authorization partial limit', {
+                    flintUserId,
+                    currentConnections,
+                    limit: connectionLimit,
+                    available: availableSlots,
+                    attempted: newAuths.length,
+                    accepted: availableSlots
+                  });
+                  // Take first N new auths + all existing auths
+                  authsToSync = [...existingAuthsToUpdate, ...newAuths.slice(0, availableSlots)];
+                }
+              }
+              
+              // Sync authorized connections to database
+              let syncedCount = 0;
+              let updatedCount = 0;
+              for (const auth of authsToSync) {
+                const isNewAuth = !existingAuthIds.has(auth.id);
+                
                 await db
                   .insert(snaptradeConnections)
                   .values({
@@ -221,7 +277,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
                     }
                   });
                 
-                console.log(`✅ Synced authorization: ${auth.brokerage?.name} (${auth.id})`);
+                if (isNewAuth) {
+                  syncedCount++;
+                  console.log(`✅ Added authorization: ${auth.brokerage?.name} (${auth.id})`);
+                } else {
+                  updatedCount++;
+                  console.log(`🔄 Updated authorization: ${auth.brokerage?.name} (${auth.id})`);
+                }
+              }
+              
+              const rejectedCount = newAuths.length - syncedCount;
+              if (rejectedCount > 0) {
+                console.warn(`⚠️ Rejected ${rejectedCount} new authorizations due to connection limit`);
               }
               
               logger.info('SnapTrade authorizations synced successfully', {
@@ -3901,6 +3968,36 @@ export function getAccountLimit(tier: string, isAdmin?: boolean): number | null 
     case 'premium': return null; // Unlimited
     default: return 4;
   }
+}
+
+/**
+ * Counts connections properly by provider:
+ * - Teller: Each account counts as 1 connection
+ * - SnapTrade: Each authorization (brokerage login) counts as 1 connection (may have multiple accounts)
+ */
+export async function getConnectionCount(userId: string): Promise<number> {
+  const { db } = await import('./db');
+  const { connectedAccounts, snaptradeConnections } = await import('@shared/schema');
+  const { eq, and } = await import('drizzle-orm');
+  
+  // Count Teller accounts individually (each account = 1 connection)
+  const tellerAccounts = await db
+    .select()
+    .from(connectedAccounts)
+    .where(
+      and(
+        eq(connectedAccounts.userId, userId),
+        eq(connectedAccounts.provider, 'teller')
+      )
+    );
+  
+  // Count SnapTrade authorizations (each authorization = 1 connection, regardless of # of accounts)
+  const snaptradeAuths = await db
+    .select()
+    .from(snaptradeConnections)
+    .where(eq(snaptradeConnections.flintUserId, userId));
+  
+  return tellerAccounts.length + snaptradeAuths.length;
 }
 
 // Helper functions for subscription detection
