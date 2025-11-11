@@ -233,49 +233,18 @@ router.get("/history", requireAuth, async (req: any, res) => {
     if (!userId) {
       return res.status(401).json({ message: "Unauthorized" });
     }
-    const period = req.query.period || '1D';
     
-    // Generate mock historical data for charting
-    // In production, this would fetch from a time-series database
-    const now = Date.now();
-    const dataPoints = [];
-    let intervals = 24; // Default for 1D
-    let intervalMs = 60 * 60 * 1000; // 1 hour
+    const period = (req.query.period || '1D') as '1D' | '1W' | '1M' | '3M' | '1Y';
     
-    switch (period) {
-      case '1W':
-        intervals = 7 * 24;
-        intervalMs = 60 * 60 * 1000;
-        break;
-      case '1M':
-        intervals = 30;
-        intervalMs = 24 * 60 * 60 * 1000;
-        break;
-      case '3M':
-        intervals = 90;
-        intervalMs = 24 * 60 * 60 * 1000;
-        break;
-      case '1Y':
-        intervals = 365;
-        intervalMs = 24 * 60 * 60 * 1000;
-        break;
-    }
+    // Generate real portfolio history using transaction data
+    const { generatePortfolioHistory } = await import('../lib/portfolio-history');
+    const dataPoints = await generatePortfolioHistory(userId, period);
     
-    // Get current portfolio value
-    const accounts = await storage.getConnectedAccounts(userId);
-    const totalValue = accounts.reduce((sum, acc) => sum + parseFloat(acc.balance), 0);
-    
-    // Generate historical points with some volatility
-    for (let i = intervals; i >= 0; i--) {
-      const timestamp = now - (i * intervalMs);
-      const randomChange = (Math.random() - 0.5) * 0.02; // ±2% volatility
-      const value = totalValue * (1 + randomChange * (i / intervals));
-      
-      dataPoints.push({
-        timestamp: new Date(timestamp).toISOString(),
-        value: Math.round(value * 100) / 100
-      });
-    }
+    logger.info("Portfolio history generated", {
+      userId,
+      period,
+      dataPointsCount: dataPoints.length
+    });
     
     res.json({
       period,
@@ -303,49 +272,21 @@ router.get("/history/:period", requireAuth, async (req: any, res) => {
     if (!userId) {
       return res.status(401).json({ message: "Unauthorized" });
     }
+    
     const { period = '1D' } = req.params;
     
-    // Generate mock historical data for charting
-    // In production, this would fetch from a time-series database
-    const now = Date.now();
-    const dataPoints = [];
-    let intervals = 24; // Default for 1D
-    let intervalMs = 60 * 60 * 1000; // 1 hour
+    // Generate real portfolio history using transaction data
+    const { generatePortfolioHistory } = await import('../lib/portfolio-history');
+    const dataPoints = await generatePortfolioHistory(
+      userId,
+      period as '1D' | '1W' | '1M' | '3M' | '1Y'
+    );
     
-    switch (period) {
-      case '1W':
-        intervals = 7 * 24;
-        intervalMs = 60 * 60 * 1000;
-        break;
-      case '1M':
-        intervals = 30;
-        intervalMs = 24 * 60 * 60 * 1000;
-        break;
-      case '3M':
-        intervals = 90;
-        intervalMs = 24 * 60 * 60 * 1000;
-        break;
-      case '1Y':
-        intervals = 365;
-        intervalMs = 24 * 60 * 60 * 1000;
-        break;
-    }
-    
-    // Get current portfolio value
-    const accounts = await storage.getConnectedAccounts(userId);
-    const totalValue = accounts.reduce((sum, acc) => sum + parseFloat(acc.balance), 0);
-    
-    // Generate historical points with some volatility
-    for (let i = intervals; i >= 0; i--) {
-      const timestamp = now - (i * intervalMs);
-      const randomChange = (Math.random() - 0.5) * 0.02; // ±2% volatility
-      const value = totalValue * (1 + randomChange * (i / intervals));
-      
-      dataPoints.push({
-        timestamp: new Date(timestamp).toISOString(),
-        value: Math.round(value * 100) / 100
-      });
-    }
+    logger.info("Portfolio history generated", {
+      userId,
+      period,
+      dataPointsCount: dataPoints.length
+    });
     
     res.json({
       period,
