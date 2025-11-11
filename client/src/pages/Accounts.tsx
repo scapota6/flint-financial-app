@@ -64,7 +64,7 @@ export default function Accounts() {
       // Set connection limit info for alert display
       setConnectionLimitInfo({ accepted, rejected, tier, brokerages });
       
-      // Show immediate toast notification
+      // Show immediate toast notification for limited tier users
       if (rejected > 0 && accepted === 0) {
         // Zero accepted - complete failure
         toast({
@@ -79,6 +79,13 @@ export default function Accounts() {
           title: "Partial Connection",
           description: `Connected ${accepted} brokerage${accepted > 1 ? 's' : ''}, but ${rejected} ${rejected > 1 ? 'were' : 'was'} rejected due to limits.`,
           duration: 6000,
+        });
+      } else if (accepted > 0 && rejected === 0) {
+        // All accepted - show success for unlimited tier users too
+        toast({
+          title: "Connection Successful",
+          description: `Successfully connected ${accepted} brokerage${accepted > 1 ? 's' : ''}.`,
+          duration: 4000,
         });
       }
       

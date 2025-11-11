@@ -20,6 +20,7 @@ import { demoMode } from "@shared/demo-mode";
 import { sendApplicationNotificationEmail } from "./services/email";
 import { getTellerAccessToken } from "./store/tellerUsers";
 import { resilientTellerFetch, getTellerBaseUrl } from "./teller/client";
+import { getAccountLimit, getConnectionCount } from "./services/connection-limits";
 import { 
   insertConnectedAccountSchema,
   insertWatchlistItemSchema,
@@ -310,6 +311,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
                 redirectUrl.searchParams.set('accepted', syncedCount.toString());
                 redirectUrl.searchParams.set('rejected', rejectedCount.toString());
                 redirectUrl.searchParams.set('tier', user?.subscriptionTier || 'free');
+                // Only include brokerages param when rejections exist
                 if (rejectedBrokerages.length > 0) {
                   redirectUrl.searchParams.set('brokerages', rejectedBrokerages.join(','));
                 }
@@ -3979,51 +3981,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   return httpServer;
 }
 
-// Helper function for account limits
-export function getAccountLimit(tier: string, isAdmin?: boolean): number | null {
-  // Admin users have unlimited connections
-  if (isAdmin === true) {
-    return null;
-  }
-  
-  switch (tier) {
-    case 'free': return 4;
-    case 'basic': return null; // Unlimited
-    case 'pro': return null; // Unlimited
-    case 'premium': return null; // Unlimited
-    default: return 4;
-  }
-}
-
-/**
- * Counts connections properly by provider:
- * - Teller: Each account counts as 1 connection
- * - SnapTrade: Each authorization (brokerage login) counts as 1 connection (may have multiple accounts)
- */
-export async function getConnectionCount(userId: string): Promise<number> {
-  const { db } = await import('./db');
-  const { connectedAccounts, snaptradeConnections } = await import('@shared/schema');
-  const { eq, and } = await import('drizzle-orm');
-  
-  // Count Teller accounts individually (each account = 1 connection)
-  const tellerAccounts = await db
-    .select()
-    .from(connectedAccounts)
-    .where(
-      and(
-        eq(connectedAccounts.userId, userId),
-        eq(connectedAccounts.provider, 'teller')
-      )
-    );
-  
-  // Count SnapTrade authorizations (each authorization = 1 connection, regardless of # of accounts)
-  const snaptradeAuths = await db
-    .select()
-    .from(snaptradeConnections)
-    .where(eq(snaptradeConnections.flintUserId, userId));
-  
-  return tellerAccounts.length + snaptradeAuths.length;
-}
+// Re-export connection limit helpers from service for backward compatibility
+export { getAccountLimit, getConnectionCount } from "./services/connection-limits";
 
 // Helper functions for subscription detection
 function detectRecurringPayments(transactions: any[]) {

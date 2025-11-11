@@ -9,7 +9,7 @@ import { logger } from "@shared/logger";
 import { storage } from "../storage";
 import { v4 as uuidv4 } from 'uuid';
 import tellerPaymentsRouter from './teller.payments';
-import { getAccountLimit } from '../routes';
+import { getAccountLimit, getConnectionCount } from '../services/connection-limits';
 import { getTellerUser, saveTellerUser, getTellerAccessToken } from '../store/tellerUsers';
 import { resilientTellerFetch, getTellerBaseUrl } from '../teller/client';
 
@@ -134,7 +134,6 @@ router.post("/save-account", requireAuth, async (req: any, res) => {
     
     // Get user and calculate limits using proper connection counting
     const user = await storage.getUser(userId);
-    const { getConnectionCount } = await import('../routes');
     const currentConnections = await getConnectionCount(userId);
     const accountLimit = getAccountLimit(user?.subscriptionTier || 'free', user?.isAdmin === true ? true : undefined);
     const isUnlimited = accountLimit === null;
@@ -332,7 +331,6 @@ router.post("/exchange-token", requireAuth, async (req: any, res) => {
     
     // Get user and calculate limits using proper connection counting
     const user = await storage.getUser(userId);
-    const { getConnectionCount } = await import('../routes');
     const currentConnections = await getConnectionCount(userId);
     const accountLimit = getAccountLimit(user?.subscriptionTier || 'free', user?.isAdmin === true ? true : undefined);
     const isUnlimited = accountLimit === null;

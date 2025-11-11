@@ -142,7 +142,8 @@ export default function AccountCard({ account }: AccountCardProps) {
                   ) : (
                     <>
                       {account.institution}
-                      {account.accountNumber && ` • ****${account.accountNumber.slice(-4)}`}
+                      {/* Only show separator and masked number when accountNumber exists */}
+                      {account.accountNumber && account.accountNumber.trim() && ` • ****${account.accountNumber.slice(-4)}`}
                     </>
                   )}
                 </p>

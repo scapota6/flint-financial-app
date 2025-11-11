@@ -36,8 +36,10 @@ export default function ConnectionLimitAlert({
     return null;
   }
   
-  // Parse brokerages list
-  const rejectedBrokeragesList = brokerages ? brokerages.split(',').filter(b => b.trim()) : [];
+  // Parse brokerages list - guard against missing/empty brokerages param
+  const rejectedBrokeragesList = (brokerages && brokerages.trim()) 
+    ? brokerages.split(',').filter(b => b && b.trim()) 
+    : [];
   const total = accepted + rejected;
   
   // Get tier limit dynamically
