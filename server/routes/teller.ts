@@ -1619,13 +1619,39 @@ router.get("/money-movement", requireAuth, async (req: any, res) => {
     // Fetch Teller access token
     const accessToken = await getTellerAccessToken(userId);
     if (!accessToken) {
-      return res.json({ moneyIn: 0, moneyOut: 0, sources: [], spend: [] });
+      return res.json({ 
+        month: targetDate.toISOString().slice(0, 7),
+        banking: { 
+          moneyIn: 0, 
+          moneyOut: 0, 
+          topSources: [], 
+          topSpend: [],
+          threeMonthAverage: { moneyIn: 0, moneyOut: 0 }
+        },
+        creditCards: { 
+          moneyIn: 0, 
+          moneyOut: 0, 
+          topSources: [], 
+          topSpend: [],
+          threeMonthAverage: { moneyIn: 0, moneyOut: 0 }
+        }
+      });
     }
     
-    let moneyIn = 0;
-    let moneyOut = 0;
-    const sources: { [key: string]: { amount: number; provider: string } } = {};
-    const spend: { [key: string]: { amount: number; provider: string } } = {};
+    // Separate buckets for banking vs credit cards
+    const banking = {
+      moneyIn: 0,
+      moneyOut: 0,
+      sources: {} as { [key: string]: { amount: number; provider: string } },
+      spend: {} as { [key: string]: { amount: number; provider: string } }
+    };
+    
+    const creditCards = {
+      moneyIn: 0,
+      moneyOut: 0,
+      sources: {} as { [key: string]: { amount: number; provider: string } },
+      spend: {} as { [key: string]: { amount: number; provider: string } }
+    };
     
     // Fetch transactions from all accounts
     for (const account of accounts) {
@@ -1646,6 +1672,10 @@ router.get("/money-movement", requireAuth, async (req: any, res) => {
         
         const transactions = await response.json();
         
+        // Check if this is a credit card account (Teller stores as 'card')
+        const isCreditCard = account.accountType === 'card';
+        const bucket = isCreditCard ? creditCards : banking;
+        
         // Filter transactions for the target month
         transactions.forEach((tx: any) => {
           const txDate = new Date(tx.date);
@@ -1653,11 +1683,7 @@ router.get("/money-movement", requireAuth, async (req: any, res) => {
           
           const amount = parseFloat(tx.amount || '0');
           const merchant = tx.description || tx.counterparty?.name || 'Unknown';
-          const merchantLower = merchant.toLowerCase();
           const provider = account.institutionName || 'Bank';
-          
-          // Check if this is a credit card account (Teller stores as 'card')
-          const isCreditCard = account.accountType === 'card';
           
           // Teller API transaction amounts:
           // For BANK ACCOUNTS:
@@ -1668,40 +1694,36 @@ router.get("/money-movement", requireAuth, async (req: any, res) => {
           //   Negative amount = Payments/Refunds (Money IN - decreases debt)
           
           if (isCreditCard) {
-            // Credit card logic (reversed)
+            // Credit card logic: Only count charges, NOT payments
+            // Payments are already counted in banking.moneyOut to avoid double-counting
             if (amount > 0) {
               // Positive = Charge/Purchase (Money OUT)
-              moneyOut += amount;
-              if (!spend[merchant]) {
-                spend[merchant] = { amount: 0, provider };
+              bucket.moneyOut += amount;
+              if (!bucket.spend[merchant]) {
+                bucket.spend[merchant] = { amount: 0, provider };
               }
-              spend[merchant].amount += amount;
-            } else if (amount < 0) {
-              // Negative = Payment/Refund (Money IN)
-              const inAmount = Math.abs(amount);
-              moneyIn += inAmount;
-              if (!sources[merchant]) {
-                sources[merchant] = { amount: 0, provider };
-              }
-              sources[merchant].amount += inAmount;
+              bucket.spend[merchant].amount += amount;
             }
+            // REMOVED: else if (amount < 0) block
+            // Credit card payments (negative amounts) are NOT counted as creditCards.moneyIn
+            // to prevent double-counting since they already appear in banking.moneyOut
           } else {
             // Bank account logic (normal)
             if (amount > 0) {
               // Positive amount = Money IN (deposits, refunds, etc.)
-              moneyIn += amount;
-              if (!sources[merchant]) {
-                sources[merchant] = { amount: 0, provider };
+              bucket.moneyIn += amount;
+              if (!bucket.sources[merchant]) {
+                bucket.sources[merchant] = { amount: 0, provider };
               }
-              sources[merchant].amount += amount;
+              bucket.sources[merchant].amount += amount;
             } else if (amount < 0) {
               // Negative amount = Money OUT (purchases, withdrawals, fees, etc.)
               const outAmount = Math.abs(amount);
-              moneyOut += outAmount;
-              if (!spend[merchant]) {
-                spend[merchant] = { amount: 0, provider };
+              bucket.moneyOut += outAmount;
+              if (!bucket.spend[merchant]) {
+                bucket.spend[merchant] = { amount: 0, provider };
               }
-              spend[merchant].amount += outAmount;
+              bucket.spend[merchant].amount += outAmount;
             }
           }
         });
@@ -1710,19 +1732,32 @@ router.get("/money-movement", requireAuth, async (req: any, res) => {
       }
     }
     
-    // Calculate top sources and top spend (top 10 for scrollable list)
-    const topSources = Object.entries(sources)
+    // Calculate top sources and top spend (top 10 for scrollable list) for banking
+    const bankingTopSources = Object.entries(banking.sources)
       .sort(([, a], [, b]) => b.amount - a.amount)
       .slice(0, 10)
       .map(([name, data]) => ({ name, amount: data.amount, provider: data.provider }));
     
-    const topSpend = Object.entries(spend)
+    const bankingTopSpend = Object.entries(banking.spend)
       .sort(([, a], [, b]) => b.amount - a.amount)
       .slice(0, 10)
       .map(([name, data]) => ({ name, amount: data.amount, provider: data.provider }));
     
-    // Calculate real 3-month averages
-    const threeMonthTotals = { moneyIn: 0, moneyOut: 0 };
+    // Calculate top sources and top spend (top 10 for scrollable list) for credit cards
+    const creditCardsTopSources = Object.entries(creditCards.sources)
+      .sort(([, a], [, b]) => b.amount - a.amount)
+      .slice(0, 10)
+      .map(([name, data]) => ({ name, amount: data.amount, provider: data.provider }));
+    
+    const creditCardsTopSpend = Object.entries(creditCards.spend)
+      .sort(([, a], [, b]) => b.amount - a.amount)
+      .slice(0, 10)
+      .map(([name, data]) => ({ name, amount: data.amount, provider: data.provider }));
+    
+    // Calculate real 3-month averages - separate for banking and credit cards
+    const bankingThreeMonthTotals = { moneyIn: 0, moneyOut: 0 };
+    const creditCardsThreeMonthTotals = { moneyIn: 0, moneyOut: 0 };
+    
     for (let i = 1; i <= 3; i++) {
       const monthStart = new Date(targetDate.getFullYear(), targetDate.getMonth() - i, 1);
       const monthEnd = new Date(targetDate.getFullYear(), targetDate.getMonth() - i + 1, 0);
@@ -1745,28 +1780,30 @@ router.get("/money-movement", requireAuth, async (req: any, res) => {
           
           const transactions = await response.json();
           
+          // Check if this is a credit card account (Teller stores as 'card')
+          const isCreditCard = account.accountType === 'card';
+          const totals = isCreditCard ? creditCardsThreeMonthTotals : bankingThreeMonthTotals;
+          
           transactions.forEach((tx: any) => {
             const txDate = new Date(tx.date);
             if (txDate < monthStart || txDate > monthEnd) return;
             
             const amount = parseFloat(tx.amount || '0');
             
-            // Check if this is a credit card account (Teller stores as 'card')
-            const isCreditCard = account.accountType === 'card';
-            
             if (isCreditCard) {
-              // Credit card: Positive = OUT (charges), Negative = IN (payments)
+              // Credit card: Only count charges, NOT payments
+              // Payments are already counted in banking.moneyOut to avoid double-counting
               if (amount > 0) {
-                threeMonthTotals.moneyOut += amount;
-              } else if (amount < 0) {
-                threeMonthTotals.moneyIn += Math.abs(amount);
+                totals.moneyOut += amount;
               }
+              // REMOVED: else if (amount < 0) block
+              // Credit card payments are NOT counted as creditCards.moneyIn
             } else {
               // Bank account: Positive = IN, Negative = OUT
               if (amount > 0) {
-                threeMonthTotals.moneyIn += amount;
+                totals.moneyIn += amount;
               } else if (amount < 0) {
-                threeMonthTotals.moneyOut += Math.abs(amount);
+                totals.moneyOut += Math.abs(amount);
               }
             }
           });
@@ -1778,13 +1815,25 @@ router.get("/money-movement", requireAuth, async (req: any, res) => {
     
     res.json({
       month: targetDate.toISOString().slice(0, 7), // YYYY-MM format
-      moneyIn,
-      moneyOut,
-      topSources,
-      topSpend,
-      threeMonthAverage: {
-        moneyIn: threeMonthTotals.moneyIn / 3,
-        moneyOut: threeMonthTotals.moneyOut / 3
+      banking: {
+        moneyIn: banking.moneyIn,
+        moneyOut: banking.moneyOut,
+        topSources: bankingTopSources,
+        topSpend: bankingTopSpend,
+        threeMonthAverage: {
+          moneyIn: bankingThreeMonthTotals.moneyIn / 3,
+          moneyOut: bankingThreeMonthTotals.moneyOut / 3
+        }
+      },
+      creditCards: {
+        moneyIn: creditCards.moneyIn,
+        moneyOut: creditCards.moneyOut,
+        topSources: creditCardsTopSources,
+        topSpend: creditCardsTopSpend,
+        threeMonthAverage: {
+          moneyIn: creditCardsThreeMonthTotals.moneyIn / 3,
+          moneyOut: creditCardsThreeMonthTotals.moneyOut / 3
+        }
       }
     });
     
