@@ -23,7 +23,10 @@ export default function SnapTradeConnectionAlert({ snapTradeStatus }: SnapTradeC
   const handleConnect = async () => {
     setIsConnecting(true);
     try {
-      const response = await apiRequest('POST', '/api/snaptrade/register');
+      const response = await apiRequest('/api/snaptrade/register', {
+        method: 'POST'
+      });
+      
       const data = await response.json();
       
       if (data.redirectUrl) {

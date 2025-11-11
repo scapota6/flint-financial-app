@@ -221,6 +221,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
               
               // Check if new authorizations would exceed limit
               let authsToSync = authorizations;
+              let rejectedBrokerages: string[] = [];
+              
               if (!isUnlimited && newAuths.length > 0) {
                 const availableSlots = Math.max(0, connectionLimit! - currentConnections);
                 
@@ -235,6 +237,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
                   });
                   // Only sync existing authorizations (updates), skip new ones
                   authsToSync = existingAuthsToUpdate;
+                  rejectedBrokerages = newAuths.map(auth => auth.brokerage?.name || 'Unknown');
                 } else if (newAuths.length > availableSlots) {
                   console.warn(`⚠️ Partial limit: accepting ${availableSlots}/${newAuths.length} new authorizations`);
                   logger.warn('SnapTrade authorization partial limit', {
@@ -247,6 +250,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
                   });
                   // Take first N new auths + all existing auths
                   authsToSync = [...existingAuthsToUpdate, ...newAuths.slice(0, availableSlots)];
+                  rejectedBrokerages = newAuths.slice(availableSlots).map(auth => auth.brokerage?.name || 'Unknown');
                 }
               }
               
@@ -296,6 +300,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
                 snaptradeUserId: userId as string,
                 count: authorizations.length
               });
+              
+              // Build redirect URL with connection status metadata
+              const redirectUrl = new URL('/accounts', `${req.protocol}://${req.get('host')}`);
+              
+              if (rejectedCount > 0) {
+                // Connection limit reached - some or all connections rejected
+                redirectUrl.searchParams.set('snaptrade', 'limit');
+                redirectUrl.searchParams.set('accepted', syncedCount.toString());
+                redirectUrl.searchParams.set('rejected', rejectedCount.toString());
+                redirectUrl.searchParams.set('tier', user?.subscriptionTier || 'free');
+                if (rejectedBrokerages.length > 0) {
+                  redirectUrl.searchParams.set('brokerages', rejectedBrokerages.join(','));
+                }
+              } else {
+                // All connections successful
+                redirectUrl.searchParams.set('snaptrade', 'success');
+              }
+              
+              return res.redirect(redirectUrl.pathname + redirectUrl.search);
             } catch (syncError) {
               // Log error but don't fail the redirect - sync can be retried later
               console.error('❌ Failed to sync authorizations:', syncError);

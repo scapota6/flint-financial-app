@@ -16,7 +16,11 @@ export default function Subscribe() {
   const { toast } = useToast();
   const [isProcessing, setIsProcessing] = useState(false);
   const [isAnnual, setIsAnnual] = useState(false);
-  const [checkoutPlanId, setCheckoutPlanId] = useState<string | null>(null);
+  const [checkoutData, setCheckoutData] = useState<{
+    sessionId: string;
+    planId: string;
+    planName: string;
+  } | null>(null);
 
   // Fetch user data to check current subscription
   const { data: userData, error } = useQuery<{ subscriptionTier?: string; subscriptionStatus?: string }>({
@@ -52,9 +56,17 @@ export default function Subscribe() {
       const response = await fetch(`/api/whop/checkout/${ctaId}${userEmail ? `?email=${encodeURIComponent(userEmail)}` : ''}`);
       const data = await response.json();
       
-      if (data.planId) {
+      if (data.sessionId && data.planId) {
+        // Get the plan name from SUBSCRIPTION_TIERS
+        const tier = SUBSCRIPTION_TIERS.find(t => t.id === tierId);
+        const planName = tier?.name || tierId;
+        
         // Open checkout in modal with Whop embed
-        setCheckoutPlanId(data.planId);
+        setCheckoutData({
+          sessionId: data.sessionId,
+          planId: data.planId,
+          planName: planName
+        });
       } else {
         toast({
           title: "Error",
@@ -357,8 +369,12 @@ export default function Subscribe() {
       
       {/* Checkout Modal */}
       <CheckoutModal 
-        planId={checkoutPlanId} 
-        onClose={() => setCheckoutPlanId(null)} 
+        isOpen={!!checkoutData}
+        sessionId={checkoutData?.sessionId || ''}
+        planId={checkoutData?.planId}
+        planName={checkoutData?.planName || ''}
+        email={(user as any)?.email}
+        onClose={() => setCheckoutData(null)} 
       />
     </div>
   );

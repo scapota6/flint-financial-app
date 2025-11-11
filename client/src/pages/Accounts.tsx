@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -13,6 +13,8 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { getInstitutionLogo } from "@/lib/bank-logos";
+import { useToast } from "@/hooks/use-toast";
+import ConnectionLimitAlert from "@/components/dashboard/connection-limit-alert";
 
 interface BrokerageAccount {
   id: string;
@@ -39,6 +41,61 @@ interface BankAccount {
 export default function Accounts() {
   const { isAuthenticated } = useAuth();
   const [disconnecting, setDisconnecting] = useState<string | null>(null);
+  const { toast } = useToast();
+  
+  // Detect SnapTrade connection limit query params
+  const [connectionLimitInfo, setConnectionLimitInfo] = useState<{
+    accepted: number;
+    rejected: number;
+    tier: string;
+    brokerages?: string;
+  } | null>(null);
+  
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const snaptradeStatus = params.get('snaptrade');
+    
+    if (snaptradeStatus === 'limit') {
+      const accepted = parseInt(params.get('accepted') || '0');
+      const rejected = parseInt(params.get('rejected') || '0');
+      const tier = params.get('tier') || 'free';
+      const brokerages = params.get('brokerages') || '';
+      
+      // Set connection limit info for alert display
+      setConnectionLimitInfo({ accepted, rejected, tier, brokerages });
+      
+      // Show immediate toast notification
+      if (rejected > 0 && accepted === 0) {
+        // Zero accepted - complete failure
+        toast({
+          title: "Connection Limit Reached",
+          description: `Unable to connect ${rejected} brokerage${rejected > 1 ? 's' : ''} due to account limits.`,
+          variant: "destructive",
+          duration: 6000,
+        });
+      } else if (rejected > 0 && accepted > 0) {
+        // Partial acceptance
+        toast({
+          title: "Partial Connection",
+          description: `Connected ${accepted} brokerage${accepted > 1 ? 's' : ''}, but ${rejected} ${rejected > 1 ? 'were' : 'was'} rejected due to limits.`,
+          duration: 6000,
+        });
+      }
+      
+      // Clean URL without reloading page
+      window.history.replaceState({}, '', '/accounts');
+    } else if (snaptradeStatus === 'success') {
+      // All connections successful
+      toast({
+        title: "Connection Successful",
+        description: "Your brokerage accounts have been connected successfully.",
+        duration: 4000,
+      });
+      
+      // Clean URL
+      window.history.replaceState({}, '', '/accounts');
+    }
+  }, [toast]);
 
   // Fetch user data to check subscription tier
   const { data: userData } = useQuery<{ subscriptionTier?: string }>({
@@ -127,6 +184,16 @@ export default function Accounts() {
             Disconnect accounts you no longer want connected
           </p>
         </div>
+        
+        {/* Connection Limit Alert */}
+        {connectionLimitInfo && connectionLimitInfo.rejected > 0 && (
+          <ConnectionLimitAlert
+            accepted={connectionLimitInfo.accepted}
+            rejected={connectionLimitInfo.rejected}
+            tier={connectionLimitInfo.tier}
+            brokerages={connectionLimitInfo.brokerages}
+          />
+        )}
 
         {hasNoAccounts ? (
           <Card className="border-dashed bg-slate-800/30 border-slate-700">
