@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { queryClient, apiRequest } from '@/lib/queryClient';
 import { useAuth } from '@/hooks/useAuth';
@@ -549,6 +549,30 @@ function UsersTab() {
   const [dashboardModalOpen, setDashboardModalOpen] = useState(false);
   const [dashboardUser, setDashboardUser] = useState<{ id: string; name: string } | null>(null);
   const { toast } = useToast();
+  
+  // Ref to prevent dialog from closing when clicking inside
+  const allowCloseTierDialogRef = useRef(false);
+  
+  // Reset ref when dialog opens
+  useEffect(() => {
+    if (actionDialog === 'tier') {
+      allowCloseTierDialogRef.current = false;
+    }
+  }, [actionDialog]);
+  
+  // Handler for tier dialog close
+  const handleCloseTierDialog = () => {
+    allowCloseTierDialogRef.current = true;
+    setActionDialog(null);
+  };
+  
+  // Handler for tier dialog open change
+  const handleTierDialogOpenChange = (open: boolean) => {
+    if (!open && allowCloseTierDialogRef.current) {
+      allowCloseTierDialogRef.current = false;
+      setActionDialog(null);
+    }
+  };
 
   const { data, isLoading, refetch } = useQuery<{ users: User[]; pagination: Pagination }>({
     queryKey: ['/api/admin-panel/users', { page, search, tier: tierFilter }],
@@ -613,6 +637,7 @@ function UsersTab() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/admin-panel/users'], refetchType: 'all' });
       toast({ title: 'User tier updated' });
+      allowCloseTierDialogRef.current = true;
       setActionDialog(null);
     },
   });
@@ -905,7 +930,7 @@ function UsersTab() {
         </DialogContent>
       </Dialog>
 
-      <Dialog open={actionDialog === 'tier'} onOpenChange={() => setActionDialog(null)}>
+      <Dialog open={actionDialog === 'tier'} onOpenChange={handleTierDialogOpenChange}>
         <DialogContent className="bg-slate-900/95 border border-slate-700/50 text-white">
           <DialogHeader>
             <DialogTitle className="text-white">Change Subscription Tier</DialogTitle>
@@ -927,7 +952,7 @@ function UsersTab() {
             </Select>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setActionDialog(null)} data-testid="button-cancel-tier">
+            <Button variant="outline" onClick={handleCloseTierDialog} data-testid="button-cancel-tier">
               Cancel
             </Button>
             <Button
