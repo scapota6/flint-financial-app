@@ -480,6 +480,337 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json({ csrfToken: req.csrfToken() });
   });
 
+  // Helper function: Fetch all Teller accounts in parallel
+  async function fetchTellerAccounts(
+    userId: string,
+    userEmail: string,
+    tellerAccounts: any[],
+    tellerAccessToken: string | null
+  ) {
+    const enrichedAccounts: any[] = [];
+    let totalBalance = 0;
+    let bankBalance = 0;
+
+    console.log('[Dashboard] Teller accounts found:', tellerAccounts.length);
+    console.log('[Dashboard] Teller access token:', tellerAccessToken ? 'FOUND' : 'NOT FOUND');
+
+    if (!tellerAccessToken || tellerAccounts.length === 0) {
+      // No access token or no accounts - return accounts with needsReconnection flag
+      for (const account of tellerAccounts) {
+        const storedBalance = parseFloat(account.balance) || 0;
+        
+        if (account.accountType === 'card') {
+          enrichedAccounts.push({
+            id: account.id,
+            provider: 'teller',
+            accountName: account.accountName || 'Credit Card',
+            balance: storedBalance,
+            type: 'credit' as const,
+            institution: account.institutionName || 'Credit Card',
+            lastUpdated: account.lastSynced || new Date().toISOString(),
+            needsReconnection: true
+          });
+        } else {
+          enrichedAccounts.push({
+            id: account.id,
+            provider: 'teller',
+            accountName: account.accountName || 'Bank Account',
+            balance: storedBalance,
+            type: 'bank' as const,
+            institution: account.institutionName || 'Bank',
+            lastUpdated: account.lastSynced || new Date().toISOString(),
+            needsReconnection: true
+          });
+        }
+      }
+      
+      return { enrichedAccounts, totalBalance, bankBalance };
+    }
+
+    // Import helpers for mTLS authentication
+    const { resilientTellerFetch } = await import('./teller/client');
+    const authHeader = `Basic ${Buffer.from(tellerAccessToken + ":").toString("base64")}`;
+
+    // Fetch all accounts in parallel using Promise.all
+    const accountResults = await Promise.all(
+      tellerAccounts.map(async (account) => {
+        console.log('[Dashboard] Processing Teller account:', account.id, account.accountName);
+        
+        try {
+          // Fetch both account info and balances from Teller with mTLS
+          const [accountResponse, balancesResponse] = await Promise.all([
+            resilientTellerFetch(
+              `${getTellerBaseUrl()}/accounts/${account.externalAccountId}`,
+              {
+                headers: {
+                  'Authorization': authHeader,
+                },
+              },
+              'Dashboard-Account'
+            ),
+            resilientTellerFetch(
+              `${getTellerBaseUrl()}/accounts/${account.externalAccountId}/balances`,
+              {
+                headers: {
+                  'Authorization': authHeader,
+                },
+              },
+              'Dashboard-Balance'
+            )
+          ]);
+          
+          if (accountResponse.ok && balancesResponse.ok) {
+            const tellerAccount = await accountResponse.json();
+            const tellerBalances = await balancesResponse.json();
+            
+            console.log('[Dashboard] Teller account data:', {
+              accountId: account.id,
+              type: tellerAccount.type,
+              subtype: tellerAccount.subtype,
+              balances: tellerBalances
+            });
+            
+            // Use Teller mapper to properly handle credit card debt vs regular balances
+            const { mapTellerToFlint, logMappingDetails } = await import('./lib/teller-mapping.js');
+            const mapped = mapTellerToFlint(tellerAccount, tellerBalances);
+            logMappingDetails(tellerAccount, tellerBalances, mapped);
+            
+            // Extract values from mapped account
+            const accountType: 'bank' | 'credit' = mapped.accountType === 'credit' ? 'credit' : 'bank';
+            const displayBalance = mapped.displayBalance;
+            const availableCredit = mapped.availableCredit || null;
+            const amountSpent = mapped.owed || null;
+            
+            console.log('[Dashboard] Account classification:', {
+              accountId: account.id,
+              accountType,
+              displayBalance,
+              owed: mapped.owed,
+              availableCredit: mapped.availableCredit
+            });
+            
+            // Update stored balance in database
+            await storage.updateAccountBalance(account.id, displayBalance.toString());
+            
+            return {
+              enrichedAccount: {
+                id: account.id,
+                provider: 'teller',
+                accountName: account.accountName || (accountType === 'credit' ? 'Credit Card' : 'Bank Account'),
+                balance: accountType === 'credit' ? (amountSpent || 0) : displayBalance,
+                type: accountType,
+                institution: account.institutionName || (accountType === 'credit' ? 'Credit Card' : 'Bank'),
+                lastUpdated: account.lastSynced || account.lastCheckedAt || new Date().toISOString(),
+                availableBalance: parseFloat(tellerBalances.available || '0') || 0,
+                ledgerBalance: parseFloat(tellerBalances.ledger || '0') || 0,
+                currentBalance: parseFloat(tellerBalances.current || '0') || 0,
+                creditLimit: mapped.creditLimit || null,
+                availableCredit: availableCredit,
+                amountSpent: amountSpent
+              },
+              displayBalance,
+              accountType
+            };
+          } else if (accountResponse.status === 401 || accountResponse.status === 403) {
+            // Account access expired - mark for reconnection but DON'T include in totals
+            console.log(`[Dashboard] Teller account ${account.id} access expired, excluding from totals`);
+            
+            const storedBalance = parseFloat(account.balance) || 0;
+            
+            if (account.accountType === 'card') {
+              return {
+                enrichedAccount: {
+                  id: account.id,
+                  provider: 'teller',
+                  accountName: account.accountName || 'Credit Card',
+                  balance: storedBalance,
+                  type: 'credit' as const,
+                  institution: account.institutionName || 'Credit Card',
+                  lastUpdated: account.lastSynced || new Date().toISOString(),
+                  needsReconnection: true
+                },
+                displayBalance: 0, // Don't include in totals
+                accountType: 'credit' as const
+              };
+            } else {
+              return {
+                enrichedAccount: {
+                  id: account.id,
+                  provider: 'teller',
+                  accountName: account.accountName || 'Bank Account',
+                  balance: storedBalance,
+                  type: 'bank' as const,
+                  institution: account.institutionName || 'Bank',
+                  lastUpdated: account.lastSynced || new Date().toISOString(),
+                  needsReconnection: true
+                },
+                displayBalance: 0, // Don't include in totals
+                accountType: 'bank' as const
+              };
+            }
+          }
+        } catch (fetchError) {
+          console.error(`Error validating Teller account ${account.id}:`, fetchError);
+          // Don't include in totals if we can't access the account
+          const storedBalance = parseFloat(account.balance) || 0;
+          
+          if (account.accountType === 'card') {
+            return {
+              enrichedAccount: {
+                id: account.id,
+                provider: 'teller',
+                accountName: account.accountName || 'Credit Card',
+                balance: storedBalance,
+                type: 'credit' as const,
+                institution: account.institutionName || 'Credit Card',
+                lastUpdated: account.lastSynced || new Date().toISOString(),
+                needsReconnection: true
+              },
+              displayBalance: 0,
+              accountType: 'credit' as const
+            };
+          } else {
+            return {
+              enrichedAccount: {
+                id: account.id,
+                provider: 'teller',
+                accountName: account.accountName || 'Bank Account',
+                balance: storedBalance,
+                type: 'bank' as const,
+                institution: account.institutionName || 'Bank',
+                lastUpdated: account.lastSynced || new Date().toISOString(),
+                needsReconnection: true
+              },
+              displayBalance: 0,
+              accountType: 'bank' as const
+            };
+          }
+        }
+        
+        return null;
+      })
+    );
+
+    // Process results and calculate totals
+    for (const result of accountResults) {
+      if (result && result.enrichedAccount) {
+        enrichedAccounts.push(result.enrichedAccount);
+        
+        // Only add to totals if not marked for reconnection
+        if (!result.enrichedAccount.needsReconnection) {
+          // Credit cards have NEGATIVE displayBalance (debt), so adding them reduces net worth
+          totalBalance += result.displayBalance;
+          
+          if (result.accountType === 'bank') {
+            bankBalance += result.displayBalance;
+          }
+        }
+      }
+    }
+
+    console.log('[Dashboard] Teller accounts processed:', {
+      total: enrichedAccounts.length,
+      totalBalance,
+      bankBalance
+    });
+
+    return { enrichedAccounts, totalBalance, bankBalance };
+  }
+
+  // Helper function: Fetch all SnapTrade accounts
+  async function fetchSnapTradeAccounts(userId: string, userEmail: string, snapUser: any) {
+    const enrichedAccounts: any[] = [];
+    let investmentValue = 0;
+    let snapTradeError: string | null = null;
+    const snapTradePositions: any[] = [];
+
+    console.log('Fetching SnapTrade accounts for user:', userEmail);
+    
+    if (!snapUser?.userSecret) {
+      console.log('SnapTrade credentials not available for user');
+      return {
+        enrichedAccounts,
+        investmentValue,
+        snapTradeError: 'not_connected',
+        snapTradePositions
+      };
+    }
+
+    try {
+      const { accountsApi } = await import('./lib/snaptrade');
+      const accounts = await accountsApi.listUserAccounts({
+        userId: snapUser.userId,
+        userSecret: snapUser.userSecret,
+      });
+      
+      console.log('SnapTrade accounts fetched:', accounts.data?.length || 0);
+      console.log('SnapTrade raw accounts data:', JSON.stringify(accounts.data, null, 2));
+      
+      if (accounts.data && Array.isArray(accounts.data)) {
+        for (const account of accounts.data) {
+          const balance = parseFloat((account as any).total_value?.amount || (account as any).balance?.total?.amount || '0') || 0;
+          const cash = parseFloat((account as any).cash?.amount || '0') || 0;
+          const holdings = balance - cash;
+          
+          investmentValue += balance;
+          
+          // Normalize account name to handle "Default", "default", " default ", whitespace-only, etc.
+          const normalizedName = account.name?.trim().toLowerCase();
+          const isDefaultOrEmpty = !normalizedName || normalizedName === 'default';
+          
+          enrichedAccounts.push({
+            id: account.id || `snaptrade-${Math.random()}`,
+            provider: 'snaptrade',
+            accountName: isDefaultOrEmpty
+              ? (account.institution_name || account.account_type || 'Investment Account')
+              : (account.name?.trim() || 'Investment Account'),
+            accountNumber: account.number,
+            balance: balance,
+            type: 'investment' as const,
+            subtype: account.meta?.type || account.raw_type || null,
+            rawType: account.raw_type || null,
+            institution: account.institution_name || 'Brokerage',
+            lastUpdated: account.sync_status?.holdings?.last_successful_sync || account.sync_status?.last_successful_sync || new Date().toISOString(),
+            cash: cash,
+            holdings: holdings,
+            buyingPower: parseFloat(account.buying_power?.amount || '0') || cash
+          });
+        }
+      }
+    } catch (error: any) {
+      console.error('Error fetching SnapTrade accounts:', error);
+      
+      // Check if it's an authentication error
+      if (error.status === 401 || error.message?.includes('401') || error.message?.includes('Unable to verify signature') || error.responseBody?.code === '1083' || error.responseBody?.code === '1076') {
+        snapTradeError = 'auth_failed';
+        
+        // Show placeholder for failed SnapTrade connection
+        enrichedAccounts.push({
+          id: `snaptrade-disconnected-${userId}`,
+          provider: 'snaptrade',
+          accountName: 'Investment Account (Disconnected)',
+          balance: 0,
+          type: 'investment' as const,
+          institution: 'SnapTrade',
+          lastUpdated: new Date().toISOString(),
+          needsReconnection: true
+        });
+        
+        // Keep stale credentials for reconnection - don't delete them
+        console.log('[SnapTrade] Detected stale user credentials, keeping for reconnection:', userId);
+      } else {
+        snapTradeError = 'fetch_failed';
+      }
+    }
+
+    return {
+      enrichedAccounts,
+      investmentValue,
+      snapTradeError,
+      snapTradePositions
+    };
+  }
+
   // Dashboard data (with data rate limiting) - Enhanced with real API integration
   app.get('/api/dashboard', rateLimits.data, requireAuth, async (req: any, res) => {
     try {
@@ -493,292 +824,49 @@ export async function registerRoutes(app: Express): Promise<Server> {
       let bankBalance = 0;
       let investmentValue = 0;
       let cryptoValue = 0;
-      const enrichedAccounts = [];
+      let snapTradeError: string | null = null;
+      let snapTradePositions: any[] = [];
+      const enrichedAccounts: any[] = [];
 
-      // Fetch real bank account data from Teller (including credit cards)
-      // Only include accounts that we can successfully access via API
-      try {
-        console.log('Fetching bank accounts for user:', userEmail);
-        const connectedAccounts = await storage.getConnectedAccounts(userId);
-        const tellerAccounts = connectedAccounts.filter(acc => acc.provider === 'teller');
-        
-        console.log('[Dashboard] Teller accounts found:', tellerAccounts.length);
-        
-        // Import helpers for mTLS authentication
-        const { resilientTellerFetch } = await import('./teller/client');
-        const { getTellerAccessToken } = await import('./store/tellerUsers');
-        
-        // Fetch Teller access token once for all accounts (stored per-user, not per-account)
-        const tellerAccessToken = await getTellerAccessToken(userId);
-        
-        console.log('[Dashboard] Teller access token:', tellerAccessToken ? 'FOUND' : 'NOT FOUND');
-        
-        for (const account of tellerAccounts) {
-          console.log('[Dashboard] Processing Teller account:', account.id, account.accountName);
-          // Always include accounts, validate access for real-time data
-          if (tellerAccessToken) {
-            try {
-              // Fetch both account info and balances from Teller with mTLS
-              const authHeader = `Basic ${Buffer.from(tellerAccessToken + ":").toString("base64")}`;
-              const [accountResponse, balancesResponse] = await Promise.all([
-                resilientTellerFetch(
-                  `${getTellerBaseUrl()}/accounts/${account.externalAccountId}`,
-                  {
-                    headers: {
-                      'Authorization': authHeader,
-                    },
-                  },
-                  'Dashboard-Account'
-                ),
-                resilientTellerFetch(
-                  `${getTellerBaseUrl()}/accounts/${account.externalAccountId}/balances`,
-                  {
-                    headers: {
-                      'Authorization': authHeader,
-                    },
-                  },
-                  'Dashboard-Balance'
-                )
-              ]);
-              
-              if (accountResponse.ok && balancesResponse.ok) {
-                const tellerAccount = await accountResponse.json();
-                const tellerBalances = await balancesResponse.json();
-                
-                console.log('[Dashboard] Teller account data:', {
-                  accountId: account.id,
-                  type: tellerAccount.type,
-                  subtype: tellerAccount.subtype,
-                  balances: tellerBalances
-                });
-                
-                // Use Teller mapper to properly handle credit card debt vs regular balances
-                const { mapTellerToFlint, logMappingDetails } = await import('./lib/teller-mapping.js');
-                const mapped = mapTellerToFlint(tellerAccount, tellerBalances);
-                logMappingDetails(tellerAccount, tellerBalances, mapped);
-                
-                // Extract values from mapped account
-                const accountType: 'bank' | 'credit' = mapped.accountType === 'credit' ? 'credit' : 'bank';
-                const displayBalance = mapped.displayBalance;
-                const availableCredit = mapped.availableCredit || null;
-                const amountSpent = mapped.owed || null;
-                
-                // Update running totals
-                // Credit cards have NEGATIVE displayBalance (debt), so adding them reduces net worth
-                totalBalance += displayBalance;
-                
-                if (accountType === 'bank') {
-                  bankBalance += displayBalance;
-                }
-                
-                console.log('[Dashboard] Account classification:', {
-                  accountId: account.id,
-                  accountType,
-                  displayBalance,
-                  owed: mapped.owed,
-                  availableCredit: mapped.availableCredit,
-                  runningTotal: totalBalance
-                });
-                
-                // Update stored balance in database
-                await storage.updateAccountBalance(account.id, displayBalance.toString());
-                
-                enrichedAccounts.push({
-                  id: account.id,
-                  provider: 'teller',
-                  accountName: account.accountName || (accountType === 'credit' ? 'Credit Card' : 'Bank Account'),
-                  // For credit cards: show positive debt in UI, but totalBalance already uses negative displayBalance
-                  balance: accountType === 'credit' ? (amountSpent || 0) : displayBalance,
-                  type: accountType,
-                  institution: account.institutionName || (accountType === 'credit' ? 'Credit Card' : 'Bank'),
-                  lastUpdated: account.lastSynced || account.lastCheckedAt || new Date().toISOString(),
-                  // Store additional balance info for details view
-                  availableBalance: parseFloat(tellerBalances.available || '0') || 0,
-                  ledgerBalance: parseFloat(tellerBalances.ledger || '0') || 0,
-                  currentBalance: parseFloat(tellerBalances.current || '0') || 0,
-                  creditLimit: mapped.creditLimit || null,
-                  // Credit-specific fields
-                  availableCredit: availableCredit,
-                  amountSpent: amountSpent
-                });
-              } else if (accountResponse.status === 401 || accountResponse.status === 403) {
-                // Account access expired - mark for reconnection but DON'T include in totals
-                console.log(`[Dashboard] Teller account ${account.id} access expired, excluding from totals`);
-                
-                const storedBalance = parseFloat(account.balance) || 0;
-                
-                // Add to enrichedAccounts with needsReconnection flag but don't add to totals
-                if (account.accountType === 'card') {
-                  enrichedAccounts.push({
-                    id: account.id,
-                    provider: 'teller',
-                    accountName: account.accountName || 'Credit Card',
-                    balance: storedBalance,
-                    type: 'credit' as const,
-                    institution: account.institutionName || 'Credit Card',
-                    lastUpdated: account.lastSynced || new Date().toISOString(),
-                    needsReconnection: true
-                  });
-                } else {
-                  // Don't add to bankBalance or totalBalance for disconnected accounts
-                  enrichedAccounts.push({
-                    id: account.id,
-                    provider: 'teller',
-                    accountName: account.accountName || 'Bank Account',
-                    balance: storedBalance,
-                    type: 'bank' as const,
-                    institution: account.institutionName || 'Bank',
-                    lastUpdated: account.lastSynced || new Date().toISOString(),
-                    needsReconnection: true
-                  });
-                }
-              }
-            } catch (fetchError) {
-              console.error(`Error validating Teller account ${account.id}:`, fetchError);
-              // Don't include in totals if we can't access the account
-              const storedBalance = parseFloat(account.balance) || 0;
-              
-              if (account.accountType === 'card') {
-                enrichedAccounts.push({
-                  id: account.id,
-                  provider: 'teller',
-                  accountName: account.accountName || 'Credit Card',
-                  balance: storedBalance,
-                  type: 'credit' as const,
-                  institution: account.institutionName || 'Credit Card',
-                  lastUpdated: account.lastSynced || new Date().toISOString(),
-                  needsReconnection: true
-                });
-              } else {
-                // Don't add to bankBalance or totalBalance for inaccessible accounts
-                enrichedAccounts.push({
-                  id: account.id,
-                  provider: 'teller',
-                  accountName: account.accountName || 'Bank Account',
-                  balance: storedBalance,
-                  type: 'bank' as const,
-                  institution: account.institutionName || 'Bank',
-                  lastUpdated: account.lastSynced || new Date().toISOString(),
-                  needsReconnection: true
-                });
-              }
-            }
-          } else {
-            // No access token - don't include in totals
-            const storedBalance = parseFloat(account.balance) || 0;
-            
-            if (account.accountType === 'card') {
-              enrichedAccounts.push({
-                id: account.id,
-                provider: 'teller',
-                accountName: account.accountName || 'Credit Card',
-                balance: storedBalance,
-                type: 'credit' as const,
-                institution: account.institutionName || 'Credit Card',
-                lastUpdated: account.lastSynced || new Date().toISOString(),
-                needsReconnection: true
-              });
-            } else {
-              // Don't add to bankBalance or totalBalance for accounts without access token
-              enrichedAccounts.push({
-                id: account.id,
-                provider: 'teller',
-                accountName: account.accountName || 'Bank Account',
-                balance: storedBalance,
-                type: 'bank' as const,
-                institution: account.institutionName || 'Bank',
-                lastUpdated: account.lastSynced || new Date().toISOString(),
-                needsReconnection: true
-              });
-            }
-          }
-        }
-      } catch (error) {
-        console.error('Error fetching bank accounts:', error);
+      // OPTIMIZATION: Filter accounts once (remove duplicate query)
+      console.log('Fetching bank accounts for user:', userEmail);
+      const tellerAccounts = connectedAccounts.filter(acc => acc.provider === 'teller');
+      
+      // Import helper for Teller access token
+      const { getTellerAccessToken } = await import('./store/tellerUsers');
+      const tellerAccessToken = await getTellerAccessToken(userId);
+      
+      // Get SnapTrade user for parallel fetching
+      const snapUser = await getSnapUser(userId);
+
+      // OPTIMIZATION: Fetch Teller and SnapTrade accounts in parallel using Promise.allSettled
+      // This ensures failures in one provider don't block the other
+      const [tellerResult, snapTradeResult] = await Promise.allSettled([
+        fetchTellerAccounts(userId, userEmail, tellerAccounts, tellerAccessToken),
+        fetchSnapTradeAccounts(userId, userEmail, snapUser)
+      ]);
+
+      // Process Teller results
+      if (tellerResult.status === 'fulfilled') {
+        const { enrichedAccounts: tellerEnrichedAccounts, totalBalance: tellerTotalBalance, bankBalance: tellerBankBalance } = tellerResult.value;
+        enrichedAccounts.push(...tellerEnrichedAccounts);
+        totalBalance += tellerTotalBalance;
+        bankBalance += tellerBankBalance;
+      } else {
+        console.error('Error fetching Teller accounts:', tellerResult.reason);
       }
 
-      // Fetch real investment account data from SnapTrade
-      let snapTradeError = null;
-      let snapTradePositions: any[] = []; // Initialize positions array
-      try {
-        console.log('Fetching SnapTrade accounts for user:', userEmail);
-        
-        // Use the persistent store instead of database storage - use userId not email
-        const snapUser = await getSnapUser(userId);
-        if (snapUser?.userSecret) {
-          const { accountsApi } = await import('./lib/snaptrade');
-          const accounts = await accountsApi.listUserAccounts({
-            userId: snapUser.userId,
-            userSecret: snapUser.userSecret,
-          });
-          
-          console.log('SnapTrade accounts fetched:', accounts.data?.length || 0);
-          console.log('SnapTrade raw accounts data:', JSON.stringify(accounts.data, null, 2));
-          
-          if (accounts.data && Array.isArray(accounts.data)) {
-            for (const account of accounts.data) {
-              const balance = parseFloat((account as any).total_value?.amount || (account as any).balance?.total?.amount || '0') || 0;
-              const cash = parseFloat((account as any).cash?.amount || '0') || 0;
-              const holdings = balance - cash;
-              
-              investmentValue += balance;
-              totalBalance += balance;
-              
-              // Normalize account name to handle "Default", "default", " default ", whitespace-only, etc.
-              const normalizedName = account.name?.trim().toLowerCase();
-              const isDefaultOrEmpty = !normalizedName || normalizedName === 'default';
-              
-              enrichedAccounts.push({
-                id: account.id || `snaptrade-${Math.random()}`,
-                provider: 'snaptrade',
-                accountName: isDefaultOrEmpty
-                  ? (account.institution_name || account.account_type || 'Investment Account')
-                  : (account.name?.trim() || 'Investment Account'),
-                accountNumber: account.number,
-                balance: balance,
-                type: 'investment' as const,
-                subtype: account.meta?.type || account.raw_type || null,
-                rawType: account.raw_type || null,
-                institution: account.institution_name || 'Brokerage',
-                lastUpdated: account.sync_status?.holdings?.last_successful_sync || account.sync_status?.last_successful_sync || new Date().toISOString(),
-                cash: cash,
-                holdings: holdings,
-                buyingPower: parseFloat(account.buying_power?.amount || '0') || cash
-              });
-            }
-          }
-        } else {
-          console.log('SnapTrade credentials not available for user');
-          snapTradeError = 'not_connected';
-        }
-      } catch (error: any) {
-        console.error('Error fetching SnapTrade accounts:', error);
-        
-        // Check if it's an authentication error
-        if (error.status === 401 || error.message?.includes('401') || error.message?.includes('Unable to verify signature') || error.responseBody?.code === '1083' || error.responseBody?.code === '1076') {
-          snapTradeError = 'auth_failed';
-          
-          // Add disconnected SnapTrade accounts that need reconnection
-          const snapUser = await getSnapUser(userId);
-          if (snapUser) {
-            // Show placeholder for failed SnapTrade connection
-            enrichedAccounts.push({
-              id: `snaptrade-disconnected-${userId}`,
-              provider: 'snaptrade',
-              accountName: 'Investment Account (Disconnected)',
-              balance: 0,
-              type: 'investment' as const,
-              institution: 'SnapTrade',
-              lastUpdated: new Date().toISOString(),
-              needsReconnection: true
-            });
-          }
-          
-          // Keep stale credentials for reconnection - don't delete them
-          console.log('[SnapTrade] Detected stale user credentials, keeping for reconnection:', userId);
-        } else {
-          snapTradeError = 'fetch_failed';
-        }
+      // Process SnapTrade results
+      if (snapTradeResult.status === 'fulfilled') {
+        const { enrichedAccounts: snapTradeEnrichedAccounts, investmentValue: snapTradeInvestmentValue, snapTradeError: snapError, snapTradePositions: snapPositions } = snapTradeResult.value;
+        enrichedAccounts.push(...snapTradeEnrichedAccounts);
+        investmentValue += snapTradeInvestmentValue;
+        totalBalance += snapTradeInvestmentValue;
+        snapTradeError = snapError;
+        snapTradePositions = snapPositions;
+      } else {
+        console.error('Error fetching SnapTrade accounts:', snapTradeResult.reason);
+        snapTradeError = 'fetch_failed';
       }
 
       // Skip legacy connected accounts - only show accounts we can validate via API
