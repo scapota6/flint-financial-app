@@ -231,13 +231,25 @@ export default function Accounts() {
 
             <TabsContent value="brokerages" className="space-y-4">
               {isLoading ? (
-                <div className="space-y-4">
-                  {[1, 2].map((i) => (
-                    <Card key={i} className="bg-slate-800/50 border-slate-700">
-                      <CardContent className="p-6">
-                        <Skeleton className="h-6 w-48 mb-2" />
-                        <Skeleton className="h-4 w-32" />
-                      </CardContent>
+                <div className="space-y-4" data-testid="skeleton-brokerages-grid">
+                  {[1, 2, 3].map((i) => (
+                    <Card key={i} className="bg-slate-800/50 border-slate-700" data-testid={`skeleton-brokerage-card-${i}`}>
+                      <CardHeader className="pb-3">
+                        <div className="flex justify-between items-center">
+                          <div className="flex items-center gap-3">
+                            <Skeleton className="h-12 w-12 rounded-lg" data-testid={`skeleton-brokerage-logo-${i}`} />
+                            <div>
+                              <Skeleton className="h-5 w-40 mb-2" data-testid={`skeleton-brokerage-name-${i}`} />
+                              <Skeleton className="h-4 w-32" data-testid={`skeleton-brokerage-details-${i}`} />
+                              <div className="flex items-center gap-2 mt-1">
+                                <Skeleton className="h-5 w-16" data-testid={`skeleton-brokerage-status-${i}`} />
+                                <Skeleton className="h-5 w-20" data-testid={`skeleton-brokerage-sync-${i}`} />
+                              </div>
+                            </div>
+                          </div>
+                          <Skeleton className="h-9 w-28" data-testid={`skeleton-brokerage-button-${i}`} />
+                        </div>
+                      </CardHeader>
                     </Card>
                   ))}
                 </div>
@@ -304,13 +316,21 @@ export default function Accounts() {
 
             <TabsContent value="banks" className="space-y-4">
               {isLoading ? (
-                <div className="space-y-4">
-                  {[1, 2].map((i) => (
-                    <Card key={i} className="bg-slate-800/50 border-slate-700">
-                      <CardContent className="p-6">
-                        <Skeleton className="h-6 w-48 mb-2" />
-                        <Skeleton className="h-4 w-32" />
-                      </CardContent>
+                <div className="space-y-4" data-testid="skeleton-banks-grid">
+                  {[1, 2, 3].map((i) => (
+                    <Card key={i} className="bg-slate-800/50 border-slate-700" data-testid={`skeleton-bank-card-${i}`}>
+                      <CardHeader className="pb-3">
+                        <div className="flex justify-between items-center">
+                          <div className="flex items-center gap-3">
+                            <Skeleton className="h-12 w-12 rounded-lg" data-testid={`skeleton-bank-logo-${i}`} />
+                            <div>
+                              <Skeleton className="h-5 w-40 mb-2" data-testid={`skeleton-bank-name-${i}`} />
+                              <Skeleton className="h-5 w-24" data-testid={`skeleton-bank-type-${i}`} />
+                            </div>
+                          </div>
+                          <Skeleton className="h-9 w-28" data-testid={`skeleton-bank-button-${i}`} />
+                        </div>
+                      </CardHeader>
                     </Card>
                   ))}
                 </div>
