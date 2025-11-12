@@ -125,7 +125,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           });
         } else {
           logger.error('Application notification email failed', {
-            error: emailResult.error || 'Unknown error',
+            error: new Error(emailResult.error || 'Unknown error'),
             metadata: {
               applicationId: application.id,
               applicantEmail: email,
@@ -136,8 +136,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       } catch (emailError: any) {
         // Log error but don't fail the application submission
         logger.error('Exception while sending application notification email', { 
-          error: emailError instanceof Error ? emailError.message : String(emailError),
-          stack: emailError instanceof Error ? emailError.stack : undefined,
+          error: emailError instanceof Error ? emailError : new Error(String(emailError)),
           metadata: {
             applicationId: application.id,
             applicantEmail: email,

@@ -1080,8 +1080,31 @@ export async function sendApplicationNotificationEmail(
     timestamp
   );
   
-  console.log(`Sending application notification to support@flint-investing.com for ${applicantName} (${applicantEmail})`);
-  return await sendEmail('support@flint-investing.com', subject, html, 'application_notification');
+  console.log(`[Email Service] Preparing application notification email`, {
+    recipient: 'support@flint-investing.com',
+    applicantName,
+    applicantEmail,
+    accountCount,
+    connectType,
+    subject
+  });
+  
+  const result = await sendEmail('support@flint-investing.com', subject, html, 'application_notification');
+  
+  if (result.success) {
+    console.log(`[Email Service] Application notification email sent successfully`, {
+      recipient: 'support@flint-investing.com',
+      applicantEmail
+    });
+  } else {
+    console.error(`[Email Service] Failed to send application notification email`, {
+      recipient: 'support@flint-investing.com',
+      applicantEmail,
+      error: result.error
+    });
+  }
+  
+  return result;
 }
 
 export const emailService = {
