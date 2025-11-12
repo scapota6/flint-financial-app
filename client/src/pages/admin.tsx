@@ -943,7 +943,11 @@ function UsersTab() {
               <SelectTrigger className="bg-gray-800 border-gray-700 text-white" data-testid="select-new-tier">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent className="bg-slate-900 border border-slate-700/50 text-white z-[99999]" sideOffset={5}>
+              <SelectContent 
+                className="bg-slate-900 border border-slate-700/50 text-white z-[99999]" 
+                sideOffset={5}
+                container={document.body}
+              >
                 <SelectItem value="free">Free</SelectItem>
                 <SelectItem value="basic">Basic</SelectItem>
                 <SelectItem value="pro">Pro</SelectItem>
