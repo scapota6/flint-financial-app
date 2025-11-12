@@ -108,20 +108,41 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Send notification email to support@flint-investing.com
       try {
-        await sendApplicationNotificationEmail(
+        const emailResult = await sendApplicationNotificationEmail(
           firstName,
           email,
           accountCount,
           connectType
         );
-        logger.info('Application notification email sent to support@flint-investing.com', {
-          metadata: { applicationId: application.id }
-        });
+        
+        if (emailResult.success) {
+          logger.info('Application notification email sent successfully', {
+            metadata: { 
+              applicationId: application.id,
+              applicantEmail: email,
+              recipient: 'support@flint-investing.com'
+            }
+          });
+        } else {
+          logger.error('Application notification email failed', {
+            error: emailResult.error || 'Unknown error',
+            metadata: {
+              applicationId: application.id,
+              applicantEmail: email,
+              applicantName: firstName
+            }
+          });
+        }
       } catch (emailError: any) {
         // Log error but don't fail the application submission
-        logger.error('Failed to send application notification email', { 
-          error: emailError.message,
-          applicationId: application.id 
+        logger.error('Exception while sending application notification email', { 
+          error: emailError instanceof Error ? emailError.message : String(emailError),
+          stack: emailError instanceof Error ? emailError.stack : undefined,
+          metadata: {
+            applicationId: application.id,
+            applicantEmail: email,
+            applicantName: firstName
+          }
         });
       }
 
