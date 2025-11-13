@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { isAuthenticated } from '../replitAuth';
+import { requireAuth } from '../middleware/jwt-auth';
 import { storage } from '../storage.js';
 import { getTellerAccessToken } from '../store/tellerUsers';
 import { resilientTellerFetch } from '../teller/client';
@@ -25,7 +25,7 @@ interface RecurringSubscription {
 }
 
 // Detect recurring subscriptions from bank/credit card transactions
-router.get('/', isAuthenticated, async (req: any, res) => {
+router.get('/', requireAuth, async (req: any, res) => {
   try {
     const userId = req.user.claims.sub;
     
