@@ -1,0 +1,35 @@
+   at Node.sync (/home/runner/workspace/node_modules/@logtail/node/src/node.ts:69:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async handler (/home/runner/workspace/node_modules/@logtail/tools/src/throttle.ts:35:23)
+Error: Unauthorized
+    at Node.sync (/home/runner/workspace/node_modules/@logtail/node/src/node.ts:69:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async handler (/home/runner/workspace/node_modules/@logtail/tools/src/throttle.ts:35:23)
+Error: Unauthorized
+    at Node.sync (/home/runner/workspace/node_modules/@logtail/node/src/node.ts:69:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async handler (/home/runner/workspace/node_modules/@logtail/tools/src/throttle.ts:35:23)
+Error: Unauthorized
+    at Node.sync (/home/runner/workspace/node_modules/@logtail/node/src/node.ts:69:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async handler (/home/runner/workspace/node_modules/@logtail/tools/src/throttle.ts:35:23)
+Error: Unauthorized
+    at Node.sync (/home/runner/workspace/node_modules/@logtail/node/src/node.ts:69:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async handler (/home/runner/workspace/node_modules/@logtail/tools/src/throttle.ts:35:23)
+Error: Unauthorized
+    at Node.sync (/home/runner/workspace/node_modules/@logtail/node/src/node.ts:69:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async handler (/home/runner/workspace/node_modules/@logtail/tools/src/throttle.ts:35:23)
+Error: Unauthorized
+    at Node.sync (/home/runner/workspace/node_modules/@logtail/node/src/node.ts:69:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async handler (/home/runner/workspace/node_modules/@logtail/tools/src/throttle.ts:35:23)
+Error: Unauthorized
+    at Node.sync (/home/runner/workspace/node_modules/@logtail/node/src/node.ts:69:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async handler (/home/runner/workspace/node_modules/@logtail/tools/src/throttle.ts:35:23)
+Error: Unauthorized
+    at Node.sync (/home/runner/workspace/node_modules/@logtail/node/src/node.ts:69:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async handler (/home/runner/workspace/node_modules/@logtail/tools/src/throttle.ts:35:23)
