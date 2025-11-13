@@ -17,8 +17,8 @@ Preferred communication style: Simple, everyday language.
 ### Backend
 - **Runtime**: Node.js with Express.js.
 - **Database**: PostgreSQL with Drizzle ORM on Neon Database.
-- **Authentication**: Custom hardened JWT-based dual-mode authentication (web via httpOnly/SameSite cookies with CSRF, mobile via Bearer tokens). Argon2id hashing, multi-device sessions, MFA/TOTP, password reset, rate limiting, account enumeration protection.
-- **CSRF Protection**: Web requests use CSRF tokens; mobile apps bypass via `X-Mobile-App: true` header.
+- **Authentication**: Custom hardened JWT-based dual-mode authentication (web via httpOnly/SameSite cookies with CSRF, mobile via Bearer tokens). Argon2id hashing, multi-device sessions, MFA/TOTP, password reset, rate limiting, account enumeration protection. All API endpoints use `requireAuth` middleware supporting both cookie and Bearer token authentication.
+- **CSRF Protection**: Web requests use CSRF tokens; mobile apps bypass via `X-Mobile-App: true` header. OAuth callbacks (`/api/snaptrade/callback`, `/api/teller/callback`) are in CSRF skip list.
 - **API Pattern**: RESTful API with JSON responses and robust JSON error handling.
 
 ### Performance Optimizations
