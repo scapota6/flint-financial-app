@@ -123,48 +123,19 @@ async function deleteConnectionAndChildren(authorizationId: string, requestId: s
       
       if (accountIds.length > 0) {
         // Step 3: Delete all child records using batched IN-clause for atomicity
-        // Use inArray for multiple IDs, eq for single ID
-        const accountFilter = accountIds.length === 1 
-          ? eq(snaptradeBalances.accountId, accountIds[0])
-          : sql`${snaptradeBalances.accountId} IN ${accountIds}`;
-        
-        // Delete all child records in parallel (safe because they're in same transaction)
+        // Use inArray for cleaner Drizzle syntax that handles both single and multiple IDs
         await Promise.all([
-          tx.delete(snaptradeBalances).where(
-            accountIds.length === 1 
-              ? eq(snaptradeBalances.accountId, accountIds[0])
-              : sql`${snaptradeBalances.accountId} = ANY(${accountIds})`
-          ),
-          tx.delete(snaptradePositions).where(
-            accountIds.length === 1
-              ? eq(snaptradePositions.accountId, accountIds[0])
-              : sql`${snaptradePositions.accountId} = ANY(${accountIds})`
-          ),
-          tx.delete(snaptradeOrders).where(
-            accountIds.length === 1
-              ? eq(snaptradeOrders.accountId, accountIds[0])
-              : sql`${snaptradeOrders.accountId} = ANY(${accountIds})`
-          ),
-          tx.delete(snaptradeActivities).where(
-            accountIds.length === 1
-              ? eq(snaptradeActivities.accountId, accountIds[0])
-              : sql`${snaptradeActivities.accountId} = ANY(${accountIds})`
-          ),
-          tx.delete(snaptradeOptionHoldings).where(
-            accountIds.length === 1
-              ? eq(snaptradeOptionHoldings.accountId, accountIds[0])
-              : sql`${snaptradeOptionHoldings.accountId} = ANY(${accountIds})`
-          )
+          tx.delete(snaptradeBalances).where(inArray(snaptradeBalances.accountId, accountIds)),
+          tx.delete(snaptradePositions).where(inArray(snaptradePositions.accountId, accountIds)),
+          tx.delete(snaptradeOrders).where(inArray(snaptradeOrders.accountId, accountIds)),
+          tx.delete(snaptradeActivities).where(inArray(snaptradeActivities.accountId, accountIds)),
+          tx.delete(snaptradeOptionHoldings).where(inArray(snaptradeOptionHoldings.accountId, accountIds))
         ]);
         
         console.log(`[SnapTrade Webhook ${requestId}] Deleted all child records for ${accountIds.length} accounts`);
         
         // Step 4: Delete all accounts in a single query
-        await tx.delete(snaptradeAccounts).where(
-          accountIds.length === 1
-            ? eq(snaptradeAccounts.id, accountIds[0])
-            : sql`${snaptradeAccounts.id} = ANY(${accountIds})`
-        );
+        await tx.delete(snaptradeAccounts).where(inArray(snaptradeAccounts.id, accountIds));
         
         console.log(`[SnapTrade Webhook ${requestId}] Deleted ${accountIds.length} accounts`);
       }
