@@ -32,6 +32,81 @@ console.log('[SnapTrade] SDK init', {
 });
 
 /**
+ * Recovery mutex to prevent concurrent re-registration of the same user
+ */
+const recoveryLocks = new Map<string, Promise<void>>();
+
+/**
+ * Auto-recovery function for deleted SnapTrade users
+ * This is called automatically when a 404/410/user-not-found error is detected
+ */
+export async function recoverDeletedSnapTradeUser(flintUserId: string): Promise<void> {
+  // Check if recovery is already in progress for this user
+  const existingLock = recoveryLocks.get(flintUserId);
+  if (existingLock) {
+    console.log(`[SnapTrade Recovery] Waiting for existing recovery to complete for user ${flintUserId}`);
+    await existingLock;
+    return;
+  }
+
+  // Create recovery promise and lock
+  const recoveryPromise = (async () => {
+    try {
+      const { db } = await import('../db');
+      const { snaptradeUsers } = await import('../../shared/schema');
+      const { eq } = await import('drizzle-orm');
+      const { logger } = await import('@shared/logger');
+      
+      console.log(`[SnapTrade Recovery] Re-registering deleted user: ${flintUserId}`);
+      
+      // Re-register the user with SnapTrade
+      const response = await authApi.registerSnapTradeUser({ userId: flintUserId });
+      const newUserSecret = (response.data as any).userSecret;
+      
+      if (!newUserSecret) {
+        throw new Error('Failed to get userSecret from SnapTrade registration');
+      }
+      
+      // Update the database with new credentials
+      const [updated] = await db
+        .update(snaptradeUsers)
+        .set({
+          snaptradeUserId: flintUserId,
+          userSecret: newUserSecret,
+          updatedAt: new Date()
+        })
+        .where(eq(snaptradeUsers.flintUserId, flintUserId))
+        .returning();
+      
+      if (!updated) {
+        throw new Error(`Failed to update snaptrade_users for flintUserId: ${flintUserId}`);
+      }
+      
+      // Audit log the credential rotation
+      logger.info('[SnapTrade Recovery] User credentials rotated due to deletion', {
+        metadata: {
+          flintUserId,
+          snaptradeUserId: flintUserId,
+          secretLength: newUserSecret.length,
+          timestamp: new Date().toISOString()
+        }
+      });
+      
+      console.log(`[SnapTrade Recovery] Successfully re-registered user ${flintUserId}`);
+    } catch (error: any) {
+      console.error(`[SnapTrade Recovery] Failed to recover user ${flintUserId}:`, error?.message || error);
+      throw error;
+    } finally {
+      // Always remove the lock when done
+      recoveryLocks.delete(flintUserId);
+    }
+  })();
+  
+  recoveryLocks.set(flintUserId, recoveryPromise);
+  await recoveryPromise;
+}
+
+/**
  * Validate SnapTrade credentials on startup
  */
 export async function validateSnapTradeCredentials() {
@@ -831,7 +906,8 @@ export async function listBrokerageAuthorizations(userId: string, userSecret: st
     'listBrokerageAuthorizations',
     () => connectionsApi.listBrokerageAuthorizations({ userId, userSecret }),
     3,
-    flintUserId
+    flintUserId,
+    flintUserId ? () => recoverDeletedSnapTradeUser(flintUserId) : undefined
   );
 }
 

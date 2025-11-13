@@ -121,12 +121,23 @@ export function getRequestStats(): {
  * Matches CLI error categorization
  */
 export function categorizeSnapTradeError(error: any): {
-  category: 'auth' | 'rate_limit' | 'validation' | 'network' | 'server' | 'unknown';
+  category: 'auth' | 'rate_limit' | 'validation' | 'network' | 'server' | 'user_deleted' | 'unknown';
   message: string;
   retryable: boolean;
+  requiresReRegistration?: boolean;
 } {
-  const status = error.response?.status;
+  const status = error.response?.status || error.status;
   const errorCode = error.response?.data?.code || error.responseBody?.code;
+  
+  // Detect user deleted/not found scenarios
+  if (status === 404 || status === 410 || errorCode === '1005' || errorCode === 'USER_NOT_FOUND') {
+    return {
+      category: 'user_deleted',
+      message: 'User registration was deleted - will auto-recover',
+      retryable: true,
+      requiresReRegistration: true
+    };
+  }
   
   switch (status) {
     case 401:
@@ -186,15 +197,17 @@ export function categorizeSnapTradeError(error: any): {
 }
 
 /**
- * Retry wrapper for SnapTrade calls with exponential backoff
+ * Retry wrapper for SnapTrade calls with exponential backoff and auto-recovery
  */
 export async function retryableSnapTradeCall<T>(
   operation: string,
   apiCall: () => Promise<T>,
   maxRetries: number = 3,
-  userId?: string
+  userId?: string,
+  onUserDeleted?: (userId: string) => Promise<void>
 ): Promise<T> {
   let lastError: any;
+  let hasAttemptedRecovery = false;
   
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
@@ -202,6 +215,31 @@ export async function retryableSnapTradeCall<T>(
     } catch (error) {
       lastError = error;
       const errorInfo = categorizeSnapTradeError(error);
+      
+      // Auto-recovery for deleted users (only attempt once)
+      if (errorInfo.requiresReRegistration && !hasAttemptedRecovery && userId && onUserDeleted) {
+        hasAttemptedRecovery = true;
+        
+        logger.warn(`[SnapTrade Auto-Recovery] User ${userId} was deleted - re-registering`, {
+          metadata: { operation, userId }
+        });
+        
+        try {
+          await onUserDeleted(userId);
+          logger.info(`[SnapTrade Auto-Recovery] Successfully re-registered user ${userId}`, {
+            metadata: { operation }
+          });
+          
+          // Retry the operation immediately after recovery
+          continue;
+        } catch (recoveryError: any) {
+          logger.error(`[SnapTrade Auto-Recovery] Failed to re-register user ${userId}`, {
+            error: recoveryError as Error,
+            metadata: { operation }
+          });
+          throw recoveryError;
+        }
+      }
       
       // Don't retry if error is not retryable
       if (!errorInfo.retryable || attempt === maxRetries) {
