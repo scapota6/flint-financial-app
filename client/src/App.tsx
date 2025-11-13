@@ -12,7 +12,12 @@ import GlobalNavbar from "@/components/layout/global-navbar";
 import { UpgradeBanner } from "@/components/ui/upgrade-banner";
 import { useAuth } from "@/hooks/useAuth";
 
-// Code-split all page components for optimal bundle size
+// Eagerly load critical email-linked pages to prevent blank page on first load
+import PasswordSetup from "@/pages/password-setup";
+import ResetPassword from "@/pages/reset-password";
+import Login from "@/pages/login";
+
+// Code-split remaining pages for optimal bundle size
 const NotFound = lazy(() => import("@/pages/not-found"));
 const Landing = lazy(() => import("@/pages/landing"));
 const SuccessPage = lazy(() => import("@/pages/success"));
@@ -37,16 +42,19 @@ const Security = lazy(() => import("@/pages/Security"));
 const Monitoring = lazy(() => import("@/pages/Monitoring"));
 const TellerCallback = lazy(() => import("@/pages/TellerCallback"));
 const AdminDashboard = lazy(() => import("@/pages/admin"));
-const PasswordSetup = lazy(() => import("@/pages/password-setup"));
-const ResetPassword = lazy(() => import("@/pages/reset-password"));
-const Login = lazy(() => import("@/pages/login"));
 const TermsOfService = lazy(() => import("@/pages/tos"));
 const PrivacyPolicy = lazy(() => import("@/pages/privacy-policy"));
 
-// Loading fallback component
+// Loading fallback component with branding to prevent blank page appearance
 const PageLoader = () => (
-  <div className="min-h-screen flex items-center justify-center bg-black">
-    <div className="animate-spin w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full" />
+  <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+    <div className="text-center space-y-4">
+      <div className="text-4xl font-bold bg-gradient-to-r from-blue-400 to-blue-600 bg-clip-text text-transparent mb-4">
+        Flint
+      </div>
+      <div className="animate-spin w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full mx-auto" />
+      <p className="text-gray-400 text-sm mt-4">Loading...</p>
+    </div>
   </div>
 );
 
@@ -66,11 +74,7 @@ function Router() {
   const { isAuthenticated, isLoading } = useAuth();
 
   if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-black">
-        <div className="animate-spin w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full" />
-      </div>
-    );
+    return <PageLoader />;
   }
 
   return (
