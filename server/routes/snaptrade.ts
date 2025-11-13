@@ -11,7 +11,7 @@ import { db } from '../db';
 import { snaptradeUsers, snaptradeConnections } from '@shared/schema';
 import { eq, desc, sql, and } from 'drizzle-orm';
 import { normalizeSnapTradeError } from '../lib/normalize-snaptrade-error';
-import { isAuthenticated } from '../replitAuth';
+import { requireAuth } from '../middleware/jwt-auth';
 import { rateLimitMiddleware, fetchWithRateLimit } from '../lib/rate-limiting';
 import { handleBrokenConnection, snaptradeApiCall } from '../lib/broken-connections';
 import { getSnapUser } from '../store/snapUsers';
@@ -902,7 +902,7 @@ router.post('/trades/place', snaptradeRateLimit, async (req: any, res: any) => {
  * Sync connected brokerage accounts from SnapTrade to database
  * This endpoint is called after OAuth callback to save connections
  */
-router.post('/sync', isAuthenticated, async (req: any, res) => {
+router.post('/sync', requireAuth, async (req: any, res) => {
   try {
     const flintUserId = req.user.claims.sub;
     
@@ -1048,7 +1048,7 @@ router.post('/sync', isAuthenticated, async (req: any, res) => {
  * Required body params:
  * - authorizationId or connection_id: The brokerage authorization ID from OAuth callback
  */
-router.post('/callback', isAuthenticated, async (req: any, res) => {
+router.post('/callback', requireAuth, async (req: any, res) => {
   try {
     const flintUserId = req.user.claims.sub;
     const { authorizationId, connection_id } = req.body;

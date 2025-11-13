@@ -1,7 +1,17 @@
 import { Router } from 'express';
 import { db } from '../db';
-import { users, snaptradeUsers, snaptradeConnections } from '@shared/schema';
-import { eq } from 'drizzle-orm';
+import { 
+  users, 
+  snaptradeUsers, 
+  snaptradeConnections, 
+  snaptradeAccounts,
+  snaptradeBalances,
+  snaptradePositions,
+  snaptradeOrders,
+  snaptradeActivities,
+  snaptradeOptionHoldings
+} from '@shared/schema';
+import { eq, sql, inArray } from 'drizzle-orm';
 import type { WebhookEvent, WebhookAck, WebhookType, ISODate, UUID } from '@shared/types';
 
 const router = Router();
@@ -78,6 +88,105 @@ function mapWebhookType(snaptradeType: string): WebhookType | null {
 }
 
 /**
+ * Helper function to delete a SnapTrade connection and all its child records
+ * This ensures a clean slate when a connection is broken - no stale data remains
+ * Uses transactions and batched IN-clause deletes for atomicity and performance
+ */
+async function deleteConnectionAndChildren(authorizationId: string, requestId: string): Promise<void> {
+  try {
+    console.log(`[SnapTrade Webhook ${requestId}] Starting cascading deletion for authorization:`, authorizationId);
+    
+    // Wrap everything in a transaction to ensure atomicity
+    await db.transaction(async (tx) => {
+      // Step 1: Find the connection
+      const [connection] = await tx
+        .select()
+        .from(snaptradeConnections)
+        .where(eq(snaptradeConnections.brokerageAuthorizationId, authorizationId))
+        .limit(1);
+      
+      if (!connection) {
+        console.warn(`[SnapTrade Webhook ${requestId}] Connection not found:`, authorizationId);
+        return;
+      }
+      
+      console.log(`[SnapTrade Webhook ${requestId}] Found connection ID:`, connection.id);
+      
+      // Step 2: Find all accounts for this connection
+      const accounts = await tx
+        .select()
+        .from(snaptradeAccounts)
+        .where(eq(snaptradeAccounts.connectionId, connection.id));
+      
+      const accountIds = accounts.map(acc => acc.id);
+      console.log(`[SnapTrade Webhook ${requestId}] Found ${accountIds.length} accounts to delete`);
+      
+      if (accountIds.length > 0) {
+        // Step 3: Delete all child records using batched IN-clause for atomicity
+        // Use inArray for multiple IDs, eq for single ID
+        const accountFilter = accountIds.length === 1 
+          ? eq(snaptradeBalances.accountId, accountIds[0])
+          : sql`${snaptradeBalances.accountId} IN ${accountIds}`;
+        
+        // Delete all child records in parallel (safe because they're in same transaction)
+        await Promise.all([
+          tx.delete(snaptradeBalances).where(
+            accountIds.length === 1 
+              ? eq(snaptradeBalances.accountId, accountIds[0])
+              : sql`${snaptradeBalances.accountId} = ANY(${accountIds})`
+          ),
+          tx.delete(snaptradePositions).where(
+            accountIds.length === 1
+              ? eq(snaptradePositions.accountId, accountIds[0])
+              : sql`${snaptradePositions.accountId} = ANY(${accountIds})`
+          ),
+          tx.delete(snaptradeOrders).where(
+            accountIds.length === 1
+              ? eq(snaptradeOrders.accountId, accountIds[0])
+              : sql`${snaptradeOrders.accountId} = ANY(${accountIds})`
+          ),
+          tx.delete(snaptradeActivities).where(
+            accountIds.length === 1
+              ? eq(snaptradeActivities.accountId, accountIds[0])
+              : sql`${snaptradeActivities.accountId} = ANY(${accountIds})`
+          ),
+          tx.delete(snaptradeOptionHoldings).where(
+            accountIds.length === 1
+              ? eq(snaptradeOptionHoldings.accountId, accountIds[0])
+              : sql`${snaptradeOptionHoldings.accountId} = ANY(${accountIds})`
+          )
+        ]);
+        
+        console.log(`[SnapTrade Webhook ${requestId}] Deleted all child records for ${accountIds.length} accounts`);
+        
+        // Step 4: Delete all accounts in a single query
+        await tx.delete(snaptradeAccounts).where(
+          accountIds.length === 1
+            ? eq(snaptradeAccounts.id, accountIds[0])
+            : sql`${snaptradeAccounts.id} = ANY(${accountIds})`
+        );
+        
+        console.log(`[SnapTrade Webhook ${requestId}] Deleted ${accountIds.length} accounts`);
+      }
+      
+      // Step 5: Delete the connection itself
+      await tx
+        .delete(snaptradeConnections)
+        .where(eq(snaptradeConnections.id, connection.id));
+      
+      console.log(`[SnapTrade Webhook ${requestId}] ✅ Successfully deleted connection and all child records for:`, authorizationId);
+    });
+  } catch (error: any) {
+    console.error(`[SnapTrade Webhook ${requestId}] ❌ Error during cascading deletion:`, {
+      authorizationId,
+      error: error.message,
+      stack: error.stack
+    });
+    // Don't throw - we still want to acknowledge the webhook
+  }
+}
+
+/**
  * POST /api/snaptrade/webhooks
  * Handle SnapTrade webhook events with normalized response format
  */
@@ -139,17 +248,9 @@ router.post('/webhooks', async (req, res) => {
     // Handle specific webhook types
     switch (webhookEvent.type) {
       case 'connection.broken':
-        console.log('[SnapTrade Webhook] Connection broken - marking authorization as disabled');
+        console.log('[SnapTrade Webhook] Connection broken - DELETING connection and all child records');
         if (webhookEvent.authorizationId) {
-          await db
-            .update(snaptradeConnections)
-            .set({
-              disabled: true,
-              updatedAt: new Date()
-            })
-            .where(eq(snaptradeConnections.brokerageAuthorizationId, webhookEvent.authorizationId));
-          
-          console.log('[SnapTrade Webhook] Authorization disabled:', webhookEvent.authorizationId);
+          await deleteConnectionAndChildren(webhookEvent.authorizationId, webhookEvent.id);
         }
         break;
         
@@ -169,13 +270,9 @@ router.post('/webhooks', async (req, res) => {
         break;
         
       case 'connection.deleted':
-        console.log('[SnapTrade Webhook] Connection deleted - removing authorization');
+        console.log('[SnapTrade Webhook] Connection deleted - DELETING connection and all child records');
         if (webhookEvent.authorizationId) {
-          await db
-            .delete(snaptradeConnections)
-            .where(eq(snaptradeConnections.brokerageAuthorizationId, webhookEvent.authorizationId));
-          
-          console.log('[SnapTrade Webhook] Authorization removed:', webhookEvent.authorizationId);
+          await deleteConnectionAndChildren(webhookEvent.authorizationId, webhookEvent.id);
         }
         break;
         
@@ -294,17 +391,9 @@ export async function handleSnapTradeWebhook(req: any, res: any) {
   // Handle specific webhook types
   switch (webhookType) {
     case 'connection.broken':
-      console.log(`[SnapTrade Webhook ${requestId}] Connection broken - marking authorization as disabled`);
+      console.log(`[SnapTrade Webhook ${requestId}] Connection broken - DELETING connection and all child records`);
       if (authorizationId) {
-        await db
-          .update(snaptradeConnections)
-          .set({
-            disabled: true,
-            updatedAt: new Date()
-          })
-          .where(eq(snaptradeConnections.brokerageAuthorizationId, authorizationId));
-        
-        console.log(`[SnapTrade Webhook ${requestId}] Authorization disabled:`, authorizationId);
+        await deleteConnectionAndChildren(authorizationId, requestId);
       }
       break;
       
@@ -324,13 +413,9 @@ export async function handleSnapTradeWebhook(req: any, res: any) {
       break;
       
     case 'connection.deleted':
-      console.log(`[SnapTrade Webhook ${requestId}] Connection deleted - removing authorization`);
+      console.log(`[SnapTrade Webhook ${requestId}] Connection deleted - DELETING connection and all child records`);
       if (authorizationId) {
-        await db
-          .delete(snaptradeConnections)
-          .where(eq(snaptradeConnections.brokerageAuthorizationId, authorizationId));
-        
-        console.log(`[SnapTrade Webhook ${requestId}] Authorization removed:`, authorizationId);
+        await deleteConnectionAndChildren(authorizationId, requestId);
       }
       break;
       
