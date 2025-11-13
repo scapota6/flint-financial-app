@@ -60,6 +60,8 @@ export function validateCSRFToken(req: Request, res: Response, next: NextFunctio
     "/api/feature-flags",
     "/api/snaptrade/register", // Public SnapTrade registration endpoint
     "/api/snaptrade/reset-user", // DEV ONLY - reset endpoint
+    "/api/snaptrade/callback", // Mobile OAuth callback - uses Bearer token auth
+    "/api/teller/callback", // Mobile OAuth callback - uses Bearer token auth
   ];
   
   if (skipCSRFRoutes.some(route => req.path.startsWith(route))) {
