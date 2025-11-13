@@ -427,7 +427,7 @@ export function fillInactiveGaps(
 /**
  * Generate complete portfolio history for a user
  * @param userId Flint user ID
- * @param period Time period
+ * @param period Time period to display (filters the full dataset)
  * @returns Historical data points for charting
  */
 export async function generatePortfolioHistory(
@@ -435,6 +435,7 @@ export async function generatePortfolioHistory(
   period: Period
 ): Promise<HistoricalDataPoint[]> {
   try {
+    // Get period-specific config for bucketing/granularity
     const config = getPeriodConfig(period);
     
     // Fetch all connected accounts
@@ -463,6 +464,10 @@ export async function generatePortfolioHistory(
         const currentBalance = parseFloat(account.balance) || 0;
         let transactions: NormalizedTransaction[] = [];
         
+        // ALWAYS fetch 365 days of transactions regardless of selected period
+        // This ensures all time filters have complete data available
+        const FULL_YEAR_DAYS = 365;
+        
         // Fetch transactions based on provider
         if (account.provider === 'teller') {
           const accountType = account.accountType === 'card' ? 'card' : 'bank';
@@ -470,7 +475,7 @@ export async function generatePortfolioHistory(
             userId,
             account.externalAccountId!,
             accountType,
-            config.daysBack
+            FULL_YEAR_DAYS
           );
         } else if (account.provider === 'snaptrade') {
           // Fetch SnapTrade credentials
@@ -480,7 +485,7 @@ export async function generatePortfolioHistory(
               snapUser.userId,
               snapUser.userSecret,
               account.externalAccountId,
-              config.daysBack
+              FULL_YEAR_DAYS
             );
           }
         }
