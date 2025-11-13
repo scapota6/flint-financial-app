@@ -548,29 +548,20 @@ function UsersTab() {
   const [newPassword, setNewPassword] = useState('');
   const [dashboardModalOpen, setDashboardModalOpen] = useState(false);
   const [dashboardUser, setDashboardUser] = useState<{ id: string; name: string } | null>(null);
+  const [isTierSelectOpen, setIsTierSelectOpen] = useState(false);
   const { toast } = useToast();
-  
-  // Ref to prevent dialog from closing when clicking inside
-  const allowCloseTierDialogRef = useRef(false);
-  
-  // Reset ref when dialog opens
-  useEffect(() => {
-    if (actionDialog === 'tier') {
-      allowCloseTierDialogRef.current = false;
-    }
-  }, [actionDialog]);
   
   // Handler for tier dialog close
   const handleCloseTierDialog = () => {
-    allowCloseTierDialogRef.current = true;
     setActionDialog(null);
+    setIsTierSelectOpen(false);
   };
   
   // Handler for tier dialog open change
   const handleTierDialogOpenChange = (open: boolean) => {
-    if (!open && allowCloseTierDialogRef.current) {
-      allowCloseTierDialogRef.current = false;
+    if (!open) {
       setActionDialog(null);
+      setIsTierSelectOpen(false);
     }
   };
 
@@ -637,8 +628,8 @@ function UsersTab() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/admin-panel/users'], refetchType: 'all' });
       toast({ title: 'User tier updated' });
-      allowCloseTierDialogRef.current = true;
       setActionDialog(null);
+      setIsTierSelectOpen(false);
     },
   });
 
@@ -931,7 +922,15 @@ function UsersTab() {
       </Dialog>
 
       <Dialog open={actionDialog === 'tier'} onOpenChange={handleTierDialogOpenChange}>
-        <DialogContent className="bg-slate-900/95 border border-slate-700/50 text-white">
+        <DialogContent 
+          className="bg-slate-900/95 border border-slate-700/50 text-white"
+          onPointerDownOutside={(e) => {
+            // Prevent closing when clicking on the Select dropdown
+            if (isTierSelectOpen) {
+              e.preventDefault();
+            }
+          }}
+        >
           <DialogHeader>
             <DialogTitle className="text-white">Change Subscription Tier</DialogTitle>
             <DialogDescription className="text-gray-400">
@@ -939,14 +938,19 @@ function UsersTab() {
             </DialogDescription>
           </DialogHeader>
           <div className="py-4">
-            <Select value={newTier} onValueChange={setNewTier}>
+            <Select 
+              value={newTier} 
+              onValueChange={setNewTier}
+              onOpenChange={setIsTierSelectOpen}
+            >
               <SelectTrigger className="bg-gray-800 border-gray-700 text-white" data-testid="select-new-tier">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent 
-                className="bg-slate-900 border border-slate-700/50 text-white z-[99999]" 
+                className="bg-slate-900 border border-slate-700/50 text-white" 
                 sideOffset={5}
                 container={document.body}
+                style={{ zIndex: 9999 }}
               >
                 <SelectItem value="free">Free</SelectItem>
                 <SelectItem value="basic">Basic</SelectItem>
