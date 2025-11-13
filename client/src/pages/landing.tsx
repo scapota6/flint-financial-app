@@ -103,6 +103,9 @@ const getCheckoutUrl = (plan: string, email?: string) => {
   return `${baseUrl}?${params.toString()}`;
 };
 
+// Feature flag for trading/transfers - set to true after Stripe approval
+const SHOW_TRADING_FEATURES = false; // TODO: Set to true after Stripe approves these features
+
 function Landing() {
   const [isYearly, setIsYearly] = useState(false);
   const [formData, setFormData] = useState({
@@ -712,9 +715,9 @@ function Landing() {
                     <span className="text-3xl font-bold text-white">3</span>
                   </div>
                 </div>
-                <h3 className="text-2xl font-bold text-white">Trade, Transfer, Analyze</h3>
+                <h3 className="text-2xl font-bold text-white">Analyze & Optimize</h3>
                 <p className="text-gray-400">
-                  Buy stocks. Move money. Track it all.
+                  Make smarter financial decisions with powerful insights.
                 </p>
               </div>
             </div>
@@ -1159,7 +1162,7 @@ function Landing() {
                     </div>
                   </div>
                   <CardDescription className="text-gray-300">
-                    Complete control with trading and transfer capabilities.
+                    Complete control with advanced analytics and automation features.
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="text-center">
@@ -1266,22 +1269,26 @@ function Landing() {
                           <Check className="h-5 w-5 text-green-500 mx-auto" />
                         </td>
                       </tr>
-                      <tr className="border-b border-gray-800">
-                        <td className="py-3 text-white">Trading (Coming Soon)</td>
-                        <td className="text-center py-3 text-gray-600">-</td>
-                        <td className="text-center py-3 text-gray-600">-</td>
-                        <td className="text-center py-3">
-                          <Check className="h-5 w-5 text-green-500 mx-auto" />
-                        </td>
-                      </tr>
-                      <tr>
-                        <td className="py-3 text-white">Transfer Funds (Coming Soon)</td>
-                        <td className="text-center py-3 text-gray-600">-</td>
-                        <td className="text-center py-3 text-gray-600">-</td>
-                        <td className="text-center py-3">
-                          <Check className="h-5 w-5 text-green-500 mx-auto" />
-                        </td>
-                      </tr>
+                      {SHOW_TRADING_FEATURES && (
+                        <tr className="border-b border-gray-800">
+                          <td className="py-3 text-white">Trading (Coming Soon)</td>
+                          <td className="text-center py-3 text-gray-600">-</td>
+                          <td className="text-center py-3 text-gray-600">-</td>
+                          <td className="text-center py-3">
+                            <Check className="h-5 w-5 text-green-500 mx-auto" />
+                          </td>
+                        </tr>
+                      )}
+                      {SHOW_TRADING_FEATURES && (
+                        <tr>
+                          <td className="py-3 text-white">Transfer Funds (Coming Soon)</td>
+                          <td className="text-center py-3 text-gray-600">-</td>
+                          <td className="text-center py-3 text-gray-600">-</td>
+                          <td className="text-center py-3">
+                            <Check className="h-5 w-5 text-green-500 mx-auto" />
+                          </td>
+                        </tr>
+                      )}
                     </tbody>
                   </table>
                 </div>
@@ -1341,14 +1348,16 @@ function Landing() {
                     </AccordionContent>
                   </AccordionItem>
 
-                  <AccordionItem value="item-5" className="border-gray-700">
-                    <AccordionTrigger className="text-white hover:text-blue-400">
-                      How does trading work?
-                    </AccordionTrigger>
-                    <AccordionContent className="text-gray-300">
-                      With the Pro plan, you can buy and sell stocks directly through your connected brokerage accounts. We provide real-time quotes, market data, and a simple trading interface. Trading is available for only supported brokerages.
-                    </AccordionContent>
-                  </AccordionItem>
+                  {SHOW_TRADING_FEATURES && (
+                    <AccordionItem value="item-5" className="border-gray-700">
+                      <AccordionTrigger className="text-white hover:text-blue-400">
+                        How does trading work?
+                      </AccordionTrigger>
+                      <AccordionContent className="text-gray-300">
+                        With the Pro plan, you can buy and sell stocks directly through your connected brokerage accounts. We provide real-time quotes, market data, and a simple trading interface. Trading is available for only supported brokerages.
+                      </AccordionContent>
+                    </AccordionItem>
+                  )}
 
                   <AccordionItem value="item-6" className="border-gray-700">
                     <AccordionTrigger className="text-white hover:text-blue-400">
@@ -1364,7 +1373,7 @@ function Landing() {
                       What's the difference between the plans?
                     </AccordionTrigger>
                     <AccordionContent className="text-gray-300">
-                      Free (4 connections) includes money flow tracking, dashboard, and transaction history. Basic (unlimited connections) adds recurring subscriptions, credit card management, and stock charts. Pro (unlimited connections) includes everything in Basic plus trading and transfer capabilities.
+                      Free (4 connections) includes money flow tracking, dashboard, and transaction history. Basic (unlimited connections) adds recurring subscriptions, credit card management, and stock charts. Pro (unlimited connections) includes everything in Basic plus advanced analytics and automation features.
                     </AccordionContent>
                   </AccordionItem>
                 </Accordion>
