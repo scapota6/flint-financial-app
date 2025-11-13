@@ -389,9 +389,11 @@ function ApplicationsTab() {
 
   const approveMutation = useMutation({
     mutationFn: (id: number) => apiRequest(`/api/admin-panel/applications/${id}/approve`, { method: 'POST' }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/admin-panel/applications'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/admin-panel/applications/stats'] });
+    onSuccess: async () => {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['/api/admin-panel/applications'], refetchType: 'active' }),
+        queryClient.invalidateQueries({ queryKey: ['/api/admin-panel/applications/stats'], refetchType: 'active' }),
+      ]);
       toast({ title: 'Application approved successfully' });
     },
     onError: () => {
@@ -401,9 +403,11 @@ function ApplicationsTab() {
 
   const rejectMutation = useMutation({
     mutationFn: (id: number) => apiRequest(`/api/admin-panel/applications/${id}/reject`, { method: 'POST' }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/admin-panel/applications'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/admin-panel/applications/stats'] });
+    onSuccess: async () => {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['/api/admin-panel/applications'], refetchType: 'active' }),
+        queryClient.invalidateQueries({ queryKey: ['/api/admin-panel/applications/stats'], refetchType: 'active' }),
+      ]);
       toast({ title: 'Application rejected successfully' });
     },
     onError: () => {
