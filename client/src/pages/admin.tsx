@@ -1228,23 +1228,6 @@ function ConnectionsTab() {
                         </p>
                       </div>
                     </div>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className="border-gray-700"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setDashboardUser({ 
-                          id: group.userId, 
-                          name: group.email 
-                        });
-                        setDashboardModalOpen(true);
-                      }}
-                      data-testid={`button-view-dashboard-${group.userId}`}
-                    >
-                      <Eye className="h-4 w-4 mr-1" />
-                      View Dashboard
-                    </Button>
                   </CollapsibleTrigger>
                 
                 <CollapsibleContent className="px-4 pb-4" data-testid={`content-user-${group.userId}`}>
@@ -1255,7 +1238,6 @@ function ConnectionsTab() {
                         <TableHead>Account Type</TableHead>
                         <TableHead>Account Name</TableHead>
                         <TableHead>Provider</TableHead>
-                        <TableHead>Balance</TableHead>
                         <TableHead>Connected</TableHead>
                         <TableHead>Actions</TableHead>
                       </TableRow>
@@ -1268,9 +1250,6 @@ function ConnectionsTab() {
                           <TableCell data-testid={`text-name-${conn.id}`}>{conn.accountName}</TableCell>
                           <TableCell className="uppercase" data-testid={`badge-provider-${conn.id}`}>
                             <Badge className="bg-blue-600">{conn.provider}</Badge>
-                          </TableCell>
-                          <TableCell data-testid={`text-balance-${conn.id}`}>
-                            {conn.balance ? `$${conn.balance.toLocaleString()}` : '-'}
                           </TableCell>
                           <TableCell data-testid={`text-date-${conn.id}`}>
                             {new Date(conn.createdAt).toLocaleDateString()}
