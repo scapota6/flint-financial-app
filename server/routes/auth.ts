@@ -208,9 +208,6 @@ router.post('/login', rateLimits.login, async (req, res) => {
       ipAddress
     );
 
-    // Set httpOnly, Secure, SameSite=Strict cookies
-    setCookies(res, accessToken, refreshTokenData.token);
-
     // Update last login timestamp
     await db
       .update(users)
@@ -220,19 +217,36 @@ router.post('/login', rateLimits.login, async (req, res) => {
     // Log successful login
     await logLoginAttempt(email, true, user.id, ipAddress, userAgent, 'Login successful');
 
-    // Return user data (exclude sensitive fields)
-    return res.status(200).json({
-      success: true,
-      user: {
-        id: user.id,
-        email: user.email,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        role: user.isAdmin ? 'admin' : 'user',
-        subscriptionTier: user.subscriptionTier,
-        mfaEnabled: user.mfaEnabled,
-      },
-    });
+    // DUAL-MODE AUTHENTICATION: Detect platform and return appropriate credentials
+    const isMobile = req.headers['x-mobile-app'] === 'true';
+
+    // Prepare user data (exclude sensitive fields)
+    const userData = {
+      id: user.id,
+      email: user.email,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      role: user.isAdmin ? 'admin' : 'user',
+      subscriptionTier: user.subscriptionTier,
+      mfaEnabled: user.mfaEnabled,
+    };
+
+    if (isMobile) {
+      // MOBILE: Return tokens in response body (NO cookies)
+      return res.status(200).json({
+        success: true,
+        user: userData,
+        mobileAccessToken: accessToken,
+        mobileRefreshToken: refreshTokenData.token,
+      });
+    } else {
+      // WEB: Set httpOnly cookies (existing behavior)
+      setCookies(res, accessToken, refreshTokenData.token);
+      return res.status(200).json({
+        success: true,
+        user: userData,
+      });
+    }
   } catch (error) {
     console.error('Login error:', error);
     
@@ -300,10 +314,52 @@ router.post('/refresh', async (req, res) => {
   }
 });
 
-// POST /api/auth/logout - Logout user and revoke tokens
+// POST /api/auth/refresh-token - Mobile refresh token endpoint (accepts token in body)
+router.post('/refresh-token', async (req, res) => {
+  try {
+    const { refreshToken } = req.body;
+
+    if (!refreshToken) {
+      return res.status(401).json({
+        message: 'No refresh token provided',
+      });
+    }
+
+    const userAgent = req.headers['user-agent'] || 'unknown';
+    const ipAddress = req.ip || 'unknown';
+
+    // Refresh tokens with rotation (invalidate old, issue new)
+    const result = await refreshTokensWithRotation(
+      refreshToken,
+      userAgent,
+      ipAddress
+    );
+
+    if (!result) {
+      return res.status(401).json({
+        message: 'Invalid or expired refresh token',
+      });
+    }
+
+    // MOBILE: Return tokens in response body
+    return res.status(200).json({
+      success: true,
+      mobileAccessToken: result.accessToken,
+      mobileRefreshToken: result.refreshToken,
+    });
+  } catch (error) {
+    console.error('Mobile token refresh error:', error);
+    return res.status(500).json({
+      message: 'An error occurred during token refresh',
+    });
+  }
+});
+
+// POST /api/auth/logout - Logout user and revoke tokens (dual-mode)
 router.post('/logout', async (req, res) => {
   try {
-    const refreshToken = req.cookies.refreshToken;
+    // Check for refresh token in request body (mobile) OR cookies (web)
+    const refreshToken = req.body.refreshToken || req.cookies.refreshToken;
 
     if (refreshToken) {
       const { hashRefreshToken, revokeRefreshToken } = await import('../lib/auth-tokens');
@@ -311,6 +367,7 @@ router.post('/logout', async (req, res) => {
       await revokeRefreshToken(hashedToken);
     }
 
+    // Always clear cookies (no-op for mobile, important for web)
     clearAuthCookies(res);
 
     return res.status(200).json({

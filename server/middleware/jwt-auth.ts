@@ -16,8 +16,9 @@ declare global {
 }
 
 /**
- * JWT Authentication Middleware
- * Verifies the access token from cookies and attaches user info to req.user
+ * JWT Authentication Middleware (Dual-Mode)
+ * Verifies the access token from either Authorization header (mobile) or cookies (web)
+ * and attaches user info to req.user
  */
 export async function requireAuth(
   req: Request,
@@ -25,9 +26,23 @@ export async function requireAuth(
   next: NextFunction
 ): Promise<void> {
   try {
-    // Extract JWT from cookie
-    const accessToken = req.cookies.accessToken;
+    let accessToken: string | undefined;
+    let isMobileAuth = false;
 
+    // PRIORITY 1: Check for Bearer token in Authorization header (mobile)
+    const authHeader = req.headers.authorization;
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      accessToken = authHeader.substring(7); // Remove 'Bearer ' prefix
+      isMobileAuth = true;
+    }
+
+    // PRIORITY 2: Fall back to cookie authentication (web)
+    if (!accessToken) {
+      accessToken = req.cookies.accessToken;
+      isMobileAuth = false;
+    }
+
+    // No token found in either location
     if (!accessToken) {
       res.status(401).json({
         message: 'Authentication required',
@@ -50,8 +65,9 @@ export async function requireAuth(
         },
       };
 
-      // Sliding window token refresh: Check if token expires soon
-      if (payload.exp) {
+      // Sliding window token refresh: ONLY for cookie-based auth (web)
+      // Mobile apps use explicit /api/auth/refresh-token endpoint
+      if (!isMobileAuth && payload.exp) {
         const now = Math.floor(Date.now() / 1000); // Current time in seconds
         const timeUntilExpiry = payload.exp - now; // Time remaining in seconds
         const REFRESH_THRESHOLD = 5 * 60; // 5 minutes in seconds

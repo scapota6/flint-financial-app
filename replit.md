@@ -17,7 +17,7 @@ Preferred communication style: Simple, everyday language.
 ### Backend
 - **Runtime**: Node.js with Express.js.
 - **Database**: PostgreSQL with Drizzle ORM, utilizing Neon Database.
-- **Authentication**: Custom hardened JWT-based authentication (Argon2id, httpOnly/SameSite cookies, double-submit-cookie CSRF, multi-device sessions, MFA/TOTP support, password reset via email with SHA-256 tokens, rate limiting, account enumeration protection, timing-safe operations).
+- **Authentication**: Custom hardened JWT-based **dual-mode authentication** supporting both web (cookies) and mobile (Bearer tokens). Uses Argon2id password hashing, multi-device sessions, MFA/TOTP support, password reset via email with SHA-256 tokens, rate limiting, account enumeration protection, timing-safe operations. **Web mode**: httpOnly/SameSite cookies with double-submit-cookie CSRF protection and sliding window token refresh. **Mobile mode**: JWT Bearer tokens in Authorization header with explicit refresh endpoint (`POST /api/auth/refresh-token`). Login endpoint detects platform via `X-Mobile-App: true` header and returns tokens in response body for mobile, cookies for web. Auth middleware checks Authorization header first (mobile), then cookies (web). Same backend, same database, cross-platform user sessions.
 - **CSRF Protection**: Web requests require CSRF tokens; mobile apps (React Native/iOS) bypass CSRF by sending `X-Mobile-App: true` header. CORS configured to allow `X-Mobile-App` and `X-CSRF-Token` headers for mobile/web client compatibility.
 - **API Pattern**: RESTful API with JSON responses and robust JSON error handling.
 
