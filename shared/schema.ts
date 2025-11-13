@@ -170,10 +170,10 @@ export const snaptradeAccounts = pgTable('snaptrade_accounts', {
   connectionIndex: index('snaptrade_accounts_connection_idx').on(table.connectionId),
 }));
 
-// SnapTrade account balances table
+// SnapTrade account balances table (with 10-second caching for cross-platform consistency)
 export const snaptradeBalances = pgTable('snaptrade_balances', {
   id: serial('id').primaryKey(),
-  accountId: varchar('account_id').notNull().references(() => snaptradeAccounts.id),
+  accountId: varchar('account_id').notNull().unique().references(() => snaptradeAccounts.id),
   cash: decimal('cash', { precision: 15, scale: 2 }),
   totalEquity: decimal('total_equity', { precision: 15, scale: 2 }),
   buyingPower: decimal('buying_power', { precision: 15, scale: 2 }),
@@ -182,6 +182,7 @@ export const snaptradeBalances = pgTable('snaptrade_balances', {
   lastUpdated: timestamp('last_updated').defaultNow(),
 }, (table) => ({
   accountIndex: index('snaptrade_balances_account_idx').on(table.accountId),
+  lastUpdatedIndex: index('snaptrade_balances_last_updated_idx').on(table.lastUpdated),
 }));
 
 // SnapTrade positions/holdings table

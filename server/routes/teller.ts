@@ -282,6 +282,182 @@ router.post("/save-account", requireAuth, async (req: any, res) => {
 });
 
 /**
+ * POST /api/teller/callback
+ * Mobile OAuth callback - handles Teller OAuth redirect for iOS/Android apps
+ * Accepts access token from mobile app and completes account connection
+ */
+router.post("/callback", requireAuth, async (req: any, res) => {
+  try {
+    const userId = req.user.claims.sub;
+    const { accessToken, enrollment_id, institution } = req.body;
+    
+    console.log('[Teller Mobile Callback] User:', userId, 'has accessToken:', !!accessToken);
+    
+    if (!accessToken) {
+      return res.status(400).json({ 
+        message: "Access token is required",
+        code: 'MISSING_TOKEN'
+      });
+    }
+    
+    logger.info("Processing mobile Teller OAuth callback", { userId });
+    
+    // Use access token as Basic Auth (per Teller docs)
+    const authHeader = `Basic ${Buffer.from(accessToken + ":").toString("base64")}`;
+    
+    // Fetch account details from Teller with mTLS
+    const tellerResponse = await resilientTellerFetch(
+      `${getTellerBaseUrl()}/accounts`,
+      {
+        method: 'GET',
+        headers: {
+          'Authorization': authHeader,
+          'Accept': 'application/json'
+        }
+      },
+      'MobileCallback-FetchAccounts'
+    );
+    
+    if (!tellerResponse.ok) {
+      const errorText = await tellerResponse.text();
+      logger.error(`Teller API error in mobile callback: ${tellerResponse.status}`, { 
+        error: new Error(errorText)
+      });
+      return res.status(tellerResponse.status).json({
+        success: false,
+        message: 'Failed to fetch accounts from Teller',
+        error: errorText
+      });
+    }
+    
+    const accounts = await tellerResponse.json();
+    logger.info(`Mobile callback - Teller accounts fetched: ${accounts.length} accounts`);
+    
+    // Save/update Teller enrollment for this user
+    const enrollmentId = enrollment_id || accessToken;
+    await saveTellerUser(userId, {
+      enrollmentId: enrollmentId,
+      accessToken: accessToken,
+      institutionName: institution
+    });
+    logger.info("Mobile callback - Teller enrollment saved", { userId });
+    
+    // Get user and calculate limits
+    const user = await storage.getUser(userId);
+    const currentConnections = await getConnectionCount(userId);
+    const accountLimit = getAccountLimit(user?.subscriptionTier || 'free', user?.isAdmin === true ? true : undefined);
+    const isUnlimited = accountLimit === null;
+    const availableSlots = isUnlimited ? Infinity : Math.max(0, accountLimit - currentConnections);
+    
+    // Get existing accounts for duplicate checking
+    const existingAccounts = await storage.getConnectedAccounts(userId);
+    const existingTellerIds = new Set(
+      existingAccounts
+        .filter((acc: any) => acc.provider === 'teller')
+        .map((acc: any) => acc.externalAccountId)
+    );
+    
+    // Filter out already-connected accounts
+    const newAccounts = accounts.filter((acc: any) => !existingTellerIds.has(acc.id));
+    const duplicateCount = accounts.length - newAccounts.length;
+    
+    // Check if limit reached
+    if (!isUnlimited && availableSlots === 0 && newAccounts.length > 0) {
+      logger.warn("Mobile callback - No available slots for new accounts", { userId });
+      return res.status(403).json({
+        success: false,
+        accountsSaved: 0,
+        accountsRejected: newAccounts.length,
+        duplicates: duplicateCount,
+        limit: accountLimit,
+        current: currentConnections,
+        message: `Connection limit reached (${accountLimit}). Upgrade your plan to connect more accounts.`
+      });
+    }
+    
+    // Save new accounts (unlimited users get all, others get up to availableSlots)
+    const accountsToSave = isUnlimited ? newAccounts : newAccounts.slice(0, availableSlots);
+    const rejectedCount = newAccounts.length - accountsToSave.length;
+    
+    // Store each account in database
+    for (const account of accountsToSave) {
+      const institutionName = institution || account.institution?.name || 'Unknown Bank';
+      const lastFour = account.last_four || account.mask || '';
+      const accountType = account.type === 'credit' ? 'card' : 'bank';
+      
+      let accountName = account.name || '';
+      if (lastFour) {
+        accountName = `${institutionName} - ${accountName} (****${lastFour})`;
+      } else {
+        accountName = `${institutionName} - ${accountName}`;
+      }
+      
+      const balanceValue = account.type === 'credit' 
+        ? (account.balance?.ledger || 0)
+        : (account.balance?.available || 0);
+      
+      let formattedBalance = '0.00';
+      try {
+        const numBalance = Number(balanceValue);
+        if (isFinite(numBalance)) {
+          formattedBalance = numBalance.toFixed(2);
+        }
+      } catch (err) {
+        console.error(`[Mobile Callback] Error converting balance for account ${account.id}:`, err);
+      }
+      
+      await storage.upsertConnectedAccount({
+        userId,
+        provider: 'teller',
+        externalAccountId: account.id,
+        displayName: accountName,
+        institutionName,
+        subtype: account.subtype,
+        mask: lastFour,
+        currency: account.currency || 'USD',
+        status: 'connected',
+        accountType,
+        balance: formattedBalance,
+      });
+    }
+    
+    logger.info("Mobile callback - Teller accounts saved successfully", { 
+      userId,
+      metadata: {
+        accountsSaved: accountsToSave.length,
+        accountsRejected: rejectedCount,
+        duplicates: duplicateCount
+      }
+    });
+    
+    res.json({
+      success: true,
+      accountsSaved: accountsToSave.length,
+      accountsRejected: rejectedCount,
+      duplicates: duplicateCount,
+      limit: accountLimit,
+      current: currentConnections + accountsToSave.length,
+      message: rejectedCount > 0
+        ? `Connected ${accountsToSave.length} of ${newAccounts.length} new accounts. ${rejectedCount} rejected due to tier limit.`
+        : accountsToSave.length === 0 && duplicateCount > 0
+        ? `All ${duplicateCount} accounts were already connected.`
+        : `All ${accountsToSave.length} accounts connected successfully.`
+    });
+    
+  } catch (error: any) {
+    console.error('[Teller Mobile Callback] Error:', error);
+    logger.error("Mobile Teller callback error", { 
+      error: error instanceof Error ? error : new Error(error.message)
+    });
+    res.status(500).json({ 
+      success: false,
+      message: "Failed to process Teller callback",
+      error: error.message
+    });
+  }
+});
+
+/**
  * POST /api/teller/exchange-token
  * Exchange Teller enrollment ID for access token and store account info
  */

@@ -21,6 +21,7 @@ import { sendApplicationNotificationEmail } from "./services/email";
 import { getTellerAccessToken } from "./store/tellerUsers";
 import { resilientTellerFetch, getTellerBaseUrl } from "./teller/client";
 import { getAccountLimit, getConnectionCount } from "./services/connection-limits";
+import { getBalanceSnapshot } from "./services/balance-cache";
 import { 
   insertConnectedAccountSchema,
   insertWatchlistItemSchema,
@@ -45,6 +46,16 @@ import adminPanelRouter from './routes/admin-panel';
 import userPasswordRouter from './routes/user-password';
 import authRouter from './routes/auth';
 import lemonSqueezyRouter from './routes/lemonsqueezy';
+
+/**
+ * Safely parse decimal values from SnapTrade API responses
+ * Returns null for invalid/missing values, number for valid decimals
+ */
+function parseDecimal(value: string | number | null | undefined): number | null {
+  if (value === null || value === undefined) return null;
+  const num = Number(value);
+  return Number.isFinite(num) ? num : null;
+}
 
 // Initialize Stripe (only if API key is provided)
 let stripe: Stripe | null = null;
@@ -743,6 +754,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     let investmentValue = 0;
     let snapTradeError: string | null = null;
     const snapTradePositions: any[] = [];
+    let mostRecentBalanceUpdate: Date | null = null;
 
     console.log('Fetching SnapTrade accounts for user:', userEmail);
     
@@ -752,7 +764,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         enrichedAccounts,
         investmentValue,
         snapTradeError: 'not_connected',
-        snapTradePositions
+        snapTradePositions,
+        lastBalanceUpdate: null
       };
     }
 
@@ -768,9 +781,41 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       if (accounts.data && Array.isArray(accounts.data)) {
         for (const account of accounts.data) {
-          const balance = parseFloat((account as any).total_value?.amount || (account as any).balance?.total?.amount || '0') || 0;
-          const cash = parseFloat((account as any).cash?.amount || '0') || 0;
-          const holdings = balance - cash;
+          // First parse the live API balance as fallback
+          const liveCash = parseDecimal((account as any).cash?.amount);
+          const liveBuyingPower = parseDecimal((account as any).buying_power?.amount);
+          const liveBalance = parseDecimal((account as any).total_value?.amount || (account as any).balance?.total?.amount) ?? 0;
+          
+          // Try to get cached balance
+          const balanceSnapshot = await getBalanceSnapshot(snapUser.userId, snapUser.userSecret, account.id);
+          
+          let balance: number;
+          let cash: number | null;
+          let buyingPower: number | null;
+          let lastUpdated: Date | null;
+          
+          if (balanceSnapshot) {
+            // Use cached balance data
+            balance = balanceSnapshot.totalEquity ?? liveBalance;
+            cash = balanceSnapshot.cash ?? liveCash;
+            buyingPower = balanceSnapshot.buyingPower ?? liveBuyingPower;
+            lastUpdated = balanceSnapshot.lastUpdated;
+            
+            // Track most recent balance update
+            if (!mostRecentBalanceUpdate || lastUpdated > mostRecentBalanceUpdate) {
+              mostRecentBalanceUpdate = lastUpdated;
+            }
+          } else {
+            // Fallback to live API data on cache failure
+            balance = liveBalance;
+            cash = liveCash;
+            buyingPower = liveBuyingPower;
+            lastUpdated = null; // null indicates fallback to live data
+            
+            console.warn(`[Dashboard] Cache miss for account ${account.id}, using live API balance: $${liveBalance}`);
+          }
+          
+          const holdings = cash !== null ? (balance - cash) : balance;
           
           investmentValue += balance;
           
@@ -790,10 +835,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
             subtype: account.meta?.type || account.raw_type || null,
             rawType: account.raw_type || null,
             institution: account.institution_name || 'Brokerage',
-            lastUpdated: account.sync_status?.holdings?.last_successful_sync || account.sync_status?.last_successful_sync || new Date().toISOString(),
-            cash: cash,
+            lastUpdated: lastUpdated ? lastUpdated.toISOString() : null,
+            cash,
             holdings: holdings,
-            buyingPower: parseFloat(account.buying_power?.amount || '0') || cash
+            buyingPower,
+            cashAvailable: cash !== null,
+            buyingPowerAvailable: buyingPower !== null
           });
         }
       }
@@ -827,7 +874,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       enrichedAccounts,
       investmentValue,
       snapTradeError,
-      snapTradePositions
+      snapTradePositions,
+      lastBalanceUpdate: mostRecentBalanceUpdate
     };
   }
 
@@ -877,13 +925,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // Process SnapTrade results
+      let lastBalanceUpdate: Date | null = null;
       if (snapTradeResult.status === 'fulfilled') {
-        const { enrichedAccounts: snapTradeEnrichedAccounts, investmentValue: snapTradeInvestmentValue, snapTradeError: snapError, snapTradePositions: snapPositions } = snapTradeResult.value;
+        const { enrichedAccounts: snapTradeEnrichedAccounts, investmentValue: snapTradeInvestmentValue, snapTradeError: snapError, snapTradePositions: snapPositions, lastBalanceUpdate: balanceUpdateTimestamp } = snapTradeResult.value;
         enrichedAccounts.push(...snapTradeEnrichedAccounts);
         investmentValue += snapTradeInvestmentValue;
         totalBalance += snapTradeInvestmentValue;
         snapTradeError = snapError;
         snapTradePositions = snapPositions;
+        lastBalanceUpdate = balanceUpdateTimestamp;
       } else {
         console.error('Error fetching SnapTrade accounts:', snapTradeResult.reason);
         snapTradeError = 'fetch_failed';
@@ -934,7 +984,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // Add SnapTrade status for holdings component
         snapTradeStatus: {
           connected: !snapTradeError && investmentValue > 0
-        }
+        },
+        // Balance cache timestamp for cross-platform consistency
+        lastBalanceUpdate: lastBalanceUpdate ? lastBalanceUpdate.toISOString() : null
       };
       
       res.json(dashboardData);

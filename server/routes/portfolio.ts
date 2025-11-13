@@ -11,6 +11,17 @@ import { getSnapUser } from "../store/snapUsers";
 import { requireAuth } from "../middleware/jwt-auth";
 import { getTellerAccessToken } from "../store/tellerUsers";
 import { resilientTellerFetch } from "../teller/client";
+import { getBalanceSnapshot } from "../services/balance-cache";
+
+/**
+ * Safely parse decimal values from SnapTrade API responses
+ * Returns null for invalid/missing values, number for valid decimals
+ */
+function parseDecimal(value: string | number | null | undefined): number | null {
+  if (value === null || value === undefined) return null;
+  const num = Number(value);
+  return Number.isFinite(num) ? num : null;
+}
 
 const router = Router();
 
@@ -38,6 +49,7 @@ router.get("/summary", requireAuth, async (req: any, res) => {
     let totalYtdChange = 0;
     let totalYtdChangePercent = 0;
     let accountCount = 0;
+    let mostRecentBalanceUpdate: Date | null = null;
 
     // Fetch real investment account data from SnapTrade (same pattern as dashboard)
     try {
@@ -58,12 +70,39 @@ router.get("/summary", requireAuth, async (req: any, res) => {
           accountCount = accounts.data.length;
           
           for (const account of accounts.data) {
-            const balance = parseFloat(account.balance?.total?.amount || '0') || 0;
-            const cash = parseFloat(account.balance?.cash?.amount || '0') || 0;
-            const holdings = balance - cash;
+            // First parse the live API balance as fallback
+            const liveBalance = parseDecimal((account as any).balance?.total?.amount || (account as any).total_value?.amount) ?? 0;
+            const liveCash = parseDecimal((account as any).cash?.amount);
+            
+            // Try to get cached balance
+            const balanceSnapshot = await getBalanceSnapshot(snapUser.userId, snapUser.userSecret, account.id);
+            
+            let balance: number;
+            let cash: number | null;
+            let holdings: number;
+            
+            if (balanceSnapshot) {
+              // Use cached balance data
+              balance = balanceSnapshot.totalEquity ?? liveBalance;
+              cash = balanceSnapshot.cash ?? liveCash;
+              
+              // Track most recent balance update
+              if (!mostRecentBalanceUpdate || balanceSnapshot.lastUpdated > mostRecentBalanceUpdate) {
+                mostRecentBalanceUpdate = balanceSnapshot.lastUpdated;
+              }
+            } else {
+              // Fallback to live API data on cache failure
+              balance = liveBalance;
+              cash = liveCash;
+              
+              console.warn(`[Portfolio] Cache miss for account ${account.id}, using live API balance: $${liveBalance}`);
+            }
+            
+            // Calculate holdings properly
+            holdings = cash !== null ? (balance - cash) : balance;
             
             // Add to totals
-            totalCash += cash;
+            totalCash += cash ?? 0;
             totalStocks += holdings; // Holdings represent invested value
             
             // Try to get positions for more detailed breakdown and performance
@@ -199,7 +238,8 @@ router.get("/summary", requireAuth, async (req: any, res) => {
       },
       metadata: {
         accountCount: accountCount,
-        lastUpdated: new Date().toISOString(),
+        lastUpdated: mostRecentBalanceUpdate ? mostRecentBalanceUpdate.toISOString() : null,
+        lastBalanceUpdate: mostRecentBalanceUpdate ? mostRecentBalanceUpdate.toISOString() : null,
         currency: 'USD',
         dataDelayed: false // Set to true if using cached data
       }
