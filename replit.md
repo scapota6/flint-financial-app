@@ -75,13 +75,25 @@ Preferred communication style: Simple, everyday language.
 - **stripe**: Stripe payment processing SDK.
 
 ## Recent Changes (November 14, 2025)
-- **Migrated Payment System from Whop to Stripe**: Complete Stripe Checkout integration with webhook handlers, Customer Portal for subscription management, and dual authentication support (web + mobile)
-  - Backend: Stripe routes (`/api/stripe/*`), pricing configuration, webhook handler with signature verification for all subscription lifecycle events
-  - Frontend: Updated Subscribe page to use Stripe Checkout, updated Landing page CTAs to redirect to Subscribe page, added subscription management to Settings page
-  - User Flow: Landing page CTAs → Subscribe page → Login (if needed) → Stripe Checkout. Unauthenticated users see "Log in to subscribe" banner
-  - Security: CSRF skip list for webhooks, raw body middleware for signature validation, validation enforcing Basic monthly only until production Price IDs added
-  - Documentation: React Native mobile integration guide (`docs/stripe-mobile-integration.md`)
-  - Current Status: Basic monthly plan active ($9.99/mo - price_1ST8cEQP10htbkzEdwmsi5HN), Pro tier and yearly billing temporarily disabled pending production Price IDs
+- **Implemented Stripe Embedded Checkout with "Pay First, Set Password Later" Flow**: Complete embedded checkout integration allowing unauthenticated purchases with post-payment account creation
+  - **Backend Implementation**:
+    - Created `/api/stripe/create-embedded-checkout` endpoint with rate limiting (10 req/15min per IP) and CSRF exemption
+    - Configured sessions with `redirect_on_completion: 'never'` for client-side navigation control
+    - Idempotent webhook handler with multi-source email reading (`metadata.customerEmail` → `customer_details.email` → `customer_email`)
+    - Automatic user account creation on payment completion with passwordHash: null
+    - Password reset token generation and welcome email dispatch via `sendPasswordResetEmail`
+    - Stripe customer ID persistence for existing users
+    - Structured logging tracks email source (metadata vs Stripe-collected) for debugging
+  - **Frontend Implementation**:
+    - Created `EmbeddedCheckoutModal` component using `@stripe/react-stripe-js`
+    - Stripe collects email directly in checkout form (no custom email dialog)
+    - Modal state management with `onComplete` callback for navigation to success page
+    - Error handling with inline retry button
+    - Fresh clientSecret fetch on every modal open
+    - Post-checkout success page (`/checkout-success`) with password setup instructions
+  - **User Flow**: Landing page CTA → Embedded checkout modal → Stripe collects email + payment → Payment succeeds → Account created → Webhook sends password reset email → Success page → User sets password → Login
+  - **Security**: Rate limiting, CSRF exemption for public endpoint, idempotent webhooks, SHA-256 hashed tokens, .onConflictDoNothing() for race conditions
+  - **Current Status**: Basic monthly only ($9.99/mo - price_1ST8cEQP10htbkzEdwmsi5HN), Pro tier and yearly billing disabled pending production Price IDs
 - Fixed admin dashboard UI: mutations now await cache invalidation for immediate updates after approving/rejecting users
 - Fixed password setup link blank page: removed lazy loading for critical email-linked pages and added branded PageLoader
 - Resolved SnapTrade billing incident: deleted 2 orphaned users, created recovery documentation
