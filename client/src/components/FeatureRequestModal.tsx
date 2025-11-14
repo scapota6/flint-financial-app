@@ -49,8 +49,6 @@ interface FeatureRequestModalProps {
 
 export default function FeatureRequestModal({ open, onOpenChange }: FeatureRequestModalProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isTypeSelectOpen, setIsTypeSelectOpen] = useState(false);
-  const [isPrioritySelectOpen, setIsPrioritySelectOpen] = useState(false);
   const { toast } = useToast();
 
   const form = useForm<FeatureRequestFormData>({
@@ -102,10 +100,8 @@ export default function FeatureRequestModal({ open, onOpenChange }: FeatureReque
       <DialogContent 
         className="sm:max-w-[600px] max-h-[90vh] bg-[#18181B] border-[#27272A] text-white"
         onPointerDownOutside={(e) => {
-          // Prevent closing when clicking on Select dropdowns
-          if (isTypeSelectOpen || isPrioritySelectOpen) {
-            e.preventDefault();
-          }
+          // Always prevent closing when clicking outside - modal can only be closed via Cancel button or form submission
+          e.preventDefault();
         }}
       >
         <DialogHeader>
@@ -128,7 +124,6 @@ export default function FeatureRequestModal({ open, onOpenChange }: FeatureReque
                   <Select 
                     onValueChange={field.onChange} 
                     defaultValue={field.value}
-                    onOpenChange={setIsTypeSelectOpen}
                   >
                     <FormControl>
                       <SelectTrigger 
@@ -230,7 +225,6 @@ export default function FeatureRequestModal({ open, onOpenChange }: FeatureReque
                   <Select 
                     onValueChange={field.onChange} 
                     defaultValue={field.value}
-                    onOpenChange={setIsPrioritySelectOpen}
                   >
                     <FormControl>
                       <SelectTrigger 
