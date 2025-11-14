@@ -9,7 +9,117 @@ import Stripe from 'stripe';
 
 const router = Router();
 
-// Create Stripe Checkout Session
+// Create Stripe Embedded Checkout Session (unauthenticated)
+router.post('/create-embedded-checkout', async (req, res) => {
+  try {
+    const { email, tier, billingPeriod = 'monthly' } = req.body;
+
+    if (!email || !email.includes('@')) {
+      return res.status(400).json({ error: 'Valid email required' });
+    }
+
+    // TEMPORARY: Only allow Basic monthly until production Price IDs are added
+    if (tier !== 'basic' || billingPeriod !== 'monthly') {
+      return res.status(400).json({ 
+        error: 'Only Basic monthly plan is currently available. Pro tier and yearly billing coming soon.' 
+      });
+    }
+
+    // Get pricing plan
+    const plan = getPriceByTierAndPeriod(tier, billingPeriod);
+    if (!plan) {
+      return res.status(400).json({ error: 'Pricing plan not available' });
+    }
+
+    // Check if user already exists with this email
+    const [existingUser] = await db
+      .select()
+      .from(users)
+      .where(eq(users.email, email.toLowerCase()))
+      .limit(1);
+
+    let customerId = existingUser?.stripeCustomerId;
+
+    // Create or retrieve Stripe customer
+    if (!customerId) {
+      const customer = await stripe.customers.create({
+        email: email.toLowerCase(),
+        metadata: {
+          isNewCustomer: 'true',
+        },
+      });
+      customerId = customer.id;
+
+      logger.info('Created Stripe customer for embedded checkout', {
+        metadata: { email: email.toLowerCase(), customerId }
+      });
+    }
+
+    // Get app URL for return redirect
+    const appUrl = process.env.REPLIT_DEV_DOMAIN 
+      ? `https://${process.env.REPLIT_DEV_DOMAIN}`
+      : 'http://localhost:5000';
+
+    // Create Embedded Checkout Session
+    const session = await stripe.checkout.sessions.create({
+      customer: customerId,
+      mode: 'subscription',
+      ui_mode: 'embedded',
+      payment_method_types: ['card'],
+      line_items: [
+        {
+          price: plan.priceId,
+          quantity: 1,
+        },
+      ],
+      return_url: `${appUrl}/subscribe?session_id={CHECKOUT_SESSION_ID}`,
+      metadata: {
+        customerEmail: email.toLowerCase(),
+        tier,
+        billingPeriod,
+        isNewUser: existingUser ? 'false' : 'true',
+      },
+      subscription_data: {
+        metadata: {
+          customerEmail: email.toLowerCase(),
+          tier,
+          billingPeriod,
+        },
+      },
+    });
+
+    logger.info('Created Stripe embedded checkout session', {
+      metadata: {
+        sessionId: session.id,
+        email: email.toLowerCase(),
+        tier,
+        billingPeriod,
+        priceId: plan.priceId,
+        isNewUser: !existingUser,
+      }
+    });
+
+    res.json({
+      clientSecret: session.client_secret,
+      sessionId: session.id,
+    });
+  } catch (error: any) {
+    logger.error('Failed to create embedded checkout session', {
+      error: error.message,
+      metadata: {
+        email: req.body?.email,
+        tier: req.body?.tier,
+        billingPeriod: req.body?.billingPeriod,
+      }
+    });
+    res.status(500).json({
+      error: 'Failed to create checkout session',
+      details: error.message
+    });
+  }
+});
+
+// Create Stripe Checkout Session (authenticated - legacy for logged-in users)
 router.post('/create-checkout-session', requireAuth, async (req, res) => {
   try {
     const { tier, billingPeriod = 'monthly' } = req.body;
