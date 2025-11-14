@@ -12,7 +12,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { useToast } from '@/hooks/use-toast';
 import { Skeleton } from '@/components/ui/skeleton';
-import { User, Bell, Link2, Download, Trash2, Shield, Clock, Mail, Smartphone, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
+import { User, Bell, Link2, Download, Trash2, Shield, Clock, Mail, Smartphone, CheckCircle, XCircle, AlertCircle, CreditCard } from 'lucide-react';
 import { format } from 'date-fns';
 
 export default function Settings() {
@@ -160,6 +160,40 @@ export default function Settings() {
     }
   });
 
+  // Manage subscription - open Stripe Customer Portal
+  const handleManageSubscription = async () => {
+    try {
+      const response = await fetch('/api/stripe/create-portal-session', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': document.cookie
+            .split('; ')
+            .find((row) => row.startsWith('flint_csrf='))
+            ?.split('=')[1] || '',
+        },
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to create portal session');
+      }
+
+      const data = await response.json();
+      
+      if (data.url) {
+        // Redirect to Stripe Customer Portal
+        window.location.href = data.url;
+      }
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'Failed to open subscription management. Please try again.',
+        variant: 'destructive'
+      });
+    }
+  };
+
   const isLoading = authLoading || profileLoading || notifLoading || accountsLoading;
 
   if (isLoading) {
@@ -251,6 +285,54 @@ export default function Settings() {
               >
                 {updateProfileMutation.isPending ? 'Saving...' : 'Save Changes'}
               </Button>
+            </CardContent>
+          </Card>
+
+          {/* Subscription Management Card */}
+          <Card className="mt-4">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <CreditCard className="w-5 h-5" />
+                Subscription
+              </CardTitle>
+              <CardDescription>
+                Manage your Flint subscription
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="font-medium">Current Plan</p>
+                  <p className="text-sm text-gray-500">
+                    {user?.subscriptionTier === 'free' ? 'Free' : user?.subscriptionTier === 'basic' ? 'Flint Basic' : user?.subscriptionTier === 'pro' ? 'Pro' : 'Free'}
+                  </p>
+                </div>
+                {user?.subscriptionTier && user.subscriptionTier !== 'free' && (
+                  <Button 
+                    onClick={handleManageSubscription}
+                    variant="outline"
+                    className="gap-2"
+                    data-testid="button-manage-subscription"
+                  >
+                    <CreditCard className="w-4 h-4" />
+                    Manage Subscription
+                  </Button>
+                )}
+              </div>
+              {user?.subscriptionTier === 'free' && (
+                <div className="pt-4 border-t">
+                  <p className="text-sm text-gray-500 mb-3">
+                    Upgrade to unlock unlimited account connections, portfolio tracking, and more.
+                  </p>
+                  <Button 
+                    onClick={() => window.location.href = '/subscribe'}
+                    className="w-full sm:w-auto"
+                    data-testid="button-upgrade-plan"
+                  >
+                    Upgrade Plan
+                  </Button>
+                </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
