@@ -388,10 +388,23 @@ export async function handleStripeWebhook(req: ExpressRequest, res: any) {
 async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) {
   try {
     // Get email from metadata (if pre-filled) or from Stripe's customer_details (if collected by Stripe)
+    const emailSource = session.metadata?.customerEmail ? 'metadata' : 
+                        session.customer_details?.email ? 'customer_details' :
+                        session.customer_email ? 'customer_email' : 'none';
     const customerEmail = session.metadata?.customerEmail || session.customer_details?.email || session.customer_email;
     const tier = session.metadata?.tier as 'basic' | 'pro';
     const stripeCustomerId = session.customer as string;
     const stripeSubscriptionId = session.subscription as string;
+
+    logger.info('Processing checkout session', {
+      metadata: {
+        sessionId: session.id,
+        emailSource,
+        hasEmail: !!customerEmail,
+        tier,
+        stripeCustomerId,
+      }
+    });
 
     // STEP 1: Try to find user by Stripe customer ID first (most reliable)
     let [user] = await db.select()
