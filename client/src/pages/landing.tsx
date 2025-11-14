@@ -106,8 +106,8 @@ const getCheckoutUrl = (plan: string, email?: string) => {
   return `${baseUrl}?${params.toString()}`;
 };
 
-// Feature flag for trading/transfers - set to true after Stripe approval
-const SHOW_TRADING_FEATURES = false; // TODO: Set to true after Stripe approves these features
+// Feature flag for trading/transfers - enabled for production
+const SHOW_TRADING_FEATURES = true;
 
 function Landing() {
   const [isYearly, setIsYearly] = useState(false);
