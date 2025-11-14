@@ -34,6 +34,16 @@ const APPLICATION_QUIPS = [
   "Another brave soul requests access to financial enlightenment :person_in_lotus_position:",
 ];
 
+const FEATURE_REQUEST_QUIPS = [
+  "Someone's got ideas! :bulb:",
+  "The people have spoken :speaking_head:",
+  "Feature request incoming! :incoming_envelope:",
+  "New idea alert! :brain:",
+  "They want more features (don't we all) :star:",
+  "Building the future, one request at a time :hammer_and_wrench:",
+  "User feedback is a gift :gift:",
+];
+
 function getRandomQuip(quips: string[]): string {
   return quips[Math.floor(Math.random() * quips.length)];
 }
@@ -253,6 +263,79 @@ export async function notifyNewApplication(data: {
           },
         ],
         text: `_${getRandomQuip(APPLICATION_QUIPS)}_\n\nFlint to the moon ! :rocket::rocket::rocket:`,
+        footer: 'Flint Investment Platform • Review in Admin Panel',
+        ts: Math.floor(data.submissionTime.getTime() / 1000),
+      },
+    ],
+  };
+
+  await sendSlackMessage(message);
+}
+
+/**
+ * Send notification for new feature request
+ */
+export async function notifyFeatureRequest(data: {
+  name: string;
+  email: string;
+  phone?: string;
+  priority: string;
+  description: string;
+  submissionTime: Date;
+}): Promise<void> {
+  const priorityEmojis: { [key: string]: string } = {
+    low: ':green_circle:',
+    medium: ':yellow_circle:',
+    high: ':orange_circle:',
+    critical: ':red_circle:',
+  };
+
+  const priorityEmoji = priorityEmojis[data.priority.toLowerCase()] || ':white_circle:';
+
+  const message: SlackMessage = {
+    text: ':bulb: *New Feature Request Submitted!*',
+    attachments: [
+      {
+        color: '#9945FF', // Purple
+        fields: [
+          {
+            title: 'Requester Name',
+            value: data.name,
+            short: true,
+          },
+          {
+            title: 'Email',
+            value: data.email,
+            short: true,
+          },
+          {
+            title: 'Phone',
+            value: data.phone || 'Not provided',
+            short: true,
+          },
+          {
+            title: 'Priority',
+            value: `${priorityEmoji} ${data.priority.charAt(0).toUpperCase() + data.priority.slice(1)}`,
+            short: true,
+          },
+          {
+            title: 'Description',
+            value: data.description.length > 200 
+              ? data.description.substring(0, 200) + '...' 
+              : data.description,
+            short: false,
+          },
+          {
+            title: 'Submitted',
+            value: data.submissionTime.toLocaleString('en-US', {
+              timeZone: 'America/New_York',
+              dateStyle: 'medium',
+              timeStyle: 'short',
+            }),
+            short: false,
+          },
+        ],
+        text: `_${getRandomQuip(FEATURE_REQUEST_QUIPS)}_\n\nFlint to the moon ! :rocket::rocket::rocket:`,
         footer: 'Flint Investment Platform • Review in Admin Panel',
         ts: Math.floor(data.submissionTime.getTime() / 1000),
       },

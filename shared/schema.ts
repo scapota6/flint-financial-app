@@ -524,6 +524,25 @@ export const accountApplications = pgTable("account_applications", {
   reviewNotes: text("review_notes"),
 });
 
+// Feature requests table (user feedback and feature suggestions)
+export const featureRequests = pgTable("feature_requests", {
+  id: serial("id").primaryKey(),
+  name: varchar("name").notNull(),
+  email: varchar("email").notNull(),
+  phone: varchar("phone"),
+  priority: varchar("priority").notNull().default("medium"), // low, medium, high, critical
+  description: text("description").notNull(),
+  status: varchar("status").default("pending"), // pending, reviewing, planned, in_progress, completed, rejected
+  submittedAt: timestamp("submitted_at").defaultNow(),
+  reviewedBy: varchar("reviewed_by"), // admin email who reviewed
+  reviewedAt: timestamp("reviewed_at"),
+  reviewNotes: text("review_notes"),
+}, (table) => [
+  index("feature_requests_status_idx").on(table.status),
+  index("feature_requests_priority_idx").on(table.priority),
+  index("feature_requests_submitted_idx").on(table.submittedAt),
+]);
+
 // Audit logs table (admin actions tracking)
 export const auditLogs = pgTable("audit_logs", {
   id: serial("id").primaryKey(),
@@ -630,6 +649,11 @@ export const insertAccountApplicationSchema = createInsertSchema(accountApplicat
   submittedAt: true,
 });
 
+export const insertFeatureRequestSchema = createInsertSchema(featureRequests).omit({
+  id: true,
+  submittedAt: true,
+});
+
 export const insertAuditLogSchema = createInsertSchema(auditLogs).omit({
   id: true,
   timestamp: true,
@@ -658,6 +682,9 @@ export const insertRefreshTokenSchema = createInsertSchema(refreshTokens).omit({
 // Types for new tables
 export type AccountApplication = typeof accountApplications.$inferSelect;
 export type InsertAccountApplication = z.infer<typeof insertAccountApplicationSchema>;
+
+export type FeatureRequest = typeof featureRequests.$inferSelect;
+export type InsertFeatureRequest = z.infer<typeof insertFeatureRequestSchema>;
 
 export type AuditLog = typeof auditLogs.$inferSelect;
 export type InsertAuditLog = z.infer<typeof insertAuditLogSchema>;

@@ -424,6 +424,10 @@ const app = express();
   const tradingRouter = (await import("./routes/trading")).default;
   app.use("/api/trade", tradingRouter);
 
+  // Mount Feature Requests API router
+  const featureRequestsRouter = (await import("./routes/feature-requests")).default;
+  app.use("/api/feature-requests", featureRequestsRouter);
+
   // ========================================
   // IMPORTANT: All API routes must be mounted BEFORE static files
   // ========================================
