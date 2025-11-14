@@ -45,10 +45,24 @@ export async function apiRequest(path: string, options: ApiRequestInit = {}) {
     headers['Content-Type'] = 'application/json';
   }
 
-  // Add CSRF token for state-changing requests
-  if (['POST', 'PUT', 'DELETE', 'PATCH'].includes(options.method || '')) {
-    const csrfToken = await getCsrfToken();
-    headers['x-csrf-token'] = csrfToken; // csurf reads from this header by default
+  // Public endpoints that don't require CSRF (matches server-side publicPaths)
+  const publicEndpoints = [
+    '/api/feature-requests',
+    '/api/auth/setup-password',
+    '/api/auth/request-reset',
+    '/api/auth/local-login'
+  ];
+
+  // Add CSRF token for state-changing requests (except public endpoints)
+  const isPublicEndpoint = publicEndpoints.some(publicPath => path.startsWith(publicPath));
+  if (['POST', 'PUT', 'DELETE', 'PATCH'].includes(options.method || '') && !isPublicEndpoint) {
+    try {
+      const csrfToken = await getCsrfToken();
+      headers['x-csrf-token'] = csrfToken; // csurf reads from this header by default
+    } catch (error) {
+      // Log CSRF token fetch error but don't block the request
+      console.warn('Failed to get CSRF token:', error);
+    }
   }
 
   // Create fetch options with proper body type
