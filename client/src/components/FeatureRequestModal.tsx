@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -49,7 +49,14 @@ interface FeatureRequestModalProps {
 
 export default function FeatureRequestModal({ open, onOpenChange }: FeatureRequestModalProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const allowCloseRef = useRef(false);
   const { toast } = useToast();
+
+  useEffect(() => {
+    if (open) {
+      allowCloseRef.current = false;
+    }
+  }, [open]);
 
   const form = useForm<FeatureRequestFormData>({
     resolver: zodResolver(featureRequestSchema),
@@ -62,6 +69,18 @@ export default function FeatureRequestModal({ open, onOpenChange }: FeatureReque
       description: '',
     },
   });
+
+  const handleClose = () => {
+    allowCloseRef.current = true;
+    onOpenChange(false);
+  };
+
+  const handleOpenChange = (newOpen: boolean) => {
+    if (!newOpen && allowCloseRef.current) {
+      allowCloseRef.current = false;
+      onOpenChange(newOpen);
+    }
+  };
 
   const onSubmit = async (data: FeatureRequestFormData) => {
     setIsSubmitting(true);
@@ -83,7 +102,7 @@ export default function FeatureRequestModal({ open, onOpenChange }: FeatureReque
       });
 
       form.reset();
-      onOpenChange(false);
+      handleClose();
     } catch (error) {
       toast({
         title: 'Submission failed',
@@ -96,13 +115,9 @@ export default function FeatureRequestModal({ open, onOpenChange }: FeatureReque
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange} modal={true}>
+    <Dialog open={open} onOpenChange={handleOpenChange} modal={true}>
       <DialogContent 
         className="sm:max-w-[600px] max-h-[90vh] bg-[#18181B] border-[#27272A] text-white"
-        onPointerDownOutside={(e) => {
-          // Always prevent closing when clicking outside - modal can only be closed via Cancel button or form submission
-          e.preventDefault();
-        }}
       >
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold">Request a Feature</DialogTitle>
@@ -294,7 +309,7 @@ export default function FeatureRequestModal({ open, onOpenChange }: FeatureReque
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => onOpenChange(false)}
+                onClick={handleClose}
                 disabled={isSubmitting}
                 className="bg-transparent border-[#3F3F46] text-white hover:bg-[#27272A]"
                 data-testid="button-cancel-feature-request"
