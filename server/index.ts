@@ -104,6 +104,7 @@ const app = express();
   // Use express.text() to preserve exact body string for signature validation
   app.use('/api/lemonsqueezy/webhook', express.text({ type: 'application/json' }));
   app.use('/api/webhook/whop', express.text({ type: 'application/json' }));
+  app.use('/api/stripe/webhook', express.text({ type: 'application/json' }));
   
   // Standard JSON parsing for all other routes
   app.use(express.json());

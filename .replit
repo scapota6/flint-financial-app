@@ -56,6 +56,10 @@ externalPort = 3001
 localPort = 35875
 
 [[ports]]
+localPort = 36953
+externalPort = 8080
+
+[[ports]]
 localPort = 37335
 
 [[ports]]
@@ -67,10 +71,6 @@ externalPort = 5000
 
 [[ports]]
 localPort = 38551
-
-[[ports]]
-localPort = 38571
-externalPort = 8080
 
 [[ports]]
 localPort = 38827

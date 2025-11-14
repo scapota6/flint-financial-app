@@ -2468,6 +2468,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   const whopRouter = await import('./routes/whop');
   app.use('/api/whop', whopRouter.default);
 
+  // Mount Stripe payment routes
+  const stripeRouter = await import('./routes/stripe');
+  app.use('/api/stripe', stripeRouter.default);
+
   
   // Disconnect account endpoint
   app.post('/api/accounts/disconnect', requireAuth, async (req: any, res) => {
