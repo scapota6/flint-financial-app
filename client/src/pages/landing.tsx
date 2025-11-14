@@ -130,7 +130,7 @@ function Landing() {
     });
   });
 
-  // Handle CTA clicks - redirects to subscribe page with tier preference
+  // Handle CTA clicks - creates Stripe checkout session directly
   const handleCTAClick = async (ctaId: string, price: string) => {
     trackEvent('click_cta', { cta_id: ctaId, price });
     
@@ -147,8 +147,50 @@ function Landing() {
       return;
     }
     
-    // Redirect to subscribe page with tier preference (user will login there if needed)
-    window.location.href = `/subscribe?tier=${tier}`;
+    try {
+      // Try to create Stripe checkout session
+      const response = await fetch('/api/stripe/create-checkout-session', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          tier,
+          billingPeriod: 'monthly',
+        }),
+      });
+
+      if (response.status === 401) {
+        // User not authenticated - redirect to subscribe page to login
+        window.location.href = `/subscribe?tier=${tier}`;
+        return;
+      }
+
+      if (!response.ok) {
+        throw new Error('Failed to create checkout session');
+      }
+
+      const data = await response.json();
+      
+      if (data.url) {
+        // Redirect to Stripe Checkout
+        window.location.href = data.url;
+      } else {
+        throw new Error('No checkout URL returned');
+      }
+    } catch (error) {
+      console.error('Checkout error:', error);
+      toast({
+        title: "Error",
+        description: "Unable to open checkout. Redirecting to subscribe page...",
+        variant: "destructive"
+      });
+      // Fallback: redirect to subscribe page
+      setTimeout(() => {
+        window.location.href = `/subscribe?tier=${tier}`;
+      }, 1500);
+    }
   };
 
   // Handle form submission
