@@ -115,10 +115,10 @@ Preferred communication style: Simple, everyday language.
   - **User Flow**: Landing/dashboard → Click "Request a Feature" → Select type → Fill form → Submit → Success toast → Type-specific Slack notification sent
 - **Configured Production Stripe Environment with All 4 Subscription Plans**:
   - **Production Price IDs**: 
-    - Basic Monthly: price_1RUGqMKgl6E3u5QE9OtHKCOS ($9.99/month)
-    - Basic Annual: price_1ST8THKgl6E3u5QEbFXJR1Qi ($95.88/year = $7.99/month)
-    - Pro Monthly: price_1ST7B1Kgl6E3u5QElvyoQnY7 ($29.99/month)
-    - Pro Annual: price_1ST7CuKgl6E3u5QEzXDsvsxx ($287.88/year = $23.99/month)
+    - Basic Monthly: price_1RUGqMKgl6E3u5QE9OtHKCOS ($19.99/month)
+    - Basic Annual: price_1ST8THKgl6E3u5QEbFXJR1Qi ($199.99/year = $16.67/month)
+    - Pro Monthly: price_1ST7B1Kgl6E3u5QElvyoQnY7 ($39.99/month)
+    - Pro Annual: price_1ST7CuKgl6E3u5QEzXDsvsxx ($399.99/year = $33.33/month)
   - **Landing Page Pricing**: Updated to display correct production prices for all 4 plans with monthly/annual toggle
   - **Embedded Checkout**: Enhanced to accept tier (basic/pro) and billingPeriod (monthly/yearly) parameters
   - **Backend Validation**: Strict whitelisting of tier and billing period combinations with explicit error handling

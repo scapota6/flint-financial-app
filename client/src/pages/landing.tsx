@@ -857,7 +857,7 @@ function Landing() {
           <div className="space-y-8">
             <div className="space-y-4">
               <p className="text-xl text-gray-300 leading-relaxed">
-                Or get started right now and <strong>save 20%</strong> 
+                Or get started right now and <strong>save $80</strong> 
                 when you pay yearly for Flint Pro.
               </p>
             </div>
@@ -1094,10 +1094,10 @@ function Landing() {
                   <CardTitle className="text-2xl">Flint Basic</CardTitle>
                   <div className="space-y-2">
                     <div className="text-4xl font-bold">
-                      ${isYearly ? '16.66' : '19.99'}
+                      ${isYearly ? '16.67' : '19.99'}
                     </div>
                     <div className="text-gray-300">
-                      {isYearly ? '/mo (billed $199.92/year)' : '/month'}
+                      {isYearly ? '/mo (billed $199.99/year)' : '/month'}
                     </div>
                   </div>
                   <CardDescription className="text-gray-300">
@@ -1125,7 +1125,7 @@ function Landing() {
                       ${isYearly ? '33.33' : '39.99'}
                     </div>
                     <div className="text-gray-400">
-                      {isYearly ? '/mo (billed $399.96/year)' : '/month'}
+                      {isYearly ? '/mo (billed $399.99/year)' : '/month'}
                     </div>
                   </div>
                   <CardDescription className="text-gray-300">

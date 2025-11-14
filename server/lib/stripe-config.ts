@@ -42,7 +42,7 @@ export const STRIPE_PRICES: Record<string, PricingPlan> = {
     name: 'Flint Basic',
     priceId: 'price_1ST8THKgl6E3u5QEbFXJR1Qi',
     billingPeriod: 'yearly',
-    amount: 19992, // $199.92/year ($16.66/month)
+    amount: 19999, // $199.99/year ($16.67/month)
     features: [
       'Connect up to 5 accounts',
       'Real-time portfolio tracking',
@@ -71,7 +71,7 @@ export const STRIPE_PRICES: Record<string, PricingPlan> = {
     name: 'Flint Pro',
     priceId: 'price_1ST7CuKgl6E3u5QEzXDsvsxx',
     billingPeriod: 'yearly',
-    amount: 39996, // $399.96/year ($33.33/month)
+    amount: 39999, // $399.99/year ($33.33/month)
     features: [
       'Unlimited account connections',
       'Advanced portfolio analytics',
