@@ -104,7 +104,7 @@ export function EmbeddedCheckoutModal({
     <Dialog open={open} onOpenChange={handleOpenChange} modal={true}>
       <DialogContent
         data-testid="embedded-checkout-modal"
-        className="max-w-2xl max-h-[90vh] p-0 bg-gray-950 border-gray-800 overflow-y-auto flex flex-col"
+        className="max-w-2xl max-h-[90vh] p-0 bg-gray-950 border-gray-800 overflow-y-auto z-[70] flex flex-col"
       >
         <VisuallyHidden>
           <DialogTitle>
