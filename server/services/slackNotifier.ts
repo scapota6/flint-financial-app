@@ -5,6 +5,40 @@ import { logger } from '@shared/logger';
  * Sends real-time notifications to Slack via webhook for key business events
  */
 
+// Funny messages to spice things up
+const SIGNUP_QUIPS = [
+  "Another soul joins the financial revolution 🚀",
+  "Cha-ching! That's the sound of success 💸",
+  "Money doesn't grow on trees, but it does grow in Flint 🌱",
+  "New user alert! Someone's about to get rich (or at least try) 💰",
+  "Breaking news: Your bank account just got some competition 🏦",
+  "Plot twist: They actually read the terms and conditions 📜",
+];
+
+const SUBSCRIPTION_QUIPS = [
+  "Show me the money! 💵",
+  "Someone just leveled up their financial game 📈",
+  "This calls for a celebration! 🎊",
+  "Ka-ching! Time to update the revenue dashboard 💸",
+  "Another happy customer (and a happier bank account) 🤑",
+  "They said yes to the dress... I mean, subscription 👗",
+  "Stripe just sent us good vibes ✨",
+];
+
+const APPLICATION_QUIPS = [
+  "Fresh meat! 🥩",
+  "Someone wants in on the action 👀",
+  "A new challenger approaches! 🎮",
+  "Knock knock. Who's there? A new applicant! 🚪",
+  "They found us on the internet (probably) 🕵️",
+  "Time to dust off the admin panel 🧹",
+  "Another brave soul requests access to financial enlightenment 🧘",
+];
+
+function getRandomQuip(quips: string[]): string {
+  return quips[Math.floor(Math.random() * quips.length)];
+}
+
 interface SlackField {
   title: string;
   value: string;
@@ -102,6 +136,7 @@ export async function notifyNewUserSignup(data: {
             short: true,
           },
         ],
+        text: `_${getRandomQuip(SIGNUP_QUIPS)}_`,
         footer: 'Flint Investment Platform',
         ts: Math.floor(data.signupTime.getTime() / 1000),
       },
@@ -162,6 +197,7 @@ export async function notifyNewSubscription(data: {
             short: false,
           },
         ],
+        text: `_${getRandomQuip(SUBSCRIPTION_QUIPS)}_`,
         footer: 'Flint Investment Platform',
         ts: Math.floor(data.subscriptionTime.getTime() / 1000),
       },
@@ -217,6 +253,7 @@ export async function notifyNewApplication(data: {
             short: false,
           },
         ],
+        text: `_${getRandomQuip(APPLICATION_QUIPS)}_`,
         footer: 'Flint Investment Platform • Review in Admin Panel',
         ts: Math.floor(data.submissionTime.getTime() / 1000),
       },
