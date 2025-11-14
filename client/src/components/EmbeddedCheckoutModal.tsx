@@ -17,7 +17,7 @@ import { Loader2 } from "lucide-react";
 interface EmbeddedCheckoutModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  email: string;
+  email?: string;
   tier: "basic" | "pro";
   billingPeriod?: "monthly" | "yearly";
 }
@@ -66,7 +66,7 @@ export function EmbeddedCheckoutModal({
               ?.split("=")[1] || "",
         },
         credentials: "include",
-        body: JSON.stringify({ email, tier, billingPeriod }),
+        body: JSON.stringify({ email: email || '', tier, billingPeriod }),
       });
 
       if (!response.ok) {

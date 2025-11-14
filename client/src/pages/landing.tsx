@@ -120,9 +120,7 @@ function Landing() {
   const [checkoutModalOpen, setCheckoutModalOpen] = useState(false);
   const [selectedCheckout, setSelectedCheckout] = useState<{ sessionId: string; planId?: string; email?: string; planName: string } | null>(null);
   
-  // Email dialog and embedded checkout state
-  const [emailDialogOpen, setEmailDialogOpen] = useState(false);
-  const [emailInput, setEmailInput] = useState('');
+  // Embedded checkout state
   const [checkoutEmail, setCheckoutEmail] = useState('');
   const [checkoutTier, setCheckoutTier] = useState<'basic' | 'pro'>('basic');
   
@@ -138,7 +136,7 @@ function Landing() {
     });
   });
 
-  // Handle CTA clicks - opens email dialog for embedded checkout
+  // Handle CTA clicks - opens checkout modal directly
   const handleCTAClick = (tier: 'basic' | 'pro', billingPeriod: 'monthly' | 'yearly') => {
     trackEvent('click_cta', { tier, billingPeriod });
     
@@ -152,26 +150,8 @@ function Landing() {
       return;
     }
     
-    // Set tier and open email dialog
+    // Set tier and open checkout modal directly
     setCheckoutTier(tier);
-    setEmailDialogOpen(true);
-  };
-
-  // Handle email submission to open embedded checkout
-  const handleEmailSubmit = () => {
-    // Basic email validation
-    if (!emailInput || !emailInput.includes('@') || !emailInput.includes('.')) {
-      toast({
-        title: "Invalid Email",
-        description: "Please enter a valid email address.",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    // Set email and open checkout modal
-    setCheckoutEmail(emailInput);
-    setEmailDialogOpen(false);
     setCheckoutModalOpen(true);
   };
 
@@ -1469,58 +1449,13 @@ function Landing() {
         />
       )}
 
-      {/* Email Input Dialog */}
-      <Dialog open={emailDialogOpen} onOpenChange={setEmailDialogOpen}>
-        <DialogContent className="bg-gray-900 border-gray-700 max-w-md">
-          <VisuallyHidden>
-            <DialogDescription>
-              Enter your email to continue with checkout
-            </DialogDescription>
-          </VisuallyHidden>
-          <DialogTitle className="text-2xl font-bold text-white">
-            Get Started with Flint
-          </DialogTitle>
-          <div className="space-y-4 pt-4">
-            <div className="space-y-2">
-              <Label htmlFor="email-input" className="text-gray-300">
-                Email Address
-              </Label>
-              <Input
-                id="email-input"
-                type="email"
-                placeholder="Enter your email"
-                value={emailInput}
-                onChange={(e) => setEmailInput(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    handleEmailSubmit();
-                  }
-                }}
-                className="bg-gray-800 border-gray-600 text-white placeholder:text-gray-500 focus:border-blue-500"
-                data-testid="input-email"
-                autoFocus
-              />
-            </div>
-            <Button
-              onClick={handleEmailSubmit}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white"
-              data-testid="button-continue-checkout"
-            >
-              Continue to Checkout
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
-
       {/* Embedded Checkout Modal */}
       <EmbeddedCheckoutModal
         open={checkoutModalOpen}
         onOpenChange={(open) => {
           setCheckoutModalOpen(open);
           if (!open) {
-            // Clear email state when modal closes
             setCheckoutEmail('');
-            setEmailInput('');
           }
         }}
         email={checkoutEmail}

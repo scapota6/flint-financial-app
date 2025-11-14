@@ -18,10 +18,6 @@ router.post('/create-embedded-checkout', rateLimits.publicCheckout, async (req, 
   try {
     const { email, tier, billingPeriod = 'monthly' } = req.body;
 
-    if (!email || !email.includes('@')) {
-      return res.status(400).json({ error: 'Valid email required' });
-    }
-
     // TEMPORARY: Only allow Basic monthly until production Price IDs are added
     if (tier !== 'basic' || billingPeriod !== 'monthly') {
       return res.status(400).json({ 
@@ -35,38 +31,44 @@ router.post('/create-embedded-checkout', rateLimits.publicCheckout, async (req, 
       return res.status(400).json({ error: 'Pricing plan not available' });
     }
 
-    // Check if user already exists with this email
-    const [existingUser] = await db
-      .select()
-      .from(users)
-      .where(eq(users.email, email.toLowerCase()))
-      .limit(1);
+    // Optional: Support pre-filled email if provided
+    let customerId: string | undefined;
+    let existingUser = null;
 
-    let customerId = existingUser?.stripeCustomerId;
+    if (email && email.includes('@')) {
+      // Check if user already exists with this email
+      [existingUser] = await db
+        .select()
+        .from(users)
+        .where(eq(users.email, email.toLowerCase()))
+        .limit(1);
 
-    // Create or retrieve Stripe customer
-    if (!customerId) {
-      const customer = await stripe.customers.create({
-        email: email.toLowerCase(),
-        metadata: {
-          isNewCustomer: 'true',
-        },
-      });
-      customerId = customer.id;
+      customerId = existingUser?.stripeCustomerId;
 
-      logger.info('Created Stripe customer for embedded checkout', {
-        metadata: { email: email.toLowerCase(), customerId }
-      });
-
-      // Persist the customer ID to the existing user
-      if (existingUser && !existingUser.stripeCustomerId) {
-        await db.update(users)
-          .set({ stripeCustomerId: customerId, updatedAt: new Date() })
-          .where(eq(users.id, existingUser.id));
-
-        logger.info('Persisted Stripe customer ID to existing user', {
-          metadata: { userId: existingUser.id, customerId }
+      // Create or retrieve Stripe customer
+      if (!customerId) {
+        const customer = await stripe.customers.create({
+          email: email.toLowerCase(),
+          metadata: {
+            isNewCustomer: 'true',
+          },
         });
+        customerId = customer.id;
+
+        logger.info('Created Stripe customer for embedded checkout', {
+          metadata: { email: email.toLowerCase(), customerId }
+        });
+
+        // Persist the customer ID to the existing user
+        if (existingUser && !existingUser.stripeCustomerId) {
+          await db.update(users)
+            .set({ stripeCustomerId: customerId, updatedAt: new Date() })
+            .where(eq(users.id, existingUser.id));
+
+          logger.info('Persisted Stripe customer ID to existing user', {
+            metadata: { userId: existingUser.id, customerId }
+          });
+        }
       }
     }
 
@@ -74,7 +76,7 @@ router.post('/create-embedded-checkout', rateLimits.publicCheckout, async (req, 
     // Note: Using redirect_on_completion: 'never' because we handle navigation
     // via onComplete callback in the frontend component
     const session = await stripe.checkout.sessions.create({
-      customer: customerId,
+      customer: customerId, // undefined is ok - Stripe will create customer and collect email
       mode: 'subscription',
       ui_mode: 'embedded',
       redirect_on_completion: 'never',
@@ -86,16 +88,18 @@ router.post('/create-embedded-checkout', rateLimits.publicCheckout, async (req, 
         },
       ],
       metadata: {
-        customerEmail: email.toLowerCase(),
         tier,
         billingPeriod,
-        isNewUser: existingUser ? 'false' : 'true',
+        ...(email && email.includes('@') ? { 
+          customerEmail: email.toLowerCase(),
+          isNewUser: existingUser ? 'false' : 'true'
+        } : {}),
       },
       subscription_data: {
         metadata: {
-          customerEmail: email.toLowerCase(),
           tier,
           billingPeriod,
+          ...(email && email.includes('@') ? { customerEmail: email.toLowerCase() } : {}),
         },
       },
     });
@@ -103,11 +107,11 @@ router.post('/create-embedded-checkout', rateLimits.publicCheckout, async (req, 
     logger.info('Created Stripe embedded checkout session', {
       metadata: {
         sessionId: session.id,
-        email: email.toLowerCase(),
+        email: email || 'none (Stripe will collect)',
         tier,
         billingPeriod,
         priceId: plan.priceId,
-        isNewUser: !existingUser,
+        isNewUser: existingUser ? false : 'unknown',
       }
     });
 
@@ -383,7 +387,8 @@ export async function handleStripeWebhook(req: ExpressRequest, res: any) {
 // Handle checkout.session.completed
 async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) {
   try {
-    const customerEmail = session.metadata?.customerEmail;
+    // Get email from metadata (if pre-filled) or from Stripe's customer_details (if collected by Stripe)
+    const customerEmail = session.metadata?.customerEmail || session.customer_details?.email || session.customer_email;
     const tier = session.metadata?.tier as 'basic' | 'pro';
     const stripeCustomerId = session.customer as string;
     const stripeSubscriptionId = session.subscription as string;
