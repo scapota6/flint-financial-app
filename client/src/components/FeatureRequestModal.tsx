@@ -95,10 +95,12 @@ export default function FeatureRequestModal({ open, onOpenChange }: FeatureReque
     }
   };
 
+  if (!open) return null;
+
   return (
-    <Dialog open={open} onOpenChange={(newOpen) => !newOpen && onOpenChange(false)}>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent 
-        className="sm:max-w-[600px] max-h-[90vh] bg-[#18181B] border-[#27272A] text-white pointer-events-auto"
+        className="sm:max-w-[600px] max-h-[90vh] bg-[#18181B] border-[#27272A] text-white"
       >
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold">Request a Feature</DialogTitle>
