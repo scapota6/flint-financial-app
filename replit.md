@@ -31,7 +31,7 @@ Preferred communication style: Simple, everyday language.
 - **Email Service**: Resend-based email system with automated logging.
 - **Alert Monitoring System**: Background service for price alerts with debouncing and notifications.
 - **Financial Data Management**: Multi-account connections, real-time balance tracking, portfolio management, trade execution simulation.
-- **Subscription System**: Three-tier model (Free, Basic, Pro) integrated with Whop.com for payment processing and feature gating, with a comprehensive checkout flow and webhook-driven lifecycle management.
+- **Subscription System**: Three-tier model (Free, Basic, Pro) migrated from Whop to Stripe Checkout for payment processing and feature gating. Includes Stripe Customer Portal for subscription management, webhook-driven lifecycle management, and dual authentication (cookie for web, Bearer token for mobile).
 - **Security Framework**: AES-256-GCM encryption for credentials, multi-tier rate limiting, activity logging, secure sessions, double-submit-cookie CSRF, SHA-256 hashed password reset tokens, and RBAC middleware.
 - **Wallet Service Architecture**: Internal fund management with pre-authorization and hold/release, integrated with ACH transfers via Teller.
 - **Trading Aggregation Engine**: Intelligent routing, real-time position consolidation, pre-trade validation, trade preview/placement APIs.
@@ -71,4 +71,16 @@ Preferred communication style: Simple, everyday language.
 - **tailwindcss**: CSS framework.
 - **esbuild**: Backend bundling.
 - **date-fns**: Date formatting.
-- **@whop/api**: Whop server-side SDK.
+- **@whop/api**: Whop server-side SDK (legacy, migrating to Stripe).
+- **stripe**: Stripe payment processing SDK.
+
+## Recent Changes (November 14, 2025)
+- **Migrated Payment System from Whop to Stripe**: Complete Stripe Checkout integration with webhook handlers, Customer Portal for subscription management, and dual authentication support (web + mobile)
+  - Backend: Stripe routes (`/api/stripe/*`), pricing configuration, webhook handler with signature verification
+  - Frontend: Updated Subscribe page to redirect to Stripe Checkout, added subscription management to Settings page
+  - Security: CSRF skip list for webhooks, raw body middleware for signature validation
+  - Documentation: React Native mobile integration guide (`docs/stripe-mobile-integration.md`)
+  - Current Status: Basic monthly plan active ($9.99/mo - price_1ST8cEQP10htbkzEdwmsi5HN), Pro tier and yearly billing temporarily disabled pending production Price IDs
+- Fixed admin dashboard UI: mutations now await cache invalidation for immediate updates after approving/rejecting users
+- Fixed password setup link blank page: removed lazy loading for critical email-linked pages and added branded PageLoader
+- Resolved SnapTrade billing incident: deleted 2 orphaned users, created recovery documentation

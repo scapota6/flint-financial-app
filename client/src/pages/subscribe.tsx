@@ -72,8 +72,8 @@ export default function Subscribe() {
     setIsProcessing(true);
 
     try {
-      // Create Stripe checkout session
-      const billingPeriod = isAnnual ? 'yearly' : 'monthly';
+      // TEMPORARY: Hardcode monthly billing until production Price IDs are added
+      const billingPeriod = 'monthly';
       
       const response = await fetch('/api/stripe/create-checkout-session', {
         method: 'POST',
@@ -169,23 +169,22 @@ export default function Subscribe() {
             <p className="text-gray-400 text-lg">Unlock the full potential of Flint with our premium features</p>
           </div>
           
-          {/* Monthly/Yearly Toggle */}
-          <div className="flex items-center justify-center space-x-4">
+          {/* Monthly/Yearly Toggle - Disabled until production Price IDs are added */}
+          <div className="flex items-center justify-center space-x-4 opacity-50 cursor-not-allowed">
             <span className={`text-lg ${!isAnnual ? 'text-white font-semibold' : 'text-gray-400'}`}>
               Monthly
             </span>
             <Switch 
               checked={isAnnual} 
-              onCheckedChange={setIsAnnual}
+              onCheckedChange={() => {}} // Disabled
+              disabled
               className="data-[state=checked]:bg-blue-600 data-[state=unchecked]:bg-gray-600 border-2 border-gray-500"
               data-testid="switch-billing-toggle"
             />
             <span className={`text-lg ${isAnnual ? 'text-white font-semibold' : 'text-gray-400'}`}>
               Yearly
             </span>
-            {isAnnual && (
-              <Badge className="bg-green-600 text-white">2 months free</Badge>
-            )}
+            <Badge className="bg-gray-600 text-gray-400">Coming Soon</Badge>
           </div>
         </div>
 
@@ -255,11 +254,11 @@ export default function Subscribe() {
                 </CardHeader>
                 <CardContent className="text-center">
                   <Button
-                    onClick={() => tier.id !== 'free' ? handleSelectTier(tier.id) : null}
-                    disabled={isProcessing || currentTier === tier.id || tier.id === 'free'}
+                    onClick={() => tier.id === 'basic' ? handleSelectTier(tier.id) : null}
+                    disabled={isProcessing || currentTier === tier.id || tier.id === 'free' || tier.id === 'pro'}
                     className={`w-full ${
                       tier.id === 'pro'
-                        ? 'bg-blue-600 hover:bg-blue-700'
+                        ? 'bg-gray-600 cursor-not-allowed opacity-50'
                         : tier.id === 'free'
                         ? 'bg-gray-600 cursor-not-allowed'
                         : 'bg-gray-700 hover:bg-gray-600'
@@ -268,12 +267,14 @@ export default function Subscribe() {
                   >
                     {tier.id === 'free' ? (
                       'Free Forever'
+                    ) : tier.id === 'pro' ? (
+                      'Coming Soon'
                     ) : isProcessing ? (
                       'Processing...'
                     ) : currentTier === tier.id ? (
                       'Current Plan'
                     ) : (
-                      `Choose ${tier.name} ${isAnnual ? 'Yearly' : 'Monthly'}`
+                      `Choose ${tier.name} Monthly`
                     )}
                   </Button>
                 </CardContent>

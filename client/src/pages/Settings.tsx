@@ -176,7 +176,19 @@ export default function Settings() {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to create portal session');
+        const data = await response.json();
+        
+        // Check if user doesn't have a subscription
+        if (response.status === 400 && data.error?.includes('No subscription')) {
+          toast({
+            title: 'No Subscription Found',
+            description: 'You need an active subscription to manage billing. Please upgrade your plan first.',
+            variant: 'default'
+          });
+          return;
+        }
+        
+        throw new Error(data.error || 'Failed to create portal session');
       }
 
       const data = await response.json();
@@ -185,10 +197,10 @@ export default function Settings() {
         // Redirect to Stripe Customer Portal
         window.location.href = data.url;
       }
-    } catch (error) {
+    } catch (error: any) {
       toast({
         title: 'Error',
-        description: 'Failed to open subscription management. Please try again.',
+        description: error.message || 'Failed to open subscription management. Please try again.',
         variant: 'destructive'
       });
     }

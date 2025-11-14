@@ -20,14 +20,11 @@ router.post('/create-checkout-session', requireAuth, async (req, res) => {
       return res.status(401).json({ error: 'Authentication required' });
     }
 
-    // Validate tier
-    if (!tier || !['basic', 'pro'].includes(tier)) {
-      return res.status(400).json({ error: 'Invalid tier. Must be basic or pro' });
-    }
-
-    // Validate billing period
-    if (!['monthly', 'yearly'].includes(billingPeriod)) {
-      return res.status(400).json({ error: 'Invalid billing period. Must be monthly or yearly' });
+    // TEMPORARY: Only allow Basic monthly until production Price IDs are added
+    if (tier !== 'basic' || billingPeriod !== 'monthly') {
+      return res.status(400).json({ 
+        error: 'Only Basic monthly plan is currently available. Pro tier and yearly billing coming soon.' 
+      });
     }
 
     // Get pricing plan
