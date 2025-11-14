@@ -7,31 +7,31 @@ import { logger } from '@shared/logger';
 
 // Funny messages to spice things up
 const SIGNUP_QUIPS = [
-  "Another soul joins the financial revolution 🚀",
-  "Cha-ching! That's the sound of success 💸",
-  "Money doesn't grow on trees, but it does grow in Flint 🌱",
-  "New user alert! Someone's about to get rich (or at least try) 💰",
-  "Breaking news: Your bank account just got some competition 🏦",
-  "Plot twist: They actually read the terms and conditions 📜",
+  "Another soul joins the financial revolution :rocket:",
+  "Cha-ching! That's the sound of success :money_with_wings:",
+  "Money doesn't grow on trees, but it does grow in Flint :seedling:",
+  "New user alert! Someone's about to get rich (or at least try) :moneybag:",
+  "Breaking news: Your bank account just got some competition :bank:",
+  "Plot twist: They actually read the terms and conditions :scroll:",
 ];
 
 const SUBSCRIPTION_QUIPS = [
-  "Show me the money! 💵",
-  "Someone just leveled up their financial game 📈",
-  "This calls for a celebration! 🎊",
-  "Ka-ching! Time to update the revenue dashboard 💸",
-  "Another happy customer (and a happier bank account) 🤑",
-  "Stripe just sent us good vibes ✨",
+  "Show me the money! :dollar:",
+  "Someone just leveled up their financial game :chart_with_upwards_trend:",
+  "This calls for a celebration! :confetti_ball:",
+  "Ka-ching! Time to update the revenue dashboard :money_with_wings:",
+  "Another happy customer (and a happier bank account) :money_mouth_face:",
+  "Stripe just sent us good vibes :sparkles:",
 ];
 
 const APPLICATION_QUIPS = [
-  "Fresh meat! 🥩",
-  "Someone wants in on the action 👀",
-  "A new challenger approaches! 🎮",
-  "Knock knock. Who's there? A new applicant! 🚪",
-  "They found us on the internet (probably) 🕵️",
-  "Time to dust off the admin panel 🧹",
-  "Another brave soul requests access to financial enlightenment 🧘",
+  "Fresh meat! :cut_of_meat:",
+  "Someone wants in on the action :eyes:",
+  "A new challenger approaches! :video_game:",
+  "Knock knock. Who's there? A new applicant! :door:",
+  "They found us on the internet (probably) :detective:",
+  "Time to dust off the admin panel :broom:",
+  "Another brave soul requests access to financial enlightenment :person_in_lotus_position:",
 ];
 
 function getRandomQuip(quips: string[]): string {
@@ -105,7 +105,7 @@ export async function notifyNewUserSignup(data: {
   signupTime: Date;
 }): Promise<void> {
   const message: SlackMessage = {
-    text: '🎉 *New User Signup!*',
+    text: ':tada: *New User Signup!*',
     attachments: [
       {
         color: '#36a64f', // Green
@@ -135,7 +135,7 @@ export async function notifyNewUserSignup(data: {
             short: true,
           },
         ],
-        text: `_${getRandomQuip(SIGNUP_QUIPS)}_\n\nFlint to the moon ! 🚀🚀🚀`,
+        text: `_${getRandomQuip(SIGNUP_QUIPS)}_\n\nFlint to the moon ! :rocket::rocket::rocket:`,
         footer: 'Flint Investment Platform',
         ts: Math.floor(data.signupTime.getTime() / 1000),
       },
@@ -161,7 +161,7 @@ export async function notifyNewSubscription(data: {
   const amountDisplay = data.amount ? `$${data.amount.toFixed(2)}` : 'N/A';
 
   const message: SlackMessage = {
-    text: '💰 *New Subscription Purchase!*',
+    text: ':moneybag: *New Subscription Purchase!*',
     attachments: [
       {
         color: '#f2c744', // Gold
@@ -196,7 +196,7 @@ export async function notifyNewSubscription(data: {
             short: false,
           },
         ],
-        text: `_${getRandomQuip(SUBSCRIPTION_QUIPS)}_\n\nFlint to the moon ! 🚀🚀🚀`,
+        text: `_${getRandomQuip(SUBSCRIPTION_QUIPS)}_\n\nFlint to the moon ! :rocket::rocket::rocket:`,
         footer: 'Flint Investment Platform',
         ts: Math.floor(data.subscriptionTime.getTime() / 1000),
       },
@@ -217,7 +217,7 @@ export async function notifyNewApplication(data: {
   submissionTime: Date;
 }): Promise<void> {
   const message: SlackMessage = {
-    text: '📋 *New Account Application Submitted!*',
+    text: ':clipboard: *New Account Application Submitted!*',
     attachments: [
       {
         color: '#3AA3E3', // Blue
@@ -252,7 +252,7 @@ export async function notifyNewApplication(data: {
             short: false,
           },
         ],
-        text: `_${getRandomQuip(APPLICATION_QUIPS)}_\n\nFlint to the moon ! 🚀🚀🚀`,
+        text: `_${getRandomQuip(APPLICATION_QUIPS)}_\n\nFlint to the moon ! :rocket::rocket::rocket:`,
         footer: 'Flint Investment Platform • Review in Admin Panel',
         ts: Math.floor(data.submissionTime.getTime() / 1000),
       },
