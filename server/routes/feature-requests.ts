@@ -27,8 +27,15 @@ const submitFeatureRequestSchema = insertFeatureRequestSchema.extend({
  */
 router.post('/', async (req, res) => {
   try {
+    // Normalize empty strings to undefined for optional fields
+    const normalizedBody = {
+      ...req.body,
+      phone: req.body.phone?.trim() === '' ? undefined : req.body.phone,
+      priority: req.body.priority || 'medium',
+    };
+
     // Validate request body
-    const parseResult = submitFeatureRequestSchema.safeParse(req.body);
+    const parseResult = submitFeatureRequestSchema.safeParse(normalizedBody);
     
     if (!parseResult.success) {
       return res.status(400).json({

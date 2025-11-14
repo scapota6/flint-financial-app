@@ -99,8 +99,16 @@ Preferred communication style: Simple, everyday language.
 - Fixed password setup link blank page: removed lazy loading for critical email-linked pages and added branded PageLoader
 - Resolved SnapTrade billing incident: deleted 2 orphaned users, created recovery documentation
 - **Implemented Slack Webhook Integration for Real-Time Business Notifications**:
-  - Created `slackNotifier.ts` service with three notification functions: `notifyNewUserSignup`, `notifyNewSubscription`, `notifyNewApplication`
+  - Created `slackNotifier.ts` service with notification functions: `notifyNewUserSignup`, `notifyNewSubscription`, `notifyNewApplication`, `notifyFeatureRequest`
   - Integrated instant notifications for new account applications (`/api/applications/submit`)
   - Integrated instant notifications for new subscriptions in Stripe webhook (`checkout.session.completed` for both new and existing users)
+  - Integrated instant notifications for feature requests with funny quips ending in "Flint to the moon ! 🚀🚀🚀"
   - All notifications are non-blocking with error logging, require `SLACK_WEBHOOK_URL` environment variable
   - Notifications include formatted messages with user details (name, email, plan, timestamp) for COO/admin monitoring
+- **Implemented Feature Request System for User Feedback Collection**:
+  - **Database Schema**: `feature_requests` table with fields: id, name, email, phone (optional), priority (low/medium/high/critical), description, status (pending/approved/in_progress/completed/rejected), submittedAt, reviewedBy, reviewedAt, reviewNotes
+  - **Backend**: Public POST endpoint `/api/feature-requests` with CSRF exemption, schema validation with empty-string normalization, Slack notification integration
+  - **Frontend**: Reusable `FeatureRequestModal` component with form validation, floating action buttons on landing page and dashboard
+  - **Schema Alignment**: Frontend imports shared `insertFeatureRequestSchema` from `@shared/schema` for perfect validation alignment
+  - **Data Handling**: Empty phone strings transformed to undefined, priority defaults to 'medium', server-managed fields (status, timestamps) auto-populated
+  - **User Flow**: Landing/dashboard → Click "Request a Feature" → Fill form → Submit → Success toast → Slack notification sent

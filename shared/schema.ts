@@ -652,6 +652,13 @@ export const insertAccountApplicationSchema = createInsertSchema(accountApplicat
 export const insertFeatureRequestSchema = createInsertSchema(featureRequests).omit({
   id: true,
   submittedAt: true,
+  status: true,
+  reviewedBy: true,
+  reviewedAt: true,
+  reviewNotes: true,
+}).extend({
+  phone: z.string().trim().transform(v => v === '' ? undefined : v).optional(),
+  priority: z.enum(['low', 'medium', 'high', 'critical']).default('medium'),
 });
 
 export const insertAuditLogSchema = createInsertSchema(auditLogs).omit({

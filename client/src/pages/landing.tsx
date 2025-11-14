@@ -65,6 +65,8 @@ import avatar4 from "@assets/generated_images/Professional_Caucasian_man_headsho
 import avatar5 from "@assets/generated_images/Professional_Middle_Eastern_woman_headshot_5f778eae.png";
 import { CheckoutModal } from "@/components/checkout-modal";
 import { EmbeddedCheckoutModal } from "@/components/EmbeddedCheckoutModal";
+import FeatureRequestModal from "@/components/FeatureRequestModal";
+import { MessageSquare } from "lucide-react";
 
 // Removed Lemon Squeezy - now using Whop for payment processing
 
@@ -119,6 +121,7 @@ function Landing() {
   const [dashboardPreviewOpen, setDashboardPreviewOpen] = useState(false);
   const [checkoutModalOpen, setCheckoutModalOpen] = useState(false);
   const [selectedCheckout, setSelectedCheckout] = useState<{ sessionId: string; planId?: string; email?: string; planName: string } | null>(null);
+  const [featureRequestModalOpen, setFeatureRequestModalOpen] = useState(false);
   
   // Embedded checkout state
   const [checkoutEmail, setCheckoutEmail] = useState('');
@@ -1461,6 +1464,22 @@ function Landing() {
         email={checkoutEmail}
         tier={checkoutTier}
         billingPeriod="monthly"
+      />
+
+      {/* Floating Feature Request Button */}
+      <button
+        onClick={() => setFeatureRequestModalOpen(true)}
+        className="fixed bottom-6 right-6 z-50 bg-blue-600 hover:bg-blue-700 text-white rounded-full p-4 shadow-lg transition-all duration-200 hover:scale-110 flex items-center gap-2 group"
+        data-testid="button-feature-request-floating"
+        aria-label="Request a feature"
+      >
+        <MessageSquare className="w-6 h-6" />
+        <span className="hidden group-hover:inline-block pr-2 font-medium">Request Feature</span>
+      </button>
+
+      <FeatureRequestModal 
+        open={featureRequestModalOpen}
+        onOpenChange={setFeatureRequestModalOpen}
       />
     </div>
   );

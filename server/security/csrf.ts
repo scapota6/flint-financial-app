@@ -24,6 +24,7 @@ export function installCsrf(app: Express) {
     '/api/stripe/create-embedded-checkout',  // Stripe embedded checkout from public landing page
     '/api/whop/create-checkout',  // Whop checkout creation from public landing page
     '/api/applications/submit',
+    '/api/feature-requests',  // Feature requests from public landing page
     '/api/auth/setup-password',
     '/api/auth/request-reset',
     '/api/auth/local-login'  // Local password login doesn't require CSRF

@@ -15,6 +15,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import RealTimeHoldings from '@/components/portfolio/real-time-holdings';
 import RecurringSubscriptions from '@/components/subscriptions/recurring-subscriptions';
 import MoneyMovement from '@/components/money/money-movement';
+import FeatureRequestModal from "@/components/FeatureRequestModal";
+import { MessageSquare } from "lucide-react";
 
 // import TransactionHistory from '@/components/activity/transaction-history';
 
@@ -34,6 +36,7 @@ export default function Dashboard() {
   const { toast } = useToast();
   const [selectedAccount, setSelectedAccount] = useState<any>(null);
   const [isAccountModalOpen, setIsAccountModalOpen] = useState(false);
+  const [featureRequestModalOpen, setFeatureRequestModalOpen] = useState(false);
 
   // Fetch dashboard data with robust error handling
   const { data, isLoading, isError, error } = useQuery({
@@ -279,6 +282,22 @@ export default function Dashboard() {
         isOpen={isAccountModalOpen}
         onClose={() => setIsAccountModalOpen(false)}
         account={selectedAccount}
+      />
+
+      {/* Floating Feature Request Button */}
+      <button
+        onClick={() => setFeatureRequestModalOpen(true)}
+        className="fixed bottom-6 right-6 z-50 bg-blue-600 hover:bg-blue-700 text-white rounded-full p-4 shadow-lg transition-all duration-200 hover:scale-110 flex items-center gap-2 group"
+        data-testid="button-feature-request-floating-dashboard"
+        aria-label="Request a feature"
+      >
+        <MessageSquare className="w-6 h-6" />
+        <span className="hidden group-hover:inline-block pr-2 font-medium">Request Feature</span>
+      </button>
+
+      <FeatureRequestModal 
+        open={featureRequestModalOpen}
+        onOpenChange={setFeatureRequestModalOpen}
       />
     </div>
   );
