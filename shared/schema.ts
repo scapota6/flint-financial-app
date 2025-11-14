@@ -530,6 +530,7 @@ export const featureRequests = pgTable("feature_requests", {
   name: varchar("name").notNull(),
   email: varchar("email").notNull(),
   phone: varchar("phone"),
+  type: varchar("type").notNull().default("feature_request"), // feature_request or bug_report
   priority: varchar("priority").notNull().default("medium"), // low, medium, high, critical
   description: text("description").notNull(),
   status: varchar("status").default("pending"), // pending, reviewing, planned, in_progress, completed, rejected
@@ -540,6 +541,7 @@ export const featureRequests = pgTable("feature_requests", {
 }, (table) => [
   index("feature_requests_status_idx").on(table.status),
   index("feature_requests_priority_idx").on(table.priority),
+  index("feature_requests_type_idx").on(table.type),
   index("feature_requests_submitted_idx").on(table.submittedAt),
 ]);
 
@@ -658,6 +660,7 @@ export const insertFeatureRequestSchema = createInsertSchema(featureRequests).om
   reviewNotes: true,
 }).extend({
   phone: z.string().trim().transform(v => v === '' ? undefined : v).optional(),
+  type: z.enum(['feature_request', 'bug_report']).default('feature_request'),
   priority: z.enum(['low', 'medium', 'high', 'critical']).default('medium'),
 });
 
