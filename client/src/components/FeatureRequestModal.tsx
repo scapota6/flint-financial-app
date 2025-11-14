@@ -29,7 +29,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { apiRequest } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Bug, Lightbulb } from 'lucide-react';
 import { insertFeatureRequestSchema, type InsertFeatureRequest } from '@shared/schema';
 
 // Extend the shared schema with additional frontend-specific validation
@@ -57,6 +57,7 @@ export default function FeatureRequestModal({ open, onOpenChange }: FeatureReque
       name: '',
       email: '',
       phone: '',
+      type: 'feature_request',
       priority: 'medium',
       description: '',
     },
@@ -109,6 +110,42 @@ export default function FeatureRequestModal({ open, onOpenChange }: FeatureReque
         <div className="max-h-[60vh] overflow-y-auto pr-2">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            {/* Type */}
+            <FormField
+              control={form.control}
+              name="type"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>What are you submitting?</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger 
+                        className="bg-[#27272A] border-[#3F3F46] text-white"
+                        data-testid="select-submission-type"
+                      >
+                        <SelectValue placeholder="Select type" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent className="bg-[#27272A] border-[#3F3F46] text-white">
+                      <SelectItem value="feature_request" data-testid="type-feature-request">
+                        <span className="flex items-center gap-2">
+                          <Lightbulb className="w-4 h-4 text-yellow-500" />
+                          Feature Request - Suggest new functionality
+                        </span>
+                      </SelectItem>
+                      <SelectItem value="bug_report" data-testid="type-bug-report">
+                        <span className="flex items-center gap-2">
+                          <Bug className="w-4 h-4 text-red-500" />
+                          Bug Report - Report something broken
+                        </span>
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
             {/* Name */}
             <FormField
               control={form.control}

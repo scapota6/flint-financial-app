@@ -44,6 +44,16 @@ const FEATURE_REQUEST_QUIPS = [
   "User feedback is a gift :gift:",
 ];
 
+const BUG_REPORT_QUIPS = [
+  "Houston, we have a problem :bug:",
+  "Time to squash some bugs! :hammer:",
+  "Another bug bites the dust (soon) :ant:",
+  "Bug alert! Deploy the debugging team :detective:",
+  "Error 404: Bug not found (yet) :mag:",
+  "Breaking news: Something is broken :newspaper:",
+  "Bug reported! Coffee levels: critical :coffee:",
+];
+
 function getRandomQuip(quips: string[]): string {
   return quips[Math.floor(Math.random() * quips.length)];
 }
@@ -273,16 +283,19 @@ export async function notifyNewApplication(data: {
 }
 
 /**
- * Send notification for new feature request
+ * Send notification for new feature request or bug report
  */
 export async function notifyFeatureRequest(data: {
   name: string;
   email: string;
   phone?: string;
+  type?: string;
   priority: string;
   description: string;
   submissionTime: Date;
 }): Promise<void> {
+  const isBugReport = data.type === 'bug_report';
+  
   const priorityEmojis: { [key: string]: string } = {
     low: ':green_circle:',
     medium: ':yellow_circle:',
@@ -291,13 +304,29 @@ export async function notifyFeatureRequest(data: {
   };
 
   const priorityEmoji = priorityEmojis[data.priority.toLowerCase()] || ':white_circle:';
+  
+  const submissionIcon = isBugReport ? ':bug:' : ':bulb:';
+  const submissionTitle = isBugReport ? 'New Bug Report Submitted!' : 'New Feature Request Submitted!';
+  const typeLabel = isBugReport ? 'Bug Report' : 'Feature Request';
+  const quips = isBugReport ? BUG_REPORT_QUIPS : FEATURE_REQUEST_QUIPS;
+  const color = isBugReport ? '#FF4444' : '#9945FF'; // Red for bugs, Purple for features
 
   const message: SlackMessage = {
-    text: ':bulb: *New Feature Request Submitted!*',
+    text: `${submissionIcon} *${submissionTitle}*`,
     attachments: [
       {
-        color: '#9945FF', // Purple
+        color,
         fields: [
+          {
+            title: 'Type',
+            value: typeLabel,
+            short: true,
+          },
+          {
+            title: 'Priority',
+            value: `${priorityEmoji} ${data.priority.charAt(0).toUpperCase() + data.priority.slice(1)}`,
+            short: true,
+          },
           {
             title: 'Requester Name',
             value: data.name,
@@ -311,11 +340,6 @@ export async function notifyFeatureRequest(data: {
           {
             title: 'Phone',
             value: data.phone || 'Not provided',
-            short: true,
-          },
-          {
-            title: 'Priority',
-            value: `${priorityEmoji} ${data.priority.charAt(0).toUpperCase() + data.priority.slice(1)}`,
             short: true,
           },
           {
@@ -335,7 +359,7 @@ export async function notifyFeatureRequest(data: {
             short: false,
           },
         ],
-        text: `_${getRandomQuip(FEATURE_REQUEST_QUIPS)}_\n\nFlint to the moon ! :rocket::rocket::rocket:`,
+        text: `_${getRandomQuip(quips)}_\n\nFlint to the moon ! :rocket::rocket::rocket:`,
         footer: 'Flint Investment Platform • Review in Admin Panel',
         ts: Math.floor(data.submissionTime.getTime() / 1000),
       },

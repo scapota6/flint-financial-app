@@ -31,6 +31,7 @@ router.post('/', async (req, res) => {
     const normalizedBody = {
       ...req.body,
       phone: req.body.phone?.trim() === '' ? undefined : req.body.phone,
+      type: req.body.type || 'feature_request',
       priority: req.body.priority || 'medium',
     };
 
@@ -54,6 +55,7 @@ router.post('/', async (req, res) => {
       name: featureRequestData.name,
       email: featureRequestData.email,
       phone: featureRequestData.phone || null,
+      type: featureRequestData.type || 'feature_request',
       priority: featureRequestData.priority || 'medium',
       description: featureRequestData.description,
       status: 'pending',
@@ -72,6 +74,7 @@ router.post('/', async (req, res) => {
       name: newFeatureRequest.name,
       email: newFeatureRequest.email,
       phone: newFeatureRequest.phone || undefined,
+      type: newFeatureRequest.type || 'feature_request',
       priority: newFeatureRequest.priority,
       description: newFeatureRequest.description,
       submissionTime: newFeatureRequest.submittedAt || new Date(),

@@ -27,14 +27,59 @@ export const STRIPE_PRICES: Record<string, PricingPlan> = {
   'basic-monthly': {
     tier: 'basic',
     name: 'Flint Basic',
-    priceId: 'price_1ST8cEQP10htbkzEdwmsi5HN',
+    priceId: 'price_1RUGqMKgl6E3u5QE9OtHKCOS',
     billingPeriod: 'monthly',
-    amount: 999, // $9.99
+    amount: 999, // $9.99/month
     features: [
       'Connect up to 5 accounts',
       'Real-time portfolio tracking',
       'Basic analytics',
       'Email support'
+    ]
+  },
+  'basic-yearly': {
+    tier: 'basic',
+    name: 'Flint Basic',
+    priceId: 'price_1ST8THKgl6E3u5QEbFXJR1Qi',
+    billingPeriod: 'yearly',
+    amount: 9588, // $95.88/year ($7.99/month)
+    features: [
+      'Connect up to 5 accounts',
+      'Real-time portfolio tracking',
+      'Basic analytics',
+      'Email support',
+      '2 months free with annual billing'
+    ]
+  },
+  'pro-monthly': {
+    tier: 'pro',
+    name: 'Flint Pro',
+    priceId: 'price_1ST7B1Kgl6E3u5QElvyoQnY7',
+    billingPeriod: 'monthly',
+    amount: 2999, // $29.99/month
+    features: [
+      'Unlimited account connections',
+      'Advanced portfolio analytics',
+      'Real-time trading execution',
+      'Price alerts & notifications',
+      'Priority support',
+      'Tax reporting tools'
+    ]
+  },
+  'pro-yearly': {
+    tier: 'pro',
+    name: 'Flint Pro',
+    priceId: 'price_1ST7CuKgl6E3u5QEzXDsvsxx',
+    billingPeriod: 'yearly',
+    amount: 28788, // $287.88/year ($23.99/month)
+    features: [
+      'Unlimited account connections',
+      'Advanced portfolio analytics',
+      'Real-time trading execution',
+      'Price alerts & notifications',
+      'Priority support',
+      'Tax reporting tools',
+      '2 months free with annual billing'
     ]
   },
 };
