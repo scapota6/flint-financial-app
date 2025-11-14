@@ -30,6 +30,30 @@ export default function Subscribe() {
 
   // Note: Whop SDK loaded via script tag in index.html
 
+  // Handle Stripe checkout return (success/canceled)
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const success = params.get('success');
+    const canceled = params.get('canceled');
+
+    if (success === 'true') {
+      toast({
+        title: "Success!",
+        description: "Your subscription has been activated. Welcome to Flint!",
+      });
+      // Clear URL params
+      window.history.replaceState({}, '', '/subscribe');
+    } else if (canceled === 'true') {
+      toast({
+        title: "Checkout Canceled",
+        description: "You can subscribe anytime.",
+        variant: "default",
+      });
+      // Clear URL params
+      window.history.replaceState({}, '', '/subscribe');
+    }
+  }, [toast]);
+
   // Handle unauthorized errors
   useEffect(() => {
     if (error && isUnauthorizedError(error as Error)) {
@@ -48,29 +72,38 @@ export default function Subscribe() {
     setIsProcessing(true);
 
     try {
-      // Map tier IDs to CTA IDs for the checkout endpoint
-      const ctaId = isAnnual ? `${tierId}-yearly` : `${tierId}-monthly`;
+      // Create Stripe checkout session
+      const billingPeriod = isAnnual ? 'yearly' : 'monthly';
       
-      // Get checkout URL from backend (using Whop now)
-      const userEmail = (user as any)?.email;
-      const response = await fetch(`/api/whop/checkout/${ctaId}${userEmail ? `?email=${encodeURIComponent(userEmail)}` : ''}`);
+      const response = await fetch('/api/stripe/create-checkout-session', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': document.cookie
+            .split('; ')
+            .find((row) => row.startsWith('flint_csrf='))
+            ?.split('=')[1] || '',
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          tier: tierId,
+          billingPeriod,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to create checkout session');
+      }
+
       const data = await response.json();
       
-      if (data.sessionId && data.planId) {
-        // Get the plan name from SUBSCRIPTION_TIERS
-        const tier = SUBSCRIPTION_TIERS.find(t => t.id === tierId);
-        const planName = tier?.name || tierId;
-        
-        // Open checkout in modal with Whop embed
-        setCheckoutData({
-          sessionId: data.sessionId,
-          planId: data.planId,
-          planName: planName
-        });
+      if (data.url) {
+        // Redirect to Stripe Checkout
+        window.location.href = data.url;
       } else {
         toast({
           title: "Error",
-          description: "Failed to get checkout. Please try again.",
+          description: "Failed to create checkout session. Please try again.",
           variant: "destructive",
         });
       }
