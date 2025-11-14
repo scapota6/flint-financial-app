@@ -104,7 +104,7 @@ export function EmbeddedCheckoutModal({
     <Dialog open={open} onOpenChange={handleOpenChange} modal={true}>
       <DialogContent
         data-testid="embedded-checkout-modal"
-        className="max-w-2xl max-h-[90vh] p-6 bg-gray-950 border-gray-800 overflow-hidden flex flex-col"
+        className="max-w-2xl max-h-[90vh] p-0 bg-gray-950 border-gray-800 overflow-y-auto flex flex-col"
       >
         <VisuallyHidden>
           <DialogTitle>
@@ -115,7 +115,7 @@ export function EmbeddedCheckoutModal({
           </DialogDescription>
         </VisuallyHidden>
 
-        <div className="w-full flex-1 min-h-[600px] rounded-lg overflow-auto">
+        <div className="w-full flex-1 min-h-[600px] p-6 rounded-lg">
           {error ? (
             <div className="flex flex-col items-center justify-center p-8 space-y-4">
               <p className="text-red-500">{error}</p>
