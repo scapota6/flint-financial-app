@@ -29,6 +29,7 @@ Preferred communication style: Simple, everyday language.
 - **Application Approval System**: Landing page form for account applications with admin review.
 - **Admin Dashboard**: Restricted access for user, account, subscription, and analytics management.
 - **Email Service**: Resend-based email system with automated logging.
+- **Slack Notification System**: Real-time Slack webhooks for business-critical events (new applications, subscriptions, user signups). Non-blocking notifications with structured error logging. Requires `SLACK_WEBHOOK_URL` environment variable.
 - **Alert Monitoring System**: Background service for price alerts with debouncing and notifications.
 - **Financial Data Management**: Multi-account connections, real-time balance tracking, portfolio management, trade execution simulation.
 - **Subscription System**: Three-tier model (Free, Basic, Pro) migrated from Whop to Stripe Checkout for payment processing and feature gating. Includes Stripe Customer Portal for subscription management, webhook-driven lifecycle management, and dual authentication (cookie for web, Bearer token for mobile).
@@ -97,3 +98,9 @@ Preferred communication style: Simple, everyday language.
 - Fixed admin dashboard UI: mutations now await cache invalidation for immediate updates after approving/rejecting users
 - Fixed password setup link blank page: removed lazy loading for critical email-linked pages and added branded PageLoader
 - Resolved SnapTrade billing incident: deleted 2 orphaned users, created recovery documentation
+- **Implemented Slack Webhook Integration for Real-Time Business Notifications**:
+  - Created `slackNotifier.ts` service with three notification functions: `notifyNewUserSignup`, `notifyNewSubscription`, `notifyNewApplication`
+  - Integrated instant notifications for new account applications (`/api/applications/submit`)
+  - Integrated instant notifications for new subscriptions in Stripe webhook (`checkout.session.completed` for both new and existing users)
+  - All notifications are non-blocking with error logging, require `SLACK_WEBHOOK_URL` environment variable
+  - Notifications include formatted messages with user details (name, email, plan, timestamp) for COO/admin monitoring

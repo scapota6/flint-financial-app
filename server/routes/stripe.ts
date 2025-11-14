@@ -10,6 +10,7 @@ import Stripe from 'stripe';
 import crypto from 'crypto';
 import { generateSecureToken, hashToken } from '../lib/token-utils';
 import { sendPasswordResetEmail } from '../services/email';
+import { notifyNewSubscription } from '../services/slackNotifier';
 
 const router = Router();
 
@@ -435,6 +436,17 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
       logger.info('Subscription activated for existing user', {
         metadata: { userId: user.id, tier, subscriptionId: stripeSubscriptionId }
       });
+
+      // Send Slack notification for subscription (non-blocking)
+      notifyNewSubscription({
+        name: `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'User',
+        email: user.email || customerEmail || 'No email',
+        tier: tier || 'unknown',
+        billingPeriod: session.metadata?.billingPeriod || 'monthly',
+        subscriptionTime: new Date(),
+      }).catch(err => {
+        logger.error('Failed to send Slack notification for subscription', { error: err });
+      });
     } else if (customerEmail) {
       // NEW USER: Create account with password reset token
       const userId = crypto.randomUUID();
@@ -506,6 +518,17 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
           tier, 
           subscriptionId: stripeSubscriptionId 
         }
+      });
+
+      // Send Slack notification for new subscription (non-blocking)
+      notifyNewSubscription({
+        name: newUser.firstName || 'New User',
+        email: customerEmail,
+        tier: tier || 'unknown',
+        billingPeriod: session.metadata?.billingPeriod || 'monthly',
+        subscriptionTime: new Date(),
+      }).catch(err => {
+        logger.error('Failed to send Slack notification for new subscription', { error: err });
       });
     } else {
       logger.error('Cannot create user - no email in metadata', {

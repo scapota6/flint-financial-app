@@ -18,6 +18,7 @@ import { getServerFeatureFlags } from "@shared/feature-flags";
 import { logger } from "@shared/logger";
 import { demoMode } from "@shared/demo-mode";
 import { sendApplicationNotificationEmail } from "./services/email";
+import { notifyNewApplication } from "./services/slackNotifier";
 import { getTellerAccessToken } from "./store/tellerUsers";
 import { resilientTellerFetch, getTellerBaseUrl } from "./teller/client";
 import { getAccountLimit, getConnectionCount } from "./services/connection-limits";
@@ -155,6 +156,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
           }
         });
       }
+
+      // Send Slack notification (non-blocking)
+      notifyNewApplication({
+        name: firstName,
+        email,
+        accountCount,
+        connectType,
+        submissionTime: new Date(),
+      }).catch(err => {
+        logger.error('Failed to send Slack notification for application', { error: err });
+      });
 
       res.json({ 
         success: true,
