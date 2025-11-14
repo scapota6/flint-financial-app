@@ -1094,10 +1094,10 @@ function Landing() {
                   <CardTitle className="text-2xl">Flint Basic</CardTitle>
                   <div className="space-y-2">
                     <div className="text-4xl font-bold">
-                      ${isYearly ? '7.99' : '9.99'}
+                      ${isYearly ? '16.66' : '19.99'}
                     </div>
                     <div className="text-gray-300">
-                      {isYearly ? '/mo (billed $95.88/year)' : '/month'}
+                      {isYearly ? '/mo (billed $199.92/year)' : '/month'}
                     </div>
                   </div>
                   <CardDescription className="text-gray-300">
@@ -1122,10 +1122,10 @@ function Landing() {
                   <CardTitle className="text-2xl">Flint Pro</CardTitle>
                   <div className="space-y-2">
                     <div className="text-4xl font-bold">
-                      ${isYearly ? '23.99' : '29.99'}
+                      ${isYearly ? '33.33' : '39.99'}
                     </div>
                     <div className="text-gray-400">
-                      {isYearly ? '/mo (billed $287.88/year)' : '/month'}
+                      {isYearly ? '/mo (billed $399.96/year)' : '/month'}
                     </div>
                   </div>
                   <CardDescription className="text-gray-300">
