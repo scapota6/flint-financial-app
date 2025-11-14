@@ -118,6 +118,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       });
 
+      // Log structured metric for Grafana
+      logger.logMetric('application_submitted', {
+        application_id: application.id,
+        account_count: accountCount,
+        connect_type: connectType,
+      });
+
       // Send notification email to support@flint-investing.com
       try {
         const emailResult = await sendApplicationNotificationEmail(

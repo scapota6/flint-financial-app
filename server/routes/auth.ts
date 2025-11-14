@@ -25,6 +25,7 @@ import {
 } from '../lib/auth-tokens';
 import { rateLimits } from '../middleware/rateLimiter';
 import { requireAuth } from '../middleware/jwt-auth';
+import { logger } from '@shared/logger';
 
 const router = Router();
 
@@ -216,6 +217,12 @@ router.post('/login', rateLimits.login, async (req, res) => {
 
     // Log successful login
     await logLoginAttempt(email, true, user.id, ipAddress, userAgent, 'Login successful');
+
+    // Log structured metric for Grafana (track daily active users)
+    logger.logMetric('user_login', {
+      user_id: user.id,
+      login_method: 'password',
+    });
 
     // DUAL-MODE AUTHENTICATION: Detect platform and return appropriate credentials
     const isMobile = req.headers['x-mobile-app'] === 'true';

@@ -538,6 +538,14 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
         }
       });
 
+      // Log structured metric for Grafana
+      logger.logMetric('user_signup', {
+        user_id: newUser.id,
+        subscription_tier: tier,
+        subscription_status: 'active',
+        signup_source: 'stripe_checkout',
+      });
+
       // Send Slack notification for new subscription (non-blocking)
       notifyNewSubscription({
         name: newUser.firstName || 'New User',

@@ -178,6 +178,36 @@ class Logger {
   }
 
   /**
+   * Log structured metrics for Grafana/monitoring dashboards
+   * This method sends structured event data that can be aggregated by monitoring tools
+   * All metadata is automatically scrubbed of PII for security
+   */
+  logMetric(eventType: string, eventData: Record<string, unknown>): void {
+    // Redact PII from metric data for security
+    const redactedData = this.redactPII(eventData) as Record<string, unknown>;
+    
+    const metricLog = {
+      event_type: eventType,
+      event_name: `metric.${eventType}`,
+      timestamp: new Date().toISOString(),
+      ...redactedData,
+    };
+
+    console.log(JSON.stringify({
+      level: 'INFO',
+      message: `Metric: ${eventType}`,
+      ...metricLog
+    }));
+
+    // Send structured metric to Logtail
+    if (this.logtail) {
+      this.logtail.info(`Metric: ${eventType}`, metricLog).catch((error: Error) => {
+        // Silently absorb Logtail errors
+      });
+    }
+  }
+
+  /**
    * Flush all pending logs to Logtail (for graceful shutdown)
    */
   async flush(): Promise<void> {

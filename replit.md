@@ -76,6 +76,21 @@ Preferred communication style: Simple, everyday language.
 - **stripe**: Stripe payment processing SDK.
 
 ## Recent Changes (November 14, 2025)
+- **Implemented Structured Metrics Logging for Grafana/Betterstack Integration**:
+  - **Problem**: Grafana dashboard metrics (User Count, Applications, Daily Active Users) were not updating despite logging being configured
+  - **Root Cause**: Better Stack (Logtail) deprecated its hosted Grafana integration; existing logs lacked structured event fields for metric aggregation
+  - **Solution**: Added `logMetric()` method to centralized logger (`shared/logger.ts`) that emits structured JSON events with:
+    - `event_type`: Metric category (e.g., "user_signup", "application_submitted", "user_login")
+    - `event_name`: Formatted as `metric.{event_type}` for consistent querying
+    - `timestamp`: ISO-8601 timestamp for time-series aggregation
+    - Redacted metadata (automatic PII scrubbing via existing `redactPII()` helper)
+  - **Integration Points**:
+    - User signups: `server/routes/stripe.ts` - logs `metric.user_signup` on Stripe checkout completion
+    - Applications: `server/routes.ts` - logs `metric.application_submitted` on landing page form submission
+    - User logins: `server/routes/auth.ts` - logs `metric.user_login` on successful authentication (tracks Daily Active Users)
+  - **Grafana Configuration Required**: Update dashboard queries to filter on `event_name =~ /^metric\./` and aggregate by `event_type` and `timestamp` fields
+  - **Security**: All metric data passes through PII redaction (emails, tokens, API keys automatically scrubbed)
+  - **Next Steps**: Add optional event types for broader coverage: `user_activity` (feature interactions), `connection_added`/`connection_removed` (integration health)
 - **Implemented Stripe Embedded Checkout with "Pay First, Set Password Later" Flow**: Complete embedded checkout integration allowing unauthenticated purchases with post-payment account creation
   - **Backend Implementation**:
     - Created `/api/stripe/create-embedded-checkout` endpoint with rate limiting (10 req/15min per IP) and CSRF exemption
