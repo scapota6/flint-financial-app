@@ -94,7 +94,7 @@ Preferred communication style: Simple, everyday language.
     - Post-checkout success page (`/checkout-success`) with password setup instructions
   - **User Flow**: Landing page CTA → Embedded checkout modal → Stripe collects email + payment → Payment succeeds → Account created → Webhook sends password reset email → Success page → User sets password → Login
   - **Security**: Rate limiting, CSRF exemption for public endpoint, idempotent webhooks, SHA-256 hashed tokens, .onConflictDoNothing() for race conditions
-  - **Current Status**: Basic monthly only ($9.99/mo - price_1ST8cEQP10htbkzEdwmsi5HN), Pro tier and yearly billing disabled pending production Price IDs
+  - **Current Status**: All 4 production plans active (Basic/Pro × Monthly/Annual) with production Price IDs configured
 - Fixed admin dashboard UI: mutations now await cache invalidation for immediate updates after approving/rejecting users
 - Fixed password setup link blank page: removed lazy loading for critical email-linked pages and added branded PageLoader
 - Resolved SnapTrade billing incident: deleted 2 orphaned users, created recovery documentation
@@ -105,10 +105,22 @@ Preferred communication style: Simple, everyday language.
   - Integrated instant notifications for feature requests with funny quips ending in "Flint to the moon ! 🚀🚀🚀"
   - All notifications are non-blocking with error logging, require `SLACK_WEBHOOK_URL` environment variable
   - Notifications include formatted messages with user details (name, email, plan, timestamp) for COO/admin monitoring
-- **Implemented Feature Request System for User Feedback Collection**:
-  - **Database Schema**: `feature_requests` table with fields: id, name, email, phone (optional), priority (low/medium/high/critical), description, status (pending/approved/in_progress/completed/rejected), submittedAt, reviewedBy, reviewedAt, reviewNotes
-  - **Backend**: Public POST endpoint `/api/feature-requests` with CSRF exemption, schema validation with empty-string normalization, Slack notification integration
-  - **Frontend**: Reusable `FeatureRequestModal` component with form validation, floating action buttons on landing page and dashboard
+- **Implemented Feature Request & Bug Report System for User Feedback Collection**:
+  - **Database Schema**: `feature_requests` table with fields: id, name, email, phone (optional), type (enum: 'feature_request' | 'bug_report', default 'feature_request'), priority (low/medium/high/critical), description, status (pending/approved/in_progress/completed/rejected), submittedAt, reviewedBy, reviewedAt, reviewNotes
+  - **Backend**: Public POST endpoint `/api/feature-requests` with CSRF exemption, schema validation with empty-string normalization, type-aware Slack notification integration
+  - **Frontend**: Reusable `FeatureRequestModal` component with Type dropdown (📝 Feature Request or 🐛 Bug Report), form validation, floating action buttons on landing page and dashboard
   - **Schema Alignment**: Frontend imports shared `insertFeatureRequestSchema` from `@shared/schema` for perfect validation alignment
-  - **Data Handling**: Empty phone strings transformed to undefined, priority defaults to 'medium', server-managed fields (status, timestamps) auto-populated
-  - **User Flow**: Landing/dashboard → Click "Request a Feature" → Fill form → Submit → Success toast → Slack notification sent
+  - **Data Handling**: Empty phone strings transformed to undefined, priority defaults to 'medium', type defaults to 'feature_request', server-managed fields (status, timestamps) auto-populated
+  - **Slack Notifications**: Bug reports show red color with 🐛 icon and urgent quips; feature requests show purple color with 💡 icon and innovation-focused quips
+  - **User Flow**: Landing/dashboard → Click "Request a Feature" → Select type → Fill form → Submit → Success toast → Type-specific Slack notification sent
+- **Configured Production Stripe Environment with All 4 Subscription Plans**:
+  - **Production Price IDs**: 
+    - Basic Monthly: price_1RUGqMKgl6E3u5QE9OtHKCOS ($9.99/month)
+    - Basic Annual: price_1ST8THKgl6E3u5QEbFXJR1Qi ($95.88/year = $7.99/month)
+    - Pro Monthly: price_1ST7B1Kgl6E3u5QElvyoQnY7 ($29.99/month)
+    - Pro Annual: price_1ST7CuKgl6E3u5QEzXDsvsxx ($287.88/year = $23.99/month)
+  - **Landing Page Pricing**: Updated to display correct production prices for all 4 plans with monthly/annual toggle
+  - **Embedded Checkout**: Enhanced to accept tier (basic/pro) and billingPeriod (monthly/yearly) parameters
+  - **Backend Validation**: Strict whitelisting of tier and billing period combinations with explicit error handling
+  - **Webhook Configuration**: Production webhook at https://www.flint-investing.com/api/stripe/webhook with signing secret whsec_XRVWF8zT1hCfJiu2G6Yoakd35UNWdCvV
+  - **Security**: Maintained rate limiting (10 req/15min per IP), CSRF exemption for public checkout endpoint, production Stripe keys stored as Replit secrets
