@@ -99,6 +99,12 @@ export default function FeatureRequestModal({ open, onOpenChange }: FeatureReque
     <Dialog open={open} onOpenChange={onOpenChange} modal={true}>
       <DialogContent 
         className="sm:max-w-[600px] max-h-[90vh] bg-[#18181B] border-[#27272A] text-white"
+        onPointerDownOutside={(e) => {
+          e.preventDefault();
+        }}
+        onInteractOutside={(e) => {
+          e.preventDefault();
+        }}
       >
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold">Request a Feature</DialogTitle>
