@@ -76,9 +76,10 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes (November 14, 2025)
 - **Migrated Payment System from Whop to Stripe**: Complete Stripe Checkout integration with webhook handlers, Customer Portal for subscription management, and dual authentication support (web + mobile)
-  - Backend: Stripe routes (`/api/stripe/*`), pricing configuration, webhook handler with signature verification
-  - Frontend: Updated Subscribe page to redirect to Stripe Checkout, added subscription management to Settings page
-  - Security: CSRF skip list for webhooks, raw body middleware for signature validation
+  - Backend: Stripe routes (`/api/stripe/*`), pricing configuration, webhook handler with signature verification for all subscription lifecycle events
+  - Frontend: Updated Subscribe page to use Stripe Checkout, updated Landing page CTAs to redirect to Subscribe page, added subscription management to Settings page
+  - User Flow: Landing page CTAs → Subscribe page → Login (if needed) → Stripe Checkout. Unauthenticated users see "Log in to subscribe" banner
+  - Security: CSRF skip list for webhooks, raw body middleware for signature validation, validation enforcing Basic monthly only until production Price IDs added
   - Documentation: React Native mobile integration guide (`docs/stripe-mobile-integration.md`)
   - Current Status: Basic monthly plan active ($9.99/mo - price_1ST8cEQP10htbkzEdwmsi5HN), Pro tier and yearly billing temporarily disabled pending production Price IDs
 - Fixed admin dashboard UI: mutations now await cache invalidation for immediate updates after approving/rejecting users

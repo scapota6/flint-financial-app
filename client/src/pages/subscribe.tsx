@@ -54,19 +54,8 @@ export default function Subscribe() {
     }
   }, [toast]);
 
-  // Handle unauthorized errors
-  useEffect(() => {
-    if (error && isUnauthorizedError(error as Error)) {
-      toast({
-        title: "Session Expired",
-        description: "Please log in again to continue",
-        variant: "destructive",
-      });
-      setTimeout(() => {
-        window.location.href = "/api/login";
-      }, 2000);
-    }
-  }, [error, toast]);
+  // Check if user is authenticated - don't auto-redirect, just track the state
+  const isAuthenticated = !error || !isUnauthorizedError(error as Error);
 
   const handleSelectTier = async (tierId: string) => {
     setIsProcessing(true);
@@ -188,8 +177,33 @@ export default function Subscribe() {
           </div>
         </div>
 
+        {/* Login Required Banner for Unauthenticated Users */}
+        {!isAuthenticated && (
+          <div className="mb-8">
+            <Card className="bg-blue-900/20 border-blue-600/50">
+              <CardContent className="p-6 text-center space-y-4">
+                <div>
+                  <h3 className="text-xl font-semibold text-white mb-2">
+                    Log in to subscribe
+                  </h3>
+                  <p className="text-gray-300">
+                    Please log in to your Flint account to manage your subscription
+                  </p>
+                </div>
+                <Button
+                  onClick={() => window.location.href = "/api/login"}
+                  className="bg-blue-600 hover:bg-blue-700 text-white"
+                  data-testid="button-login-to-subscribe"
+                >
+                  Log In
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
         {/* Current Subscription Status */}
-        {currentTier && (
+        {isAuthenticated && currentTier && (
           <div className="mb-8">
             <Card className="trade-card">
               <CardContent className="p-6">
@@ -254,8 +268,16 @@ export default function Subscribe() {
                 </CardHeader>
                 <CardContent className="text-center">
                   <Button
-                    onClick={() => tier.id === 'basic' ? handleSelectTier(tier.id) : null}
-                    disabled={isProcessing || currentTier === tier.id || tier.id === 'free' || tier.id === 'pro'}
+                    onClick={() => {
+                      if (!isAuthenticated) {
+                        window.location.href = "/api/login";
+                        return;
+                      }
+                      if (tier.id === 'basic') {
+                        handleSelectTier(tier.id);
+                      }
+                    }}
+                    disabled={isProcessing || (isAuthenticated && currentTier === tier.id) || tier.id === 'free' || tier.id === 'pro'}
                     className={`w-full ${
                       tier.id === 'pro'
                         ? 'bg-gray-600 cursor-not-allowed opacity-50'
@@ -269,6 +291,8 @@ export default function Subscribe() {
                       'Free Forever'
                     ) : tier.id === 'pro' ? (
                       'Coming Soon'
+                    ) : !isAuthenticated ? (
+                      'Log In to Subscribe'
                     ) : isProcessing ? (
                       'Processing...'
                     ) : currentTier === tier.id ? (

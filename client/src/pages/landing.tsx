@@ -130,54 +130,25 @@ function Landing() {
     });
   });
 
-  // Handle CTA clicks - opens Whop checkout in embedded modal
+  // Handle CTA clicks - redirects to subscribe page with tier preference
   const handleCTAClick = async (ctaId: string, price: string) => {
     trackEvent('click_cta', { cta_id: ctaId, price });
     
-    try {
-      // Parse tier and billing period from ctaId (e.g., 'basic-monthly', 'pro-yearly')
-      const [tier, billingPeriod] = ctaId.split('-') as ['basic' | 'pro' | 'premium', 'monthly' | 'yearly'];
-      
-      // Fetch product ID from backend
-      const response = await fetch('/api/whop/create-checkout', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          tier,
-          billingPeriod,
-          email: formData.email || undefined,
-        }),
-      });
-      
-      const data = await response.json();
-      
-      if (!data.sessionId) {
-        toast({
-          title: "Error",
-          description: data.error || "Unable to open checkout. Please try again.",
-          variant: "destructive"
-        });
-        return;
-      }
-
-      // Open embedded checkout modal with sessionId
-      setSelectedCheckout({
-        sessionId: data.sessionId,
-        planId: data.planId,
-        email: data.email || formData.email,
-        planName: data.planName || `${tier} ${billingPeriod}`,
-      });
-      setCheckoutModalOpen(true);
-    } catch (error) {
-      console.error('Checkout error:', error);
+    // Parse tier and billing period from ctaId (e.g., 'basic-monthly', 'pro-yearly')
+    const [tier, billingPeriod] = ctaId.split('-') as ['basic' | 'pro' | 'premium', 'monthly' | 'yearly'];
+    
+    // TEMPORARY: Only Basic monthly is available until production Price IDs are added
+    if (tier !== 'basic' || billingPeriod !== 'monthly') {
       toast({
-        title: "Error",
-        description: "Unable to open checkout. Please try again.",
-        variant: "destructive"
+        title: "Coming Soon",
+        description: "Pro tier and yearly billing will be available soon. Only Basic monthly is currently active.",
+        variant: "default"
       });
+      return;
     }
+    
+    // Redirect to subscribe page with tier preference (user will login there if needed)
+    window.location.href = `/subscribe?tier=${tier}`;
   };
 
   // Handle form submission
