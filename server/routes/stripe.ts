@@ -19,10 +19,19 @@ router.post('/create-embedded-checkout', rateLimits.publicCheckout, async (req, 
   try {
     const { email, tier, billingPeriod = 'monthly' } = req.body;
 
-    // TEMPORARY: Only allow Basic monthly until production Price IDs are added
-    if (tier !== 'basic' || billingPeriod !== 'monthly') {
+    // Validate tier and billingPeriod
+    const validTiers = ['basic', 'pro'];
+    const validBillingPeriods = ['monthly', 'yearly'];
+    
+    if (!tier || !validTiers.includes(tier)) {
       return res.status(400).json({ 
-        error: 'Only Basic monthly plan is currently available. Pro tier and yearly billing coming soon.' 
+        error: 'Invalid tier. Must be one of: basic, pro' 
+      });
+    }
+    
+    if (!billingPeriod || !validBillingPeriods.includes(billingPeriod)) {
+      return res.status(400).json({ 
+        error: 'Invalid billing period. Must be one of: monthly, yearly' 
       });
     }
 
@@ -44,7 +53,7 @@ router.post('/create-embedded-checkout', rateLimits.publicCheckout, async (req, 
         .where(eq(users.email, email.toLowerCase()))
         .limit(1);
 
-      customerId = existingUser?.stripeCustomerId;
+      customerId = existingUser?.stripeCustomerId || undefined;
 
       // Create or retrieve Stripe customer
       if (!customerId) {
@@ -147,10 +156,19 @@ router.post('/create-checkout-session', requireAuth, async (req, res) => {
       return res.status(401).json({ error: 'Authentication required' });
     }
 
-    // TEMPORARY: Only allow Basic monthly until production Price IDs are added
-    if (tier !== 'basic' || billingPeriod !== 'monthly') {
+    // Validate tier and billingPeriod
+    const validTiers = ['basic', 'pro'];
+    const validBillingPeriods = ['monthly', 'yearly'];
+    
+    if (!tier || !validTiers.includes(tier)) {
       return res.status(400).json({ 
-        error: 'Only Basic monthly plan is currently available. Pro tier and yearly billing coming soon.' 
+        error: 'Invalid tier. Must be one of: basic, pro' 
+      });
+    }
+    
+    if (!billingPeriod || !validBillingPeriods.includes(billingPeriod)) {
+      return res.status(400).json({ 
+        error: 'Invalid billing period. Must be one of: monthly, yearly' 
       });
     }
 

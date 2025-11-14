@@ -126,6 +126,7 @@ function Landing() {
   // Embedded checkout state
   const [checkoutEmail, setCheckoutEmail] = useState('');
   const [checkoutTier, setCheckoutTier] = useState<'basic' | 'pro'>('basic');
+  const [checkoutBillingPeriod, setCheckoutBillingPeriod] = useState<'monthly' | 'yearly'>('monthly');
   
   const { toast } = useToast();
 
@@ -143,18 +144,9 @@ function Landing() {
   const handleCTAClick = (tier: 'basic' | 'pro', billingPeriod: 'monthly' | 'yearly') => {
     trackEvent('click_cta', { tier, billingPeriod });
     
-    // TEMPORARY: Only Basic monthly is available until production Price IDs are added
-    if (tier !== 'basic' || billingPeriod !== 'monthly') {
-      toast({
-        title: "Coming Soon",
-        description: "Pro tier and yearly billing will be available soon. Only Basic monthly is currently active.",
-        variant: "default"
-      });
-      return;
-    }
-    
-    // Set tier and open checkout modal directly
+    // Set tier, billing period and open checkout modal directly
     setCheckoutTier(tier);
+    setCheckoutBillingPeriod(billingPeriod);
     setCheckoutModalOpen(true);
   };
 
@@ -1102,10 +1094,10 @@ function Landing() {
                   <CardTitle className="text-2xl">Flint Basic</CardTitle>
                   <div className="space-y-2">
                     <div className="text-4xl font-bold">
-                      ${isYearly ? '16.67' : '19.99'}
+                      ${isYearly ? '7.99' : '9.99'}
                     </div>
                     <div className="text-gray-300">
-                      {isYearly ? '/mo (billed yearly)' : '/month'}
+                      {isYearly ? '/mo (billed $95.88/year)' : '/month'}
                     </div>
                   </div>
                   <CardDescription className="text-gray-300">
@@ -1130,10 +1122,10 @@ function Landing() {
                   <CardTitle className="text-2xl">Flint Pro</CardTitle>
                   <div className="space-y-2">
                     <div className="text-4xl font-bold">
-                      ${isYearly ? '33.33' : '39.99'}
+                      ${isYearly ? '23.99' : '29.99'}
                     </div>
                     <div className="text-gray-400">
-                      {isYearly ? '/mo (billed yearly)' : '/month'}
+                      {isYearly ? '/mo (billed $287.88/year)' : '/month'}
                     </div>
                   </div>
                   <CardDescription className="text-gray-300">
@@ -1463,7 +1455,7 @@ function Landing() {
         }}
         email={checkoutEmail}
         tier={checkoutTier}
-        billingPeriod="monthly"
+        billingPeriod={checkoutBillingPeriod}
       />
 
       {/* Floating Feature Request Button */}
