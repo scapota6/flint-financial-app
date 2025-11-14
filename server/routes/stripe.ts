@@ -5,12 +5,13 @@ import { users } from '@shared/schema';
 import { eq } from 'drizzle-orm';
 import { logger } from '@shared/logger';
 import { requireAuth } from '../middleware/jwt-auth';
+import { rateLimits } from '../middleware/rateLimiter';
 import Stripe from 'stripe';
 
 const router = Router();
 
 // Create Stripe Embedded Checkout Session (unauthenticated)
-router.post('/create-embedded-checkout', async (req, res) => {
+router.post('/create-embedded-checkout', rateLimits.publicCheckout, async (req, res) => {
   try {
     const { email, tier, billingPeriod = 'monthly' } = req.body;
 
@@ -53,6 +54,17 @@ router.post('/create-embedded-checkout', async (req, res) => {
       logger.info('Created Stripe customer for embedded checkout', {
         metadata: { email: email.toLowerCase(), customerId }
       });
+
+      // Persist the customer ID to the existing user
+      if (existingUser && !existingUser.stripeCustomerId) {
+        await db.update(users)
+          .set({ stripeCustomerId: customerId, updatedAt: new Date() })
+          .where(eq(users.id, existingUser.id));
+
+        logger.info('Persisted Stripe customer ID to existing user', {
+          metadata: { userId: existingUser.id, customerId }
+        });
+      }
     }
 
     // Get app URL for return redirect
@@ -371,34 +383,54 @@ export async function handleStripeWebhook(req: ExpressRequest, res: any) {
 // Handle checkout.session.completed
 async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) {
   try {
-    const userId = session.metadata?.flintUserId;
+    const customerEmail = session.metadata?.customerEmail;
     const tier = session.metadata?.tier as 'basic' | 'pro';
+    const stripeCustomerId = session.customer as string;
+    const stripeSubscriptionId = session.subscription as string;
 
-    if (!userId || !tier) {
-      logger.error('Missing metadata in checkout session', {
-        metadata: { sessionId: session.id, hasUserId: !!userId, hasTier: !!tier }
-      });
-      return;
+    // STEP 1: Try to find user by Stripe customer ID first (most reliable)
+    let [user] = await db.select()
+      .from(users)
+      .where(eq(users.stripeCustomerId, stripeCustomerId))
+      .limit(1);
+
+    // STEP 2: If not found, try by email
+    if (!user && customerEmail) {
+      [user] = await db.select()
+        .from(users)
+        .where(eq(users.email, customerEmail.toLowerCase()))
+        .limit(1);
     }
 
-    // Update user subscription
-    await db.update(users)
-      .set({
-        stripeCustomerId: session.customer as string,
-        stripeSubscriptionId: session.subscription as string,
-        subscriptionTier: tier,
-        subscriptionStatus: 'active',
-        updatedAt: new Date(),
-      })
-      .where(eq(users.id, userId));
+    if (user) {
+      // EXISTING USER: Update subscription (idempotent)
+      await db.update(users)
+        .set({
+          stripeCustomerId,
+          stripeSubscriptionId,
+          subscriptionTier: tier,
+          subscriptionStatus: 'active',
+          updatedAt: new Date(),
+        })
+        .where(eq(users.id, user.id));
 
-    logger.info('Subscription activated from checkout', {
-      metadata: {
-        userId,
-        tier,
-        subscriptionId: session.subscription,
-      }
-    });
+      logger.info('Subscription activated for existing user', {
+        metadata: { userId: user.id, tier, subscriptionId: stripeSubscriptionId }
+      });
+    } else if (customerEmail) {
+      // NEW USER: Create account with password reset token
+      // TODO: This will be implemented in next task - for now just log
+      logger.info('Would create new user account', {
+        metadata: { email: customerEmail, tier, stripeCustomerId }
+      });
+      
+      // Future: Insert user + generate password reset token + send email
+      // For now, skip to avoid incomplete implementation
+    } else {
+      logger.error('Cannot create user - no email in metadata', {
+        metadata: { sessionId: session.id }
+      });
+    }
   } catch (error: any) {
     logger.error('Failed to handle checkout.session.completed', { error: error.message });
     throw error;

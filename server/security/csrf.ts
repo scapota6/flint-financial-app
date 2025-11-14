@@ -21,6 +21,7 @@ export function installCsrf(app: Express) {
     '/api/snaptrade/webhooks',
     '/api/lemonsqueezy/webhook',  // Lemon Squeezy payment webhooks
     '/api/stripe/webhook',  // Stripe payment webhooks
+    '/api/stripe/create-embedded-checkout',  // Stripe embedded checkout from public landing page
     '/api/whop/create-checkout',  // Whop checkout creation from public landing page
     '/api/applications/submit',
     '/api/auth/setup-password',

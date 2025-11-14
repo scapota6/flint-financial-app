@@ -174,5 +174,25 @@ export const rateLimits = {
     windowMs: 60 * 1000, // 1 minute
     maxRequests: 10,
     keyGenerator: (req) => `external:${(req as any).user?.claims?.sub || req.ip}`
+  }),
+
+  // Strict limits for public checkout to prevent abuse
+  publicCheckout: createRateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    maxRequests: 10,
+    keyGenerator: (req) => `checkout:${req.ip}`,
+    onLimitReached: (req, res) => {
+      logger.warn('Public checkout rate limit exceeded', {
+        metadata: {
+          ip: req.ip,
+          userAgent: req.headers['user-agent'],
+        }
+      });
+      res.status(429).json({
+        error: 'Too many checkout attempts',
+        message: 'You have exceeded the maximum number of checkout attempts. Please wait 15 minutes before trying again.',
+        retryAfter: 900 // 15 minutes in seconds
+      });
+    }
   })
 };
