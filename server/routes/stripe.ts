@@ -1,12 +1,15 @@
 import { Router, Request as ExpressRequest } from 'express';
 import { stripe, getPriceByTierAndPeriod, getTierByPriceId, STRIPE_CONFIG } from '../lib/stripe-config';
 import { db } from '../db';
-import { users } from '@shared/schema';
+import { users, passwordResetTokens } from '@shared/schema';
 import { eq } from 'drizzle-orm';
 import { logger } from '@shared/logger';
 import { requireAuth } from '../middleware/jwt-auth';
 import { rateLimits } from '../middleware/rateLimiter';
 import Stripe from 'stripe';
+import crypto from 'crypto';
+import { generateSecureToken, hashToken } from '../lib/token-utils';
+import { sendPasswordResetEmail } from '../services/email';
 
 const router = Router();
 
@@ -67,16 +70,14 @@ router.post('/create-embedded-checkout', rateLimits.publicCheckout, async (req, 
       }
     }
 
-    // Get app URL for return redirect
-    const appUrl = process.env.REPLIT_DEV_DOMAIN 
-      ? `https://${process.env.REPLIT_DEV_DOMAIN}`
-      : 'http://localhost:5000';
-
     // Create Embedded Checkout Session
+    // Note: Using redirect_on_completion: 'never' because we handle navigation
+    // via onComplete callback in the frontend component
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
       mode: 'subscription',
       ui_mode: 'embedded',
+      redirect_on_completion: 'never',
       payment_method_types: ['card'],
       line_items: [
         {
@@ -84,7 +85,6 @@ router.post('/create-embedded-checkout', rateLimits.publicCheckout, async (req, 
           quantity: 1,
         },
       ],
-      return_url: `${appUrl}/subscribe?session_id={CHECKOUT_SESSION_ID}`,
       metadata: {
         customerEmail: email.toLowerCase(),
         tier,
@@ -419,13 +419,76 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
       });
     } else if (customerEmail) {
       // NEW USER: Create account with password reset token
-      // TODO: This will be implemented in next task - for now just log
-      logger.info('Would create new user account', {
-        metadata: { email: customerEmail, tier, stripeCustomerId }
-      });
+      const userId = crypto.randomUUID();
       
-      // Future: Insert user + generate password reset token + send email
-      // For now, skip to avoid incomplete implementation
+      const [newUser] = await db.insert(users)
+        .values({
+          id: userId,
+          email: customerEmail.toLowerCase(),
+          passwordHash: null, // No password yet
+          stripeCustomerId,
+          stripeSubscriptionId,
+          subscriptionTier: tier,
+          subscriptionStatus: 'active',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        })
+        .returning()
+        .onConflictDoNothing(); // Idempotent: If race condition, ignore
+
+      if (!newUser) {
+        // Race condition: user was created by another webhook retry
+        logger.warn('User already exists (race condition)', {
+          metadata: { email: customerEmail, stripeCustomerId }
+        });
+        return;
+      }
+
+      // Generate password reset token (24 hour expiry)
+      const plainToken = generateSecureToken();
+      const tokenHash = hashToken(plainToken);
+      const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+
+      await db.insert(passwordResetTokens).values({
+        userId: newUser.id,
+        token: tokenHash,
+        tokenType: 'password_reset',
+        expiresAt,
+        used: false,
+      });
+
+      // Build password setup link
+      const baseUrl = process.env.REPLIT_DEV_DOMAIN 
+        ? `https://${process.env.REPLIT_DEV_DOMAIN}`
+        : 'https://www.flint-investing.com';
+      const passwordSetupLink = `${baseUrl}/setup-password?token=${plainToken}`;
+
+      // Send password reset email with password setup link
+      const emailResult = await sendPasswordResetEmail(
+        customerEmail,
+        newUser.firstName || 'User',
+        passwordSetupLink
+      );
+
+      if (!emailResult.success) {
+        // Log error but don't throw - Stripe will retry webhook if we throw
+        logger.error('Failed to send welcome email to new user', {
+          metadata: { 
+            userId: newUser.id, 
+            email: customerEmail, 
+            error: emailResult.error 
+          }
+        });
+      }
+
+      logger.info('New user account created via Stripe checkout', {
+        metadata: { 
+          userId: newUser.id, 
+          email: customerEmail, 
+          tier, 
+          subscriptionId: stripeSubscriptionId 
+        }
+      });
     } else {
       logger.error('Cannot create user - no email in metadata', {
         metadata: { sessionId: session.id }

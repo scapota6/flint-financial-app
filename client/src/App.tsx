@@ -22,6 +22,7 @@ const NotFound = lazy(() => import("@/pages/not-found"));
 const Landing = lazy(() => import("@/pages/landing"));
 const SuccessPage = lazy(() => import("@/pages/success"));
 const PaymentSuccessPage = lazy(() => import("@/pages/payment-success"));
+const CheckoutSuccess = lazy(() => import("@/pages/checkout-success"));
 const Dashboard = lazy(() => import("@/pages/dashboard"));
 const Trading = lazy(() => import("@/pages/Trading"));
 const Transfers = lazy(() => import("@/pages/transfers"));
@@ -94,6 +95,7 @@ function Router() {
                 <Route path="/success" component={SuccessPage} />
                 <Route path="/landing/success" component={SuccessPage} />
                 <Route path="/payment-success" component={PaymentSuccessPage} />
+                <Route path="/checkout-success" component={CheckoutSuccess} />
                 <Route path="/setup-password" component={PasswordSetup} />
                 <Route path="/reset-password" component={ResetPassword} />
                 <Route path="/tos" component={TermsOfService} />

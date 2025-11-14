@@ -64,6 +64,7 @@ import avatar3 from "@assets/generated_images/Professional_Hispanic_woman_headsh
 import avatar4 from "@assets/generated_images/Professional_Caucasian_man_headshot_f922a01f.png";
 import avatar5 from "@assets/generated_images/Professional_Middle_Eastern_woman_headshot_5f778eae.png";
 import { CheckoutModal } from "@/components/checkout-modal";
+import { EmbeddedCheckoutModal } from "@/components/EmbeddedCheckoutModal";
 
 // Removed Lemon Squeezy - now using Whop for payment processing
 
@@ -118,6 +119,13 @@ function Landing() {
   const [dashboardPreviewOpen, setDashboardPreviewOpen] = useState(false);
   const [checkoutModalOpen, setCheckoutModalOpen] = useState(false);
   const [selectedCheckout, setSelectedCheckout] = useState<{ sessionId: string; planId?: string; email?: string; planName: string } | null>(null);
+  
+  // Email dialog and embedded checkout state
+  const [emailDialogOpen, setEmailDialogOpen] = useState(false);
+  const [emailInput, setEmailInput] = useState('');
+  const [checkoutEmail, setCheckoutEmail] = useState('');
+  const [checkoutTier, setCheckoutTier] = useState<'basic' | 'pro'>('basic');
+  
   const { toast } = useToast();
 
   // Track section views
@@ -130,12 +138,9 @@ function Landing() {
     });
   });
 
-  // Handle CTA clicks - creates Stripe checkout session directly
-  const handleCTAClick = async (ctaId: string, price: string) => {
-    trackEvent('click_cta', { cta_id: ctaId, price });
-    
-    // Parse tier and billing period from ctaId (e.g., 'basic-monthly', 'pro-yearly')
-    const [tier, billingPeriod] = ctaId.split('-') as ['basic' | 'pro' | 'premium', 'monthly' | 'yearly'];
+  // Handle CTA clicks - opens email dialog for embedded checkout
+  const handleCTAClick = (tier: 'basic' | 'pro', billingPeriod: 'monthly' | 'yearly') => {
+    trackEvent('click_cta', { tier, billingPeriod });
     
     // TEMPORARY: Only Basic monthly is available until production Price IDs are added
     if (tier !== 'basic' || billingPeriod !== 'monthly') {
@@ -147,50 +152,27 @@ function Landing() {
       return;
     }
     
-    try {
-      // Try to create Stripe checkout session
-      const response = await fetch('/api/stripe/create-checkout-session', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify({
-          tier,
-          billingPeriod: 'monthly',
-        }),
-      });
+    // Set tier and open email dialog
+    setCheckoutTier(tier);
+    setEmailDialogOpen(true);
+  };
 
-      if (response.status === 401) {
-        // User not authenticated - redirect to subscribe page to login
-        window.location.href = `/subscribe?tier=${tier}`;
-        return;
-      }
-
-      if (!response.ok) {
-        throw new Error('Failed to create checkout session');
-      }
-
-      const data = await response.json();
-      
-      if (data.url) {
-        // Redirect to Stripe Checkout
-        window.location.href = data.url;
-      } else {
-        throw new Error('No checkout URL returned');
-      }
-    } catch (error) {
-      console.error('Checkout error:', error);
+  // Handle email submission to open embedded checkout
+  const handleEmailSubmit = () => {
+    // Basic email validation
+    if (!emailInput || !emailInput.includes('@') || !emailInput.includes('.')) {
       toast({
-        title: "Error",
-        description: "Unable to open checkout. Redirecting to subscribe page...",
+        title: "Invalid Email",
+        description: "Please enter a valid email address.",
         variant: "destructive"
       });
-      // Fallback: redirect to subscribe page
-      setTimeout(() => {
-        window.location.href = `/subscribe?tier=${tier}`;
-      }, 1500);
+      return;
     }
+
+    // Set email and open checkout modal
+    setCheckoutEmail(emailInput);
+    setEmailDialogOpen(false);
+    setCheckoutModalOpen(true);
   };
 
   // Handle form submission
@@ -916,8 +898,8 @@ function Landing() {
                 size="lg" 
                 className="w-full lg:w-auto bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 text-lg"
                 data-cta="annual-pro"
-                data-testid="button-cta-annual-pro"
-                onClick={() => handleCTAClick('pro-yearly', '$399.99')}
+                data-testid="button-get-pro-yearly"
+                onClick={() => handleCTAClick('pro', 'yearly')}
               >
                 Start with Pro Annual – $399.99
               </Button>
@@ -1151,11 +1133,8 @@ function Landing() {
                   <Button 
                     className="w-full bg-blue-600 hover:bg-blue-700 text-white"
                     data-cta={isYearly ? 'basic-yearly' : 'basic-monthly'}
-                    data-testid={isYearly ? 'button-cta-basic-yearly' : 'button-cta-basic-monthly'}
-                    onClick={() => handleCTAClick(
-                      isYearly ? 'basic-yearly' : 'basic-monthly', 
-                      isYearly ? '$199.99' : '$19.99'
-                    )}
+                    data-testid={isYearly ? 'button-get-basic-yearly' : 'button-get-basic'}
+                    onClick={() => handleCTAClick('basic', isYearly ? 'yearly' : 'monthly')}
                   >
                     Choose Basic {isYearly ? 'Yearly' : 'Monthly'}
                   </Button>
@@ -1182,10 +1161,8 @@ function Landing() {
                   <Button 
                     className="w-full bg-blue-600 hover:bg-blue-700 text-white"
                     data-cta={isYearly ? 'pro-yearly' : 'pro-monthly'}
-                    onClick={() => handleCTAClick(
-                      isYearly ? 'pro-yearly' : 'pro-monthly', 
-                      isYearly ? '$399.99' : '$39.99'
-                    )}
+                    data-testid={isYearly ? 'button-get-pro-yearly' : 'button-get-pro'}
+                    onClick={() => handleCTAClick('pro', isYearly ? 'yearly' : 'monthly')}
                   >
                     Choose Pro {isYearly ? 'Yearly' : 'Monthly'}
                   </Button>
@@ -1491,6 +1468,65 @@ function Landing() {
           }}
         />
       )}
+
+      {/* Email Input Dialog */}
+      <Dialog open={emailDialogOpen} onOpenChange={setEmailDialogOpen}>
+        <DialogContent className="bg-gray-900 border-gray-700 max-w-md">
+          <VisuallyHidden>
+            <DialogDescription>
+              Enter your email to continue with checkout
+            </DialogDescription>
+          </VisuallyHidden>
+          <DialogTitle className="text-2xl font-bold text-white">
+            Get Started with Flint
+          </DialogTitle>
+          <div className="space-y-4 pt-4">
+            <div className="space-y-2">
+              <Label htmlFor="email-input" className="text-gray-300">
+                Email Address
+              </Label>
+              <Input
+                id="email-input"
+                type="email"
+                placeholder="Enter your email"
+                value={emailInput}
+                onChange={(e) => setEmailInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    handleEmailSubmit();
+                  }
+                }}
+                className="bg-gray-800 border-gray-600 text-white placeholder:text-gray-500 focus:border-blue-500"
+                data-testid="input-email"
+                autoFocus
+              />
+            </div>
+            <Button
+              onClick={handleEmailSubmit}
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+              data-testid="button-continue-checkout"
+            >
+              Continue to Checkout
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Embedded Checkout Modal */}
+      <EmbeddedCheckoutModal
+        open={checkoutModalOpen}
+        onOpenChange={(open) => {
+          setCheckoutModalOpen(open);
+          if (!open) {
+            // Clear email state when modal closes
+            setCheckoutEmail('');
+            setEmailInput('');
+          }
+        }}
+        email={checkoutEmail}
+        tier={checkoutTier}
+        billingPeriod="monthly"
+      />
     </div>
   );
 }
