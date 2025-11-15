@@ -384,6 +384,11 @@ router.get('/accounts/:accountId/positions', requireAuth, async (req: any, res) 
     
     console.log('[SnapTrade Accounts] Fetched', positions.length, 'positions for account:', accountId);
     
+    // DEBUG: Log first position to see actual SnapTrade response structure
+    if (positions.length > 0) {
+      console.log('[SnapTrade DEBUG] Sample position response:', JSON.stringify(positions[0], null, 2));
+    }
+    
     // Transform positions to normalized DTO
     const transformedPositions: Position[] = positions.map((position: any) => ({
       symbol: position.symbol?.symbol?.symbol || position.symbol?.raw_symbol || position.symbol?.symbol || 'Unknown',
@@ -464,6 +469,11 @@ router.get('/accounts/:accountId/orders', requireAuth, async (req: any, res) => 
     const orders = ordersResponse.data || [];
     
     console.log('[SnapTrade Accounts] Fetched', orders.length, 'orders for account:', accountId);
+    
+    // DEBUG: Log first order to see actual SnapTrade response structure
+    if (orders.length > 0) {
+      console.log('[SnapTrade DEBUG] Sample order response:', JSON.stringify(orders[0], null, 2));
+    }
     
     // Transform orders to normalized DTO  
     const transformedOrders: Order[] = orders.map((order: any) => {
@@ -708,6 +718,11 @@ router.get('/accounts/:accountId/activities', requireAuth, async (req: any, res)
     }
     
     console.log('[SnapTrade Accounts] Fetched', activities.length, 'activities for account:', accountId);
+    
+    // DEBUG: Log first activity to see actual SnapTrade response structure
+    if (activities.length > 0) {
+      console.log('[SnapTrade DEBUG] Sample activity response:', JSON.stringify(activities[0], null, 2));
+    }
     
     // Transform activities to normalized DTO per official API spec
     const transformedActivities: Activity[] = activities.map((activity: any) => {
