@@ -119,8 +119,8 @@ export default function Portfolio() {
   // Fetch portfolio summary for additional data - load in parallel, don't wait for accounts
   const { data: summary, isLoading: summaryLoading } = useQuery<PortfolioSummary>({
     queryKey: ['/api/portfolio/summary'],
-    refetchInterval: 10000, // Refresh every 10 seconds (heavy aggregate)
-    staleTime: 5000 // Fresh for 5 seconds
+    refetchInterval: 2000, // Refresh every 2 seconds for live data
+    staleTime: 1000 // Fresh for 1 second
   });
 
   // Fetch portfolio history for chart - load in parallel
@@ -135,8 +135,8 @@ export default function Portfolio() {
       }
       return response.json();
     },
-    refetchInterval: 15000, // Refresh every 15 seconds (historical data, low priority)
-    staleTime: 10000 // Fresh for 10 seconds
+    refetchInterval: 5000, // Refresh every 5 seconds for live chart updates
+    staleTime: 3000 // Fresh for 3 seconds
   });
 
 

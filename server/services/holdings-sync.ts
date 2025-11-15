@@ -196,11 +196,14 @@ async function syncAllHoldings(): Promise<void> {
 
 /**
  * Initialize the background holdings sync service
+ * 
+ * Runs every 1 minute for near real-time data updates.
+ * This ensures users see live prices and positions without manual refresh.
  */
 export function startHoldingsSyncService(): void {
-  // Run every 5 minutes: '*/5 * * * *'
+  // Run every 1 minute for live data: '*/1 * * * *'
   const job = new CronJob(
-    '*/5 * * * *',
+    '*/1 * * * *',
     async () => {
       await syncAllHoldings();
     },
@@ -212,12 +215,12 @@ export function startHoldingsSyncService(): void {
   // Start the cron job
   job.start();
   
-  logger.info('[Holdings Sync] Service started - runs every 5 minutes');
+  logger.info('[Holdings Sync] Service started - runs every 1 minute for live data');
   
-  // Run initial sync after 30 seconds to avoid startup congestion
+  // Run initial sync after 10 seconds for faster initial data
   setTimeout(() => {
     syncAllHoldings().catch(error => {
       logger.error('[Holdings Sync] Initial sync failed', { error });
     });
-  }, 30000);
+  }, 10000);
 }

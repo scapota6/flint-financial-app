@@ -70,7 +70,11 @@ async function findOrphanedConnections(): Promise<OrphanedConnection[]> {
 }
 
 /**
- * Find SnapTrade users that don't have any active connections
+ * Find SnapTrade users that are truly orphaned:
+ * - The Flint user no longer exists in the users table (deleted account)
+ * 
+ * NOTE: We do NOT delete SnapTrade users just because they have no connections,
+ * as users may temporarily disconnect all accounts or be setting up new connections.
  */
 async function findOrphanedUsers(): Promise<OrphanedUser[]> {
   try {
@@ -82,8 +86,7 @@ async function findOrphanedUsers(): Promise<OrphanedUser[]> {
       })
       .from(snaptradeUsers)
       .leftJoin(users, eq(users.id, snaptradeUsers.flintUserId))
-      .leftJoin(snaptradeConnections, eq(snaptradeConnections.flintUserId, snaptradeUsers.flintUserId))
-      .where(sql`${snaptradeConnections.id} IS NULL`);
+      .where(sql`${users.id} IS NULL`); // Only find users where Flint user doesn't exist
 
     return orphaned.map(u => ({
       flintUserId: u.flintUserId,
