@@ -114,7 +114,7 @@ const GlobalNavbar = memo(function GlobalNavbar() {
                     </Avatar>
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-56 bg-[#1e1e1e] border-gray-700 z-[200]" align="end" sideOffset={8}>
+                <DropdownMenuContent className="w-56 bg-[#1e1e1e] border-gray-700 z-[200]" align="end" alignOffset={-8} sideOffset={8}>
                   <div className="flex items-center justify-start gap-2 p-2">
                     <div className="flex flex-col space-y-1 leading-none">
                       <p className="font-medium text-white">{user?.email}</p>
