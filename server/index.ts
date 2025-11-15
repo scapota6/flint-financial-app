@@ -236,6 +236,10 @@ const app = express();
   const { startOrphanedConnectionsCleanup } = await import('./services/orphaned-connections-cleanup');
   startOrphanedConnectionsCleanup();
 
+  // Start holdings sync service
+  const { startHoldingsSyncService } = await import('./services/holdings-sync');
+  startHoldingsSyncService();
+
   // Validate SnapTrade credentials on startup
   const { validateSnapTradeCredentials } = await import('./lib/snaptrade');
   validateSnapTradeCredentials().then(isValid => {
