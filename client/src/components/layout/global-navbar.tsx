@@ -115,13 +115,10 @@ const GlobalNavbar = memo(function GlobalNavbar() {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent 
-                  className="w-56 bg-[#1e1e1e] border-gray-700 z-[200]" 
+                  className="w-56 bg-[#1e1e1e] border-gray-700 z-[200] -translate-x-44" 
                   side="bottom" 
                   align="end" 
-                  alignOffset={-180}
                   sideOffset={8}
-                  collisionPadding={16}
-                  avoidCollisions={true}
                 >
                   <div className="flex items-center justify-start gap-2 p-2">
                     <div className="flex flex-col space-y-1 leading-none">
