@@ -530,22 +530,24 @@ router.get('/accounts/:accountId/orders', requireAuth, async (req: any, res) => 
       
       return {
         id: order.brokerage_order_id || order.id,
-        placedAt: order.created_at || null,
+        placedAt: order.time_placed || order.created_at || null,
         status,
         side,
         type,
         timeInForce,
         symbol,
         description,
-        quantity: order.quantity || 0,
-        limitPrice: order.price ? {
-          amount: order.price,
+        quantity: order.total_quantity || order.quantity || 0,
+        filledQuantity: order.filled_quantity || 0,
+        limitPrice: order.limit_price ? {
+          amount: order.limit_price,
           currency
         } : null,
-        averageFillPrice: order.fill_price || order.average_fill_price ? {
-          amount: order.fill_price || order.average_fill_price,
+        averageFillPrice: order.execution_price || order.fill_price || order.average_fill_price ? {
+          amount: order.execution_price || order.fill_price || order.average_fill_price,
           currency
-        } : null
+        } : null,
+        price: order.execution_price || order.limit_price || null
       };
     });
     
@@ -749,17 +751,25 @@ router.get('/accounts/:accountId/activities', requireAuth, async (req: any, res)
                      activity.option_symbol?.ticker || null;
       const description = activity.symbol?.description || activity.description || '';
       
+      // Extract financial data with proper field names from SnapTrade API
+      const quantity = activity.units || activity.quantity || activity.fractional_units || null;
+      const price = activity.price || activity.execution_price || activity.unit_price || null;
+      
+      // net_amount is the key field - represents actual cash impact on account
+      const netAmount = activity.net_amount || activity.amount;
+      const amount = netAmount !== null && netAmount !== undefined ? {
+        amount: Math.abs(parseFloat(String(netAmount))) || 0,
+        currency: activity.currency?.code || 'USD'
+      } : null;
+      
       return {
         id: activity.id as UUID,
         accountId: accountId as UUID,
         type: mappedType,
         symbol,
-        quantity: activity.units || null,
-        price: activity.price || null,
-        amount: activity.amount !== null && activity.amount !== undefined ? {
-          amount: parseFloat(String(activity.amount)) || 0,
-          currency: activity.currency?.code || 'USD'
-        } : null,
+        quantity,
+        price,
+        amount,
         fees: activity.fee ? {
           amount: parseFloat(String(activity.fee)) || 0,
           currency: activity.currency?.code || 'USD'
