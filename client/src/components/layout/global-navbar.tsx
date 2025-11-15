@@ -115,7 +115,7 @@ const GlobalNavbar = memo(function GlobalNavbar() {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent 
-                  className="w-56 bg-[#1e1e1e] border-gray-700 z-[200] -translate-x-44" 
+                  className="w-56 bg-[#1e1e1e] border-gray-700 z-[200] -translate-x-[200px]" 
                   side="bottom" 
                   align="end" 
                   sideOffset={8}
