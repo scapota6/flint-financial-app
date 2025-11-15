@@ -128,18 +128,15 @@ const GlobalNavbar = memo(function GlobalNavbar() {
                   </div>
                   <DropdownMenuSeparator className="bg-gray-700" />
                   <Link href="/profile">
-                    <DropdownMenuItem className="cursor-pointer !text-white !text-sm">
-                      <User className="mr-2 h-4 w-4 flex-shrink-0" />
-                      <span className="!text-white !text-sm font-medium">Profile</span>
+                    <DropdownMenuItem>
+                      <User className="h-4 w-4" />
+                      Profile
                     </DropdownMenuItem>
                   </Link>
                   <DropdownMenuSeparator className="bg-gray-700" />
-                  <DropdownMenuItem 
-                    onClick={handleLogout}
-                    className="!text-white !text-sm"
-                  >
-                    <LogOut className="mr-2 h-4 w-4 flex-shrink-0" />
-                    <span className="!text-white !text-sm font-medium">Sign out</span>
+                  <DropdownMenuItem onClick={handleLogout}>
+                    <LogOut className="h-4 w-4" />
+                    Sign out
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
