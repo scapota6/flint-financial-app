@@ -13,6 +13,7 @@ import {
 } from '@shared/schema';
 import { eq, sql, inArray } from 'drizzle-orm';
 import type { WebhookEvent, WebhookAck, WebhookType, ISODate, UUID } from '@shared/types';
+import { logger } from '@shared/logger';
 
 const router = Router();
 
@@ -122,15 +123,14 @@ async function deleteConnectionAndChildren(authorizationId: string, requestId: s
       console.log(`[SnapTrade Webhook ${requestId}] Found ${accountIds.length} accounts to delete`);
       
       if (accountIds.length > 0) {
-        // Step 3: Delete all child records using batched IN-clause for atomicity
-        // Use inArray for cleaner Drizzle syntax that handles both single and multiple IDs
-        await Promise.all([
-          tx.delete(snaptradeBalances).where(inArray(snaptradeBalances.accountId, accountIds)),
-          tx.delete(snaptradePositions).where(inArray(snaptradePositions.accountId, accountIds)),
-          tx.delete(snaptradeOrders).where(inArray(snaptradeOrders.accountId, accountIds)),
-          tx.delete(snaptradeActivities).where(inArray(snaptradeActivities.accountId, accountIds)),
-          tx.delete(snaptradeOptionHoldings).where(inArray(snaptradeOptionHoldings.accountId, accountIds))
-        ]);
+        // Step 3: Delete all child records SEQUENTIALLY to maintain transaction integrity
+        // IMPORTANT: Do NOT use Promise.all inside a Drizzle transaction - it can cause
+        // the transaction to close prematurely or run deletes outside transaction scope
+        await tx.delete(snaptradeBalances).where(inArray(snaptradeBalances.accountId, accountIds));
+        await tx.delete(snaptradePositions).where(inArray(snaptradePositions.accountId, accountIds));
+        await tx.delete(snaptradeOrders).where(inArray(snaptradeOrders.accountId, accountIds));
+        await tx.delete(snaptradeActivities).where(inArray(snaptradeActivities.accountId, accountIds));
+        await tx.delete(snaptradeOptionHoldings).where(inArray(snaptradeOptionHoldings.accountId, accountIds));
         
         console.log(`[SnapTrade Webhook ${requestId}] Deleted all child records for ${accountIds.length} accounts`);
         
@@ -281,7 +281,32 @@ router.post('/webhooks', async (req, res) => {
         console.log('[SnapTrade Webhook] Handling webhook type:', webhookEvent.type);
     }
     
-    // TODO: Store webhook event in database for audit trail
+    // Store webhook event in database for audit trail
+    try {
+      const { snaptradeWebhooks } = await import('@shared/schema');
+      await db.insert(snaptradeWebhooks).values({
+        type: webhookEvent.type,
+        userId: webhookEvent.userId || null,
+        authorizationId: webhookEvent.authorizationId || null,
+        payloadJson: webhookEvent as any,
+        processed: true,
+        error: null,
+      });
+      
+      console.log('[SnapTrade Webhook] Event logged to database:', webhookEvent.id);
+      
+      // Log metric for VC dashboard
+      logger.logMetric('webhook_received', {
+        webhook_type: webhookEvent.type,
+        user_id: webhookEvent.userId || 'unknown',
+        authorization_id: webhookEvent.authorizationId || 'unknown',
+      });
+    } catch (dbError: any) {
+      // Log error but don't fail the webhook acknowledgment
+      console.error('[SnapTrade Webhook] Failed to log event to database:', dbError.message);
+      logger.error('Webhook logging failed', { metadata: { error: dbError.message, webhookType: webhookEvent.type } });
+    }
+    
     // TODO: Emit real-time event to frontend via WebSocket
     
     // Acknowledge webhook with exact interface

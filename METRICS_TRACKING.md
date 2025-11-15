@@ -94,6 +94,63 @@ This document defines the comprehensive metrics taxonomy for Flint, structured f
 }
 ```
 
+### connection_orphaned
+**When**: An orphaned brokerage connection is detected (connection without parent user)
+```typescript
+{
+  event_type: "connection_orphaned",
+  brokerage_name: string,  // "Schwab", "Coinbase", etc.
+  user_id: string,
+  authorization_id: string
+}
+```
+
+### connection_cleanup_success
+**When**: Orphaned connection or user is successfully cleaned up
+```typescript
+{
+  event_type: "connection_cleanup_success",
+  reason: "orphaned_connection" | "orphaned_user" | "stale_connection",
+  connection_id?: number,
+  flint_user_id?: string
+}
+```
+
+### connection_cleanup_failed
+**When**: Orphaned connection cleanup fails
+```typescript
+{
+  event_type: "connection_cleanup_failed",
+  reason: "orphaned_connection" | "orphaned_user" | "stale_connection",
+  connection_id?: number,
+  flint_user_id?: string,
+  error: string
+}
+```
+
+### webhook_received
+**When**: SnapTrade webhook event is received and processed
+```typescript
+{
+  event_type: "webhook_received",
+  webhook_type: string,  // "connection.broken", "connection.deleted", etc.
+  user_id: string,
+  authorization_id: string
+}
+```
+
+### orphaned_cleanup_completed
+**When**: Periodic orphaned connection cleanup job completes
+```typescript
+{
+  event_type: "orphaned_cleanup_completed",
+  duration_ms: number,
+  connections_deleted: number,
+  users_deleted: number,
+  stale_connections: number
+}
+```
+
 ### portfolio_synced
 **When**: Portfolio data successfully syncs
 ```typescript

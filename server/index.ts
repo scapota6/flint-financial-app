@@ -232,6 +232,10 @@ const app = express();
   const { snaptradeBackgroundService } = await import('./services/snaptrade-background');
   await snaptradeBackgroundService.start();
 
+  // Start orphaned connections cleanup service
+  const { startOrphanedConnectionsCleanup } = await import('./services/orphaned-connections-cleanup');
+  startOrphanedConnectionsCleanup();
+
   // Validate SnapTrade credentials on startup
   const { validateSnapTradeCredentials } = await import('./lib/snaptrade');
   validateSnapTradeCredentials().then(isValid => {
