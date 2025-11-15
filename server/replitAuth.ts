@@ -63,6 +63,10 @@ function updateUserSession(
 async function upsertUser(
   claims: any,
 ) {
+  // Check if user already exists to track new signups
+  const existingUser = await storage.getUser(claims["sub"]);
+  const isNewUser = !existingUser;
+
   const user = await storage.upsertUser({
     id: claims["sub"],
     email: claims["email"],
@@ -70,6 +74,17 @@ async function upsertUser(
     lastName: claims["last_name"],
     profileImageUrl: claims["profile_image_url"],
   });
+
+  // Track new user signup metric
+  if (isNewUser) {
+    const { logger } = await import('@shared/logger');
+    logger.logMetric('user_signup', {
+      user_id: user.id,
+      subscription_tier: user.subscriptionTier || 'free',
+      subscription_status: user.subscriptionStatus || 'active',
+      cohort_week: getCohortWeek(new Date()),
+    });
+  }
 
   // Auto-provision SnapTrade user on signup/first login
   try {
@@ -80,6 +95,19 @@ async function upsertUser(
     // Auto-provision failed (non-blocking)
     // Don't fail the auth flow if SnapTrade provision fails
   }
+}
+
+// Helper function to generate cohort week in format "YYYY-WW"
+function getCohortWeek(date: Date): string {
+  const year = date.getFullYear();
+  const week = getWeekNumber(date);
+  return `${year}-W${week.toString().padStart(2, '0')}`;
+}
+
+function getWeekNumber(date: Date): number {
+  const firstDayOfYear = new Date(date.getFullYear(), 0, 1);
+  const pastDaysOfYear = (date.getTime() - firstDayOfYear.getTime()) / 86400000;
+  return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
 }
 
 export async function setupAuth(app: Express) {

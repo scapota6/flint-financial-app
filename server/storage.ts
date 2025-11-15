@@ -289,6 +289,14 @@ export class DatabaseStorage implements IStorage {
     const accountType = account.accountType ?? (account.provider === 'teller' ? 'bank' : 'brokerage');
     const balance = account.balance ?? '0.00';
     
+    // Check if this is a new account
+    const existingAccount = await this.getConnectedAccountByExternalId(
+      account.userId,
+      account.provider,
+      account.externalAccountId
+    );
+    const isFirstAccount = !existingAccount && (await this.getConnectedAccounts(account.userId)).length === 0;
+    
     const [upsertedAccount] = await db
       .insert(connectedAccounts)
       .values({
@@ -323,6 +331,19 @@ export class DatabaseStorage implements IStorage {
         }
       })
       .returning();
+
+    // Track account linking metric (only for new accounts)
+    if (!existingAccount) {
+      const { logger } = await import('@shared/logger');
+      const totalAccounts = await this.getConnectedAccounts(account.userId);
+      logger.logMetric('account_linked', {
+        user_id: account.userId,
+        account_type: accountType === 'bank' ? 'bank' : 'brokerage',
+        provider: account.provider,
+        is_first_account: isFirstAccount,
+        total_accounts: totalAccounts.length,
+      });
+    }
     
     return upsertedAccount;
   }

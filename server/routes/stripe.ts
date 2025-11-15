@@ -571,6 +571,8 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
 async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
   try {
     const userId = subscription.metadata?.flintUserId;
+    let finalUserId: string | null = null;
+    let previousTier: string | null = null;
 
     if (!userId) {
       // Try to find user by Stripe customer ID
@@ -585,6 +587,9 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
         });
         return;
       }
+
+      finalUserId = user.id;
+      previousTier = user.subscriptionTier;
 
       // Determine tier from price ID
       const priceId = subscription.items.data[0]?.price.id;
@@ -605,11 +610,52 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
         })
         .where(eq(users.id, user.id));
 
+      // Track subscription metrics
+      if (tier && previousTier !== tier) {
+        const tierHierarchy: Record<string, number> = { free: 0, basic: 1, pro: 2, premium: 3 };
+        const isNew = !user.stripeSubscriptionId || previousTier === 'free';
+        const isUpgrade = tierHierarchy[tier] > tierHierarchy[previousTier || 'free'];
+        
+        if (isNew) {
+          logger.logMetric('subscription_started', {
+            user_id: user.id,
+            subscription_id: subscription.id,
+            plan_tier: tier,
+            billing_period: subscription.metadata?.billingPeriod || 'monthly',
+            mrr: subscription.items.data[0]?.price.unit_amount ? (subscription.items.data[0].price.unit_amount / 100) : 0,
+            trial_used: subscription.status === 'trialing',
+          });
+        } else if (isUpgrade) {
+          logger.logMetric('subscription_upgraded', {
+            user_id: user.id,
+            subscription_id: subscription.id,
+            from_tier: previousTier,
+            to_tier: tier,
+          });
+        } else {
+          logger.logMetric('subscription_downgraded', {
+            user_id: user.id,
+            subscription_id: subscription.id,
+            from_tier: previousTier,
+            to_tier: tier,
+          });
+        }
+      }
+
       logger.info('Subscription updated', {
         metadata: { userId: user.id, subscriptionId: subscription.id, status, tier }
       });
     } else {
       // User ID from metadata
+      finalUserId = userId;
+      
+      const [user] = await db.select()
+        .from(users)
+        .where(eq(users.id, userId))
+        .limit(1);
+      
+      previousTier = user?.subscriptionTier || null;
+
       const priceId = subscription.items.data[0]?.price.id;
       const tier = priceId ? getTierByPriceId(priceId) : null;
 
@@ -627,6 +673,38 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
           updatedAt: new Date(),
         })
         .where(eq(users.id, userId));
+
+      // Track subscription metrics
+      if (tier && previousTier !== tier) {
+        const tierHierarchy: Record<string, number> = { free: 0, basic: 1, pro: 2, premium: 3 };
+        const isNew = !user?.stripeSubscriptionId || previousTier === 'free';
+        const isUpgrade = tierHierarchy[tier] > tierHierarchy[previousTier || 'free'];
+        
+        if (isNew) {
+          logger.logMetric('subscription_started', {
+            user_id: userId,
+            subscription_id: subscription.id,
+            plan_tier: tier,
+            billing_period: subscription.metadata?.billingPeriod || 'monthly',
+            mrr: subscription.items.data[0]?.price.unit_amount ? (subscription.items.data[0].price.unit_amount / 100) : 0,
+            trial_used: subscription.status === 'trialing',
+          });
+        } else if (isUpgrade) {
+          logger.logMetric('subscription_upgraded', {
+            user_id: userId,
+            subscription_id: subscription.id,
+            from_tier: previousTier,
+            to_tier: tier,
+          });
+        } else {
+          logger.logMetric('subscription_downgraded', {
+            user_id: userId,
+            subscription_id: subscription.id,
+            from_tier: previousTier,
+            to_tier: tier,
+          });
+        }
+      }
 
       logger.info('Subscription updated', {
         metadata: { userId, subscriptionId: subscription.id, status, tier }
@@ -657,6 +735,9 @@ async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
         return;
       }
 
+      const priceId = subscription.items.data[0]?.price.id;
+      const previousTier = priceId ? getTierByPriceId(priceId) : user.subscriptionTier;
+
       await db.update(users)
         .set({
           subscriptionTier: 'free',
@@ -665,10 +746,26 @@ async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
         })
         .where(eq(users.id, user.id));
 
+      // Track subscription cancellation metric
+      logger.logMetric('subscription_canceled', {
+        user_id: user.id,
+        subscription_id: subscription.id,
+        plan_tier: previousTier,
+        mrr_lost: subscription.items.data[0]?.price.unit_amount ? (subscription.items.data[0].price.unit_amount / 100) : 0,
+      });
+
       logger.info('Subscription cancelled', {
         metadata: { userId: user.id, subscriptionId: subscription.id }
       });
     } else {
+      const [user] = await db.select()
+        .from(users)
+        .where(eq(users.id, userId))
+        .limit(1);
+
+      const priceId = subscription.items.data[0]?.price.id;
+      const previousTier = priceId ? getTierByPriceId(priceId) : user?.subscriptionTier;
+
       await db.update(users)
         .set({
           subscriptionTier: 'free',
@@ -676,6 +773,14 @@ async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
           updatedAt: new Date(),
         })
         .where(eq(users.id, userId));
+
+      // Track subscription cancellation metric
+      logger.logMetric('subscription_canceled', {
+        user_id: userId,
+        subscription_id: subscription.id,
+        plan_tier: previousTier,
+        mrr_lost: subscription.items.data[0]?.price.unit_amount ? (subscription.items.data[0].price.unit_amount / 100) : 0,
+      });
 
       logger.info('Subscription cancelled', {
         metadata: { userId, subscriptionId: subscription.id }
@@ -713,6 +818,14 @@ async function handleInvoicePaid(invoice: Stripe.Invoice) {
         })
         .where(eq(users.id, user.id));
 
+      // Track payment succeeded metric
+      logger.logMetric('payment_succeeded', {
+        user_id: user.id,
+        subscription_id: subscriptionId,
+        amount: invoice.amount_paid / 100,
+        plan_tier: user.subscriptionTier,
+      });
+
       logger.info('Invoice paid - subscription active', {
         metadata: { userId: user.id, invoiceId: invoice.id }
       });
@@ -742,6 +855,15 @@ async function handleInvoicePaymentFailed(invoice: Stripe.Invoice) {
       .limit(1);
 
     if (user) {
+      // Track payment failed metric
+      logger.logMetric('payment_failed', {
+        user_id: user.id,
+        subscription_id: subscriptionId,
+        amount: invoice.amount_due / 100,
+        failure_reason: invoice.last_payment_error?.message || 'unknown',
+        retry_count: invoice.attempt_count || 0,
+      });
+
       logger.warn('Invoice payment failed', {
         metadata: { userId: user.id, invoiceId: invoice.id }
       });
