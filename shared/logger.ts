@@ -178,30 +178,40 @@ class Logger {
   }
 
   /**
-   * Log structured metrics for Grafana/monitoring dashboards
-   * This method sends structured event data that can be aggregated by monitoring tools
+   * Log structured metrics for VC dashboards and analytics
+   * Sends metrics to Better Stack with queryable top-level fields
    * All metadata is automatically scrubbed of PII for security
+   * 
+   * Better Stack SQL queries require:
+   * - event_name: at top level for WHERE clauses
+   * - event_type: at top level for grouping
+   * - Anonymized IDs for uniqueness aggregations
    */
   logMetric(eventType: string, eventData: Record<string, unknown>): void {
     // Redact PII from metric data for security
     const redactedData = this.redactPII(eventData) as Record<string, unknown>;
     
-    const metricLog = {
+    const eventName = `metric.${eventType}`;
+    const timestamp = new Date().toISOString();
+
+    // Create metric payload with Better Stack-compatible structure
+    const metricPayload = {
+      dt: timestamp, // Better Stack uses 'dt' for time-series queries
+      event_name: eventName,
       event_type: eventType,
-      event_name: `metric.${eventType}`,
-      timestamp: new Date().toISOString(),
       ...redactedData,
     };
 
     console.log(JSON.stringify({
       level: 'INFO',
       message: `Metric: ${eventType}`,
-      ...metricLog
+      ...metricPayload,
     }));
 
-    // Send structured metric to Logtail
+    // Send to Better Stack via Logtail
+    // Use info() with flattened structure - Logtail will merge context fields
     if (this.logtail) {
-      this.logtail.info(`Metric: ${eventType}`, metricLog).catch((error: Error) => {
+      this.logtail.info(`Metric: ${eventType}`, metricPayload).catch((error: Error) => {
         // Silently absorb Logtail errors
       });
     }

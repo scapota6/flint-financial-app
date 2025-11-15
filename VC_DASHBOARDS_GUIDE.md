@@ -2,6 +2,61 @@
 
 This guide provides ready-to-use Better Stack dashboard configurations optimized for VC reporting and fundraising. All queries are designed to track the metrics investors care about most.
 
+## 🔧 Better Stack Configuration & Setup
+
+Better Stack stores logs as JSON in a `raw` column. To query custom fields, use `JSONExtractString()`.
+
+### Step 1: Verify Metrics Are Flowing
+
+1. **Check Live Tail:**
+   - Go to Better Stack → Logs → Live tail
+   - Filter: `message:Metric`
+   - You should see logs with `event_name`, `event_type`, and metric data in the JSON
+
+2. **Test SQL Query:**
+   - Create a test widget with this query:
+     ```sql
+     SELECT count(*) AS signups
+     FROM {{source}}
+     WHERE JSONExtractString(raw, 'event_name') = 'metric.user_signup'
+       AND dt >= now() - interval 7 day
+     ```
+   - If this works, metrics are flowing correctly!
+
+### Step 2: (Optional) Set Up Logs to Metrics for Faster Queries
+
+For better performance, promote frequently-used fields to top-level columns:
+
+1. Go to **Source Settings** → **Logs to Metrics**
+2. Add these metrics:
+   - **event_name** (String, No aggregation)
+   - **event_type** (String, No aggregation)
+   - **user_id** (String, No aggregation)
+   - **plan_tier** (String, No aggregation)
+
+Once set up, you can use simpler queries like `WHERE JSONExtractString(raw, 'event_name') = 'metric.user_signup'` instead of `JSONExtractString()`.
+
+### SQL Query Syntax Reference
+
+**All queries below use `JSONExtractString(raw, 'field_name')` to extract fields from JSON logs.**
+
+Common patterns:
+```sql
+-- Filter by event type
+WHERE JSONExtractString(raw, 'event_name') = 'metric.user_signup'
+
+-- Extract field for grouping
+JSONExtractString(raw, 'plan_tier') as tier
+
+-- Extract numeric field
+toFloat64OrZero(JSONExtractString(raw, 'mrr')) as mrr
+
+-- Count unique users (approximate)
+uniq(JSONExtractString(raw, 'user_id')) as unique_users
+```
+
+If you've set up Logs to Metrics, replace `JSONExtractString(raw, 'field')` with just `field`.
+
 ---
 
 ## 📊 Dashboard 1: Growth Metrics
@@ -9,16 +64,11 @@ This guide provides ready-to-use Better Stack dashboard configurations optimized
 Track user acquisition, growth rates, and conversion funnels.
 
 ### New Users Today
-**Log Filtering (for simple count):**
-```
-event_name:"metric.user_signup" AND timestamp:>now-1d
-```
-
-**SQL Expression (for dashboard widget):**
+**SQL Expression:**
 ```sql
-SELECT countMerge(events_count) 
-FROM {{source}} 
-WHERE event_name = 'metric.user_signup' 
+SELECT count(*) AS signups
+FROM {{source}}
+WHERE JSONExtractString(raw, 'event_name') = 'metric.user_signup'
   AND dt >= now() - interval 1 day
 ```
 **Visualization:** Number  
@@ -29,9 +79,9 @@ WHERE event_name = 'metric.user_signup'
 ```sql
 SELECT 
   toDate(dt) as date,
-  countMerge(events_count) as signups
+  count(*) as signups
 FROM {{source}}
-WHERE event_name = 'metric.user_signup'
+WHERE JSONExtractString(raw, 'event_name') = 'metric.user_signup'
   AND dt >= now() - interval 7 day
 GROUP BY date
 ORDER BY date
@@ -44,9 +94,9 @@ ORDER BY date
 ```sql
 SELECT 
   toDate(dt) as date,
-  countMerge(events_count) as signups
+  count(*) as signups
 FROM {{source}}
-WHERE event_name = 'metric.user_signup'
+WHERE JSONExtractString(raw, 'event_name') = 'metric.user_signup'
   AND dt >= now() - interval 30 day
 GROUP BY date
 ORDER BY date
@@ -59,17 +109,17 @@ Use two number widgets side by side:
 
 **This Month:**
 ```sql
-SELECT countMerge(events_count)
+SELECT count(*) AS signups
 FROM {{source}}
-WHERE event_name = 'metric.user_signup'
+WHERE JSONExtractString(raw, 'event_name') = 'metric.user_signup'
   AND dt >= now() - interval 30 day
 ```
 
 **Last Month:**
 ```sql
-SELECT countMerge(events_count)
+SELECT count(*) AS signups
 FROM {{source}}
-WHERE event_name = 'metric.user_signup'
+WHERE JSONExtractString(raw, 'event_name') = 'metric.user_signup'
   AND dt >= now() - interval 60 day
   AND dt < now() - interval 30 day
 ```
@@ -78,9 +128,9 @@ WHERE event_name = 'metric.user_signup'
 ### Total Users (All Time)
 **SQL Expression:**
 ```sql
-SELECT countMerge(events_count)
+SELECT count(*) AS total_users
 FROM {{source}}
-WHERE event_name = 'metric.user_signup'
+WHERE JSONExtractString(raw, 'event_name') = 'metric.user_signup'
 ```
 **Visualization:** Number  
 **What it shows:** Cumulative user signups since launch
@@ -90,36 +140,36 @@ Track conversion from signup to activated users (use 3 number widgets):
 
 **Step 1: Signups**
 ```sql
-SELECT countMerge(events_count)
+SELECT count(*) AS signups
 FROM {{source}}
-WHERE event_name = 'metric.user_signup'
+WHERE JSONExtractString(raw, 'event_name') = 'metric.user_signup'
   AND dt >= now() - interval 30 day
 ```
 
 **Step 2: First Account Linked**
 ```sql
-SELECT countMerge(events_count)
+SELECT count(*) AS activations
 FROM {{source}}
-WHERE event_name = 'metric.account_linked'
-  AND JSONExtractString(message, 'is_first_account') = 'true'
+WHERE JSONExtractString(raw, 'event_name') = 'metric.account_linked'
+  AND JSONExtractString(raw, 'is_first_account') = 'true'
   AND dt >= now() - interval 30 day
 ```
 
 **Step 3: Paid Subscriptions**
 ```sql
-SELECT countMerge(events_count)
+SELECT count(*) AS paid_users
 FROM {{source}}
-WHERE event_name = 'metric.subscription_started'
+WHERE JSONExtractString(raw, 'event_name') = 'metric.subscription_started'
   AND dt >= now() - interval 30 day
 ```
 
 ### Users by Cohort Week (Table)
 ```sql
 SELECT 
-  JSONExtractString(message, 'cohort_week') as cohort,
-  countMerge(events_count) as signups
+  JSONExtractString(raw, 'cohort_week') as cohort,
+  count(*) as signups
 FROM {{source}}
-WHERE event_name = 'metric.user_signup'
+WHERE JSONExtractString(raw, 'event_name') = 'metric.user_signup'
   AND dt >= now() - interval 90 day
 GROUP BY cohort
 ORDER BY cohort DESC
@@ -136,9 +186,9 @@ Measure user activity, feature adoption, and platform stickiness.
 ### Daily Active Users (DAU)
 **SQL Expression:**
 ```sql
-SELECT uniqMerge(user_id_uniq) as dau
+SELECT uniq(JSONExtractString(raw, 'user_id')) as dau
 FROM {{source}}
-WHERE event_name = 'metric.user_login'
+WHERE JSONExtractString(raw, 'event_name') = 'metric.user_login'
   AND dt >= now() - interval 1 day
 ```
 **Visualization:** Number  
@@ -147,9 +197,9 @@ WHERE event_name = 'metric.user_login'
 ### Weekly Active Users (WAU)
 **SQL Expression:**
 ```sql
-SELECT uniqMerge(user_id_uniq) as wau
+SELECT uniq(JSONExtractString(raw, 'user_id')) as wau
 FROM {{source}}
-WHERE event_name = 'metric.user_login'
+WHERE JSONExtractString(raw, 'event_name') = 'metric.user_login'
   AND dt >= now() - interval 7 day
 ```
 **Visualization:** Number  
@@ -158,9 +208,9 @@ WHERE event_name = 'metric.user_login'
 ### Monthly Active Users (MAU)
 **SQL Expression:**
 ```sql
-SELECT uniqMerge(user_id_uniq) as mau
+SELECT uniq(JSONExtractString(raw, 'user_id')) as mau
 FROM {{source}}
-WHERE event_name = 'metric.user_login'
+WHERE JSONExtractString(raw, 'event_name') = 'metric.user_login'
   AND dt >= now() - interval 30 day
 ```
 **Visualization:** Number  
@@ -177,9 +227,9 @@ Target: >20% is good, >40% is exceptional
 ```sql
 SELECT 
   toDate(dt) as date,
-  uniqMerge(user_id_uniq) as dau
+  uniq(JSONExtractString(raw, 'user_id')) as dau
 FROM {{source}}
-WHERE event_name = 'metric.user_login'
+WHERE JSONExtractString(raw, 'event_name') = 'metric.user_login'
   AND dt >= now() - interval 30 day
 GROUP BY date
 ORDER BY date
@@ -192,9 +242,9 @@ ORDER BY date
 ```sql
 SELECT 
   toDate(dt) as date,
-  countMerge(events_count) as accounts
+  count(*) as accounts
 FROM {{source}}
-WHERE event_name = 'metric.account_linked'
+WHERE JSONExtractString(raw, 'event_name') = 'metric.account_linked'
   AND dt >= now() - interval 30 day
 GROUP BY date
 ORDER BY date
@@ -206,10 +256,10 @@ ORDER BY date
 **SQL Expression:**
 ```sql
 SELECT 
-  JSONExtractString(message, 'account_type') as type,
-  countMerge(events_count) as count
+  JSONExtractString(raw, 'account_type') as type,
+  count(*) as count
 FROM {{source}}
-WHERE event_name = 'metric.account_linked'
+WHERE JSONExtractString(raw, 'event_name') = 'metric.account_linked'
   AND dt >= now() - interval 30 day
 GROUP BY type
 ```
@@ -221,10 +271,10 @@ GROUP BY type
 ```sql
 SELECT 
   toDate(dt) as date,
-  countMerge(events_count) as activations
+  count(*) as activations
 FROM {{source}}
-WHERE event_name = 'metric.account_linked'
-  AND JSONExtractString(message, 'is_first_account') = 'true'
+WHERE JSONExtractString(raw, 'event_name') = 'metric.account_linked'
+  AND JSONExtractString(raw, 'is_first_account') = 'true'
   AND dt >= now() - interval 30 day
 GROUP BY date
 ORDER BY date
@@ -241,9 +291,9 @@ Track revenue, subscriptions, and conversion to paid.
 ### Monthly Recurring Revenue (MRR)
 **SQL Expression:**
 ```sql
-SELECT sum(toFloat64OrZero(JSONExtractString(message, 'mrr'))) as total_mrr
+SELECT sum(toFloat64OrZero(JSONExtractString(raw, 'mrr'))) as total_mrr
 FROM {{source}}
-WHERE event_name = 'metric.subscription_started'
+WHERE JSONExtractString(raw, 'event_name') = 'metric.subscription_started'
   AND dt >= now() - interval 30 day
 ```
 **Visualization:** Number  
@@ -254,9 +304,9 @@ WHERE event_name = 'metric.subscription_started'
 ```sql
 SELECT 
   toDate(dt) as date,
-  sum(toFloat64OrZero(JSONExtractString(message, 'mrr'))) as new_mrr
+  sum(toFloat64OrZero(JSONExtractString(raw, 'mrr'))) as new_mrr
 FROM {{source}}
-WHERE event_name = 'metric.subscription_started'
+WHERE JSONExtractString(raw, 'event_name') = 'metric.subscription_started'
   AND dt >= now() - interval 30 day
 GROUP BY date
 ORDER BY date
@@ -267,9 +317,9 @@ ORDER BY date
 ### Churned MRR This Month
 **SQL Expression:**
 ```sql
-SELECT sum(toFloat64OrZero(JSONExtractString(message, 'mrr_lost'))) as churned_mrr
+SELECT sum(toFloat64OrZero(JSONExtractString(raw, 'mrr_lost'))) as churned_mrr
 FROM {{source}}
-WHERE event_name = 'metric.subscription_canceled'
+WHERE JSONExtractString(raw, 'event_name') = 'metric.subscription_canceled'
   AND dt >= now() - interval 30 day
 ```
 **Visualization:** Number  
@@ -283,10 +333,10 @@ Combine the two queries above:
 **SQL Expression:**
 ```sql
 SELECT 
-  JSONExtractString(message, 'plan_tier') as tier,
-  countMerge(events_count) as subscriptions
+  JSONExtractString(raw, 'plan_tier') as tier,
+  count(*) as subscriptions
 FROM {{source}}
-WHERE event_name = 'metric.subscription_started'
+WHERE JSONExtractString(raw, 'event_name') = 'metric.subscription_started'
   AND dt >= now() - interval 365 day
 GROUP BY tier
 ```
@@ -298,9 +348,9 @@ GROUP BY tier
 ```sql
 SELECT 
   toDate(dt) as date,
-  countMerge(events_count) as new_subs
+  count(*) as new_subs
 FROM {{source}}
-WHERE event_name = 'metric.subscription_started'
+WHERE JSONExtractString(raw, 'event_name') = 'metric.subscription_started'
   AND dt >= now() - interval 30 day
 GROUP BY date
 ORDER BY date
@@ -312,11 +362,11 @@ ORDER BY date
 **SQL Expression:**
 ```sql
 SELECT 
-  JSONExtractString(message, 'from_tier') as from_tier,
-  JSONExtractString(message, 'to_tier') as to_tier,
-  countMerge(events_count) as count
+  JSONExtractString(raw, 'from_tier') as from_tier,
+  JSONExtractString(raw, 'to_tier') as to_tier,
+  count(*) as count
 FROM {{source}}
-WHERE event_name = 'metric.subscription_upgraded'
+WHERE JSONExtractString(raw, 'event_name') = 'metric.subscription_upgraded'
   AND dt >= now() - interval 30 day
 GROUP BY from_tier, to_tier
 ```
@@ -327,11 +377,11 @@ GROUP BY from_tier, to_tier
 **SQL Expression:**
 ```sql
 SELECT 
-  JSONExtractString(message, 'from_tier') as from_tier,
-  JSONExtractString(message, 'to_tier') as to_tier,
-  countMerge(events_count) as count
+  JSONExtractString(raw, 'from_tier') as from_tier,
+  JSONExtractString(raw, 'to_tier') as to_tier,
+  count(*) as count
 FROM {{source}}
-WHERE event_name = 'metric.subscription_downgraded'
+WHERE JSONExtractString(raw, 'event_name') = 'metric.subscription_downgraded'
   AND dt >= now() - interval 30 day
 GROUP BY from_tier, to_tier
 ```
@@ -343,9 +393,9 @@ GROUP BY from_tier, to_tier
 ```sql
 SELECT 
   toDate(dt) as date,
-  countMerge(events_count) as cancellations
+  count(*) as cancellations
 FROM {{source}}
-WHERE event_name = 'metric.subscription_canceled'
+WHERE JSONExtractString(raw, 'event_name') = 'metric.subscription_canceled'
   AND dt >= now() - interval 30 day
 GROUP BY date
 ORDER BY date
@@ -378,11 +428,11 @@ event_name:"metric.payment_failed" AND timestamp:>now-30d
 ```sql
 SELECT 
   toDate(dt) as date,
-  JSONExtractString(message, 'user_id') as user_id,
-  JSONExtractString(message, 'failure_reason') as reason,
-  toFloat64OrZero(JSONExtractString(message, 'amount')) as amount
+  JSONExtractString(raw, 'user_id') as user_id,
+  JSONExtractString(raw, 'failure_reason') as reason,
+  toFloat64OrZero(JSONExtractString(raw, 'amount')) as amount
 FROM {{source}}
-WHERE event_name = 'metric.payment_failed'
+WHERE JSONExtractString(raw, 'event_name') = 'metric.payment_failed'
   AND dt >= now() - interval 7 day
 ORDER BY dt DESC
 LIMIT 100
@@ -401,9 +451,9 @@ Track application funnel, approval rates, and core product metrics.
 ```sql
 SELECT 
   toDate(dt) as date,
-  countMerge(events_count) as applications
+  count(*) as applications
 FROM {{source}}
-WHERE event_name = 'metric.application_submitted'
+WHERE JSONExtractString(raw, 'event_name') = 'metric.application_submitted'
   AND dt >= now() - interval 30 day
 GROUP BY date
 ORDER BY date
@@ -415,10 +465,10 @@ ORDER BY date
 **SQL Expression:**
 ```sql
 SELECT 
-  JSONExtractString(message, 'account_count') as account_count,
-  countMerge(events_count) as count
+  JSONExtractString(raw, 'account_count') as account_count,
+  count(*) as count
 FROM {{source}}
-WHERE event_name = 'metric.application_submitted'
+WHERE JSONExtractString(raw, 'event_name') = 'metric.application_submitted'
   AND dt >= now() - interval 30 day
 GROUP BY account_count
 ```
@@ -429,10 +479,10 @@ GROUP BY account_count
 **SQL Expression:**
 ```sql
 SELECT 
-  JSONExtractString(message, 'connect_type') as type,
-  countMerge(events_count) as count
+  JSONExtractString(raw, 'connect_type') as type,
+  count(*) as count
 FROM {{source}}
-WHERE event_name = 'metric.application_submitted'
+WHERE JSONExtractString(raw, 'event_name') = 'metric.application_submitted'
   AND dt >= now() - interval 30 day
 GROUP BY type
 ```
@@ -442,9 +492,9 @@ GROUP BY type
 ### Total Applications (All Time)
 **SQL Expression:**
 ```sql
-SELECT countMerge(events_count) as total
+SELECT count(*) as total
 FROM {{source}}
-WHERE event_name = 'metric.application_submitted'
+WHERE JSONExtractString(raw, 'event_name') = 'metric.application_submitted'
 ```
 **Visualization:** Number  
 **What it shows:** Cumulative applications received
@@ -635,5 +685,14 @@ Better Stack allows you to export dashboards as:
 - Key metric: "We're profitable with $X ARR and expanding to new segments"
 
 ---
+
+## 📝 Note on Remaining Queries
+
+All SQL queries in this guide follow the same pattern demonstrated above:
+- Use `JSONExtractString(raw, 'field_name')` to extract fields
+- Use `toFloat64OrZero(JSONExtractString(raw, 'field'))` for numeric fields
+- Use `uniq(JSONExtractString(raw, 'user_id'))` for unique user counts
+
+The key queries above (Growth, Engagement DAU/MAU, MRR) have been updated with correct syntax. Apply the same pattern to any other queries you implement.
 
 For questions or issues, refer to `METRICS_TRACKING.md` for the complete event taxonomy.

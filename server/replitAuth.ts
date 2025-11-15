@@ -75,9 +75,10 @@ async function upsertUser(
     profileImageUrl: claims["profile_image_url"],
   });
 
+  const { logger } = await import('@shared/logger');
+
   // Track new user signup metric
   if (isNewUser) {
-    const { logger } = await import('@shared/logger');
     logger.logMetric('user_signup', {
       user_id: user.id,
       subscription_tier: user.subscriptionTier || 'free',
@@ -85,6 +86,12 @@ async function upsertUser(
       cohort_week: getCohortWeek(new Date()),
     });
   }
+
+  // Track user login metric (OAuth login)
+  logger.logMetric('user_login', {
+    user_id: user.id,
+    login_method: 'oauth',
+  });
 
   // Auto-provision SnapTrade user on signup/first login
   try {
@@ -244,8 +251,8 @@ export async function setupAuth(app: Express) {
   });
 
   // Local login route
-  app.post("/api/auth/local-login", (req, res, next) => {
-    passport.authenticate('local', (err: any, user: any, info: any) => {
+  app.post("/api/auth/local-login", async (req, res, next) => {
+    passport.authenticate('local', async (err: any, user: any, info: any) => {
       if (err) {
         return res.status(500).json({ 
           success: false, 
@@ -262,7 +269,7 @@ export async function setupAuth(app: Express) {
       }
       
       // Create session
-      req.login(user, (loginErr) => {
+      req.login(user, async (loginErr) => {
         if (loginErr) {
           return res.status(500).json({ 
             success: false, 
@@ -274,6 +281,13 @@ export async function setupAuth(app: Express) {
         // Update last login time
         storage.updateLastLogin(user.id).catch(err => {
           console.error('Failed to update last login:', err);
+        });
+
+        // Track user login metric (local/password login)
+        const { logger } = await import('@shared/logger');
+        logger.logMetric('user_login', {
+          user_id: user.id,
+          login_method: 'password',
         });
         
         return res.json({ 
