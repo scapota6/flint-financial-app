@@ -9,62 +9,122 @@ This guide provides ready-to-use Better Stack dashboard configurations optimized
 Track user acquisition, growth rates, and conversion funnels.
 
 ### New Users Today
+**Log Filtering (for simple count):**
 ```
 event_name:"metric.user_signup" AND timestamp:>now-1d
+```
+
+**SQL Expression (for dashboard widget):**
+```sql
+SELECT countMerge(events_count) 
+FROM {{source}} 
+WHERE event_name = 'metric.user_signup' 
+  AND dt >= now() - interval 1 day
 ```
 **Visualization:** Number  
 **What it shows:** Total signups in the last 24 hours
 
-### New Users This Week
+### New Users This Week (Line Chart)
+**SQL Expression:**
+```sql
+SELECT 
+  toDate(dt) as date,
+  countMerge(events_count) as signups
+FROM {{source}}
+WHERE event_name = 'metric.user_signup'
+  AND dt >= now() - interval 7 day
+GROUP BY date
+ORDER BY date
 ```
-event_name:"metric.user_signup" AND timestamp:>now-7d
-```
-**Visualization:** Line chart (by day)  
+**Visualization:** Line chart  
 **What it shows:** Daily signup trend over the past 7 days
 
-### New Users This Month
+### New Users This Month (Line Chart)
+**SQL Expression:**
+```sql
+SELECT 
+  toDate(dt) as date,
+  countMerge(events_count) as signups
+FROM {{source}}
+WHERE event_name = 'metric.user_signup'
+  AND dt >= now() - interval 30 day
+GROUP BY date
+ORDER BY date
 ```
-event_name:"metric.user_signup" AND timestamp:>now-30d
-```
-**Visualization:** Line chart (by day)  
+**Visualization:** Line chart  
 **What it shows:** Daily signups over the past 30 days
 
 ### MoM Growth Rate
 Use two number widgets side by side:
-```
-# This Month
-event_name:"metric.user_signup" AND timestamp:>now-30d
 
-# Last Month  
-event_name:"metric.user_signup" AND timestamp:>now-60d AND timestamp:<now-30d
+**This Month:**
+```sql
+SELECT countMerge(events_count)
+FROM {{source}}
+WHERE event_name = 'metric.user_signup'
+  AND dt >= now() - interval 30 day
+```
+
+**Last Month:**
+```sql
+SELECT countMerge(events_count)
+FROM {{source}}
+WHERE event_name = 'metric.user_signup'
+  AND dt >= now() - interval 60 day
+  AND dt < now() - interval 30 day
 ```
 **Manual calculation:** (This Month - Last Month) / Last Month × 100%
 
 ### Total Users (All Time)
-```
-event_name:"metric.user_signup"
+**SQL Expression:**
+```sql
+SELECT countMerge(events_count)
+FROM {{source}}
+WHERE event_name = 'metric.user_signup'
 ```
 **Visualization:** Number  
 **What it shows:** Cumulative user signups since launch
 
 ### Signup Funnel
-Track conversion from signup to activated users:
-```
-# Step 1: Signups
-event_name:"metric.user_signup" AND timestamp:>now-30d
+Track conversion from signup to activated users (use 3 number widgets):
 
-# Step 2: First Account Linked
-event_name:"metric.account_linked" AND is_first_account:true AND timestamp:>now-30d
-
-# Step 3: Paid Subscriptions
-event_name:"metric.subscription_started" AND timestamp:>now-30d
+**Step 1: Signups**
+```sql
+SELECT countMerge(events_count)
+FROM {{source}}
+WHERE event_name = 'metric.user_signup'
+  AND dt >= now() - interval 30 day
 ```
 
-### Users by Cohort Week
+**Step 2: First Account Linked**
+```sql
+SELECT countMerge(events_count)
+FROM {{source}}
+WHERE event_name = 'metric.account_linked'
+  AND JSONExtractString(message, 'is_first_account') = 'true'
+  AND dt >= now() - interval 30 day
 ```
-event_name:"metric.user_signup" AND timestamp:>now-90d
+
+**Step 3: Paid Subscriptions**
+```sql
+SELECT countMerge(events_count)
+FROM {{source}}
+WHERE event_name = 'metric.subscription_started'
+  AND dt >= now() - interval 30 day
 ```
-**Visualization:** Table grouped by `cohort_week`  
+
+### Users by Cohort Week (Table)
+```sql
+SELECT 
+  JSONExtractString(message, 'cohort_week') as cohort,
+  countMerge(events_count) as signups
+FROM {{source}}
+WHERE event_name = 'metric.user_signup'
+  AND dt >= now() - interval 90 day
+GROUP BY cohort
+ORDER BY cohort DESC
+```
+**Visualization:** Table  
 **What it shows:** Signups grouped by weekly cohorts
 
 ---
@@ -74,23 +134,37 @@ event_name:"metric.user_signup" AND timestamp:>now-90d
 Measure user activity, feature adoption, and platform stickiness.
 
 ### Daily Active Users (DAU)
+**SQL Expression:**
+```sql
+SELECT uniqMerge(user_id_uniq) as dau
+FROM {{source}}
+WHERE event_name = 'metric.user_login'
+  AND dt >= now() - interval 1 day
 ```
-event_name:"metric.user_login" AND timestamp:>now-1d
-```
-**Visualization:** Number (count unique `user_id`)  
+**Visualization:** Number  
 **What it shows:** Unique users who logged in today
 
 ### Weekly Active Users (WAU)
+**SQL Expression:**
+```sql
+SELECT uniqMerge(user_id_uniq) as wau
+FROM {{source}}
+WHERE event_name = 'metric.user_login'
+  AND dt >= now() - interval 7 day
 ```
-event_name:"metric.user_login" AND timestamp:>now-7d
-```
-**Visualization:** Number (count unique `user_id`)
+**Visualization:** Number  
+**What it shows:** Unique users who logged in this week
 
 ### Monthly Active Users (MAU)
+**SQL Expression:**
+```sql
+SELECT uniqMerge(user_id_uniq) as mau
+FROM {{source}}
+WHERE event_name = 'metric.user_login'
+  AND dt >= now() - interval 30 day
 ```
-event_name:"metric.user_login" AND timestamp:>now-30d
-```
-**Visualization:** Number (count unique `user_id`)
+**Visualization:** Number  
+**What it shows:** Unique users who logged in this month
 
 ### DAU/MAU Ratio (Stickiness)
 Use the two queries above, then manually calculate:  
@@ -99,29 +173,61 @@ Use the two queries above, then manually calculate:
 Target: >20% is good, >40% is exceptional
 
 ### DAU Trend (Last 30 Days)
+**SQL Expression:**
+```sql
+SELECT 
+  toDate(dt) as date,
+  uniqMerge(user_id_uniq) as dau
+FROM {{source}}
+WHERE event_name = 'metric.user_login'
+  AND dt >= now() - interval 30 day
+GROUP BY date
+ORDER BY date
 ```
-event_name:"metric.user_login" AND timestamp:>now-30d
-```
-**Visualization:** Line chart (unique users by day)  
+**Visualization:** Line chart  
 **What it shows:** Daily active user trend
 
 ### Accounts Linked (Last 30 Days)
-```
-event_name:"metric.account_linked" AND timestamp:>now-30d
+**SQL Expression:**
+```sql
+SELECT 
+  toDate(dt) as date,
+  countMerge(events_count) as accounts
+FROM {{source}}
+WHERE event_name = 'metric.account_linked'
+  AND dt >= now() - interval 30 day
+GROUP BY date
+ORDER BY date
 ```
 **Visualization:** Line chart  
 **What it shows:** How many accounts users are connecting
 
-### Bank vs Brokerage Accounts
+### Bank vs Brokerage Accounts (Pie Chart)
+**SQL Expression:**
+```sql
+SELECT 
+  JSONExtractString(message, 'account_type') as type,
+  countMerge(events_count) as count
+FROM {{source}}
+WHERE event_name = 'metric.account_linked'
+  AND dt >= now() - interval 30 day
+GROUP BY type
 ```
-event_name:"metric.account_linked" AND timestamp:>now-30d
-```
-**Visualization:** Pie chart (group by `account_type`)  
+**Visualization:** Pie chart  
 **What it shows:** Distribution of connected account types
 
-### First-Time Account Connections
-```
-event_name:"metric.account_linked" AND is_first_account:true AND timestamp:>now-30d
+### First-Time Account Connections (Activation Rate)
+**SQL Expression:**
+```sql
+SELECT 
+  toDate(dt) as date,
+  countMerge(events_count) as activations
+FROM {{source}}
+WHERE event_name = 'metric.account_linked'
+  AND JSONExtractString(message, 'is_first_account') = 'true'
+  AND dt >= now() - interval 30 day
+GROUP BY date
+ORDER BY date
 ```
 **Visualization:** Line chart  
 **What it shows:** User activation rate (first account = activated user)
@@ -133,63 +239,119 @@ event_name:"metric.account_linked" AND is_first_account:true AND timestamp:>now-
 Track revenue, subscriptions, and conversion to paid.
 
 ### Monthly Recurring Revenue (MRR)
+**SQL Expression:**
+```sql
+SELECT sum(toFloat64OrZero(JSONExtractString(message, 'mrr'))) as total_mrr
+FROM {{source}}
+WHERE event_name = 'metric.subscription_started'
+  AND dt >= now() - interval 30 day
 ```
-event_name:"metric.subscription_started" AND timestamp:>now-30d
-```
-**Visualization:** Sum of `mrr` field  
+**Visualization:** Number  
 **Note:** For accurate MRR, also subtract `mrr_lost` from cancellations
 
-### New MRR This Month
+### New MRR This Month (Trend)
+**SQL Expression:**
+```sql
+SELECT 
+  toDate(dt) as date,
+  sum(toFloat64OrZero(JSONExtractString(message, 'mrr'))) as new_mrr
+FROM {{source}}
+WHERE event_name = 'metric.subscription_started'
+  AND dt >= now() - interval 30 day
+GROUP BY date
+ORDER BY date
 ```
-event_name:"metric.subscription_started" AND timestamp:>now-30d
-```
-**Visualization:** Number (sum `mrr`)  
-**What it shows:** New MRR added this month
+**Visualization:** Line chart  
+**What it shows:** New MRR added over time
 
 ### Churned MRR This Month
+**SQL Expression:**
+```sql
+SELECT sum(toFloat64OrZero(JSONExtractString(message, 'mrr_lost'))) as churned_mrr
+FROM {{source}}
+WHERE event_name = 'metric.subscription_canceled'
+  AND dt >= now() - interval 30 day
 ```
-event_name:"metric.subscription_canceled" AND timestamp:>now-30d
-```
-**Visualization:** Number (sum `mrr_lost`)  
+**Visualization:** Number  
 **What it shows:** MRR lost to cancellations
 
 ### Net New MRR
 Combine the two queries above:  
 **Net New MRR = New MRR - Churned MRR**
 
-### Active Subscriptions by Tier
+### Active Subscriptions by Tier (Pie Chart)
+**SQL Expression:**
+```sql
+SELECT 
+  JSONExtractString(message, 'plan_tier') as tier,
+  countMerge(events_count) as subscriptions
+FROM {{source}}
+WHERE event_name = 'metric.subscription_started'
+  AND dt >= now() - interval 365 day
+GROUP BY tier
 ```
-event_name:"metric.subscription_started" AND timestamp:>now-365d
-```
-**Visualization:** Pie chart (group by `plan_tier`)  
+**Visualization:** Pie chart  
 **What it shows:** Distribution of subscription tiers
 
 ### Subscription Starts (Last 30 Days)
-```
-event_name:"metric.subscription_started" AND timestamp:>now-30d
+**SQL Expression:**
+```sql
+SELECT 
+  toDate(dt) as date,
+  countMerge(events_count) as new_subs
+FROM {{source}}
+WHERE event_name = 'metric.subscription_started'
+  AND dt >= now() - interval 30 day
+GROUP BY date
+ORDER BY date
 ```
 **Visualization:** Line chart  
 **What it shows:** New paid subscriptions over time
 
-### Subscription Upgrades
+### Subscription Upgrades (Table)
+**SQL Expression:**
+```sql
+SELECT 
+  JSONExtractString(message, 'from_tier') as from_tier,
+  JSONExtractString(message, 'to_tier') as to_tier,
+  countMerge(events_count) as count
+FROM {{source}}
+WHERE event_name = 'metric.subscription_upgraded'
+  AND dt >= now() - interval 30 day
+GROUP BY from_tier, to_tier
 ```
-event_name:"metric.subscription_upgraded" AND timestamp:>now-30d
-```
-**Visualization:** Table showing `from_tier` → `to_tier`  
+**Visualization:** Table  
 **What it shows:** Users moving to higher tiers
 
-### Subscription Downgrades
+### Subscription Downgrades (Table)
+**SQL Expression:**
+```sql
+SELECT 
+  JSONExtractString(message, 'from_tier') as from_tier,
+  JSONExtractString(message, 'to_tier') as to_tier,
+  countMerge(events_count) as count
+FROM {{source}}
+WHERE event_name = 'metric.subscription_downgraded'
+  AND dt >= now() - interval 30 day
+GROUP BY from_tier, to_tier
 ```
-event_name:"metric.subscription_downgraded" AND timestamp:>now-30d
-```
-**Visualization:** Table showing `from_tier` → `to_tier`
+**Visualization:** Table  
+**What it shows:** Users moving to lower tiers
 
-### Subscription Cancellations
-```
-event_name:"metric.subscription_canceled" AND timestamp:>now-30d
+### Subscription Cancellations (Line Chart)
+**SQL Expression:**
+```sql
+SELECT 
+  toDate(dt) as date,
+  countMerge(events_count) as cancellations
+FROM {{source}}
+WHERE event_name = 'metric.subscription_canceled'
+  AND dt >= now() - interval 30 day
+GROUP BY date
+ORDER BY date
 ```
 **Visualization:** Line chart  
-**What it shows:** Churn trend
+**What it shows:** Churn trend over time
 
 ### Free-to-Paid Conversion Rate
 ```
@@ -211,11 +373,21 @@ event_name:"metric.payment_failed" AND timestamp:>now-30d
 ```
 **Success Rate:** Succeeded ÷ (Succeeded + Failed) × 100%
 
-### Payment Failures
+### Payment Failures (Table)
+**SQL Expression:**
+```sql
+SELECT 
+  toDate(dt) as date,
+  JSONExtractString(message, 'user_id') as user_id,
+  JSONExtractString(message, 'failure_reason') as reason,
+  toFloat64OrZero(JSONExtractString(message, 'amount')) as amount
+FROM {{source}}
+WHERE event_name = 'metric.payment_failed'
+  AND dt >= now() - interval 7 day
+ORDER BY dt DESC
+LIMIT 100
 ```
-event_name:"metric.payment_failed" AND timestamp:>now-7d
-```
-**Visualization:** Table showing `failure_reason`, `user_id`, `amount`  
+**Visualization:** Table  
 **What it shows:** Recent payment issues requiring attention
 
 ---
@@ -225,29 +397,54 @@ event_name:"metric.payment_failed" AND timestamp:>now-7d
 Track application funnel, approval rates, and core product metrics.
 
 ### Applications Submitted (Last 30 Days)
-```
-event_name:"metric.application_submitted" AND timestamp:>now-30d
+**SQL Expression:**
+```sql
+SELECT 
+  toDate(dt) as date,
+  countMerge(events_count) as applications
+FROM {{source}}
+WHERE event_name = 'metric.application_submitted'
+  AND dt >= now() - interval 30 day
+GROUP BY date
+ORDER BY date
 ```
 **Visualization:** Line chart  
 **What it shows:** Application submission trend
 
-### Applications by Account Count
+### Applications by Account Count (Pie Chart)
+**SQL Expression:**
+```sql
+SELECT 
+  JSONExtractString(message, 'account_count') as account_count,
+  countMerge(events_count) as count
+FROM {{source}}
+WHERE event_name = 'metric.application_submitted'
+  AND dt >= now() - interval 30 day
+GROUP BY account_count
 ```
-event_name:"metric.application_submitted" AND timestamp:>now-30d
-```
-**Visualization:** Pie chart (group by `account_count`)  
+**Visualization:** Pie chart  
 **What it shows:** Distribution of applicants by # of accounts
 
-### Applications by Connection Type
+### Applications by Connection Type (Pie Chart)
+**SQL Expression:**
+```sql
+SELECT 
+  JSONExtractString(message, 'connect_type') as type,
+  countMerge(events_count) as count
+FROM {{source}}
+WHERE event_name = 'metric.application_submitted'
+  AND dt >= now() - interval 30 day
+GROUP BY type
 ```
-event_name:"metric.application_submitted" AND timestamp:>now-30d
-```
-**Visualization:** Pie chart (group by `connect_type`)  
+**Visualization:** Pie chart  
 **What it shows:** Bank vs Brokerage vs Both
 
 ### Total Applications (All Time)
-```
-event_name:"metric.application_submitted"
+**SQL Expression:**
+```sql
+SELECT countMerge(events_count) as total
+FROM {{source}}
+WHERE event_name = 'metric.application_submitted'
 ```
 **Visualization:** Number  
 **What it shows:** Cumulative applications received
