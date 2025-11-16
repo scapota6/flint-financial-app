@@ -165,12 +165,14 @@ export default function AccountCard({ account }: AccountCardProps) {
             {/* Main Balance */}
             <div>
               <p className="text-sm text-muted-foreground mb-1">
-                {account.type === 'credit' ? 'Amount Spent This Cycle' : 'Available Balance'}
+                {account.type === 'credit' ? 'Amount Spent This Cycle' : account.type === 'investment' ? 'Total Value' : 'Available Balance'}
               </p>
               <p className={`text-2xl font-bold ${account.type === 'credit' ? 'text-red-500' : 'text-green-500'}`}>
                 {formatCurrency(
                   account.type === 'credit' 
                     ? (account.amountSpent ?? (account.balance < 0 ? Math.abs(account.balance) : account.balance))
+                    : account.type === 'investment'
+                    ? ((account.cash ?? 0) + (account.holdings ?? 0))
                     : account.balance
                 )}
               </p>
