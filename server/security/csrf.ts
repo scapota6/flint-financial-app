@@ -27,7 +27,9 @@ export function installCsrf(app: Express) {
     '/api/feature-requests',  // Feature requests from public landing page
     '/api/auth/setup-password',
     '/api/auth/request-reset',
-    '/api/auth/local-login'  // Local password login doesn't require CSRF
+    '/api/auth/local-login',  // Local password login doesn't require CSRF
+    '/api/admin/snaptrade/audit',  // Admin SnapTrade audit endpoint
+    '/api/admin/snaptrade/cleanup-orphaned'  // Admin SnapTrade cleanup endpoint
   ];
   
   // Apply CSRF middleware with conditional logic

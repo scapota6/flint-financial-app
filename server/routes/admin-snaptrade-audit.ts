@@ -9,9 +9,12 @@ const router = Router();
 /**
  * GET /api/admin/snaptrade/audit
  * Audit all SnapTrade users and find orphaned ones
- * Admin only endpoint
+ * Admin only endpoint - CSRF exempt for server-side access
  */
-router.get('/snaptrade/audit', async (req: any, res) => {
+router.get('/snaptrade/audit', (req: any, res: any, next: any) => {
+  req.skipCsrf = true;
+  next();
+}, async (req: any, res) => {
   try {
     console.log('[SnapTrade Audit] Starting audit...');
     
@@ -57,9 +60,12 @@ router.get('/snaptrade/audit', async (req: any, res) => {
 /**
  * POST /api/admin/snaptrade/cleanup-orphaned
  * Delete orphaned SnapTrade users that aren't linked to any Flint user
- * Admin only endpoint
+ * Admin only endpoint - CSRF exempt for server-side access
  */
-router.post('/snaptrade/cleanup-orphaned', async (req: any, res) => {
+router.post('/snaptrade/cleanup-orphaned', (req: any, res: any, next: any) => {
+  req.skipCsrf = true;
+  next();
+}, async (req: any, res) => {
   try {
     console.log('[SnapTrade Cleanup] Starting cleanup of orphaned users...');
     
