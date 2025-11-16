@@ -44,6 +44,7 @@ import snaptradeRouter from './routes/snaptrade';
 import snaptradeDiagnosticsRouter from './routes/snaptrade-diagnostics';
 import adminRouter from './routes/admin';
 import adminPanelRouter from './routes/admin-panel';
+import adminSnapTradeAuditRouter from './routes/admin-snaptrade-audit';
 import userPasswordRouter from './routes/user-password';
 import authRouter from './routes/auth';
 import lemonSqueezyRouter from './routes/lemonsqueezy';
@@ -2478,6 +2479,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Mount password management routes
   app.use('/api/admin', adminRouter);
+  app.use('/api/admin', adminSnapTradeAuditRouter);
   app.use('/api/admin-panel', adminPanelRouter);
   app.use('/api/user', userPasswordRouter);
   app.use('/api/auth', authRouter);

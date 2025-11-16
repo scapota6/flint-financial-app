@@ -73,7 +73,7 @@ export async function recoverDeletedSnapTradeUser(flintUserId: string): Promise<
         .set({
           snaptradeUserId: flintUserId,
           userSecret: newUserSecret,
-          updatedAt: new Date()
+          rotatedAt: new Date()
         })
         .where(eq(snaptradeUsers.flintUserId, flintUserId))
         .returning();
