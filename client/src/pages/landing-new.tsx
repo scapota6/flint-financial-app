@@ -22,6 +22,7 @@ import {
   DollarSign,
   CreditCard,
   Building,
+  Building2,
   LineChart,
   ChevronDown
 } from "lucide-react";
@@ -684,10 +685,10 @@ export default function LandingNew() {
               </Card>
 
               <Card className="bg-white/5 border-white/10 p-8 hover:bg-white/10 transition-colors">
-                <Zap className="h-12 w-12 text-blue-400 mb-4" />
-                <h3 className="text-2xl font-semibold mb-3">Live Updates</h3>
+                <div className="text-4xl mb-4">🔁</div>
+                <h3 className="text-2xl font-semibold mb-3">Act in Real Time, Not Just Watch</h3>
                 <p className="text-gray-300">
-                  Watch your money change in real time. Get alerts when things happen.
+                  Don't just track your money — move it. Transfer between accounts and buy stocks directly from Flint, without switching apps.
                 </p>
               </Card>
 
@@ -720,21 +721,60 @@ export default function LandingNew() {
               <p className="text-xl text-gray-300">Watch your money all in one place</p>
             </div>
 
-            {/* Full dashboard mock with scrolling */}
+            {/* Full dashboard mock matching actual dashboard */}
             <div className="bg-black/40 border border-white/20 rounded-2xl overflow-hidden backdrop-blur-sm">
               {/* Top bar with net worth */}
               <div className="p-6 border-b border-white/10 bg-white/5">
-                <p className="text-sm text-gray-400 mb-1">Total Net Worth</p>
-                <p className="text-5xl font-bold text-blue-400" data-testid="demo-net-worth">{currentDemo.netWorth}</p>
+                <div className="text-center">
+                  <p className="text-sm text-gray-400 mb-1">Total Net Worth</p>
+                  <p className="text-5xl font-bold text-blue-400 mb-2" data-testid="demo-net-worth">{currentDemo.netWorth}</p>
+                  <p className="text-sm text-green-400">+2.4% today</p>
+                </div>
               </div>
 
               {/* Scrollable content area */}
               <div className="max-h-[600px] overflow-y-auto">
-                {/* Accounts grid */}
+                {/* Summary Cards - matching actual dashboard */}
+                <div className="p-6 border-b border-white/10">
+                  <div className="grid md:grid-cols-3 gap-4">
+                    <div className="bg-white/5 border border-white/10 rounded-lg p-4">
+                      <div className="flex items-center gap-2 mb-2">
+                        <TrendingUp className="h-4 w-4 text-blue-400" />
+                        <p className="text-sm text-gray-400">Total Balance</p>
+                      </div>
+                      <p className="text-2xl font-bold">{currentDemo.netWorth}</p>
+                      <p className="text-xs text-green-400 mt-1">+2.4% change</p>
+                    </div>
+                    
+                    <div className="bg-white/5 border border-white/10 rounded-lg p-4">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Building2 className="h-4 w-4 text-blue-400" />
+                        <p className="text-sm text-gray-400">Bank Accounts</p>
+                      </div>
+                      <p className="text-2xl font-bold">
+                        {currentDemo.accounts.find(a => a.type === 'Bank')?.balance || '$0.00'}
+                      </p>
+                      <p className="text-xs text-gray-400 mt-1">4% of total</p>
+                    </div>
+                    
+                    <div className="bg-white/5 border border-white/10 rounded-lg p-4">
+                      <div className="flex items-center gap-2 mb-2">
+                        <LineChart className="h-4 w-4 text-blue-400" />
+                        <p className="text-sm text-gray-400">Investments</p>
+                      </div>
+                      <p className="text-2xl font-bold">
+                        {currentDemo.accounts.find(a => a.type === 'Investing')?.balance || '$0.00'}
+                      </p>
+                      <p className="text-xs text-green-400 mt-1">+8.7% change</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Connected Accounts */}
                 <div className="p-6 border-b border-white/10">
                   <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
                     <Wallet className="h-5 w-5 text-blue-400" />
-                    Your Accounts
+                    Connected Accounts
                   </h3>
                   <div className="grid md:grid-cols-2 gap-4">
                     {currentDemo.accounts.map((account, idx) => (
