@@ -61,10 +61,16 @@ export const users = pgTable("users", {
   lastLogin: timestamp("last_login").defaultNow(),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
+  // Referral and waitlist system
+  referralCode: varchar("referral_code").unique(), // User's unique referral code
+  referredBy: varchar("referred_by"), // ID of the user who referred them
+  waitlistPosition: integer("waitlist_position"), // Their position in the waitlist
+  referralCount: integer("referral_count").default(0), // Number of successful referrals
 }, (table) => [
   index("users_last_login_idx").on(table.lastLogin),
   index("users_subscription_tier_idx").on(table.subscriptionTier),
   index("users_email_verified_idx").on(table.emailVerified),
+  index("users_referral_code_idx").on(table.referralCode),
 ]);
 
 // SnapTrade users table per specification: snaptrade_users(flint_user_id PK, user_secret, created_at, rotated_at)

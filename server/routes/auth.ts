@@ -1388,4 +1388,135 @@ router.get('/verify-email', async (req, res) => {
   }
 });
 
+// POST /api/auth/signup - Create new user account with referral tracking
+const signupSchema = z.object({
+  name: z.string().min(1, 'Name is required'),
+  email: z.string().email('Valid email is required'),
+  password: z.string().min(8, 'Password must be at least 8 characters'),
+  referralCode: z.string().optional(),
+});
+
+router.post('/signup', rateLimits.login, async (req, res) => {
+  try {
+    const parseResult = signupSchema.safeParse(req.body);
+    
+    if (!parseResult.success) {
+      return res.status(400).json({
+        message: 'Invalid request',
+        errors: parseResult.error.errors.map(e => e.message),
+      });
+    }
+
+    const { name, email, password, referralCode } = parseResult.data;
+    const normalizedEmail = email.toLowerCase().trim();
+    const [firstName, ...lastNameParts] = name.trim().split(' ');
+    const lastName = lastNameParts.join(' ') || '';
+
+    // Check if user already exists
+    const existingUser = await db
+      .select()
+      .from(users)
+      .where(eq(users.email, normalizedEmail))
+      .limit(1);
+
+    if (existingUser.length > 0) {
+      return res.status(409).json({
+        message: 'An account with this email already exists',
+      });
+    }
+
+    // Validate password strength
+    const passwordValidation = validatePassword(password);
+    if (!passwordValidation.valid) {
+      return res.status(400).json({
+        message: 'Password does not meet requirements',
+        errors: passwordValidation.errors,
+      });
+    }
+
+    // Hash password
+    const passwordHash = await hashPassword(password);
+
+    // Generate referral code
+    const { generateReferralCode, calculateWaitlistPosition, processReferral } = await import('../utils/referral');
+    const newReferralCode = await generateReferralCode();
+
+    // Create user
+    const [newUser] = await db
+      .insert(users)
+      .values({
+        id: crypto.randomUUID(),
+        email: normalizedEmail,
+        passwordHash,
+        firstName,
+        lastName,
+        emailVerified: false,
+        subscriptionTier: 'free',
+        subscriptionStatus: 'active',
+        referralCode: newReferralCode,
+        lastPasswordHashes: [],
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      })
+      .returning();
+
+    // Calculate waitlist position
+    const waitlistPosition = await calculateWaitlistPosition(newUser.id);
+    
+    // Update user with waitlist position
+    await db
+      .update(users)
+      .set({ waitlistPosition })
+      .where(eq(users.id, newUser.id));
+
+    // Process referral if code was provided
+    let referralProcessed = false;
+    if (referralCode) {
+      referralProcessed = await processReferral(newUser.id, referralCode);
+    }
+
+    // Log audit event
+    await db.insert(auditLogs).values({
+      userId: newUser.id,
+      adminEmail: normalizedEmail,
+      action: 'user_signup',
+      details: {
+        timestamp: new Date().toISOString(),
+        method: 'email_password',
+        referralUsed: referralProcessed,
+        referralCode: referralCode || null,
+      },
+    });
+
+    // Log metric for Grafana
+    logger.logMetric('user_signup', {
+      user_id: newUser.id,
+      subscription_tier: 'free',
+      subscription_status: 'active',
+      signup_source: 'landing_page',
+      referral_used: referralProcessed,
+    });
+
+    // Return user data with referral stats
+    return res.status(201).json({
+      message: 'Account created successfully',
+      user: {
+        id: newUser.id,
+        email: newUser.email,
+        firstName: newUser.firstName,
+        lastName: newUser.lastName,
+        referralCode: newReferralCode,
+        waitlistPosition,
+        referralCount: 0,
+      },
+    });
+  } catch (error: any) {
+    console.error('Error creating user account:', error);
+    logger.error('Signup error', { error: error.message || error });
+    return res.status(500).json({
+      message: 'Failed to create account',
+    });
+  }
+});
+
 export default router;

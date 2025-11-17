@@ -200,6 +200,8 @@ export default function LandingNew() {
   };
 
   // Signup submission
+  const [signupLoading, setSignupLoading] = useState(false);
+
   const handleSignupSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     e.stopPropagation();
@@ -208,8 +210,7 @@ export default function LandingNew() {
     if (signupData.name && signupData.email && signupData.password) {
       console.log('[Landing New] All fields valid, showing success message');
       setSignupSuccess(true);
-      // Note: In production, this would create an account via API and then redirect
-      // For this demo landing page, we just show success and link to actual signup
+      // Note: This is a demo landing page. Real signup happens through /login or Stripe checkout
     } else {
       console.log('[Landing New] Form validation failed', signupData);
     }
@@ -742,8 +743,13 @@ export default function LandingNew() {
                     />
                   </div>
 
-                  <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 h-12" data-testid="button-signup-submit">
-                    Create Account
+                  <Button 
+                    type="submit" 
+                    className="w-full bg-blue-600 hover:bg-blue-700 h-12" 
+                    disabled={signupLoading}
+                    data-testid="button-signup-submit"
+                  >
+                    {signupLoading ? 'Creating Account...' : 'Create Account'}
                   </Button>
                 </form>
 
@@ -778,15 +784,31 @@ export default function LandingNew() {
             ) : (
               <div className="p-8 bg-green-500/10 border border-green-500/20 rounded-lg text-center space-y-4">
                 <Check className="h-16 w-16 text-green-400 mx-auto" />
-                <h3 className="text-2xl font-bold">Welcome to Flint!</h3>
-                <p className="text-gray-300">Your account would be created here.</p>
-                <p className="text-sm text-gray-400">
-                  This is a demo landing page. To actually sign up, visit{' '}
-                  <Link href="/login" className="text-blue-400 hover:underline">
-                    the login page
+                <h3 className="text-2xl font-bold">You're on the list!</h3>
+                <p className="text-gray-300">This is a demo landing page. To actually create an account, visit our signup page.</p>
+                
+                <div className="mt-6 space-y-4">
+                  {/* Demo Waitlist Preview */}
+                  <div className="p-6 bg-white/5 border border-white/10 rounded-lg">
+                    <p className="text-sm text-gray-400 mb-1">Your Waitlist Position (Demo)</p>
+                    <p className="text-4xl font-bold text-blue-400">#8,247</p>
+                    <p className="text-xs text-gray-400 mt-2">Skip spots by referring friends</p>
+                  </div>
+
+                  {/* Demo Referral Info */}
+                  <div className="p-6 bg-white/5 border border-white/10 rounded-lg space-y-3">
+                    <p className="text-sm font-semibold text-white">Share & Get Unlimited Accounts</p>
+                    <p className="text-xs text-gray-400">Refer 3 friends to unlock unlimited accounts for free</p>
+                    <p className="text-sm text-blue-400 font-medium">Get your unique referral link when you sign up!</p>
+                  </div>
+
+                  {/* CTA to actual signup */}
+                  <Link href="/login">
+                    <Button className="w-full bg-blue-600 hover:bg-blue-700 h-12" data-testid="button-go-to-login">
+                      Create Real Account →
+                    </Button>
                   </Link>
-                  .
-                </p>
+                </div>
               </div>
             )}
           </div>
