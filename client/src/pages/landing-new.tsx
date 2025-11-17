@@ -307,7 +307,7 @@ export default function LandingNew() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6">
             <div className="grid md:grid-cols-3 gap-8">
               {/* Cut Hidden Fees */}
-              <Card className="bg-white/5 border-white/10 p-8 hover:bg-white/10 transition-all hover:scale-105 hover:shadow-2xl">
+              <Card className="bg-white/5 border-white/10 p-8 hover:bg-white/10 transition-all hover:scale-105 hover:shadow-2xl" data-testid="value-card-fees">
                 <div className="flex flex-col items-center text-center space-y-4">
                   <div className="h-16 w-16 rounded-full bg-blue-600/20 flex items-center justify-center">
                     <DollarSign className="h-8 w-8 text-blue-400" />
@@ -320,7 +320,7 @@ export default function LandingNew() {
               </Card>
 
               {/* Grow Net Worth */}
-              <Card className="bg-white/5 border-white/10 p-8 hover:bg-white/10 transition-all hover:scale-105 hover:shadow-2xl">
+              <Card className="bg-white/5 border-white/10 p-8 hover:bg-white/10 transition-all hover:scale-105 hover:shadow-2xl" data-testid="value-card-grow">
                 <div className="flex flex-col items-center text-center space-y-4">
                   <div className="h-16 w-16 rounded-full bg-green-600/20 flex items-center justify-center">
                     <TrendingUp className="h-8 w-8 text-green-400" />
@@ -333,7 +333,7 @@ export default function LandingNew() {
               </Card>
 
               {/* Stay in Control */}
-              <Card className="bg-white/5 border-white/10 p-8 hover:bg-white/10 transition-all hover:scale-105 hover:shadow-2xl">
+              <Card className="bg-white/5 border-white/10 p-8 hover:bg-white/10 transition-all hover:scale-105 hover:shadow-2xl" data-testid="value-card-control">
                 <div className="flex flex-col items-center text-center space-y-4">
                   <div className="h-16 w-16 rounded-full bg-purple-600/20 flex items-center justify-center">
                     <Shield className="h-8 w-8 text-purple-400" />
@@ -401,6 +401,98 @@ export default function LandingNew() {
           </div>
         </section>
 
+        {/* Social Proof Section */}
+        <section className="py-20 lg:py-24 bg-gradient-to-b from-blue-950/20 to-black">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6">
+            {/* Progress Bar */}
+            <div className="text-center mb-16">
+              <div className="inline-block bg-blue-600/10 border border-blue-400/30 rounded-xl p-6 mb-6" data-testid="social-proof-progress">
+                <p className="text-sm text-blue-400 font-semibold mb-3">EARLY ACCESS FILLING FAST</p>
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="flex-1 h-3 bg-white/10 rounded-full overflow-hidden">
+                    <div className="h-full bg-gradient-to-r from-blue-500 to-blue-600 rounded-full" style={{ width: '82%' }} data-testid="progress-bar-fill"></div>
+                  </div>
+                </div>
+                <p className="text-2xl font-bold text-white" data-testid="progress-text">8,200 / 10,000 early spots claimed!</p>
+              </div>
+              
+              <p className="text-gray-400 text-sm">Loved by early adopters for clarity and ease.</p>
+            </div>
+
+            {/* Testimonials */}
+            <div className="grid md:grid-cols-3 gap-6">
+              {/* Testimonial 1 */}
+              <Card className="bg-white/5 border-white/10 p-6" data-testid="testimonial-1">
+                <div className="space-y-4">
+                  <div className="flex gap-1">
+                    {[...Array(5)].map((_, i) => (
+                      <span key={i} className="text-yellow-400">★</span>
+                    ))}
+                  </div>
+                  <p className="text-gray-300 italic">
+                    "Finally, I can see all my accounts in one place. Found $400 in fees I didn't know I was paying!"
+                  </p>
+                  <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-full bg-blue-600/20 flex items-center justify-center text-blue-400 font-semibold">
+                      JM
+                    </div>
+                    <div>
+                      <p className="font-semibold text-white">Jessica M.</p>
+                      <p className="text-sm text-gray-400">Early Adopter</p>
+                    </div>
+                  </div>
+                </div>
+              </Card>
+
+              {/* Testimonial 2 */}
+              <Card className="bg-white/5 border-white/10 p-6" data-testid="testimonial-2">
+                <div className="space-y-4">
+                  <div className="flex gap-1">
+                    {[...Array(5)].map((_, i) => (
+                      <span key={i} className="text-yellow-400">★</span>
+                    ))}
+                  </div>
+                  <p className="text-gray-300 italic">
+                    "Super easy to use. I connected 8 accounts in under 5 minutes. The alerts are game-changing."
+                  </p>
+                  <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-full bg-green-600/20 flex items-center justify-center text-green-400 font-semibold">
+                      DR
+                    </div>
+                    <div>
+                      <p className="font-semibold text-white">David R.</p>
+                      <p className="text-sm text-gray-400">Pro User</p>
+                    </div>
+                  </div>
+                </div>
+              </Card>
+
+              {/* Testimonial 3 */}
+              <Card className="bg-white/5 border-white/10 p-6" data-testid="testimonial-3">
+                <div className="space-y-4">
+                  <div className="flex gap-1">
+                    {[...Array(5)].map((_, i) => (
+                      <span key={i} className="text-yellow-400">★</span>
+                    ))}
+                  </div>
+                  <p className="text-gray-300 italic">
+                    "Clean design, works perfectly. Helps me track crypto and stocks without jumping between apps."
+                  </p>
+                  <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-full bg-purple-600/20 flex items-center justify-center text-purple-400 font-semibold">
+                      SK
+                    </div>
+                    <div>
+                      <p className="font-semibold text-white">Sarah K.</p>
+                      <p className="text-sm text-gray-400">Investor</p>
+                    </div>
+                  </div>
+                </div>
+              </Card>
+            </div>
+          </div>
+        </section>
+
         {/* Features Section */}
         <section className="py-20 lg:py-32">
           <div className="max-w-7xl mx-auto px-4 sm:px-6">
@@ -442,7 +534,7 @@ export default function LandingNew() {
           <div className="max-w-6xl mx-auto px-4 sm:px-6">
             {/* Banner above demo */}
             <div className="text-center mb-8">
-              <div className="inline-flex items-center gap-2 bg-blue-600/20 border border-blue-400/30 rounded-full px-6 py-3">
+              <div className="inline-flex items-center gap-2 bg-blue-600/20 border border-blue-400/30 rounded-full px-6 py-3" data-testid="demo-banner">
                 <Zap className="h-4 w-4 text-blue-400" />
                 <p className="text-blue-400 font-medium">
                   See how Flint works — try the dashboard now (no sign-up needed)
