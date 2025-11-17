@@ -172,15 +172,21 @@ export default function LandingNew() {
   };
 
   // Signup submission
-  const handleSignupSubmit = (e: React.FormEvent) => {
+  const handleSignupSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    e.stopPropagation();
+    console.log('[Landing New] Signup form submitted', { name: signupData.name, email: signupData.email });
+    
     if (signupData.name && signupData.email && signupData.password) {
+      console.log('[Landing New] All fields valid, showing success message');
       setSignupSuccess(true);
-      // In production, this would actually create an account
-      setTimeout(() => {
-        window.location.href = '/dashboard';
-      }, 2000);
+      // Note: In production, this would create an account via API and then redirect
+      // For this demo landing page, we just show success and link to actual signup
+    } else {
+      console.log('[Landing New] Form validation failed', signupData);
     }
+    
+    return false;
   };
 
   return (
@@ -201,11 +207,11 @@ export default function LandingNew() {
           </div>
           <div className="flex items-center gap-4">
             <Link href="/login">
-              <Button variant="ghost" className="text-white hover:text-blue-400" data-testid="button-login">
+              <Button type="button" variant="ghost" className="text-white hover:text-blue-400" data-testid="button-login">
                 Log In
               </Button>
             </Link>
-            <Button onClick={scrollToSignup} className="bg-blue-600 hover:bg-blue-700" data-testid="button-header-signup">
+            <Button type="button" onClick={scrollToSignup} className="bg-blue-600 hover:bg-blue-700" data-testid="button-header-signup">
               Get Started Free
             </Button>
           </div>
@@ -227,6 +233,7 @@ export default function LandingNew() {
               </p>
 
               <Button 
+                type="button"
                 onClick={scrollToSignup} 
                 size="lg" 
                 className="bg-blue-600 hover:bg-blue-700 text-lg px-8 py-6 h-auto"
@@ -402,11 +409,11 @@ export default function LandingNew() {
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center mt-8">
-              <Button onClick={switchDemoData} variant="outline" className="border-white/20 text-white hover:bg-white/10" data-testid="button-demo-switch">
+              <Button type="button" onClick={switchDemoData} variant="outline" className="border-white/20 text-white hover:bg-white/10" data-testid="button-demo-switch">
                 Try with sample data
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
-              <Button onClick={scrollToSignup} className="bg-blue-600 hover:bg-blue-700" data-testid="button-demo-signup">
+              <Button type="button" onClick={scrollToSignup} className="bg-blue-600 hover:bg-blue-700" data-testid="button-demo-signup">
                 Ready to see your own? Sign up free
               </Button>
             </div>
@@ -422,44 +429,46 @@ export default function LandingNew() {
             </div>
 
             {!signupSuccess ? (
-              <form onSubmit={handleSignupSubmit} className="space-y-4">
-                <div>
-                  <Input
-                    type="text"
-                    placeholder="Full Name"
-                    value={signupData.name}
-                    onChange={(e) => setSignupData({ ...signupData, name: e.target.value })}
-                    className="bg-white/10 border-white/20 text-white placeholder:text-gray-400"
-                    required
-                    data-testid="input-signup-name"
-                  />
-                </div>
-                <div>
-                  <Input
-                    type="email"
-                    placeholder="Email"
-                    value={signupData.email}
-                    onChange={(e) => setSignupData({ ...signupData, email: e.target.value })}
-                    className="bg-white/10 border-white/20 text-white placeholder:text-gray-400"
-                    required
-                    data-testid="input-signup-email"
-                  />
-                </div>
-                <div>
-                  <Input
-                    type="password"
-                    placeholder="Password"
-                    value={signupData.password}
-                    onChange={(e) => setSignupData({ ...signupData, password: e.target.value })}
-                    className="bg-white/10 border-white/20 text-white placeholder:text-gray-400"
-                    required
-                    data-testid="input-signup-password"
-                  />
-                </div>
+              <div>
+                <form onSubmit={handleSignupSubmit} action="#" className="space-y-4">
+                  <div>
+                    <Input
+                      type="text"
+                      placeholder="Full Name"
+                      value={signupData.name}
+                      onChange={(e) => setSignupData({ ...signupData, name: e.target.value })}
+                      className="bg-white/10 border-white/20 text-white placeholder:text-gray-400"
+                      required
+                      data-testid="input-signup-name"
+                    />
+                  </div>
+                  <div>
+                    <Input
+                      type="email"
+                      placeholder="Email"
+                      value={signupData.email}
+                      onChange={(e) => setSignupData({ ...signupData, email: e.target.value })}
+                      className="bg-white/10 border-white/20 text-white placeholder:text-gray-400"
+                      required
+                      data-testid="input-signup-email"
+                    />
+                  </div>
+                  <div>
+                    <Input
+                      type="password"
+                      placeholder="Password"
+                      value={signupData.password}
+                      onChange={(e) => setSignupData({ ...signupData, password: e.target.value })}
+                      className="bg-white/10 border-white/20 text-white placeholder:text-gray-400"
+                      required
+                      data-testid="input-signup-password"
+                    />
+                  </div>
 
-                <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 h-12" data-testid="button-signup-submit">
-                  Create Account
-                </Button>
+                  <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 h-12" data-testid="button-signup-submit">
+                    Create Account
+                  </Button>
+                </form>
 
                 <div className="relative my-6">
                   <div className="absolute inset-0 flex items-center">
@@ -482,12 +491,19 @@ export default function LandingNew() {
                 <p className="text-sm text-gray-400 text-center mt-4">
                   No credit card required. You can connect up to 4 accounts on the Free plan.
                 </p>
-              </form>
+              </div>
             ) : (
-              <div className="p-8 bg-green-500/10 border border-green-500/20 rounded-lg text-center">
-                <Check className="h-16 w-16 text-green-400 mx-auto mb-4" />
-                <h3 className="text-2xl font-bold mb-2">Welcome to Flint!</h3>
-                <p className="text-gray-300">Taking you to your dashboard...</p>
+              <div className="p-8 bg-green-500/10 border border-green-500/20 rounded-lg text-center space-y-4">
+                <Check className="h-16 w-16 text-green-400 mx-auto" />
+                <h3 className="text-2xl font-bold">Welcome to Flint!</h3>
+                <p className="text-gray-300">Your account would be created here.</p>
+                <p className="text-sm text-gray-400">
+                  This is a demo landing page. To actually sign up, visit{' '}
+                  <Link href="/login" className="text-blue-400 hover:underline">
+                    the login page
+                  </Link>
+                  .
+                </p>
               </div>
             )}
           </div>
@@ -532,7 +548,7 @@ export default function LandingNew() {
                   </li>
                 </ul>
 
-                <Button onClick={scrollToSignup} className="w-full bg-white/10 hover:bg-white/20 border border-white/20" data-testid="button-free-plan">
+                <Button type="button" onClick={scrollToSignup} className="w-full bg-white/10 hover:bg-white/20 border border-white/20" data-testid="button-free-plan">
                   Get Started Free
                 </Button>
               </Card>
@@ -576,7 +592,7 @@ export default function LandingNew() {
                   </li>
                 </ul>
 
-                <Button className="w-full bg-blue-600 hover:bg-blue-700" data-testid="button-pro-plan">
+                <Button type="button" className="w-full bg-blue-600 hover:bg-blue-700" data-testid="button-pro-plan">
                   Upgrade to Pro
                 </Button>
               </Card>
