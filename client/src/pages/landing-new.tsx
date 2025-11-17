@@ -440,6 +440,16 @@ export default function LandingNew() {
         {/* Interactive Demo Section */}
         <section className="py-20 lg:py-32 bg-white/5 border-y border-white/10">
           <div className="max-w-6xl mx-auto px-4 sm:px-6">
+            {/* Banner above demo */}
+            <div className="text-center mb-8">
+              <div className="inline-flex items-center gap-2 bg-blue-600/20 border border-blue-400/30 rounded-full px-6 py-3">
+                <Zap className="h-4 w-4 text-blue-400" />
+                <p className="text-blue-400 font-medium">
+                  See how Flint works — try the dashboard now (no sign-up needed)
+                </p>
+              </div>
+            </div>
+
             <div className="text-center mb-12">
               <h2 className="text-4xl font-bold mb-4">See How It Works</h2>
               <p className="text-xl text-gray-300">Watch your money all in one place</p>
