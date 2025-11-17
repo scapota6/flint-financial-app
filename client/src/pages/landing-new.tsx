@@ -51,7 +51,7 @@ const INSTITUTIONS = [
   { name: 'TD Ameritrade', domain: 'tdameritrade.com' }
 ];
 
-// Demo data sets
+// Demo data sets with subscriptions
 const DEMO_DATA_1 = {
   netWorth: '$127,543.21',
   accounts: [
@@ -63,7 +63,16 @@ const DEMO_DATA_1 = {
   transactions: [
     { date: 'Nov 16', merchant: 'Whole Foods', amount: '-$87.43', category: 'Groceries' },
     { date: 'Nov 15', merchant: 'Shell Gas', amount: '-$45.00', category: 'Transportation' },
-    { date: 'Nov 15', merchant: 'Salary Deposit', amount: '+$4,250.00', category: 'Income' }
+    { date: 'Nov 15', merchant: 'Salary Deposit', amount: '+$4,250.00', category: 'Income' },
+    { date: 'Nov 14', merchant: 'Amazon', amount: '-$42.99', category: 'Shopping' },
+    { date: 'Nov 14', merchant: 'Starbucks', amount: '-$6.75', category: 'Food' },
+    { date: 'Nov 13', merchant: 'Netflix', amount: '-$15.99', category: 'Entertainment' }
+  ],
+  subscriptions: [
+    { name: 'Netflix', amount: '$15.99', frequency: 'Monthly', nextDate: 'Dec 13' },
+    { name: 'Spotify', amount: '$10.99', frequency: 'Monthly', nextDate: 'Dec 18' },
+    { name: 'Amazon Prime', amount: '$14.99', frequency: 'Monthly', nextDate: 'Dec 5' },
+    { name: 'Apple iCloud', amount: '$2.99', frequency: 'Monthly', nextDate: 'Nov 28' }
   ]
 };
 
@@ -75,9 +84,16 @@ const DEMO_DATA_2 = {
     { name: 'Binance', type: 'Crypto', balance: '$23,766.00', change: '+5.6%' }
   ],
   transactions: [
-    { date: 'Nov 16', merchant: 'Amazon', amount: '-$124.99', category: 'Shopping' },
-    { date: 'Nov 16', merchant: 'Netflix', amount: '-$15.99', category: 'Entertainment' },
-    { date: 'Nov 14', merchant: 'Freelance Payment', amount: '+$2,500.00', category: 'Income' }
+    { date: 'Nov 16', merchant: 'Target', amount: '-$124.99', category: 'Shopping' },
+    { date: 'Nov 16', merchant: 'Chipotle', amount: '-$12.45', category: 'Food' },
+    { date: 'Nov 14', merchant: 'Freelance Payment', amount: '+$2,500.00', category: 'Income' },
+    { date: 'Nov 13', merchant: 'Gas Station', amount: '-$52.00', category: 'Transportation' },
+    { date: 'Nov 13', merchant: 'Gym Membership', amount: '-$45.00', category: 'Health' }
+  ],
+  subscriptions: [
+    { name: 'Gym Membership', amount: '$45.00', frequency: 'Monthly', nextDate: 'Dec 13' },
+    { name: 'Disney+', amount: '$13.99', frequency: 'Monthly', nextDate: 'Dec 2' },
+    { name: 'Adobe Creative', amount: '$54.99', frequency: 'Monthly', nextDate: 'Dec 8' }
   ]
 };
 
@@ -224,23 +240,23 @@ export default function LandingNew() {
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-8">
               <h1 className="text-5xl lg:text-6xl font-bold leading-tight">
-                One dashboard for all your money – 
-                <span className="text-blue-400"> free forever</span> (up to 4 accounts)
+                All your money,
+                <span className="text-blue-400"> one place</span>
               </h1>
               
-              <p className="text-xl text-gray-300 leading-relaxed">
-                Connect your bank, card, investing and crypto accounts in minutes. See everything. Act instantly.
+              <p className="text-2xl text-gray-300 leading-relaxed">
+                See your bank, cards, stocks, and crypto together. Free forever.
               </p>
 
               <Button 
                 type="button"
                 onClick={scrollToSignup} 
                 size="lg" 
-                className="bg-blue-600 hover:bg-blue-700 text-lg px-8 py-6 h-auto"
+                className="bg-blue-600 hover:bg-blue-700 text-xl px-10 py-7 h-auto shadow-2xl shadow-blue-600/50"
                 data-testid="button-hero-cta"
               >
-                Get Started Free (No Credit Card Needed)
-                <ArrowRight className="ml-2 h-5 w-5" />
+                Get Started Free (No Card Needed)
+                <ArrowRight className="ml-3 h-6 w-6" />
               </Button>
 
               {/* Email capture */}
@@ -281,15 +297,23 @@ export default function LandingNew() {
         <section className="border-y border-white/10 bg-white/5 backdrop-blur-sm py-16">
           <div className="max-w-7xl mx-auto px-4 sm:px-6">
             <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold mb-4">Trusted by thousands. Connected everywhere.</h2>
+              <h2 className="text-3xl font-bold mb-4">Works With Your Banks</h2>
             </div>
 
-            {/* Scrolling logos */}
+            {/* Scrolling logos with Brandfetch */}
             <div className="relative overflow-hidden mb-12">
               <div className="flex gap-8 animate-[scroll_40s_linear_infinite]">
                 {[...INSTITUTIONS, ...INSTITUTIONS].map((inst, idx) => (
-                  <div key={idx} className="flex-shrink-0 w-32 h-16 bg-white/5 rounded-lg flex items-center justify-center border border-white/10">
-                    <span className="text-sm text-gray-300 font-medium">{inst.name}</span>
+                  <div key={idx} className="flex-shrink-0 w-40 h-20 bg-white/5 rounded-lg flex items-center justify-center border border-white/10 p-4">
+                    <img 
+                      src={`https://img.logo.dev/${inst.domain}?token=pk_X-WsTzKaQ_C20eGOSz4ZYA&size=80`}
+                      alt={inst.name}
+                      className="max-h-12 max-w-full object-contain filter brightness-0 invert opacity-70 hover:opacity-100 transition-opacity"
+                      onError={(e) => {
+                        e.currentTarget.style.display = 'none';
+                        e.currentTarget.parentElement!.innerHTML = `<span class="text-sm text-gray-300 font-medium">${inst.name}</span>`;
+                      }}
+                    />
                   </div>
                 ))}
               </div>
@@ -300,22 +324,22 @@ export default function LandingNew() {
               <div className="flex items-center gap-3 justify-center">
                 <Shield className="h-6 w-6 text-blue-400" />
                 <div>
-                  <p className="font-semibold">5,000+ users</p>
-                  <p className="text-sm text-gray-400">Managing their money</p>
+                  <p className="font-semibold">5,000+ people</p>
+                  <p className="text-sm text-gray-400">Use Flint every day</p>
                 </div>
               </div>
               <div className="flex items-center gap-3 justify-center">
                 <Lock className="h-6 w-6 text-blue-400" />
                 <div>
-                  <p className="font-semibold">256-bit encryption</p>
-                  <p className="text-sm text-gray-400">Bank-level security</p>
+                  <p className="font-semibold">Super safe</p>
+                  <p className="text-sm text-gray-400">Same security as banks</p>
                 </div>
               </div>
               <div className="flex items-center gap-3 justify-center">
                 <Shield className="h-6 w-6 text-blue-400" />
                 <div>
-                  <p className="font-semibold">Read-only access</p>
-                  <p className="text-sm text-gray-400">We never move your money</p>
+                  <p className="font-semibold">We only look</p>
+                  <p className="text-sm text-gray-400">We can't move your money</p>
                 </div>
               </div>
             </div>
@@ -326,32 +350,32 @@ export default function LandingNew() {
         <section className="py-20 lg:py-32">
           <div className="max-w-7xl mx-auto px-4 sm:px-6">
             <div className="text-center mb-16">
-              <h2 className="text-4xl lg:text-5xl font-bold mb-4">Everything you need in one place</h2>
-              <p className="text-xl text-gray-300">Simple. Powerful. Free to start.</p>
+              <h2 className="text-4xl lg:text-5xl font-bold mb-4">What You Get</h2>
+              <p className="text-xl text-gray-300">Simple. Fast. Free to try.</p>
             </div>
 
             <div className="grid md:grid-cols-3 gap-8">
               <Card className="bg-white/5 border-white/10 p-8 hover:bg-white/10 transition-colors">
                 <Wallet className="h-12 w-12 text-blue-400 mb-4" />
-                <h3 className="text-2xl font-semibold mb-3">All Accounts in One Place</h3>
+                <h3 className="text-2xl font-semibold mb-3">All Your Money</h3>
                 <p className="text-gray-300">
-                  Unify banks, cards, stocks, and crypto in one dashboard.
+                  See your bank, cards, stocks, and crypto together.
                 </p>
               </Card>
 
               <Card className="bg-white/5 border-white/10 p-8 hover:bg-white/10 transition-colors">
                 <Zap className="h-12 w-12 text-blue-400 mb-4" />
-                <h3 className="text-2xl font-semibold mb-3">Real-Time Insights & Alerts</h3>
+                <h3 className="text-2xl font-semibold mb-3">Live Updates</h3>
                 <p className="text-gray-300">
-                  Track spending, fees, and net worth in real time. Get automatic alerts.
+                  Watch your money change in real time. Get alerts when things happen.
                 </p>
               </Card>
 
               <Card className="bg-white/5 border-white/10 p-8 hover:bg-white/10 transition-colors">
                 <TrendingUp className="h-12 w-12 text-blue-400 mb-4" />
-                <h3 className="text-2xl font-semibold mb-3">Act Right From Flint</h3>
+                <h3 className="text-2xl font-semibold mb-3">Do More</h3>
                 <p className="text-gray-300">
-                  Transfer money and trade without leaving the app.
+                  Move money and buy stocks right from Flint.
                 </p>
               </Card>
             </div>
@@ -362,70 +386,139 @@ export default function LandingNew() {
         <section className="py-20 lg:py-32 bg-white/5 border-y border-white/10">
           <div className="max-w-6xl mx-auto px-4 sm:px-6">
             <div className="text-center mb-12">
-              <h2 className="text-4xl font-bold mb-4">See Flint in Action</h2>
-              <p className="text-xl text-gray-300">Play with sample data to see how it works</p>
+              <h2 className="text-4xl font-bold mb-4">See How It Works</h2>
+              <p className="text-xl text-gray-300">Watch your money all in one place</p>
             </div>
 
-            {/* Mock dashboard */}
-            <div className="bg-black/40 border border-white/20 rounded-2xl p-8 backdrop-blur-sm">
-              <div className="mb-6">
-                <p className="text-sm text-gray-400 mb-2">Total Net Worth</p>
+            {/* Full dashboard mock with scrolling */}
+            <div className="bg-black/40 border border-white/20 rounded-2xl overflow-hidden backdrop-blur-sm">
+              {/* Top bar with net worth */}
+              <div className="p-6 border-b border-white/10 bg-white/5">
+                <p className="text-sm text-gray-400 mb-1">Total Net Worth</p>
                 <p className="text-5xl font-bold text-blue-400" data-testid="demo-net-worth">{currentDemo.netWorth}</p>
               </div>
 
-              <div className="grid md:grid-cols-2 gap-4 mb-6">
-                {currentDemo.accounts.map((account, idx) => (
-                  <div key={idx} className="bg-white/5 border border-white/10 rounded-lg p-4">
-                    <div className="flex justify-between items-start mb-2">
-                      <div>
-                        <p className="font-semibold">{account.name}</p>
-                        <p className="text-sm text-gray-400">{account.type}</p>
+              {/* Scrollable content area */}
+              <div className="max-h-[600px] overflow-y-auto">
+                {/* Accounts grid */}
+                <div className="p-6 border-b border-white/10">
+                  <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                    <Wallet className="h-5 w-5 text-blue-400" />
+                    Your Accounts
+                  </h3>
+                  <div className="grid md:grid-cols-2 gap-4">
+                    {currentDemo.accounts.map((account, idx) => (
+                      <div key={idx} className="bg-white/5 border border-white/10 rounded-lg p-4 hover:bg-white/10 transition-colors">
+                        <div className="flex justify-between items-start mb-2">
+                          <div>
+                            <p className="font-semibold">{account.name}</p>
+                            <p className="text-sm text-gray-400">{account.type}</p>
+                          </div>
+                          <span className={account.change.startsWith('+') ? 'text-green-400 text-sm' : account.change.startsWith('-') ? 'text-red-400 text-sm' : 'text-gray-400 text-sm'}>
+                            {account.change}
+                          </span>
+                        </div>
+                        <p className="text-2xl font-bold">{account.balance}</p>
                       </div>
-                      <span className={account.change.startsWith('+') ? 'text-green-400' : account.change.startsWith('-') ? 'text-red-400' : 'text-gray-400'}>
-                        {account.change}
-                      </span>
-                    </div>
-                    <p className="text-2xl font-bold">{account.balance}</p>
+                    ))}
                   </div>
-                ))}
-              </div>
+                </div>
 
-              <div>
-                <p className="text-sm font-semibold mb-3">Recent Transactions</p>
-                <div className="space-y-2">
-                  {currentDemo.transactions.map((txn, idx) => (
-                    <div key={idx} className="flex justify-between items-center p-3 bg-white/5 rounded-lg">
-                      <div>
-                        <p className="font-medium">{txn.merchant}</p>
-                        <p className="text-sm text-gray-400">{txn.date} · {txn.category}</p>
+                {/* Subscriptions */}
+                <div className="p-6 border-b border-white/10">
+                  <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                    <CreditCard className="h-5 w-5 text-blue-400" />
+                    Your Subscriptions
+                  </h3>
+                  <div className="space-y-3">
+                    {currentDemo.subscriptions.map((sub, idx) => (
+                      <div key={idx} className="flex justify-between items-center p-4 bg-white/5 rounded-lg hover:bg-white/10 transition-colors">
+                        <div>
+                          <p className="font-semibold">{sub.name}</p>
+                          <p className="text-sm text-gray-400">{sub.frequency} • Next: {sub.nextDate}</p>
+                        </div>
+                        <p className="text-lg font-bold">{sub.amount}</p>
                       </div>
-                      <p className={txn.amount.startsWith('+') ? 'text-green-400 font-semibold' : 'text-white font-semibold'}>
-                        {txn.amount}
-                      </p>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
+                </div>
+
+                {/* Transactions */}
+                <div className="p-6">
+                  <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                    <LineChart className="h-5 w-5 text-blue-400" />
+                    Recent Activity
+                  </h3>
+                  <div className="space-y-2">
+                    {currentDemo.transactions.map((txn, idx) => (
+                      <div key={idx} className="flex justify-between items-center p-3 bg-white/5 rounded-lg hover:bg-white/10 transition-colors">
+                        <div>
+                          <p className="font-medium">{txn.merchant}</p>
+                          <p className="text-sm text-gray-400">{txn.date} · {txn.category}</p>
+                        </div>
+                        <p className={txn.amount.startsWith('+') ? 'text-green-400 font-semibold' : 'text-white font-semibold'}>
+                          {txn.amount}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center mt-8">
-              <Button type="button" onClick={switchDemoData} variant="outline" className="border-white/20 text-white hover:bg-white/10" data-testid="button-demo-switch">
-                Try with sample data
-                <ArrowRight className="ml-2 h-4 w-4" />
+              <Button type="button" onClick={switchDemoData} size="lg" variant="outline" className="border-white/20 text-white hover:bg-white/10 text-lg px-6" data-testid="button-demo-switch">
+                Switch Sample Data
+                <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
-              <Button type="button" onClick={scrollToSignup} className="bg-blue-600 hover:bg-blue-700" data-testid="button-demo-signup">
-                Ready to see your own? Sign up free
+              <Button type="button" onClick={scrollToSignup} size="lg" className="bg-blue-600 hover:bg-blue-700 text-lg px-6 shadow-2xl shadow-blue-600/50" data-testid="button-demo-signup">
+                Get Started Free
               </Button>
             </div>
+          </div>
+        </section>
+
+        {/* Second Email Capture (After Demo) */}
+        <section className="py-16">
+          <div className="max-w-2xl mx-auto px-4 sm:px-6 text-center">
+            <h3 className="text-3xl font-bold mb-3">Not ready to connect your accounts?</h3>
+            <p className="text-xl text-gray-300 mb-6">Get updates and tools to grow your money smarter.</p>
+            
+            <form onSubmit={(e) => { e.preventDefault(); /* Handle email */ }} className="flex flex-col sm:flex-row gap-3 justify-center max-w-md mx-auto">
+              <Input
+                type="email"
+                placeholder="Your email"
+                className="bg-white/10 border-white/20 text-white placeholder:text-gray-400 h-12"
+                data-testid="input-second-email"
+              />
+              <Button type="submit" size="lg" className="bg-blue-600 hover:bg-blue-700 h-12" data-testid="button-second-email-submit">
+                Join Free
+              </Button>
+            </form>
           </div>
         </section>
 
         {/* Signup Section */}
         <section ref={signupRef} className="py-20 lg:py-32">
           <div className="max-w-md mx-auto px-4 sm:px-6">
+            {/* Progress bar */}
+            <div className="mb-8 p-4 bg-blue-600/10 border border-blue-600/20 rounded-lg">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm font-semibold text-blue-400">Early Access</span>
+                <span className="text-sm text-gray-300">3,183 / 10,000 spots</span>
+              </div>
+              <div className="w-full bg-white/10 rounded-full h-2 mb-1">
+                <div className="bg-blue-500 h-2 rounded-full" style={{ width: '31.83%' }}></div>
+              </div>
+              <p className="text-xs text-gray-400 flex items-center gap-1">
+                <Check className="h-3 w-3 text-green-400" />
+                3,183 early spots claimed
+              </p>
+            </div>
+
             <div className="text-center mb-8">
-              <h2 className="text-4xl font-bold mb-4">Create your account</h2>
-              <p className="text-gray-300">No credit card required. Connect up to 4 accounts free.</p>
+              <h2 className="text-4xl font-bold mb-4">Start Free Today</h2>
+              <p className="text-gray-300">No credit card needed. Connect up to 4 accounts free.</p>
             </div>
 
             {!signupSuccess ? (
@@ -491,6 +584,12 @@ export default function LandingNew() {
                 <p className="text-sm text-gray-400 text-center mt-4">
                   No credit card required. You can connect up to 4 accounts on the Free plan.
                 </p>
+
+                {/* Referral CTA */}
+                <div className="mt-6 p-4 bg-blue-600/10 border border-blue-600/20 rounded-lg text-center">
+                  <p className="text-sm font-semibold text-blue-400 mb-1">Want unlimited accounts?</p>
+                  <p className="text-white">Get unlimited by referring 3 friends</p>
+                </div>
               </div>
             ) : (
               <div className="p-8 bg-green-500/10 border border-green-500/20 rounded-lg text-center space-y-4">
@@ -513,87 +612,132 @@ export default function LandingNew() {
         <section className="py-20 lg:py-32 bg-white/5 border-y border-white/10">
           <div className="max-w-6xl mx-auto px-4 sm:px-6">
             <div className="text-center mb-16">
-              <h2 className="text-4xl font-bold mb-4">Simple, transparent pricing</h2>
-              <p className="text-xl text-gray-300">Start free. Upgrade when you need more.</p>
+              <h2 className="text-4xl font-bold mb-4">Pick Your Plan</h2>
+              <p className="text-xl text-gray-300">Start free. Pay when you want more.</p>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+            <div className="grid md:grid-cols-3 gap-6 max-w-6xl mx-auto">
               {/* Free Plan */}
-              <Card className="bg-white/5 border-white/10 p-8">
+              <Card className="bg-white/5 border-white/10 p-6">
                 <div className="mb-6">
                   <h3 className="text-2xl font-bold mb-2">Free</h3>
-                  <div className="flex items-baseline gap-2 mb-4">
-                    <span className="text-5xl font-bold">$0</span>
+                  <div className="flex items-baseline gap-2 mb-3">
+                    <span className="text-4xl font-bold">$0</span>
                     <span className="text-gray-400">forever</span>
                   </div>
-                  <p className="text-gray-300">Perfect for getting started</p>
+                  <p className="text-gray-300 text-sm">Try it out</p>
                 </div>
 
-                <ul className="space-y-3 mb-8">
-                  <li className="flex items-start gap-2">
-                    <Check className="h-5 w-5 text-green-400 flex-shrink-0 mt-0.5" />
-                    <span>Up to 4 accounts</span>
+                <ul className="space-y-2 mb-8">
+                  <li className="flex items-start gap-2 text-sm">
+                    <Check className="h-4 w-4 text-green-400 flex-shrink-0 mt-0.5" />
+                    <span>4 accounts</span>
                   </li>
-                  <li className="flex items-start gap-2">
-                    <Check className="h-5 w-5 text-green-400 flex-shrink-0 mt-0.5" />
-                    <span>Basic dashboard</span>
+                  <li className="flex items-start gap-2 text-sm">
+                    <Check className="h-4 w-4 text-green-400 flex-shrink-0 mt-0.5" />
+                    <span>See all your money</span>
                   </li>
-                  <li className="flex items-start gap-2">
-                    <Check className="h-5 w-5 text-green-400 flex-shrink-0 mt-0.5" />
-                    <span>Real-time updates</span>
+                  <li className="flex items-start gap-2 text-sm">
+                    <Check className="h-4 w-4 text-green-400 flex-shrink-0 mt-0.5" />
+                    <span>Live updates</span>
                   </li>
-                  <li className="flex items-start gap-2">
-                    <Check className="h-5 w-5 text-green-400 flex-shrink-0 mt-0.5" />
-                    <span>Mobile app access</span>
+                  <li className="flex items-start gap-2 text-sm">
+                    <Check className="h-4 w-4 text-green-400 flex-shrink-0 mt-0.5" />
+                    <span>Mobile app</span>
                   </li>
                 </ul>
 
                 <Button type="button" onClick={scrollToSignup} className="w-full bg-white/10 hover:bg-white/20 border border-white/20" data-testid="button-free-plan">
-                  Get Started Free
+                  Start Free
+                </Button>
+              </Card>
+
+              {/* Basic Plan */}
+              <Card className="bg-white/5 border-white/10 p-6">
+                <div className="mb-6">
+                  <h3 className="text-2xl font-bold mb-2">Basic</h3>
+                  <div className="flex items-baseline gap-2 mb-3">
+                    <span className="text-4xl font-bold">$19.99</span>
+                    <span className="text-gray-400">/month</span>
+                  </div>
+                  <p className="text-gray-300 text-sm">For active users</p>
+                </div>
+
+                <ul className="space-y-2 mb-8">
+                  <li className="flex items-start gap-2 text-sm">
+                    <Check className="h-4 w-4 text-blue-400 flex-shrink-0 mt-0.5" />
+                    <span className="font-semibold">15 accounts</span>
+                  </li>
+                  <li className="flex items-start gap-2 text-sm">
+                    <Check className="h-4 w-4 text-blue-400 flex-shrink-0 mt-0.5" />
+                    <span>Everything in Free</span>
+                  </li>
+                  <li className="flex items-start gap-2 text-sm">
+                    <Check className="h-4 w-4 text-blue-400 flex-shrink-0 mt-0.5" />
+                    <span>Price alerts</span>
+                  </li>
+                  <li className="flex items-start gap-2 text-sm">
+                    <Check className="h-4 w-4 text-blue-400 flex-shrink-0 mt-0.5" />
+                    <span>Track spending</span>
+                  </li>
+                  <li className="flex items-start gap-2 text-sm">
+                    <Check className="h-4 w-4 text-blue-400 flex-shrink-0 mt-0.5" />
+                    <span>Email support</span>
+                  </li>
+                </ul>
+
+                <Button type="button" className="w-full bg-blue-600 hover:bg-blue-700" data-testid="button-basic-plan">
+                  Get Basic
                 </Button>
               </Card>
 
               {/* Pro Plan */}
-              <Card className="bg-gradient-to-br from-blue-600/20 to-blue-900/20 border-blue-400/30 p-8 relative overflow-hidden">
+              <Card className="bg-gradient-to-br from-blue-600/20 to-blue-900/20 border-blue-400/30 p-6 relative overflow-hidden">
                 <div className="absolute top-4 right-4">
-                  <span className="bg-blue-500 text-white text-xs font-semibold px-3 py-1 rounded-full">POPULAR</span>
+                  <span className="bg-blue-500 text-white text-xs font-semibold px-2 py-1 rounded-full flex items-center gap-1">
+                    <span>💸</span> Best Deal
+                  </span>
                 </div>
 
                 <div className="mb-6">
                   <h3 className="text-2xl font-bold mb-2">Pro</h3>
                   <div className="flex items-baseline gap-2 mb-2">
-                    <span className="text-5xl font-bold">$39.99</span>
+                    <span className="text-4xl font-bold">$39.99</span>
                     <span className="text-gray-400">/month</span>
                   </div>
-                  <p className="text-sm text-gray-300 mb-2">or $399.99/year (Save 15%)</p>
-                  <p className="text-sm text-blue-400">≈ $1.10/day</p>
+                  <p className="text-sm text-blue-400 mb-1">$399.99/year (Save 15%)</p>
+                  <p className="text-gray-300 text-sm">For power users</p>
                 </div>
 
-                <ul className="space-y-3 mb-8">
-                  <li className="flex items-start gap-2">
-                    <Check className="h-5 w-5 text-blue-400 flex-shrink-0 mt-0.5" />
+                <ul className="space-y-2 mb-8">
+                  <li className="flex items-start gap-2 text-sm">
+                    <Check className="h-4 w-4 text-blue-400 flex-shrink-0 mt-0.5" />
                     <span className="font-semibold">Unlimited accounts</span>
                   </li>
-                  <li className="flex items-start gap-2">
-                    <Check className="h-5 w-5 text-blue-400 flex-shrink-0 mt-0.5" />
-                    <span>Advanced analytics</span>
+                  <li className="flex items-start gap-2 text-sm">
+                    <Check className="h-4 w-4 text-blue-400 flex-shrink-0 mt-0.5" />
+                    <span>Everything in Basic</span>
                   </li>
-                  <li className="flex items-start gap-2">
-                    <Check className="h-5 w-5 text-blue-400 flex-shrink-0 mt-0.5" />
-                    <span>Custom alerts & notifications</span>
+                  <li className="flex items-start gap-2 text-sm">
+                    <Check className="h-4 w-4 text-blue-400 flex-shrink-0 mt-0.5" />
+                    <span>Advanced charts</span>
                   </li>
-                  <li className="flex items-start gap-2">
-                    <Check className="h-5 w-5 text-blue-400 flex-shrink-0 mt-0.5" />
-                    <span>Priority support</span>
+                  <li className="flex items-start gap-2 text-sm">
+                    <Check className="h-4 w-4 text-blue-400 flex-shrink-0 mt-0.5" />
+                    <span>Custom alerts</span>
                   </li>
-                  <li className="flex items-start gap-2">
-                    <Check className="h-5 w-5 text-blue-400 flex-shrink-0 mt-0.5" />
-                    <span>Export & reporting tools</span>
+                  <li className="flex items-start gap-2 text-sm">
+                    <Check className="h-4 w-4 text-blue-400 flex-shrink-0 mt-0.5" />
+                    <span>Fast support</span>
+                  </li>
+                  <li className="flex items-start gap-2 text-sm">
+                    <Check className="h-4 w-4 text-blue-400 flex-shrink-0 mt-0.5" />
+                    <span>Download reports</span>
                   </li>
                 </ul>
 
                 <Button type="button" className="w-full bg-blue-600 hover:bg-blue-700" data-testid="button-pro-plan">
-                  Upgrade to Pro
+                  Get Pro
                 </Button>
               </Card>
             </div>
@@ -604,52 +748,52 @@ export default function LandingNew() {
         <section className="py-20 lg:py-32">
           <div className="max-w-3xl mx-auto px-4 sm:px-6">
             <div className="text-center mb-12">
-              <h2 className="text-4xl font-bold mb-4">Frequently Asked Questions</h2>
+              <h2 className="text-4xl font-bold mb-4">Questions?</h2>
             </div>
 
             <Accordion type="single" collapsible className="space-y-4">
               <AccordionItem value="security" className="bg-white/5 border border-white/10 rounded-lg px-6">
                 <AccordionTrigger className="text-left hover:no-underline">
-                  Is my data secure?
+                  Is my money safe?
                 </AccordionTrigger>
                 <AccordionContent className="text-gray-300">
-                  Yes. We use bank-level 256-bit encryption and read-only connections. We never store your login credentials and can't move your money.
+                  Yes! We use the same security as banks. We can only look at your accounts. We can't move your money.
                 </AccordionContent>
               </AccordionItem>
 
               <AccordionItem value="accounts" className="bg-white/5 border border-white/10 rounded-lg px-6">
                 <AccordionTrigger className="text-left hover:no-underline">
-                  How many accounts can I connect for free?
+                  How many accounts are free?
                 </AccordionTrigger>
                 <AccordionContent className="text-gray-300">
-                  You can connect up to 4 accounts on the Free plan. This includes any combination of banks, credit cards, investment accounts, or crypto wallets.
+                  You can connect 4 accounts for free. This means banks, cards, stocks, or crypto.
                 </AccordionContent>
               </AccordionItem>
 
               <AccordionItem value="cancel" className="bg-white/5 border border-white/10 rounded-lg px-6">
                 <AccordionTrigger className="text-left hover:no-underline">
-                  Can I cancel anytime?
+                  Can I cancel?
                 </AccordionTrigger>
                 <AccordionContent className="text-gray-300">
-                  Absolutely. There are no contracts or commitments. You can cancel your Pro subscription anytime from your account settings.
+                  Yes. You can stop paying anytime. No long contracts.
                 </AccordionContent>
               </AccordionItem>
 
               <AccordionItem value="revenue" className="bg-white/5 border border-white/10 rounded-lg px-6">
                 <AccordionTrigger className="text-left hover:no-underline">
-                  How does Flint make money?
+                  How do you make money?
                 </AccordionTrigger>
                 <AccordionContent className="text-gray-300">
-                  We earn from Pro subscriptions. We don't sell your data, and we don't charge hidden fees. Our business model is simple and transparent.
+                  We make money when people pay for Pro. We never sell your info.
                 </AccordionContent>
               </AccordionItem>
 
               <AccordionItem value="upgrade" className="bg-white/5 border border-white/10 rounded-lg px-6">
                 <AccordionTrigger className="text-left hover:no-underline">
-                  Why should I upgrade to Pro?
+                  Why go Pro?
                 </AccordionTrigger>
                 <AccordionContent className="text-gray-300">
-                  Upgrade if you need to connect more than 4 accounts, want advanced analytics, custom alerts, or priority support. Many users stay on Free and love it!
+                  Go Pro if you want more than 4 accounts, better charts, or fast help. Free works great for most people!
                 </AccordionContent>
               </AccordionItem>
             </Accordion>
