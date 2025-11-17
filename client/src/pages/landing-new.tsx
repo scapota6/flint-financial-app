@@ -1019,12 +1019,12 @@ export default function LandingNew() {
 
       {/* Exit Intent Modal */}
       <Dialog open={showExitModal} onOpenChange={setShowExitModal}>
-        <DialogContent className="bg-black border-white/20">
+        <DialogContent className="bg-black border-white/20 max-w-md">
           <DialogTitle className="text-2xl font-bold">
-            Don't leave empty-handed!
+            Not ready yet?
           </DialogTitle>
-          <DialogDescription className="text-gray-300">
-            Get our free financial planning checklist. Enter your email to receive it.
+          <DialogDescription className="text-gray-300 text-base">
+            Get a free guide: <span className="font-semibold text-white">"How to Spot Hidden Bank Fees"</span> — Enter email below.
           </DialogDescription>
 
           {!exitModalSubmitted ? (
@@ -1034,16 +1034,18 @@ export default function LandingNew() {
                 placeholder="Your email"
                 value={exitEmail}
                 onChange={(e) => setExitEmail(e.target.value)}
-                className="bg-white/10 border-white/20 text-white placeholder:text-gray-400"
+                className="bg-white/10 border-white/20 text-white placeholder:text-gray-400 h-12"
                 data-testid="input-exit-modal-email"
+                required
               />
-              <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700" data-testid="button-exit-modal-submit">
-                Send Me the Checklist
+              <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 h-12 text-base font-semibold" data-testid="button-exit-modal-submit">
+                Send Me the Free Guide
               </Button>
+              <p className="text-xs text-gray-400 text-center">We'll email you the guide right away. No spam, ever.</p>
             </form>
           ) : (
-            <div className="p-4 bg-green-500/10 border border-green-500/20 rounded-lg text-center">
-              <Check className="h-12 w-12 text-green-400 mx-auto mb-2" />
+            <div className="p-4 bg-green-500/10 border border-green-500/20 rounded-lg text-center space-y-3">
+              <Check className="h-12 w-12 text-green-400 mx-auto" />
               <p className="text-green-400">Check your email for your free checklist!</p>
             </div>
           )}
