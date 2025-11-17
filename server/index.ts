@@ -90,7 +90,7 @@ const app = express();
           'https://us-assets.i.posthog.com',
           // add your exact Replit base (scheme+host+port) if you ever call absolute URLs
         ],
-        imgSrc: [SELF, 'data:', 'https://cdn.brandfetch.io'],
+        imgSrc: [SELF, 'data:', 'https://cdn.brandfetch.io', 'https://img.logo.dev'],
         baseUri: [SELF],
         frameAncestors: [SELF], // adjust if you embed your app elsewhere
         // If you use Stripe web workers or wasm, add workerSrc/childSrc as needed.

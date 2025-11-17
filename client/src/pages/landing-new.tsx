@@ -74,26 +74,37 @@ interface DemoData {
   subscriptions: DemoSubscription[];
 }
 
-// Institution list for scrolling banner (from existing landing page)
+// Complete list of supported institutions from SnapTrade and Teller integrations
 const INSTITUTIONS = [
+  // Banks (Teller Integration)
   { name: 'Chase', domain: 'chase.com' },
-  { name: 'Fidelity', domain: 'fidelity.com' },
-  { name: 'Schwab', domain: 'schwab.com' },
-  { name: 'Robinhood', domain: 'robinhood.com' },
-  { name: 'E*TRADE', domain: 'etrade.com' },
-  { name: 'Webull', domain: 'webull.com' },
-  { name: 'Interactive Brokers', domain: 'interactivebrokers.com' },
-  { name: 'Coinbase', domain: 'coinbase.com' },
   { name: 'Bank of America', domain: 'bankofamerica.com' },
   { name: 'Wells Fargo', domain: 'wellsfargo.com' },
   { name: 'Citi', domain: 'citi.com' },
   { name: 'Capital One', domain: 'capitalone.com' },
-  { name: 'Binance', domain: 'binance.com' },
-  { name: 'Kraken', domain: 'kraken.com' },
+  { name: 'US Bank', domain: 'usbank.com' },
+  { name: 'PNC', domain: 'pnc.com' },
+  { name: 'Truist', domain: 'truist.com' },
+  
+  // Brokerages (SnapTrade Integration)
+  { name: 'Fidelity', domain: 'fidelity.com' },
+  { name: 'Charles Schwab', domain: 'schwab.com' },
+  { name: 'Robinhood', domain: 'robinhood.com' },
+  { name: 'E*TRADE', domain: 'etrade.com' },
+  { name: 'Webull', domain: 'webull.com' },
+  { name: 'Interactive Brokers', domain: 'interactivebrokers.com' },
+  { name: 'TD Ameritrade', domain: 'tdameritrade.com' },
   { name: 'Alpaca', domain: 'alpaca.markets' },
-  { name: 'Public', domain: 'public.com' },
   { name: 'Vanguard', domain: 'vanguard.com' },
-  { name: 'TD Ameritrade', domain: 'tdameritrade.com' }
+  { name: 'Public', domain: 'public.com' },
+  { name: 'Tradestation', domain: 'tradestation.com' },
+  { name: 'Questrade', domain: 'questrade.com' },
+  { name: 'Wealthsimple', domain: 'wealthsimple.com' },
+  
+  // Crypto Exchanges (SnapTrade Integration)
+  { name: 'Coinbase', domain: 'coinbase.com' },
+  { name: 'Binance', domain: 'binance.com' },
+  { name: 'Kraken', domain: 'kraken.com' }
 ];
 
 // Demo data sets with subscriptions and holdings
@@ -285,27 +296,27 @@ export default function LandingNew() {
     );
   };
 
-  // Social proof notifications
+  // Social proof notifications - focused on signups and referrals
   useEffect(() => {
     const notifications = [
-      "🔥 Taylor in New York just unlocked unlimited accounts!",
       "🎉 Alex in San Francisco just joined the Launch Pool!",
       "⚡ Jordan in Austin just referred 3 friends!",
-      "🌟 Sam in Miami just upgraded to Pro!",
-      "💰 Casey in Seattle just connected 10 accounts!",
-      "✨ Morgan in Denver just connected their first brokerage!",
-      "🚀 Riley in Portland just started a $500 transfer!",
-      "💎 Jamie in Boston just bought Tesla stock!",
-      "🎯 Dakota in Chicago reached their savings goal!",
-      "⭐ Cameron in Phoenix unlocked 1 month free of Pro!",
-      "📈 Avery in Atlanta just connected Coinbase!",
+      "🌟 Sam in Miami just signed up for Pro!",
       "🏆 Quinn in Dallas completed 5 referrals!",
-      "💸 Blake in Nashville just saved $120/month on subscriptions!",
-      "🔔 Parker in Columbus set up 3 price alerts!",
       "🎁 Hayden in Detroit entered the Lifetime Giveaway!",
       "⚡ Reese in Las Vegas referred 10 friends!",
-      "💫 Skyler in Minneapolis just connected Chase Bank!",
-      "🌟 Peyton in Tampa upgraded to Standard plan!"
+      "🌟 Peyton in Tampa just created an account!",
+      "🔥 Taylor in New York just signed up!",
+      "🎉 Morgan in Denver just joined Flint!",
+      "⭐ Cameron in Phoenix just referred 2 friends!",
+      "🚀 Riley in Portland just joined the waitlist!",
+      "💫 Skyler in Minneapolis just signed up!",
+      "🎯 Dakota in Chicago just created an account!",
+      "🌟 Avery in Atlanta just joined the Launch Pool!",
+      "🏆 Blake in Nashville just referred a friend!",
+      "🎁 Parker in Columbus just entered the giveaway!",
+      "⚡ Jamie in Boston just signed up for Standard!",
+      "🔥 Casey in Seattle just joined Flint!"
     ];
 
     let activeHideTimer: NodeJS.Timeout | null = null;
@@ -608,7 +619,8 @@ export default function LandingNew() {
         <section className="border-y border-white/10 bg-white/5 backdrop-blur-sm py-16">
           <div className="max-w-7xl mx-auto px-4 sm:px-6">
             <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold mb-4">Works With Your Banks</h2>
+              <h2 className="text-3xl font-bold mb-4">Our Partners</h2>
+              <p className="text-gray-400">Connect to 25+ banks, brokerages, and crypto exchanges</p>
             </div>
 
             {/* Scrolling logos with Brandfetch */}
@@ -622,7 +634,10 @@ export default function LandingNew() {
                       className="max-h-12 max-w-full object-contain filter brightness-0 invert opacity-70 hover:opacity-100 transition-opacity"
                       onError={(e) => {
                         e.currentTarget.style.display = 'none';
-                        e.currentTarget.parentElement!.innerHTML = `<span class="text-sm text-gray-300 font-medium">${inst.name}</span>`;
+                        const parent = e.currentTarget.parentElement;
+                        if (parent) {
+                          parent.innerHTML = `<span class="text-sm text-gray-300 font-medium">${inst.name}</span>`;
+                        }
                       }}
                     />
                   </div>
