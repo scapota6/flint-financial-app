@@ -118,6 +118,9 @@ export default function LandingNew() {
   const [signupData, setSignupData] = useState({ name: '', email: '', password: '' });
   const [signupSuccess, setSignupSuccess] = useState(false);
 
+  // Pricing toggle
+  const [isAnnual, setIsAnnual] = useState(false);
+
   // Refs
   const signupRef = useRef<HTMLDivElement>(null);
 
@@ -768,9 +771,32 @@ export default function LandingNew() {
         {/* Pricing Section */}
         <section className="py-20 lg:py-32 bg-white/5 border-y border-white/10">
           <div className="max-w-6xl mx-auto px-4 sm:px-6">
-            <div className="text-center mb-16">
+            <div className="text-center mb-8">
               <h2 className="text-4xl font-bold mb-4">Pick Your Plan</h2>
-              <p className="text-xl text-gray-300">Start free. Pay when you want more.</p>
+              <p className="text-xl text-gray-300 mb-6">Start free. Pay when you want more.</p>
+              
+              {/* Monthly/Annual Toggle */}
+              <div className="inline-flex items-center gap-3 bg-white/5 border border-white/10 rounded-full p-1">
+                <button
+                  onClick={() => setIsAnnual(false)}
+                  className={`px-6 py-2 rounded-full text-sm font-medium transition-all ${
+                    !isAnnual ? 'bg-blue-600 text-white' : 'text-gray-300 hover:text-white'
+                  }`}
+                  data-testid="toggle-monthly"
+                >
+                  Monthly
+                </button>
+                <button
+                  onClick={() => setIsAnnual(true)}
+                  className={`px-6 py-2 rounded-full text-sm font-medium transition-all ${
+                    isAnnual ? 'bg-blue-600 text-white' : 'text-gray-300 hover:text-white'
+                  }`}
+                  data-testid="toggle-annual"
+                >
+                  Annual
+                  <span className="ml-2 text-green-400 text-xs">Save 17%</span>
+                </button>
+              </div>
             </div>
 
             <div className="grid md:grid-cols-3 gap-6 max-w-6xl mx-auto">
@@ -809,14 +835,21 @@ export default function LandingNew() {
                 </Button>
               </Card>
 
-              {/* Basic Plan */}
-              <Card className="bg-white/5 border-white/10 p-6">
+              {/* Standard Plan */}
+              <Card className="bg-gradient-to-br from-blue-600/20 to-blue-900/20 border-blue-400/30 p-6 relative overflow-hidden">
+                <div className="absolute top-4 right-4">
+                  <span className="bg-blue-500 text-white text-xs font-semibold px-2 py-1 rounded-full">
+                    Most Popular
+                  </span>
+                </div>
+
                 <div className="mb-6">
-                  <h3 className="text-2xl font-bold mb-2">Basic</h3>
-                  <div className="flex items-baseline gap-2 mb-3">
-                    <span className="text-4xl font-bold">$19.99</span>
-                    <span className="text-gray-400">/month</span>
+                  <h3 className="text-2xl font-bold mb-2">Standard</h3>
+                  <div className="flex items-baseline gap-2 mb-2">
+                    <span className="text-4xl font-bold">${isAnnual ? '199' : '19.99'}</span>
+                    <span className="text-gray-400">{isAnnual ? '/year' : '/month'}</span>
                   </div>
+                  {isAnnual && <p className="text-sm text-green-400 mb-1">$199/year - 2 months free!</p>}
                   <p className="text-gray-300 text-sm">For active users</p>
                 </div>
 
@@ -843,26 +876,20 @@ export default function LandingNew() {
                   </li>
                 </ul>
 
-                <Button type="button" className="w-full bg-blue-600 hover:bg-blue-700" data-testid="button-basic-plan">
-                  Get Basic
+                <Button type="button" className="w-full bg-blue-600 hover:bg-blue-700" data-testid="button-standard-plan">
+                  Get Standard
                 </Button>
               </Card>
 
-              {/* Pro Plan */}
-              <Card className="bg-gradient-to-br from-blue-600/20 to-blue-900/20 border-blue-400/30 p-6 relative overflow-hidden">
-                <div className="absolute top-4 right-4">
-                  <span className="bg-blue-500 text-white text-xs font-semibold px-2 py-1 rounded-full flex items-center gap-1">
-                    <span>💸</span> Best Deal
-                  </span>
-                </div>
-
+              {/* Plus Plan */}
+              <Card className="bg-white/5 border-white/10 p-6">
                 <div className="mb-6">
-                  <h3 className="text-2xl font-bold mb-2">Pro</h3>
+                  <h3 className="text-2xl font-bold mb-2">Plus</h3>
                   <div className="flex items-baseline gap-2 mb-2">
-                    <span className="text-4xl font-bold">$39.99</span>
-                    <span className="text-gray-400">/month</span>
+                    <span className="text-4xl font-bold">${isAnnual ? '399' : '39.99'}</span>
+                    <span className="text-gray-400">{isAnnual ? '/year' : '/month'}</span>
                   </div>
-                  <p className="text-sm text-blue-400 mb-1">$399.99/year (Save 15%)</p>
+                  {isAnnual && <p className="text-sm text-green-400 mb-1">$399/year - 2 months free!</p>}
                   <p className="text-gray-300 text-sm">For power users</p>
                 </div>
 
@@ -893,10 +920,18 @@ export default function LandingNew() {
                   </li>
                 </ul>
 
-                <Button type="button" className="w-full bg-blue-600 hover:bg-blue-700" data-testid="button-pro-plan">
-                  Get Pro
+                <Button type="button" className="w-full bg-blue-600 hover:bg-blue-700" data-testid="button-plus-plan">
+                  Get Plus
                 </Button>
               </Card>
+            </div>
+
+            {/* Guarantee */}
+            <div className="text-center mt-8">
+              <p className="text-gray-400 text-sm">
+                <Shield className="h-4 w-4 inline mr-2 text-green-400" />
+                Cancel anytime. No risk.
+              </p>
             </div>
           </div>
         </section>
