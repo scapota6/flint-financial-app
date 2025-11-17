@@ -1,0 +1,23 @@
+
+1. **Hero Section (Replace current top)**
+   - Display a bold headline: “One dashboard for all your money – free forever (up to 4 accounts).”
+   - Under it, write: “Connect your bank, card, investing and crypto accounts in minutes. See everything. Act instantly.”
+   - Place a large CTA button: “Get Started Free (No Credit Card Needed)” that scrolls to the sign-up section.
+   - Include a small email capture form directly below the hero text: a single input for email with a submit button (“Get updates”). This form should store the email in state (no backend) and display a thank-you message, then encourage the user to continue to signup.
+   - Right beside or behind the text, show a graphic or video loop of a Flint dashboard (can be a static image placeholder in this version).
+
+2. **Trust & Partners Section**
+   - Keep the horizontal scrolling icon strip of banks and brokerages (the current “partners supported” logos) intact. Put it below the hero or at the top of this section.
+   - Below the icons, list trust messages: “5,000+ users already managing their money with Flint,” “256-bit encryption,” “Read-only connections,” and show a shield icon.
+   - Remove any unlinked media logos. If actual press coverage exists, include only linked logos; otherwise omit.
+
+3. **Features Section**
+   - Replace the current feature grid with three horizontally aligned cards (stack on mobile):
+       1. **All Accounts in One Place** — Brief text: “Unify banks, cards, stocks, and crypto in one dashboard.”
+       2. **Real-Time Insights & Alerts** — Brief text: “Track spending, fees, and net worth in real time. Get automatic alerts.”
+       3. **Act Right From Flint** — Brief text: “Transfer money and trade without leaving the app.”
+   - Use simple icons next to each card heading. Keep the wording at a 3rd-grade reading level (short and clear).
+
+4. **Interactive Demo Section**
+   - Add a section titled “See Flint in Action.” Include an interactive or pseudo-interactive mock dashboard (dummy data) so visitors can click around a sample: show total net worth, list of accounts, and a transaction list. Below it, add a button “Try with sample data” that switches the mock display to another dummy set, plus a note like “Ready to see your own? Sign up free.” 
+   - Provide an optional “skip demo” link.

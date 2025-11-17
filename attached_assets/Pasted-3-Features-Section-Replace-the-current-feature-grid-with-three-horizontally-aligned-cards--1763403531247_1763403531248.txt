@@ -1,0 +1,23 @@
+3. **Features Section**
+   - Replace the current feature grid with three horizontally aligned cards (stack on mobile):
+       1. **All Accounts in One Place** — Brief text: “Unify banks, cards, stocks, and crypto in one dashboard.”
+       2. **Real-Time Insights & Alerts** — Brief text: “Track spending, fees, and net worth in real time. Get automatic alerts.”
+       3. **Act Right From Flint** — Brief text: “Transfer money and trade without leaving the app.”
+   - Use simple icons next to each card heading. Keep the wording at a 3rd-grade reading level (short and clear).
+
+4. **Interactive Demo Section**
+   - Add a section titled “See Flint in Action.” Include an interactive or pseudo-interactive mock dashboard (dummy data) so visitors can click around a sample: show total net worth, list of accounts, and a transaction list. Below it, add a button “Try with sample data” that switches the mock display to another dummy set, plus a note like “Ready to see your own? Sign up free.” 
+   - Provide an optional “skip demo” link.
+
+5. **Simplified Signup Section**
+   - Create a signup section triggered by the main CTA or a separate “Create your account” area:
+       - Ask for Full Name, Email, and Password (or allow Google/Apple sign-in). Do not ask how many accounts or what type.
+       - Place a note under the form: “No credit card required. You can connect up to 4 accounts on the Free plan.”
+       - After a successful signup (just client-side), show a confirmation message and redirect the user to a “Get Started” page or the demo dashboard.
+
+6. **Pricing & Plans Section**
+   - Add a pricing section farther down the page:
+       - Two columns: **Free** (0$ forever – up to 4 accounts, basic dashboard) and **Pro** ($39.99/month or $399.99/year – unlimited accounts, premium tools). 
+       - Beneath Pro, show daily cost: “≈ $1.10/day,” and a note: “Save 15% with annual billing.” 
+       - Include an upgrade CTA button in the Pro column (“Upgrade to Pro”), which triggers a mock payment process.
+       - Remove any “coming soon” labels and do not list features not currently available.
