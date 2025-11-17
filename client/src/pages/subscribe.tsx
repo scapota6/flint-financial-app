@@ -9,18 +9,16 @@ import { isUnauthorizedError } from "@/lib/authUtils";
 import { SUBSCRIPTION_TIERS } from "@/lib/stripe";
 import { Check, Crown, Star, Zap } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
-import { CheckoutModal } from "@/components/checkout-modal";
+import { EmbeddedCheckoutModal } from "@/components/EmbeddedCheckoutModal";
 
 export default function Subscribe() {
   const { user } = useAuth();
   const { toast } = useToast();
-  const [isProcessing, setIsProcessing] = useState(false);
   const [isAnnual, setIsAnnual] = useState(false);
-  const [checkoutData, setCheckoutData] = useState<{
-    sessionId: string;
-    planId: string;
-    planName: string;
-  } | null>(null);
+  const [checkoutModalOpen, setCheckoutModalOpen] = useState(false);
+  const [checkoutEmail, setCheckoutEmail] = useState('');
+  const [checkoutTier, setCheckoutTier] = useState<'basic' | 'pro'>('basic');
+  const [checkoutBillingPeriod, setCheckoutBillingPeriod] = useState<'monthly' | 'yearly'>('monthly');
 
   // Fetch user data to check current subscription
   const { data: userData, error } = useQuery<{ subscriptionTier?: string; subscriptionStatus?: string }>({
@@ -57,65 +55,14 @@ export default function Subscribe() {
   // Check if user is authenticated - don't auto-redirect, just track the state
   const isAuthenticated = !error || !isUnauthorizedError(error as Error);
 
-  const handleSelectTier = async (tierId: string) => {
-    setIsProcessing(true);
-
-    try {
-      // TEMPORARY: Hardcode monthly billing until production Price IDs are added
-      const billingPeriod = 'monthly';
-      
-      const response = await fetch('/api/stripe/create-checkout-session', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRF-Token': document.cookie
-            .split('; ')
-            .find((row) => row.startsWith('flint_csrf='))
-            ?.split('=')[1] || '',
-        },
-        credentials: 'include',
-        body: JSON.stringify({
-          tier: tierId,
-          billingPeriod,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to create checkout session');
-      }
-
-      const data = await response.json();
-      
-      if (data.url) {
-        // Redirect to Stripe Checkout
-        window.location.href = data.url;
-      } else {
-        toast({
-          title: "Error",
-          description: "Failed to create checkout session. Please try again.",
-          variant: "destructive",
-        });
-      }
-    } catch (error) {
-      if (isUnauthorizedError(error as Error)) {
-        toast({
-          title: "Session Expired",
-          description: "Please log in again to continue",
-          variant: "destructive",
-        });
-        setTimeout(() => {
-          window.location.href = "/api/login";
-        }, 1000);
-        return;
-      }
-      toast({
-        title: "Error",
-        description: "Failed to open checkout. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsProcessing(false);
-    }
+  const handleSelectTier = (tier: 'basic' | 'pro', billingPeriod: 'monthly' | 'yearly' = 'monthly') => {
+    // Set tier, billing period, and user email
+    setCheckoutTier(tier);
+    setCheckoutBillingPeriod(billingPeriod);
+    setCheckoutEmail((user as any)?.email || '');
+    
+    // Open embedded checkout modal
+    setCheckoutModalOpen(true);
   };
 
   const getTierIcon = (tierId: string) => {
@@ -273,11 +220,11 @@ export default function Subscribe() {
                         window.location.href = "/api/login";
                         return;
                       }
-                      if (tier.id === 'basic') {
-                        handleSelectTier(tier.id);
+                      if (tier.id === 'basic' || tier.id === 'pro') {
+                        handleSelectTier(tier.id as 'basic' | 'pro', isAnnual ? 'yearly' : 'monthly');
                       }
                     }}
-                    disabled={isProcessing || (isAuthenticated && currentTier === tier.id) || tier.id === 'free' || tier.id === 'pro'}
+                    disabled={(isAuthenticated && currentTier === tier.id) || tier.id === 'free' || tier.id === 'pro'}
                     className={`w-full ${
                       tier.id === 'pro'
                         ? 'bg-gray-600 cursor-not-allowed opacity-50'
@@ -293,12 +240,10 @@ export default function Subscribe() {
                       'Coming Soon'
                     ) : !isAuthenticated ? (
                       'Log In to Subscribe'
-                    ) : isProcessing ? (
-                      'Processing...'
                     ) : currentTier === tier.id ? (
                       'Current Plan'
                     ) : (
-                      `Choose ${tier.name} Monthly`
+                      `Choose ${tier.name}`
                     )}
                   </Button>
                 </CardContent>
@@ -425,14 +370,18 @@ export default function Subscribe() {
         </div>
       </main>
       
-      {/* Checkout Modal */}
-      <CheckoutModal 
-        isOpen={!!checkoutData}
-        sessionId={checkoutData?.sessionId || ''}
-        planId={checkoutData?.planId}
-        planName={checkoutData?.planName || ''}
-        email={(user as any)?.email}
-        onClose={() => setCheckoutData(null)} 
+      {/* Embedded Checkout Modal */}
+      <EmbeddedCheckoutModal
+        open={checkoutModalOpen}
+        onOpenChange={(open) => {
+          setCheckoutModalOpen(open);
+          if (!open) {
+            setCheckoutEmail('');
+          }
+        }}
+        email={checkoutEmail}
+        tier={checkoutTier}
+        billingPeriod={checkoutBillingPeriod}
       />
     </div>
   );
