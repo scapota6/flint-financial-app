@@ -927,10 +927,10 @@ export default function LandingNew() {
                 </Button>
               </Card>
 
-              {/* Plus Plan */}
+              {/* Pro Plan */}
               <Card className="bg-white/5 border-white/10 p-6">
                 <div className="mb-6">
-                  <h3 className="text-2xl font-bold mb-2">Plus</h3>
+                  <h3 className="text-2xl font-bold mb-2">Pro</h3>
                   <div className="flex items-baseline gap-2 mb-2">
                     <span className="text-4xl font-bold">${isAnnual ? '399' : '39.99'}</span>
                     <span className="text-gray-400">{isAnnual ? '/year' : '/month'}</span>
@@ -950,6 +950,14 @@ export default function LandingNew() {
                   </li>
                   <li className="flex items-start gap-2 text-sm">
                     <Check className="h-4 w-4 text-blue-400 flex-shrink-0 mt-0.5" />
+                    <span className="font-semibold">Trading</span>
+                  </li>
+                  <li className="flex items-start gap-2 text-sm">
+                    <Check className="h-4 w-4 text-blue-400 flex-shrink-0 mt-0.5" />
+                    <span className="font-semibold">Transfers</span>
+                  </li>
+                  <li className="flex items-start gap-2 text-sm">
+                    <Check className="h-4 w-4 text-blue-400 flex-shrink-0 mt-0.5" />
                     <span>Advanced charts</span>
                   </li>
                   <li className="flex items-start gap-2 text-sm">
@@ -966,8 +974,8 @@ export default function LandingNew() {
                   </li>
                 </ul>
 
-                <Button type="button" className="w-full bg-blue-600 hover:bg-blue-700" data-testid="button-plus-plan">
-                  Get Plus
+                <Button type="button" className="w-full bg-blue-600 hover:bg-blue-700" data-testid="button-pro-plan">
+                  Get Pro
                 </Button>
               </Card>
             </div>
