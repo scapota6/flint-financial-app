@@ -1,0 +1,76 @@
+2025-11-16 23:24:21.44
+a83fb10d
+User
+at async handler (/home/runner/workspace/node_modules/@logtail/tools/dist/cjs/throttle.js:36:37)
+2025-11-16 23:24:21.44
+a83fb10d
+User
+at Node.sync [as _sync] (/home/runner/workspace/node_modules/@logtail/node/dist/cjs/node.js:55:19)
+2025-11-16 23:24:21.44
+a83fb10d
+User
+at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+2025-11-16 23:24:21.44
+a83fb10d
+User
+at async handler (/home/runner/workspace/node_modules/@logtail/tools/dist/cjs/throttle.js:36:37)
+2025-11-16 23:24:21.44
+a83fb10d
+User
+Error: Unauthorized
+2025-11-16 23:24:21.44
+a83fb10d
+User
+Error: Unauthorized
+2025-11-16 23:24:21.44
+a83fb10d
+User
+at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+2025-11-16 23:24:28.51
+a83fb10d
+User
+[CSRF] Skipping CSRF for public path: /api/teller/webhook
+2025-11-16 23:24:28.51
+a83fb10d
+User
+[CSRF] Webhook request - path: /api/teller/webhook url: /api/teller/webhook isPublic: true
+2025-11-16 23:24:28.51
+a83fb10d
+User
+{"timestamp":"2025-11-17T04:24:28.514Z","level":"INFO","message":"Webhook signature verified successfully"}
+2025-11-16 23:24:28.51
+a83fb10d
+User
+{"timestamp":"2025-11-17T04:24:28.515Z","level":"INFO","message":"Processing Teller webhook: webhook.test","metadata":{"webhookId":"wh_pl40ejo6g7u803egte000","timestamp":"2025-11-17T04:24:28Z"}}
+2025-11-16 23:24:28.51
+a83fb10d
+User
+timestamp: '2025-11-17T04:24:28Z'
+2025-11-16 23:24:28.51
+a83fb10d
+User
+{"timestamp":"2025-11-17T04:24:28.515Z","level":"INFO","message":"Test webhook received and processed successfully"}
+2025-11-16 23:24:28.51
+a83fb10d
+User
+}
+2025-11-16 23:24:28.51
+a83fb10d
+User
+id: 'wh_pl40ejo6g7u803egte000',
+2025-11-16 23:24:28.51
+a83fb10d
+User
+Processing Teller webhook: {
+2025-11-16 23:24:28.51
+a83fb10d
+User
+type: 'webhook.test',
+2025-11-16 23:24:28.51
+a83fb10d
+User
+Webhook test received successfully
+2025-11-16 23:24:28.51
+a83fb10d
+User
+4:24:28 AM [express] POST /api/teller/webhook 200 in 6ms :: {"received":true,"processed":true,"webho…
