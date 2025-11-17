@@ -247,20 +247,26 @@ export default function LandingNew() {
                 <span className="text-blue-400"> one place</span>
               </h1>
               
-              <p className="text-2xl text-gray-300 leading-relaxed">
-                See your bank, cards, stocks, and crypto together. Free forever.
+              <p className="text-xl text-gray-300 leading-relaxed">
+                Track your bank, brokerage, and crypto accounts in one smart dashboard — find savings, avoid fees, and grow wealth automatically.
               </p>
 
-              <Button 
-                type="button"
-                onClick={scrollToSignup} 
-                size="lg" 
-                className="bg-blue-600 hover:bg-blue-700 text-xl px-10 py-7 h-auto shadow-2xl shadow-blue-600/50"
-                data-testid="button-hero-cta"
-              >
-                Get Started Free (No Card Needed)
-                <ArrowRight className="ml-3 h-6 w-6" />
-              </Button>
+              <div className="space-y-3">
+                <Button 
+                  type="button"
+                  onClick={scrollToSignup} 
+                  size="lg" 
+                  className="bg-blue-600 hover:bg-blue-700 text-xl px-10 py-7 h-auto shadow-2xl shadow-blue-600/50"
+                  data-testid="button-hero-cta"
+                >
+                  Get Started Free
+                  <ArrowRight className="ml-3 h-6 w-6" />
+                </Button>
+                
+                <p className="text-sm text-gray-400">
+                  🔒 No spam, bank-level encryption, cancel anytime.
+                </p>
+              </div>
 
               {/* Email capture */}
               <div className="pt-4">
