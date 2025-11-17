@@ -81,19 +81,22 @@ const DEMO_DATA_2 = {
   accounts: [
     { name: 'Wells Fargo Checking', type: 'Bank', balance: '$3,821.33', change: '+1.2%' },
     { name: 'Robinhood', type: 'Investing', balance: '$67,234.22', change: '+12.4%' },
-    { name: 'Binance', type: 'Crypto', balance: '$23,766.00', change: '+5.6%' }
+    { name: 'Binance', type: 'Crypto', balance: '$23,766.00', change: '+5.6%' },
+    { name: 'Amex Gold Card', type: 'Credit', balance: '-$892.15', change: '0%' }
   ],
   transactions: [
     { date: 'Nov 16', merchant: 'Target', amount: '-$124.99', category: 'Shopping' },
     { date: 'Nov 16', merchant: 'Chipotle', amount: '-$12.45', category: 'Food' },
     { date: 'Nov 14', merchant: 'Freelance Payment', amount: '+$2,500.00', category: 'Income' },
     { date: 'Nov 13', merchant: 'Gas Station', amount: '-$52.00', category: 'Transportation' },
-    { date: 'Nov 13', merchant: 'Gym Membership', amount: '-$45.00', category: 'Health' }
+    { date: 'Nov 13', merchant: 'Gym Membership', amount: '-$45.00', category: 'Health' },
+    { date: 'Nov 12', merchant: 'Uber', amount: '-$18.50', category: 'Transportation' }
   ],
   subscriptions: [
     { name: 'Gym Membership', amount: '$45.00', frequency: 'Monthly', nextDate: 'Dec 13' },
     { name: 'Disney+', amount: '$13.99', frequency: 'Monthly', nextDate: 'Dec 2' },
-    { name: 'Adobe Creative', amount: '$54.99', frequency: 'Monthly', nextDate: 'Dec 8' }
+    { name: 'Adobe Creative', amount: '$54.99', frequency: 'Monthly', nextDate: 'Dec 8' },
+    { name: 'YouTube Premium', amount: '$11.99', frequency: 'Monthly', nextDate: 'Dec 15' }
   ]
 };
 
