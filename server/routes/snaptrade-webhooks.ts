@@ -263,17 +263,85 @@ router.post('/webhooks', async (req, res) => {
         break;
         
       case 'connection.updated':
-        console.log('[SnapTrade Webhook] Connection updated - refreshing sync timestamp');
+        console.log('[SnapTrade Webhook] Connection updated/holdings synced - invalidating cache and refreshing data');
         if (webhookEvent.authorizationId) {
-          await db
-            .update(snaptradeConnections)
-            .set({
-              lastSyncAt: new Date(),
-              updatedAt: new Date()
-            })
-            .where(eq(snaptradeConnections.brokerageAuthorizationId, webhookEvent.authorizationId));
-          
-          console.log('[SnapTrade Webhook] Authorization refreshed:', webhookEvent.authorizationId);
+          try {
+            // Find the connection to get account IDs and SnapTrade credentials
+            const [connection] = await db
+              .select()
+              .from(snaptradeConnections)
+              .where(eq(snaptradeConnections.brokerageAuthorizationId, webhookEvent.authorizationId))
+              .limit(1);
+            
+            if (connection) {
+              // Get the SnapTrade user credentials
+              const [snapUser] = await db
+                .select({
+                  flintUserId: snaptradeUsers.flintUserId,
+                  snaptradeUserId: snaptradeUsers.snaptradeUserId,
+                  snaptradeUserSecret: snaptradeUsers.userSecret,
+                })
+                .from(snaptradeUsers)
+                .where(eq(snaptradeUsers.flintUserId, webhookEvent.userId))
+                .limit(1);
+              
+              if (!snapUser) {
+                console.warn('[SnapTrade Webhook] SnapTrade user not found for Flint user:', webhookEvent.userId);
+                break;
+              }
+              
+              // Get all accounts for this connection
+              const accounts = await db
+                .select()
+                .from(snaptradeAccounts)
+                .where(eq(snaptradeAccounts.connectionId, connection.id));
+              
+              console.log(`[SnapTrade Webhook] Found ${accounts.length} accounts to refresh for connection:`, connection.id);
+              
+              // Import services
+              const { invalidateBalanceCache } = await import('../services/balance-cache');
+              const { syncAccountHoldings } = await import('../services/holdings-sync');
+              
+              // Refresh holdings and invalidate cache for each account
+              let successCount = 0;
+              let errorCount = 0;
+              
+              for (const account of accounts) {
+                // Invalidate balance cache
+                await invalidateBalanceCache(account.id);
+                
+                // Refresh holdings positions immediately
+                const result = await syncAccountHoldings(
+                  snapUser.snaptradeUserId,
+                  snapUser.snaptradeUserSecret,
+                  account.id
+                );
+                
+                if (result.success) {
+                  successCount++;
+                  console.log(`[SnapTrade Webhook] ✅ Refreshed holdings for account ${account.id}: ${result.positionsCount} positions`);
+                } else {
+                  errorCount++;
+                  console.error(`[SnapTrade Webhook] ❌ Failed to refresh holdings for account ${account.id}:`, result.error);
+                }
+              }
+              
+              // Update sync timestamp
+              await db
+                .update(snaptradeConnections)
+                .set({
+                  lastSyncAt: new Date(),
+                  updatedAt: new Date()
+                })
+                .where(eq(snaptradeConnections.id, connection.id));
+              
+              console.log(`[SnapTrade Webhook] ✅ Completed webhook refresh: ${successCount} succeeded, ${errorCount} failed for authorization:`, webhookEvent.authorizationId);
+            } else {
+              console.warn('[SnapTrade Webhook] Connection not found for authorization:', webhookEvent.authorizationId);
+            }
+          } catch (error: any) {
+            console.error('[SnapTrade Webhook] Error refreshing connection data:', error.message);
+          }
         }
         break;
         
@@ -431,17 +499,85 @@ export async function handleSnapTradeWebhook(req: any, res: any) {
       break;
       
     case 'connection.updated':
-      console.log(`[SnapTrade Webhook ${requestId}] Connection updated/holdings synced - refreshing sync timestamp`);
+      console.log(`[SnapTrade Webhook ${requestId}] Connection updated/holdings synced - invalidating cache and refreshing data`);
       if (authorizationId) {
-        await db
-          .update(snaptradeConnections)
-          .set({
-            lastSyncAt: new Date(),
-            updatedAt: new Date()
-          })
-          .where(eq(snaptradeConnections.brokerageAuthorizationId, authorizationId));
-        
-        console.log(`[SnapTrade Webhook ${requestId}] Authorization refreshed:`, authorizationId);
+        try {
+          // Find the connection to get account IDs and SnapTrade credentials
+          const [connection] = await db
+            .select()
+            .from(snaptradeConnections)
+            .where(eq(snaptradeConnections.brokerageAuthorizationId, authorizationId))
+            .limit(1);
+          
+          if (connection) {
+            // Get the SnapTrade user credentials
+            const [snapUser] = await db
+              .select({
+                flintUserId: snaptradeUsers.flintUserId,
+                snaptradeUserId: snaptradeUsers.snaptradeUserId,
+                snaptradeUserSecret: snaptradeUsers.userSecret,
+              })
+              .from(snaptradeUsers)
+              .where(eq(snaptradeUsers.flintUserId, flintUserId))
+              .limit(1);
+            
+            if (!snapUser) {
+              console.warn(`[SnapTrade Webhook ${requestId}] SnapTrade user not found for Flint user:`, flintUserId);
+              break;
+            }
+            
+            // Get all accounts for this connection
+            const accounts = await db
+              .select()
+              .from(snaptradeAccounts)
+              .where(eq(snaptradeAccounts.connectionId, connection.id));
+            
+            console.log(`[SnapTrade Webhook ${requestId}] Found ${accounts.length} accounts to refresh for connection:`, connection.id);
+            
+            // Import services
+            const { invalidateBalanceCache } = await import('../services/balance-cache');
+            const { syncAccountHoldings } = await import('../services/holdings-sync');
+            
+            // Refresh holdings and invalidate cache for each account
+            let successCount = 0;
+            let errorCount = 0;
+            
+            for (const account of accounts) {
+              // Invalidate balance cache
+              await invalidateBalanceCache(account.id);
+              
+              // Refresh holdings positions immediately
+              const result = await syncAccountHoldings(
+                snapUser.snaptradeUserId,
+                snapUser.snaptradeUserSecret,
+                account.id
+              );
+              
+              if (result.success) {
+                successCount++;
+                console.log(`[SnapTrade Webhook ${requestId}] ✅ Refreshed holdings for account ${account.id}: ${result.positionsCount} positions`);
+              } else {
+                errorCount++;
+                console.error(`[SnapTrade Webhook ${requestId}] ❌ Failed to refresh holdings for account ${account.id}:`, result.error);
+              }
+            }
+            
+            // Update sync timestamp
+            await db
+              .update(snaptradeConnections)
+              .set({
+                lastSyncAt: new Date(),
+                updatedAt: new Date()
+              })
+              .where(eq(snaptradeConnections.id, connection.id));
+            
+            console.log(`[SnapTrade Webhook ${requestId}] ✅ Completed webhook refresh: ${successCount} succeeded, ${errorCount} failed for authorization:`, authorizationId);
+          } else {
+            console.warn(`[SnapTrade Webhook ${requestId}] Connection not found for authorization:`, authorizationId);
+          }
+        } catch (error: any) {
+          console.error(`[SnapTrade Webhook ${requestId}] Error refreshing connection data:`, error.message);
+        }
       }
       break;
       

@@ -1,10 +1,11 @@
 /**
  * Background Holdings Sync Service
  * 
- * This service runs periodically to refresh holdings/positions data from SnapTrade
- * for all connected brokerage accounts, ensuring the UI always shows fresh data.
+ * This service runs periodically as a backup to refresh holdings/positions data from SnapTrade
+ * for all connected brokerage accounts. Primary updates come via SnapTrade webhooks (real-time).
  * 
- * Runs every 5 minutes to maintain near real-time accuracy.
+ * Runs every 15 minutes as a safety net for missed webhooks or stale data.
+ * This reduced frequency prevents triggering brokerage security systems (e.g., Schwab 2FA).
  */
 
 import { CronJob } from 'cron';
@@ -24,8 +25,9 @@ interface SyncResult {
 
 /**
  * Sync holdings for a single account
+ * Exported for use by webhook handlers to immediately refresh data
  */
-async function syncAccountHoldings(
+export async function syncAccountHoldings(
   userId: string,
   userSecret: string,
   accountId: string
@@ -197,13 +199,15 @@ async function syncAllHoldings(): Promise<void> {
 /**
  * Initialize the background holdings sync service
  * 
- * Runs every 1 minute for near real-time data updates.
- * This ensures users see live prices and positions without manual refresh.
+ * Runs every 15 minutes as a backup safety net.
+ * Primary data updates come via SnapTrade webhooks (real-time, event-driven).
+ * This polling serves as a fallback for missed webhooks or stale data.
  */
 export function startHoldingsSyncService(): void {
-  // Run every 1 minute for live data: '*/1 * * * *'
+  // Run every 15 minutes as backup: '*/15 * * * *'
+  // Webhooks handle 99% of updates, this is just a safety net
   const job = new CronJob(
-    '*/1 * * * *',
+    '*/15 * * * *',
     async () => {
       await syncAllHoldings();
     },
@@ -215,12 +219,12 @@ export function startHoldingsSyncService(): void {
   // Start the cron job
   job.start();
   
-  logger.info('[Holdings Sync] Service started - runs every 1 minute for live data');
+  logger.info('[Holdings Sync] Service started - runs every 15 minutes as backup (webhooks provide real-time updates)');
   
-  // Run initial sync after 10 seconds for faster initial data
+  // Run initial sync after 30 seconds to allow time for webhooks to register
   setTimeout(() => {
     syncAllHoldings().catch(error => {
       logger.error('[Holdings Sync] Initial sync failed', { error });
     });
-  }, 10000);
+  }, 30000);
 }
