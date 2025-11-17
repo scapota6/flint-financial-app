@@ -580,7 +580,7 @@ export default function LandingNew() {
             {/* Progress Bar */}
             <div className="text-center mb-16">
               <div className="inline-block bg-blue-600/10 border border-blue-400/30 rounded-xl p-6 mb-6" data-testid="social-proof-progress">
-                <p className="text-sm text-blue-400 font-semibold mb-3">EARLY ACCESS FILLING FAST</p>
+                <p className="text-sm text-blue-400 font-semibold mb-3">🔥 LAUNCH POOL FILLING FAST</p>
                 <div className="flex items-center gap-3 mb-3">
                   <div className="flex-1 h-3 bg-white/10 rounded-full overflow-hidden">
                     <div className="h-full bg-gradient-to-r from-blue-500 to-blue-600 rounded-full" style={{ width: '82%' }} data-testid="progress-bar-fill"></div>
@@ -826,8 +826,8 @@ export default function LandingNew() {
             {/* Progress bar */}
             <div className="mb-8 p-4 bg-blue-600/10 border border-blue-600/20 rounded-lg">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-semibold text-blue-400">Early Access</span>
-                <span className="text-sm text-gray-300">3,183 / 10,000 spots</span>
+                <span className="text-sm font-semibold text-blue-400">Launch Pool</span>
+                <span className="text-sm text-gray-300">3,183 / 10,000 users</span>
               </div>
               <div className="w-full bg-white/10 rounded-full h-2 mb-1">
                 <div className="bg-blue-500 h-2 rounded-full" style={{ width: '31.83%' }}></div>
