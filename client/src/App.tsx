@@ -20,6 +20,7 @@ import Login from "@/pages/login";
 // Code-split remaining pages for optimal bundle size
 const NotFound = lazy(() => import("@/pages/not-found"));
 const Landing = lazy(() => import("@/pages/landing"));
+const LandingNew = lazy(() => import("@/pages/landing-new"));
 const SuccessPage = lazy(() => import("@/pages/success"));
 const PaymentSuccessPage = lazy(() => import("@/pages/payment-success"));
 const CheckoutSuccess = lazy(() => import("@/pages/checkout-success"));
@@ -91,6 +92,7 @@ function Router() {
               <>
                 <Route path="/" component={Landing} />
                 <Route path="/landing" component={Landing} />
+                <Route path="/new" component={LandingNew} />
                 <Route path="/login" component={Login} />
                 <Route path="/success" component={SuccessPage} />
                 <Route path="/landing/success" component={SuccessPage} />
