@@ -89,15 +89,22 @@ export async function syncAccountHoldings(
       positionsCount: positions.length
     };
   } catch (error: any) {
+    const errorMessage = error?.message || String(error);
+    const errorStack = error?.stack || '';
+    
     logger.error('Error syncing holdings for account', { 
-      error: new Error(error.message),
-      metadata: { accountId }
+      metadata: { 
+        accountId,
+        errorMessage,
+        errorStack,
+        errorDetails: error?.response?.data || error
+      }
     });
     
     return {
       accountId,
       success: false,
-      error: error.message
+      error: errorMessage
     };
   }
 }
@@ -154,9 +161,15 @@ async function syncAllHoldings(): Promise<void> {
           }
         }
       } catch (error: any) {
+        const errorMessage = error?.message || String(error);
+        
         logger.error('[Holdings Sync] Error processing user', {
-          error: new Error(error.message),
-          metadata: { userId: snapUser.userId }
+          metadata: { 
+            userId: snapUser.userId,
+            errorMessage,
+            errorStack: error?.stack || '',
+            errorDetails: error?.response?.data || error
+          }
         });
         errorCount++;
       }
@@ -188,10 +201,15 @@ async function syncAllHoldings(): Promise<void> {
     
   } catch (error: any) {
     const duration = Date.now() - startTime;
+    const errorMessage = error?.message || String(error);
     
     logger.error('[Holdings Sync] Background holdings sync failed', {
-      error: new Error(error.message + '\n' + error.stack),
-      metadata: { durationMs: duration }
+      metadata: { 
+        durationMs: duration,
+        errorMessage,
+        errorStack: error?.stack || '',
+        errorDetails: error?.response?.data || error
+      }
     });
   }
 }
