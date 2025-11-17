@@ -14,6 +14,7 @@ import {
   Shield, 
   Lock, 
   TrendingUp, 
+  TrendingDown,
   Wallet, 
   Zap, 
   ArrowRight, 
@@ -24,11 +25,54 @@ import {
   Building,
   Building2,
   LineChart,
-  ChevronDown
+  ChevronDown,
+  Eye
 } from "lucide-react";
 import { Link } from "wouter";
 import flintLogo from "@assets/flint-logo.png";
 import dashboardPreview from "@assets/dashboard-preview.png";
+
+// Type definitions for demo data
+interface DemoAccount {
+  name: string;
+  type: 'Bank' | 'Investing' | 'Crypto' | 'Credit';
+  balance: string;
+  change: string;
+  id: string;
+}
+
+interface DemoHolding {
+  symbol: string;
+  name: string;
+  quantity: number;
+  avgCost: number;
+  currentPrice: number;
+  value: number;
+  profitLoss: number;
+  profitLossPct: number;
+}
+
+interface DemoTransaction {
+  date: string;
+  merchant: string;
+  amount: string;
+  category: string;
+}
+
+interface DemoSubscription {
+  name: string;
+  amount: string;
+  frequency: string;
+  nextDate: string;
+}
+
+interface DemoData {
+  netWorth: string;
+  accounts: DemoAccount[];
+  holdings: DemoHolding[];
+  transactions: DemoTransaction[];
+  subscriptions: DemoSubscription[];
+}
 
 // Institution list for scrolling banner (from existing landing page)
 const INSTITUTIONS = [
@@ -52,14 +96,20 @@ const INSTITUTIONS = [
   { name: 'TD Ameritrade', domain: 'tdameritrade.com' }
 ];
 
-// Demo data sets with subscriptions
-const DEMO_DATA_1 = {
+// Demo data sets with subscriptions and holdings
+const DEMO_DATA_1: DemoData = {
   netWorth: '$127,543.21',
   accounts: [
-    { name: 'Chase Checking', type: 'Bank', balance: '$5,234.12', change: '+2.3%' },
-    { name: 'Fidelity Brokerage', type: 'Investing', balance: '$89,432.45', change: '+8.7%' },
-    { name: 'Coinbase', type: 'Crypto', balance: '$12,876.64', change: '-3.2%' },
-    { name: 'Chase Sapphire', type: 'Credit', balance: '-$1,234.00', change: '0%' }
+    { name: 'Chase Checking', type: 'Bank', balance: '$5,234.12', change: '+2.3%', id: 'chase-1' },
+    { name: 'Fidelity Brokerage', type: 'Investing', balance: '$89,432.45', change: '+8.7%', id: 'fidelity-1' },
+    { name: 'Coinbase', type: 'Crypto', balance: '$12,876.64', change: '-3.2%', id: 'coinbase-1' },
+    { name: 'Chase Sapphire', type: 'Credit', balance: '-$1,234.00', change: '0%', id: 'chase-credit-1' }
+  ],
+  holdings: [
+    { symbol: 'AAPL', name: 'Apple Inc.', quantity: 50, avgCost: 175.20, currentPrice: 189.45, value: 9472.50, profitLoss: 712.50, profitLossPct: 8.1 },
+    { symbol: 'TSLA', name: 'Tesla Inc.', quantity: 15, avgCost: 245.80, currentPrice: 238.77, value: 3581.55, profitLoss: -105.45, profitLossPct: -2.9 },
+    { symbol: 'BTC', name: 'Bitcoin', quantity: 0.25, avgCost: 45200, currentPrice: 43800, value: 10950, profitLoss: -350, profitLossPct: -3.1 },
+    { symbol: 'ETH', name: 'Ethereum', quantity: 5, avgCost: 2850, currentPrice: 2920, value: 14600, profitLoss: 350, profitLossPct: 2.5 }
   ],
   transactions: [
     { date: 'Nov 16', merchant: 'Whole Foods', amount: '-$87.43', category: 'Groceries' },
@@ -77,13 +127,19 @@ const DEMO_DATA_1 = {
   ]
 };
 
-const DEMO_DATA_2 = {
+const DEMO_DATA_2: DemoData = {
   netWorth: '$94,821.55',
   accounts: [
-    { name: 'Wells Fargo Checking', type: 'Bank', balance: '$3,821.33', change: '+1.2%' },
-    { name: 'Robinhood', type: 'Investing', balance: '$67,234.22', change: '+12.4%' },
-    { name: 'Binance', type: 'Crypto', balance: '$23,766.00', change: '+5.6%' },
-    { name: 'Amex Gold Card', type: 'Credit', balance: '-$892.15', change: '0%' }
+    { name: 'Wells Fargo Checking', type: 'Bank', balance: '$3,821.33', change: '+1.2%', id: 'wells-1' },
+    { name: 'Robinhood', type: 'Investing', balance: '$67,234.22', change: '+12.4%', id: 'robinhood-1' },
+    { name: 'Binance', type: 'Crypto', balance: '$23,766.00', change: '+5.6%', id: 'binance-1' },
+    { name: 'Amex Gold Card', type: 'Credit', balance: '-$892.15', change: '0%', id: 'amex-1' }
+  ],
+  holdings: [
+    { symbol: 'MSFT', name: 'Microsoft Corp.', quantity: 30, avgCost: 385.50, currentPrice: 412.30, value: 12369, profitLoss: 804, profitLossPct: 7.0 },
+    { symbol: 'NVDA', name: 'NVIDIA Corp.', quantity: 20, avgCost: 520.80, currentPrice: 495.20, value: 9904, profitLoss: -512, profitLossPct: -4.9 },
+    { symbol: 'SOL', name: 'Solana', quantity: 100, avgCost: 125, currentPrice: 142.50, value: 14250, profitLoss: 1750, profitLossPct: 14.0 },
+    { symbol: 'GOOGL', name: 'Alphabet Inc.', quantity: 40, avgCost: 142.20, currentPrice: 148.18, value: 5927.20, profitLoss: 239.20, profitLossPct: 4.2 }
   ],
   transactions: [
     { date: 'Nov 16', merchant: 'Target', amount: '-$124.99', category: 'Shopping' },
@@ -133,6 +189,10 @@ export default function LandingNew() {
   // Social proof notifications
   const [showNotification, setShowNotification] = useState(false);
   const [notificationMessage, setNotificationMessage] = useState('');
+
+  // Account detail modal state
+  const [selectedAccount, setSelectedAccount] = useState<DemoAccount | null>(null);
+  const [showAccountModal, setShowAccountModal] = useState(false);
 
   // Refs
   const signupRef = useRef<HTMLDivElement>(null);
@@ -232,31 +292,53 @@ export default function LandingNew() {
       "🎉 Alex in San Francisco just joined the Launch Pool!",
       "⚡ Jordan in Austin just referred 3 friends!",
       "🌟 Sam in Miami just upgraded to Pro!",
-      "💰 Casey in Seattle just connected 10 accounts!"
+      "💰 Casey in Seattle just connected 10 accounts!",
+      "✨ Morgan in Denver just connected their first brokerage!",
+      "🚀 Riley in Portland just started a $500 transfer!",
+      "💎 Jamie in Boston just bought Tesla stock!",
+      "🎯 Dakota in Chicago reached their savings goal!",
+      "⭐ Cameron in Phoenix unlocked 1 month free of Pro!",
+      "📈 Avery in Atlanta just connected Coinbase!",
+      "🏆 Quinn in Dallas completed 5 referrals!",
+      "💸 Blake in Nashville just saved $120/month on subscriptions!",
+      "🔔 Parker in Columbus set up 3 price alerts!",
+      "🎁 Hayden in Detroit entered the Lifetime Giveaway!",
+      "⚡ Reese in Las Vegas referred 10 friends!",
+      "💫 Skyler in Minneapolis just connected Chase Bank!",
+      "🌟 Peyton in Tampa upgraded to Standard plan!"
     ];
 
+    let activeHideTimer: NodeJS.Timeout | null = null;
+
     const showRandomNotification = () => {
+      // Clear any existing hide timer before showing new notification
+      if (activeHideTimer) {
+        clearTimeout(activeHideTimer);
+      }
+      
       const randomMsg = notifications[Math.floor(Math.random() * notifications.length)];
       setNotificationMessage(randomMsg);
       setShowNotification(true);
       
-      setTimeout(() => {
+      // Schedule hide and track this timer
+      activeHideTimer = setTimeout(() => {
         setShowNotification(false);
+        activeHideTimer = null;
       }, 5000);
     };
 
     // Show first notification after 15 seconds
     const initialTimer = setTimeout(showRandomNotification, 15000);
     
-    // Then show notifications every 30-60 seconds
-    const interval = setInterval(() => {
-      const delay = Math.random() * 30000 + 30000; // 30-60 seconds
-      setTimeout(showRandomNotification, delay);
-    }, 60000);
+    // Then show notifications every 45 seconds
+    const interval = setInterval(showRandomNotification, 45000);
 
     return () => {
-      clearTimeout(initialTimer);
       clearInterval(interval);
+      clearTimeout(initialTimer);
+      if (activeHideTimer) {
+        clearTimeout(activeHideTimer);
+      }
     };
   }, []);
 
@@ -778,10 +860,18 @@ export default function LandingNew() {
                   </h3>
                   <div className="grid md:grid-cols-2 gap-4">
                     {currentDemo.accounts.map((account, idx) => (
-                      <div key={idx} className="bg-white/5 border border-white/10 rounded-lg p-4 hover:bg-white/10 transition-colors">
+                      <button
+                        key={idx}
+                        onClick={() => {
+                          setSelectedAccount(account);
+                          setShowAccountModal(true);
+                        }}
+                        className="bg-white/5 border border-white/10 rounded-lg p-4 hover:bg-white/10 hover:border-blue-500/50 transition-all text-left cursor-pointer group"
+                        data-testid={`button-account-${account.id}`}
+                      >
                         <div className="flex justify-between items-start mb-2">
                           <div>
-                            <p className="font-semibold">{account.name}</p>
+                            <p className="font-semibold group-hover:text-blue-400 transition-colors">{account.name}</p>
                             <p className="text-sm text-gray-400">{account.type}</p>
                           </div>
                           <span className={account.change.startsWith('+') ? 'text-green-400 text-sm' : account.change.startsWith('-') ? 'text-red-400 text-sm' : 'text-gray-400 text-sm'}>
@@ -789,8 +879,45 @@ export default function LandingNew() {
                           </span>
                         </div>
                         <p className="text-2xl font-bold">{account.balance}</p>
+                        <p className="text-xs text-blue-400 mt-2 opacity-0 group-hover:opacity-100 transition-opacity">Click for details →</p>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Portfolio Holdings */}
+                <div className="p-6 border-b border-white/10">
+                  <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                    <LineChart className="h-5 w-5 text-blue-400" />
+                    Portfolio Holdings
+                  </h3>
+                  <div className="space-y-3">
+                    {currentDemo.holdings.map((holding, idx) => (
+                      <div key={idx} className="flex justify-between items-center p-4 bg-white/5 rounded-lg hover:bg-white/10 transition-colors">
+                        <div className="flex items-center gap-3">
+                          <div className="h-10 w-10 rounded-lg bg-blue-600/20 flex items-center justify-center font-bold text-blue-400">
+                            {holding.symbol.substring(0, 2)}
+                          </div>
+                          <div>
+                            <p className="font-semibold">{holding.symbol}</p>
+                            <p className="text-sm text-gray-400">{holding.quantity} {holding.quantity === 1 ? 'share' : 'shares'} @ ${holding.avgCost.toFixed(2)}</p>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-lg font-bold">${holding.value.toLocaleString()}</p>
+                          <p className={`text-sm flex items-center justify-end gap-1 ${holding.profitLoss >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                            {holding.profitLoss >= 0 ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
+                            ${Math.abs(holding.profitLoss).toLocaleString()} ({holding.profitLossPct > 0 ? '+' : ''}{holding.profitLossPct.toFixed(1)}%)
+                          </p>
+                        </div>
                       </div>
                     ))}
+                  </div>
+                  <div className="mt-4 p-4 bg-blue-600/10 border border-blue-600/20 rounded-lg">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm font-semibold text-blue-400">Total Portfolio Value</span>
+                      <span className="text-xl font-bold">${currentDemo.holdings.reduce((sum, h) => sum + h.value, 0).toLocaleString()}</span>
+                    </div>
                   </div>
                 </div>
 
@@ -1364,6 +1491,123 @@ export default function LandingNew() {
               <Check className="h-12 w-12 text-green-400 mx-auto" />
               <p className="text-green-400">Check your email for your free checklist!</p>
             </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Account Detail Modal */}
+      <Dialog open={showAccountModal} onOpenChange={setShowAccountModal}>
+        <DialogContent className="bg-black border-white/20 max-w-2xl max-h-[80vh] overflow-y-auto">
+          {selectedAccount && (
+            <>
+              <DialogTitle className="text-2xl font-bold flex items-center gap-3">
+                <div className="h-12 w-12 rounded-lg bg-blue-600/20 flex items-center justify-center">
+                  {selectedAccount.type === 'Bank' && <Building2 className="h-6 w-6 text-blue-400" />}
+                  {selectedAccount.type === 'Investing' && <LineChart className="h-6 w-6 text-blue-400" />}
+                  {selectedAccount.type === 'Crypto' && <Wallet className="h-6 w-6 text-blue-400" />}
+                  {selectedAccount.type === 'Credit' && <CreditCard className="h-6 w-6 text-blue-400" />}
+                </div>
+                {selectedAccount.name}
+              </DialogTitle>
+              <DialogDescription className="text-gray-300 text-base">
+                {selectedAccount.type} Account
+              </DialogDescription>
+
+              <div className="mt-6 space-y-6">
+                {/* Account Overview */}
+                <div className="bg-white/5 border border-white/10 rounded-lg p-6">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <p className="text-sm text-gray-400 mb-1">Current Balance</p>
+                      <p className="text-3xl font-bold">{selectedAccount.balance}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-400 mb-1">Change</p>
+                      <p className={`text-2xl font-semibold ${selectedAccount.change.startsWith('+') ? 'text-green-400' : selectedAccount.change.startsWith('-') ? 'text-red-400' : 'text-gray-400'}`}>
+                        {selectedAccount.change}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Holdings for Investment/Crypto accounts */}
+                {(selectedAccount.type === 'Investing' || selectedAccount.type === 'Crypto') && (
+                  <div>
+                    <div className="flex items-center justify-between mb-3">
+                      <h4 className="text-lg font-semibold flex items-center gap-2">
+                        <Eye className="h-5 w-5 text-blue-400" />
+                        Holdings
+                      </h4>
+                      <div className="bg-blue-600/20 border border-blue-500/30 rounded-full px-3 py-1">
+                        <p className="text-xs font-semibold text-blue-400">✨ Trade & Transfer in Real-Time</p>
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      {currentDemo.holdings
+                        .filter(h => 
+                          (selectedAccount.type === 'Investing' && !['BTC', 'ETH', 'SOL'].includes(h.symbol)) ||
+                          (selectedAccount.type === 'Crypto' && ['BTC', 'ETH', 'SOL'].includes(h.symbol))
+                        )
+                        .map((holding, idx) => (
+                          <div key={idx} className="bg-white/5 border border-white/10 rounded-lg p-4">
+                            <div className="flex justify-between items-start mb-2">
+                              <div>
+                                <p className="font-semibold text-lg">{holding.symbol}</p>
+                                <p className="text-sm text-gray-400">{holding.name}</p>
+                                <p className="text-xs text-gray-500 mt-1">{holding.quantity} @ ${holding.avgCost.toFixed(2)}</p>
+                              </div>
+                              <div className="text-right">
+                                <p className="text-xl font-bold">${holding.value.toLocaleString()}</p>
+                                <p className={`text-sm ${holding.profitLoss >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                                  {holding.profitLoss >= 0 ? '+' : ''}${holding.profitLoss.toLocaleString()} ({holding.profitLossPct > 0 ? '+' : ''}{holding.profitLossPct.toFixed(1)}%)
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Recent Transactions */}
+                <div>
+                  <h4 className="text-lg font-semibold mb-3 flex items-center gap-2">
+                    <LineChart className="h-5 w-5 text-blue-400" />
+                    Recent Activity
+                  </h4>
+                  <div className="space-y-2">
+                    {currentDemo.transactions.slice(0, 3).map((txn, idx) => (
+                      <div key={idx} className="bg-white/5 border border-white/10 rounded-lg p-4 flex justify-between items-center">
+                        <div>
+                          <p className="font-medium">{txn.merchant}</p>
+                          <p className="text-sm text-gray-400">{txn.date} · {txn.category}</p>
+                        </div>
+                        <p className={`font-semibold ${txn.amount.startsWith('+') ? 'text-green-400' : 'text-white'}`}>
+                          {txn.amount}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* CTA */}
+                <div className="bg-gradient-to-r from-blue-600/20 to-purple-600/20 border border-blue-500/30 rounded-lg p-6 text-center">
+                  <p className="text-lg font-semibold mb-2">Ready to connect your real accounts?</p>
+                  <p className="text-sm text-gray-300 mb-4">Get started free with up to 4 accounts</p>
+                  <Button 
+                    type="button"
+                    onClick={() => {
+                      setShowAccountModal(false);
+                      scrollToSignup();
+                    }}
+                    className="bg-blue-600 hover:bg-blue-700"
+                    data-testid="button-modal-signup"
+                  >
+                    Get Started Free
+                  </Button>
+                </div>
+              </div>
+            </>
           )}
         </DialogContent>
       </Dialog>
