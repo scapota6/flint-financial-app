@@ -1,0 +1,95 @@
+2025-11-16 23:05:37.56
+1acac361
+User
+at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+2025-11-16 23:05:37.56
+1acac361
+User
+at Node.sync [as _sync] (/home/runner/workspace/node_modules/@logtail/node/dist/cjs/node.js:55:19)
+2025-11-16 23:05:37.56
+1acac361
+User
+at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+2025-11-16 23:05:37.56
+1acac361
+User
+at async handler (/home/runner/workspace/node_modules/@logtail/tools/dist/cjs/throttle.js:36:37)
+2025-11-16 23:05:37.56
+1acac361
+User
+at Node.sync [as _sync] (/home/runner/workspace/node_modules/@logtail/node/dist/cjs/node.js:55:19)
+2025-11-16 23:05:37.56
+1acac361
+User
+at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+2025-11-16 23:05:37.56
+1acac361
+User
+at async handler (/home/runner/workspace/node_modules/@logtail/tools/dist/cjs/throttle.js:36:37)
+2025-11-16 23:05:37.56
+1acac361
+User
+at Node.sync [as _sync] (/home/runner/workspace/node_modules/@logtail/node/dist/cjs/node.js:55:19)
+2025-11-16 23:05:37.56
+1acac361
+User
+at async handler (/home/runner/workspace/node_modules/@logtail/tools/dist/cjs/throttle.js:36:37)
+2025-11-16 23:05:37.56
+1acac361
+User
+Error: Unauthorized
+2025-11-16 23:05:37.56
+1acac361
+User
+Error: Unauthorized
+2025-11-16 23:05:37.56
+1acac361
+User
+Error: Unauthorized
+2025-11-16 23:06:26.11
+1acac361
+User
+[CSRF] Webhook request - path: /api/teller/webhook url: /api/teller/webhook isPublic: true
+2025-11-16 23:06:26.11
+1acac361
+User
+[CSRF] Skipping CSRF for public path: /api/teller/webhook
+2025-11-16 23:06:26.11
+1acac361
+User
+{"timestamp":"2025-11-17T04:06:26.115Z","level":"WARN","message":"Webhook secret not configured - skipping signature verification"}
+2025-11-16 23:06:26.11
+1acac361
+User
+{"timestamp":"2025-11-17T04:06:26.116Z","level":"INFO","message":"Processing Teller webhook: webhook.test","metadata":{"webhookId":"wh_pl3vu3igg7u803egte000","timestamp":"2025-11-17T04:06:26Z"}}
+2025-11-16 23:06:26.11
+1acac361
+User
+Processing Teller webhook: {
+2025-11-16 23:06:26.11
+1acac361
+User
+timestamp: '2025-11-17T04:06:26Z'
+2025-11-16 23:06:26.11
+1acac361
+User
+Webhook test received successfully
+2025-11-16 23:06:26.11
+1acac361
+User
+type: 'webhook.test',
+2025-11-16 23:06:26.11
+1acac361
+User
+}
+2025-11-16 23:06:26.11
+1acac361
+User
+id: 'wh_pl3vu3igg7u803egte000',
+2025-11-16 23:06:26.11
+1acac361
+User
+{"timestamp":"2025-11-17T04:06:26.118Z","level":"INFO","message":"Test webhook received and processed successfully"}
+2025-11-16 23:06:26.12
+1acac361
+User
