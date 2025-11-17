@@ -302,6 +302,52 @@ export default function LandingNew() {
           </div>
         </section>
 
+        {/* Value Proposition Cards */}
+        <section className="py-20 lg:py-24 bg-gradient-to-b from-black to-blue-950/20">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6">
+            <div className="grid md:grid-cols-3 gap-8">
+              {/* Cut Hidden Fees */}
+              <Card className="bg-white/5 border-white/10 p-8 hover:bg-white/10 transition-all hover:scale-105 hover:shadow-2xl">
+                <div className="flex flex-col items-center text-center space-y-4">
+                  <div className="h-16 w-16 rounded-full bg-blue-600/20 flex items-center justify-center">
+                    <DollarSign className="h-8 w-8 text-blue-400" />
+                  </div>
+                  <h3 className="text-2xl font-bold">Cut Hidden Fees</h3>
+                  <p className="text-gray-300 leading-relaxed">
+                    We find and alert you to unnecessary bank charges. Stop losing money to fees you didn't know about.
+                  </p>
+                </div>
+              </Card>
+
+              {/* Grow Net Worth */}
+              <Card className="bg-white/5 border-white/10 p-8 hover:bg-white/10 transition-all hover:scale-105 hover:shadow-2xl">
+                <div className="flex flex-col items-center text-center space-y-4">
+                  <div className="h-16 w-16 rounded-full bg-green-600/20 flex items-center justify-center">
+                    <TrendingUp className="h-8 w-8 text-green-400" />
+                  </div>
+                  <h3 className="text-2xl font-bold">Grow Net Worth</h3>
+                  <p className="text-gray-300 leading-relaxed">
+                    All accounts on one screen helps you grow with clarity. See the big picture and make smarter money moves.
+                  </p>
+                </div>
+              </Card>
+
+              {/* Stay in Control */}
+              <Card className="bg-white/5 border-white/10 p-8 hover:bg-white/10 transition-all hover:scale-105 hover:shadow-2xl">
+                <div className="flex flex-col items-center text-center space-y-4">
+                  <div className="h-16 w-16 rounded-full bg-purple-600/20 flex items-center justify-center">
+                    <Shield className="h-8 w-8 text-purple-400" />
+                  </div>
+                  <h3 className="text-2xl font-bold">Stay in Control</h3>
+                  <p className="text-gray-300 leading-relaxed">
+                    Personalized budgets and tips that work with you, not against you. Your money, your rules.
+                  </p>
+                </div>
+              </Card>
+            </div>
+          </div>
+        </section>
+
         {/* Trust & Partners Section */}
         <section className="border-y border-white/10 bg-white/5 backdrop-blur-sm py-16">
           <div className="max-w-7xl mx-auto px-4 sm:px-6">
