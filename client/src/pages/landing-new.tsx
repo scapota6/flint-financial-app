@@ -902,7 +902,7 @@ export default function LandingNew() {
                 <ul className="space-y-2 mb-8">
                   <li className="flex items-start gap-2 text-sm">
                     <Check className="h-4 w-4 text-blue-400 flex-shrink-0 mt-0.5" />
-                    <span className="font-semibold">15 accounts</span>
+                    <span className="font-semibold">Unlimited accounts</span>
                   </li>
                   <li className="flex items-start gap-2 text-sm">
                     <Check className="h-4 w-4 text-blue-400 flex-shrink-0 mt-0.5" />
@@ -946,7 +946,7 @@ export default function LandingNew() {
                   </li>
                   <li className="flex items-start gap-2 text-sm">
                     <Check className="h-4 w-4 text-blue-400 flex-shrink-0 mt-0.5" />
-                    <span>Everything in Basic</span>
+                    <span>Everything in Standard</span>
                   </li>
                   <li className="flex items-start gap-2 text-sm">
                     <Check className="h-4 w-4 text-blue-400 flex-shrink-0 mt-0.5" />
