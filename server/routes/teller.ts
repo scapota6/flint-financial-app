@@ -1195,10 +1195,14 @@ router.post("/webhook", async (req, res) => {
       return res.status(401).json({ message: "Missing signature" });
     }
     
+    // Get raw body for signature verification
+    // Note: req.body is a string because we use express.text() middleware for this route
+    const rawBody = typeof req.body === 'string' ? req.body : JSON.stringify(req.body);
+    const webhookData = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
+    
     // Verify webhook signature if secret is configured
     if (webhookSecret) {
       const { verifyTellerWebhook } = await import("../teller/client");
-      const rawBody = JSON.stringify(req.body);
       
       if (!verifyTellerWebhook(rawBody, signature, webhookSecret)) {
         logger.warn("Webhook signature verification failed");
@@ -1210,7 +1214,7 @@ router.post("/webhook", async (req, res) => {
       logger.warn("Webhook secret not configured - skipping signature verification");
     }
     
-    const { id, type, payload, timestamp: eventTime } = req.body;
+    const { id, type, payload, timestamp: eventTime } = webhookData;
     
     logger.info(`Processing Teller webhook: ${type}`, { 
       metadata: {
@@ -1221,7 +1225,7 @@ router.post("/webhook", async (req, res) => {
     
     // Use the comprehensive webhook processor
     const { processTellerWebhook } = await import("../teller/client");
-    processTellerWebhook(req.body);
+    processTellerWebhook(webhookData);
     
     switch (type) {
       case 'enrollment.disconnected':

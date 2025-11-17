@@ -105,6 +105,7 @@ const app = express();
   app.use('/api/lemonsqueezy/webhook', express.text({ type: 'application/json' }));
   app.use('/api/webhook/whop', express.text({ type: 'application/json' }));
   app.use('/api/stripe/webhook', express.text({ type: 'application/json' }));
+  app.use('/api/teller/webhook', express.text({ type: 'application/json' })); // Teller webhook signature verification
   
   // Standard JSON parsing for all other routes
   app.use(express.json());
