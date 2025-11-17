@@ -67,6 +67,8 @@ export async function calculateWaitlistPosition(userId: string): Promise<number>
 
 /**
  * Process a referral - updates both the referrer and referee
+ * Validates: referee exists, not already referred, not self-referral
+ * Returns true only if both updates succeed
  */
 export async function processReferral(refereeId: string, referralCode: string): Promise<boolean> {
   try {
@@ -80,26 +82,56 @@ export async function processReferral(refereeId: string, referralCode: string): 
       return false;
     }
 
-    await db.transaction(async (tx: any) => {
-      // Update referee to mark who referred them
-      await tx
+    // Block self-referral
+    if (referrer[0].id === refereeId) {
+      console.warn('Referral blocked: self-referral attempt', { refereeId, referralCode });
+      return false;
+    }
+
+    const result = await db.transaction(async (tx: any) => {
+      // Update referee only if: user exists, not already referred, and not the referrer
+      const updateResult = await tx
         .update(users)
         .set({ 
           referredBy: referrer[0].id,
         })
-        .where(eq(users.id, refereeId));
+        .where(
+          sql`${users.id} = ${refereeId} 
+              AND ${users.referredBy} IS NULL 
+              AND ${users.id} != ${referrer[0].id}`
+        );
 
-      // Increment referrer's referral count
-      await tx
+      // Only increment referrer count if referee was successfully updated
+      if (!updateResult || updateResult.rowCount === 0) {
+        // Rollback transaction - referee doesn't exist, already referred, or self-referral
+        throw new Error('ROLLBACK_REFERRAL');
+      }
+
+      // Increment referrer's referral count only after successful referee update
+      const referrerUpdate = await tx
         .update(users)
         .set({ 
           referralCount: sql`COALESCE(${users.referralCount}, 0) + 1`,
         })
         .where(eq(users.id, referrer[0].id));
+
+      // Verify referrer update succeeded (catch edge case of referrer deletion mid-flight)
+      if (!referrerUpdate || referrerUpdate.rowCount !== 1) {
+        throw new Error('ROLLBACK_REFERRAL');
+      }
+
+      return true;
     });
 
-    return true;
-  } catch (error) {
+    return result;
+  } catch (error: any) {
+    if (error?.message === 'ROLLBACK_REFERRAL') {
+      console.warn('Referral not processed: invalid referee or duplicate referral', { 
+        refereeId, 
+        referralCode 
+      });
+      return false;
+    }
     console.error('Error processing referral:', error);
     return false;
   }
