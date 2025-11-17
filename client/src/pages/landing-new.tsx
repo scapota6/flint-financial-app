@@ -124,6 +124,15 @@ export default function LandingNew() {
   // Sticky nav
   const [showStickyNav, setShowStickyNav] = useState(false);
 
+  // Money goals state
+  const [selectedGoals, setSelectedGoals] = useState<string[]>([]);
+  const [goalsEmail, setGoalsEmail] = useState('');
+  const [goalsSubmitted, setGoalsSubmitted] = useState(false);
+
+  // Social proof notifications
+  const [showNotification, setShowNotification] = useState(false);
+  const [notificationMessage, setNotificationMessage] = useState('');
+
   // Refs
   const signupRef = useRef<HTMLDivElement>(null);
 
@@ -198,6 +207,57 @@ export default function LandingNew() {
   const switchDemoData = () => {
     setCurrentDemo(current => current === DEMO_DATA_1 ? DEMO_DATA_2 : DEMO_DATA_1);
   };
+
+  // Money goals submission
+  const handleGoalsSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (selectedGoals.length > 0 && goalsEmail) {
+      setGoalsSubmitted(true);
+    }
+  };
+
+  const toggleGoal = (goal: string) => {
+    setSelectedGoals(prev => 
+      prev.includes(goal) 
+        ? prev.filter(g => g !== goal)
+        : [...prev, goal]
+    );
+  };
+
+  // Social proof notifications
+  useEffect(() => {
+    const notifications = [
+      "🔥 Taylor in New York just unlocked unlimited accounts!",
+      "🎉 Alex in San Francisco just joined the Launch Pool!",
+      "⚡ Jordan in Austin just referred 3 friends!",
+      "🌟 Sam in Miami just upgraded to Pro!",
+      "💰 Casey in Seattle just connected 10 accounts!"
+    ];
+
+    const showRandomNotification = () => {
+      const randomMsg = notifications[Math.floor(Math.random() * notifications.length)];
+      setNotificationMessage(randomMsg);
+      setShowNotification(true);
+      
+      setTimeout(() => {
+        setShowNotification(false);
+      }, 5000);
+    };
+
+    // Show first notification after 15 seconds
+    const initialTimer = setTimeout(showRandomNotification, 15000);
+    
+    // Then show notifications every 30-60 seconds
+    const interval = setInterval(() => {
+      const delay = Math.random() * 30000 + 30000; // 30-60 seconds
+      setTimeout(showRandomNotification, delay);
+    }, 60000);
+
+    return () => {
+      clearTimeout(initialTimer);
+      clearInterval(interval);
+    };
+  }, []);
 
   // Signup submission
   const [signupLoading, setSignupLoading] = useState(false);
@@ -284,7 +344,7 @@ export default function LandingNew() {
               </h1>
               
               <p className="text-xl text-gray-300 leading-relaxed">
-                Track your bank, brokerage, and crypto accounts in one smart dashboard — find savings, avoid fees, and grow wealth automatically.
+                Track all your bank, card, stock, and crypto accounts — in one place. Free forever, no card needed.
               </p>
 
               <div className="space-y-3">
@@ -295,34 +355,61 @@ export default function LandingNew() {
                   className="bg-blue-600 hover:bg-blue-700 text-xl px-10 py-7 h-auto shadow-2xl shadow-blue-600/50"
                   data-testid="button-hero-cta"
                 >
-                  Get Started Free
+                  Get Started Free (No Card Needed)
                   <ArrowRight className="ml-3 h-6 w-6" />
                 </Button>
                 
-                <p className="text-sm text-gray-400">
-                  🔒 No spam, bank-level encryption, cancel anytime.
+                <p className="text-base text-blue-300 font-medium">
+                  🎉 You're automatically entered in our 10,000-user Flint Launch Pool — where you could win Flint Pro for Life.
                 </p>
               </div>
 
-              {/* Email capture */}
-              <div className="pt-4">
-                {!heroEmailSubmitted ? (
-                  <form onSubmit={handleHeroEmailSubmit} className="flex gap-2 max-w-md">
-                    <Input
-                      type="email"
-                      placeholder="Enter your email for updates"
-                      value={heroEmail}
-                      onChange={(e) => setHeroEmail(e.target.value)}
-                      className="bg-white/10 border-white/20 text-white placeholder:text-gray-400"
-                      data-testid="input-hero-email"
-                    />
-                    <Button type="submit" variant="outline" className="border-white/20 text-white hover:bg-white/10" data-testid="button-hero-email-submit">
-                      Get Updates
-                    </Button>
-                  </form>
+              {/* Money Goals Email Capture */}
+              <div className="pt-6 max-w-md">
+                {!goalsSubmitted ? (
+                  <div className="p-6 bg-white/5 border border-white/10 rounded-lg space-y-4">
+                    <p className="text-base font-semibold text-white">Not ready to connect your accounts?</p>
+                    <p className="text-sm text-gray-300">Tell us your #1 money goal and get a free tip + updates:</p>
+                    
+                    <div className="space-y-2">
+                      {['Build savings', 'Track spending', 'Cancel bad subscriptions', 'All of the above'].map((goal) => (
+                        <label key={goal} className="flex items-center gap-3 cursor-pointer group">
+                          <input
+                            type="checkbox"
+                            checked={selectedGoals.includes(goal)}
+                            onChange={() => toggleGoal(goal)}
+                            className="w-5 h-5 rounded border-white/20 bg-white/10 text-blue-600 focus:ring-blue-500"
+                            data-testid={`checkbox-goal-${goal.toLowerCase().replace(/ /g, '-')}`}
+                          />
+                          <span className="text-sm text-gray-300 group-hover:text-white transition-colors">{goal}</span>
+                        </label>
+                      ))}
+                    </div>
+
+                    <form onSubmit={handleGoalsSubmit} className="space-y-3 pt-2">
+                      <Input
+                        type="email"
+                        placeholder="Your email"
+                        value={goalsEmail}
+                        onChange={(e) => setGoalsEmail(e.target.value)}
+                        className="bg-white/10 border-white/20 text-white placeholder:text-gray-400"
+                        data-testid="input-goals-email"
+                        required
+                      />
+                      <Button 
+                        type="submit" 
+                        className="w-full bg-blue-600 hover:bg-blue-700"
+                        disabled={selectedGoals.length === 0}
+                        data-testid="button-goals-submit"
+                      >
+                        Join Free
+                      </Button>
+                    </form>
+                  </div>
                 ) : (
-                  <div className="p-4 bg-green-500/10 border border-green-500/20 rounded-lg">
-                    <p className="text-green-400">Thanks! Check your email soon. Ready to see Flint? Continue to signup below!</p>
+                  <div className="p-6 bg-green-500/10 border border-green-500/20 rounded-lg">
+                    <Check className="h-6 w-6 text-green-400 mb-2" />
+                    <p className="text-green-400 font-medium">Thanks! Check your email for your personalized tip!</p>
                   </div>
                 )}
               </div>
@@ -335,6 +422,56 @@ export default function LandingNew() {
               </div>
               <div className="absolute -inset-4 bg-blue-500/20 blur-3xl -z-10" />
             </div>
+          </div>
+        </section>
+
+        {/* Launch Giveaway Section */}
+        <section className="py-16 bg-gradient-to-r from-blue-900/30 via-purple-900/30 to-blue-900/30 border-y border-white/20">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center">
+            <h2 className="text-4xl font-bold mb-4">
+              🚀 Flint Launch Giveaway
+            </h2>
+            <p className="text-xl text-gray-200 mb-8">
+              Join now — help us hit our first 10,000 users and win big:
+            </p>
+
+            <div className="grid md:grid-cols-3 gap-6 mb-8">
+              <Card className="bg-white/10 border-blue-400/30 p-6">
+                <div className="text-5xl mb-2">🎟️</div>
+                <h3 className="text-xl font-bold mb-2">5 Winners</h3>
+                <p className="text-gray-300">Get 1 year of Flint Pro</p>
+              </Card>
+
+              <Card className="bg-gradient-to-br from-yellow-600/20 to-orange-600/20 border-yellow-400/40 p-6 transform scale-105">
+                <div className="text-5xl mb-2">🏆</div>
+                <h3 className="text-2xl font-bold mb-2">1 Grand Prize</h3>
+                <p className="text-yellow-200 font-semibold text-lg">Flint Pro for Life</p>
+              </Card>
+
+              <Card className="bg-white/10 border-purple-400/30 p-6">
+                <div className="text-5xl mb-2">📈</div>
+                <h3 className="text-xl font-bold mb-2">Boost Odds</h3>
+                <p className="text-gray-300">Refer friends or upgrade</p>
+              </Card>
+            </div>
+
+            <div className="mb-6">
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-sm text-gray-300 font-medium">Progress to 10,000 users</p>
+                <p className="text-sm font-bold text-white">8,200 / 10,000</p>
+              </div>
+              <div className="w-full bg-white/10 rounded-full h-4 overflow-hidden border border-white/20">
+                <div 
+                  className="h-full bg-gradient-to-r from-blue-500 to-purple-600 rounded-full transition-all duration-500" 
+                  style={{ width: '82%' }}
+                  data-testid="launch-giveaway-progress"
+                />
+              </div>
+            </div>
+
+            <p className="text-blue-300 font-medium">
+              🔔 Winners announced when we hit 10,000
+            </p>
           </div>
         </section>
 
@@ -775,10 +912,29 @@ export default function LandingNew() {
                   No credit card required. You can connect up to 4 accounts on the Free plan.
                 </p>
 
-                {/* Referral CTA */}
-                <div className="mt-6 p-4 bg-blue-600/10 border border-blue-600/20 rounded-lg text-center">
-                  <p className="text-sm font-semibold text-blue-400 mb-1">Want unlimited accounts?</p>
-                  <p className="text-white">Get unlimited by referring 3 friends</p>
+                {/* Referral Unlocks */}
+                <div className="mt-6 p-6 bg-gradient-to-br from-blue-600/10 to-purple-600/10 border border-blue-600/20 rounded-lg">
+                  <h4 className="text-lg font-bold mb-4">🔄 Invite & Unlock</h4>
+                  <div className="space-y-3 text-sm">
+                    <div className="flex items-center gap-3">
+                      <div className="h-8 w-8 rounded-full bg-blue-600/20 flex items-center justify-center flex-shrink-0">
+                        <span className="text-blue-400 font-bold">3</span>
+                      </div>
+                      <p className="text-gray-300"><span className="font-semibold text-white">Refer 3</span> = Unlock unlimited accounts</p>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="h-8 w-8 rounded-full bg-purple-600/20 flex items-center justify-center flex-shrink-0">
+                        <span className="text-purple-400 font-bold">5</span>
+                      </div>
+                      <p className="text-gray-300"><span className="font-semibold text-white">Refer 5</span> = Get 1 free month of Flint Pro</p>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="h-8 w-8 rounded-full bg-yellow-600/20 flex items-center justify-center flex-shrink-0">
+                        <span className="text-yellow-400 font-bold">10</span>
+                      </div>
+                      <p className="text-gray-300"><span className="font-semibold text-white">Refer 10</span> = 5x entries in the Lifetime Giveaway</p>
+                    </div>
+                  </div>
                 </div>
               </div>
             ) : (
@@ -795,11 +951,15 @@ export default function LandingNew() {
                     <p className="text-xs text-gray-400 mt-2">Skip spots by referring friends</p>
                   </div>
 
-                  {/* Demo Referral Info */}
-                  <div className="p-6 bg-white/5 border border-white/10 rounded-lg space-y-3">
-                    <p className="text-sm font-semibold text-white">Share & Get Unlimited Accounts</p>
-                    <p className="text-xs text-gray-400">Refer 3 friends to unlock unlimited accounts for free</p>
-                    <p className="text-sm text-blue-400 font-medium">Get your unique referral link when you sign up!</p>
+                  {/* Demo Referral Preview */}
+                  <div className="p-6 bg-gradient-to-br from-blue-600/10 to-purple-600/10 border border-blue-600/20 rounded-lg space-y-3">
+                    <p className="text-sm font-semibold text-white">🔄 Invite & Unlock Rewards</p>
+                    <div className="space-y-2 text-xs text-gray-300">
+                      <p>• Refer 3 = Unlimited accounts</p>
+                      <p>• Refer 5 = 1 free month of Pro</p>
+                      <p>• Refer 10 = 5x giveaway entries</p>
+                    </div>
+                    <p className="text-sm text-blue-400 font-medium pt-2">Get your unique referral link when you sign up!</p>
                   </div>
 
                   {/* CTA to actual signup */}
@@ -1115,6 +1275,21 @@ export default function LandingNew() {
         <div className="fixed bottom-4 right-4 max-w-sm bg-green-500/10 border border-green-500/20 rounded-lg p-6 shadow-2xl z-50">
           <Check className="h-6 w-6 text-green-400 mb-2" />
           <p className="text-green-400">Thanks for subscribing!</p>
+        </div>
+      )}
+
+      {/* Social Proof Notification Toast */}
+      {showNotification && (
+        <div 
+          className="fixed bottom-4 left-4 max-w-sm bg-gradient-to-r from-blue-600/90 to-purple-600/90 backdrop-blur-xl border border-white/20 rounded-lg p-4 shadow-2xl z-50 animate-[slideInLeft_0.3s_ease-out]"
+          data-testid="social-proof-notification"
+        >
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0">
+              <span className="text-xl">👤</span>
+            </div>
+            <p className="text-sm font-medium text-white">{notificationMessage}</p>
+          </div>
         </div>
       )}
 
