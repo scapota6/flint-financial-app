@@ -121,6 +121,9 @@ export default function LandingNew() {
   // Pricing toggle
   const [isAnnual, setIsAnnual] = useState(false);
 
+  // Sticky nav
+  const [showStickyNav, setShowStickyNav] = useState(false);
+
   // Refs
   const signupRef = useRef<HTMLDivElement>(null);
 
@@ -129,11 +132,14 @@ export default function LandingNew() {
     signupRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  // Scroll tracking for popup
+  // Scroll tracking for popup and sticky nav
   useEffect(() => {
     let hasShownPopup = false;
     
     const handleScroll = () => {
+      // Show sticky nav after scrolling 300px
+      setShowStickyNav(window.scrollY > 300);
+      
       if (hasShownPopup) return;
       
       const scrollPercent = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
@@ -220,8 +226,34 @@ export default function LandingNew() {
         <div className="absolute bottom-20 right-32 w-96 h-96 bg-blue-600/15 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '5s' }} />
       </div>
 
+      {/* Sticky CTA Nav */}
+      <div
+        className={`fixed top-0 left-0 right-0 z-50 bg-black/90 backdrop-blur-xl border-b border-white/10 transition-transform duration-300 ${
+          showStickyNav ? 'translate-y-0' : '-translate-y-full'
+        }`}
+        data-testid="sticky-nav"
+      >
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="h-8 w-8 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center font-bold">
+              F
+            </div>
+            <span className="font-bold text-xl">Flint</span>
+          </div>
+          <Button
+            type="button"
+            onClick={scrollToSignup}
+            size="sm"
+            className="bg-blue-600 hover:bg-blue-700"
+            data-testid="button-sticky-nav-cta"
+          >
+            Get Started Free
+          </Button>
+        </div>
+      </div>
+
       {/* Header */}
-      <header className="relative z-50 border-b border-white/10 backdrop-blur-xl">
+      <header className="relative z-40 border-b border-white/10 backdrop-blur-xl">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <img src={flintLogo} alt="Flint" className="h-8 w-auto" />
@@ -638,23 +670,15 @@ export default function LandingNew() {
           </div>
         </section>
 
-        {/* Second Email Capture (After Demo) */}
+        {/* CTA After Demo */}
         <section className="py-16">
           <div className="max-w-2xl mx-auto px-4 sm:px-6 text-center">
-            <h3 className="text-3xl font-bold mb-3">Not ready to connect your accounts?</h3>
-            <p className="text-xl text-gray-300 mb-6">Get updates and tools to grow your money smarter.</p>
+            <h3 className="text-3xl font-bold mb-3">Ready to see your full picture?</h3>
+            <p className="text-xl text-gray-300 mb-6">Join 8,200+ people taking control of their money</p>
             
-            <form onSubmit={(e) => { e.preventDefault(); /* Handle email */ }} className="flex flex-col sm:flex-row gap-3 justify-center max-w-md mx-auto">
-              <Input
-                type="email"
-                placeholder="Your email"
-                className="bg-white/10 border-white/20 text-white placeholder:text-gray-400 h-12"
-                data-testid="input-second-email"
-              />
-              <Button type="submit" size="lg" className="bg-blue-600 hover:bg-blue-700 h-12" data-testid="button-second-email-submit">
-                Join Free
-              </Button>
-            </form>
+            <Button type="button" onClick={scrollToSignup} size="lg" className="bg-blue-600 hover:bg-blue-700 h-14 px-12 text-lg" data-testid="button-cta-after-demo">
+              Get Started Free
+            </Button>
           </div>
         </section>
 
@@ -933,6 +957,18 @@ export default function LandingNew() {
                 Cancel anytime. No risk.
               </p>
             </div>
+          </div>
+        </section>
+
+        {/* CTA After Pricing */}
+        <section className="py-16 bg-white/5 border-y border-white/10">
+          <div className="max-w-2xl mx-auto px-4 sm:px-6 text-center">
+            <h3 className="text-3xl font-bold mb-3">Start managing your money better today</h3>
+            <p className="text-xl text-gray-300 mb-6">Free forever. No credit card needed.</p>
+            
+            <Button type="button" onClick={scrollToSignup} size="lg" className="bg-blue-600 hover:bg-blue-700 h-14 px-12 text-lg" data-testid="button-cta-after-pricing">
+              Get Started Free
+            </Button>
           </div>
         </section>
 
