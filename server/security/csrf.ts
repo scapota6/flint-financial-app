@@ -27,6 +27,7 @@ export function installCsrf(app: Express) {
     '/api/whop/create-checkout',  // Whop checkout creation from public landing page
     '/api/applications/submit',
     '/api/feature-requests',  // Feature requests from public landing page
+    '/api/leads',  // Lead capture from landing page
     '/api/auth/public-register',  // Public registration from landing page
     '/api/auth/setup-password',
     '/api/auth/request-reset',
