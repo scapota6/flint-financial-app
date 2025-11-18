@@ -92,6 +92,7 @@ function Router() {
               <>
                 <Route path="/" component={LandingNew} />
                 <Route path="/landing" component={LandingNew} />
+                <Route path="/new" component={LandingNew} />
                 <Route path="/legacy" component={LandingLegacy} />
                 <Route path="/login" component={Login} />
                 <Route path="/success" component={SuccessPage} />

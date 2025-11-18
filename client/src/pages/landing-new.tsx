@@ -10,6 +10,8 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
 import { 
   Shield, 
   Lock, 
@@ -1087,8 +1089,10 @@ export default function LandingNew() {
                       const bankBalance = parseCurrency(currentDemo.accounts.find(a => a.type === 'Bank')?.balance || '$0');
                       const investingBalance = parseCurrency(currentDemo.accounts.find(a => a.type === 'Investing')?.balance || '$0');
                       const cryptoBalance = parseCurrency(currentDemo.accounts.find(a => a.type === 'Crypto')?.balance || '$0');
-                      const debtBalance = parseCurrency(currentDemo.accounts.find(a => a.type === 'Credit')?.balance || '$0');
-                      const netWorth = bankBalance + investingBalance + cryptoBalance + debtBalance;
+                      const debtBalanceRaw = parseCurrency(currentDemo.accounts.find(a => a.type === 'Credit')?.balance || '$0');
+                      const totalAssets = bankBalance + investingBalance + cryptoBalance;
+                      const totalDebt = Math.abs(debtBalanceRaw);
+                      const netWorth = totalAssets - totalDebt;
                       return formatCurrency(netWorth);
                     })()}
                   </p>
@@ -1106,10 +1110,11 @@ export default function LandingNew() {
                       const bankBalance = parseCurrency(currentDemo.accounts.find(a => a.type === 'Bank')?.balance || '$0');
                       const investingBalance = parseCurrency(currentDemo.accounts.find(a => a.type === 'Investing')?.balance || '$0');
                       const cryptoBalance = parseCurrency(currentDemo.accounts.find(a => a.type === 'Crypto')?.balance || '$0');
-                      const debtBalance = parseCurrency(currentDemo.accounts.find(a => a.type === 'Credit')?.balance || '$0');
+                      const debtBalanceRaw = parseCurrency(currentDemo.accounts.find(a => a.type === 'Credit')?.balance || '$0');
                       
                       const totalAssets = bankBalance + investingBalance + cryptoBalance;
-                      const netWorth = totalAssets + debtBalance; // debtBalance is already negative
+                      const totalDebt = Math.abs(debtBalanceRaw);
+                      const netWorth = totalAssets - totalDebt;
                       
                       return (
                         <>
@@ -1145,7 +1150,7 @@ export default function LandingNew() {
                               <CreditCard className="h-5 w-5 text-red-400" />
                               <p className="apple-caption text-gray-400">Debt</p>
                             </div>
-                            <p className="apple-h3 text-red-400">{formatCurrency(Math.abs(debtBalance))}</p>
+                            <p className="apple-h3 text-red-400">{formatCurrency(totalDebt)}</p>
                             <p className="apple-caption text-gray-400 mt-1">Credit cards</p>
                           </div>
                         </>
@@ -1961,151 +1966,393 @@ export default function LandingNew() {
         </DialogContent>
       </Dialog>
 
-      {/* Account Detail Modal */}
+      {/* Account Detail Modal - Production-Accurate Tabbed Interface */}
       <Dialog open={showAccountModal} onOpenChange={setShowAccountModal}>
-        <DialogContent 
-          className="bg-black border-white/20 max-w-2xl max-h-[80vh] overflow-y-auto"
-          onPointerDownOutside={(e) => {
-            // Only close on overlay click, not content click
-            if (e.target === e.currentTarget) {
-              setShowAccountModal(false);
-            }
-          }}
-          onInteractOutside={(e) => {
-            // Prevent closing when clicking inside the modal
-            if ((e.target as HTMLElement).closest('[role="dialog"]')) {
-              e.preventDefault();
-            }
-          }}
-        >
+        <DialogContent className="bg-gray-900 border-gray-700 max-w-3xl max-h-[90vh] overflow-hidden flex flex-col">
           {selectedAccount && (
             <>
-              <DialogTitle className="text-2xl font-bold flex items-center gap-3">
-                <div className="h-12 w-12 rounded-lg bg-blue-600/20 flex items-center justify-center">
-                  {selectedAccount.type === 'Bank' && <Building2 className="h-6 w-6 text-blue-400" />}
-                  {selectedAccount.type === 'Investing' && <LineChart className="h-6 w-6 text-blue-400" />}
-                  {selectedAccount.type === 'Crypto' && <Wallet className="h-6 w-6 text-blue-400" />}
-                  {selectedAccount.type === 'Credit' && <CreditCard className="h-6 w-6 text-blue-400" />}
-                </div>
-                {selectedAccount.name}
-              </DialogTitle>
-              <DialogDescription className="text-gray-300 text-base">
-                {selectedAccount.type} Account
-              </DialogDescription>
-
-              <div className="mt-6 space-y-6">
-                {/* Account Overview */}
-                <div className="bg-white/5 border border-white/10 rounded-lg p-6">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <p className="text-sm text-gray-400 mb-1">{selectedAccount.type === 'Credit' ? 'Current Balance' : 'Current Balance'}</p>
-                      <p className="text-3xl font-bold">{selectedAccount.balance}</p>
+              {/* Header */}
+              <div className="border-b border-gray-700 pb-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-blue-600/20 border border-blue-600/30">
+                      {selectedAccount.type === 'Bank' && <Building className="h-6 w-6 text-blue-400" />}
+                      {selectedAccount.type === 'Investing' && <LineChart className="h-6 w-6 text-blue-400" />}
+                      {selectedAccount.type === 'Crypto' && <Wallet className="h-6 w-6 text-blue-400" />}
+                      {selectedAccount.type === 'Credit' && <CreditCard className="h-6 w-6 text-blue-400" />}
                     </div>
                     <div>
-                      <p className="text-sm text-gray-400 mb-1">Change</p>
-                      <p className={`text-2xl font-semibold ${selectedAccount.change.startsWith('+') ? 'text-green-400' : selectedAccount.change.startsWith('-') ? 'text-red-400' : 'text-gray-400'}`}>
-                        {selectedAccount.change}
+                      <DialogTitle className="text-xl font-bold text-white">
+                        {selectedAccount.name}
+                      </DialogTitle>
+                      <p className="text-sm text-gray-400">
+                        {selectedAccount.type} • {selectedAccount.type === 'Credit' ? 'Chase Sapphire' : selectedAccount.type === 'Bank' ? 'Chase' : selectedAccount.type === 'Investing' ? 'Fidelity' : 'Coinbase'}
                       </p>
                     </div>
                   </div>
-                  {/* Credit Card Specific Fields */}
-                  {selectedAccount.type === 'Credit' && selectedAccount.creditLimit && (
-                    <div className="grid grid-cols-2 gap-4 mt-4 pt-4 border-t border-white/10">
-                      <div>
-                        <p className="text-sm text-gray-400 mb-1">Credit Limit</p>
-                        <p className="text-lg font-semibold">{selectedAccount.creditLimit}</p>
-                      </div>
-                      <div>
-                        <p className="text-sm text-gray-400 mb-1">Available Credit</p>
-                        <p className="text-lg font-semibold text-green-400">{selectedAccount.availableCredit}</p>
-                      </div>
-                    </div>
-                  )}
+                  <Button variant="ghost" size="sm" onClick={() => setShowAccountModal(false)}>
+                    <X className="h-4 w-4 text-gray-400" />
+                  </Button>
                 </div>
 
-                {/* Holdings for Investment/Crypto accounts */}
-                {(selectedAccount.type === 'Investing' || selectedAccount.type === 'Crypto') && (
+                {/* Balance Overview - Always Visible */}
+                <div className="flex items-center gap-6 mt-4">
                   <div>
-                    <div className="flex items-center justify-between mb-3">
-                      <h4 className="text-lg font-semibold flex items-center gap-2">
-                        <Eye className="h-5 w-5 text-blue-400" />
-                        Holdings
-                      </h4>
-                      <div className="bg-blue-600/20 border border-blue-500/30 rounded-full px-3 py-1">
-                        <p className="text-xs font-semibold text-blue-400">✨ Trade & Transfer in Real-Time</p>
-                      </div>
-                    </div>
-                    <div className="space-y-2">
-                      {currentDemo.holdings
-                        .filter(h => 
-                          (selectedAccount.type === 'Investing' && !['BTC', 'ETH', 'SOL'].includes(h.symbol)) ||
-                          (selectedAccount.type === 'Crypto' && ['BTC', 'ETH', 'SOL'].includes(h.symbol))
-                        )
-                        .map((holding, idx) => {
-                          const logoKey = `modal-${holding.symbol}`;
-                          const logoFailed = failedLogos[logoKey];
-                          
-                          return (
-                            <div key={idx} className="bg-white/5 border border-white/10 rounded-lg p-4">
-                              <div className="flex justify-between items-start mb-2">
-                                <div className="flex items-start gap-3">
-                                  <div className="h-12 w-12 rounded-lg bg-white/10 overflow-hidden flex items-center justify-center flex-shrink-0">
-                                    {!logoFailed ? (
-                                      <img 
-                                        src={`https://cdn.brandfetch.io/${getSymbolDomain(holding.symbol)}`}
-                                        alt={holding.symbol}
-                                        className="w-full h-full object-contain p-1"
-                                        onError={() => {
-                                          const key = `modal-${holding.symbol}`;
-                                          setFailedLogos(prev => ({ ...prev, [key]: true }));
-                                        }}
-                                      />
-                                    ) : (
-                                      <span className="text-blue-400 font-bold">{holding.symbol.substring(0, 2)}</span>
-                                    )}
-                                  </div>
-                                  <div>
-                                    <p className="font-semibold text-lg">{holding.symbol}</p>
-                                    <p className="text-sm text-gray-400">{holding.name}</p>
-                                    <p className="text-xs text-gray-500 mt-1">{holding.quantity} @ ${holding.avgCost.toFixed(2)}</p>
+                    <p className="text-sm text-gray-400">{selectedAccount.type === 'Credit' ? 'Current Balance' : 'Available Balance'}</p>
+                    <p className="text-3xl font-bold text-white">{selectedAccount.balance}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-400">Status</p>
+                    <Badge variant="outline" className="text-green-400 border-green-400">
+                      <Check className="h-3 w-3 mr-1" />
+                      Active
+                    </Badge>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-400">Last Updated</p>
+                    <p className="text-sm text-white">Just now</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Bank/Credit Card Modal - 3 Tabs */}
+              {(selectedAccount.type === 'Bank' || selectedAccount.type === 'Credit') && (
+                <Tabs defaultValue="transactions" className="flex-1 flex flex-col overflow-hidden">
+                  <TabsList className="grid w-full grid-cols-3 bg-gray-800">
+                    <TabsTrigger value="transactions">Recent Transactions</TabsTrigger>
+                    <TabsTrigger value="details">Account Details</TabsTrigger>
+                    <TabsTrigger value="settings">Settings</TabsTrigger>
+                  </TabsList>
+
+                  <div className="flex-1 overflow-y-auto mt-4 space-y-4">
+                    <TabsContent value="transactions" className="space-y-4 m-0">
+                      <Card className="bg-gray-800/50 border-gray-700">
+                        <div className="p-4">
+                          <div className="flex items-center justify-between mb-4">
+                            <h3 className="text-white font-semibold flex items-center gap-2">
+                              <TrendingDown className="h-5 w-5 text-blue-400" />
+                              Recent Transactions
+                            </h3>
+                            <Badge variant="outline">{(selectedAccount.transactions || []).length} transactions</Badge>
+                          </div>
+                          <div className="space-y-3">
+                            {(selectedAccount.transactions || currentDemo.transactions.slice(0, 5)).map((txn, idx) => (
+                              <div key={idx} className="flex items-center gap-3 p-3 rounded-lg bg-gray-700/30 hover:bg-gray-700/50 transition-colors">
+                                <div className="p-2 rounded-full bg-gray-600/50">
+                                  {txn.amount.startsWith('+') ? (
+                                    <TrendingUp className="h-4 w-4 text-green-400" />
+                                  ) : (
+                                    <TrendingDown className="h-4 w-4 text-red-400" />
+                                  )}
+                                </div>
+                                <div className="flex-1">
+                                  <p className="text-white font-medium text-sm">{txn.merchant}</p>
+                                  <div className="flex items-center gap-2 text-xs text-gray-400">
+                                    {txn.date}
+                                    <Badge variant="outline" className="text-xs py-0 px-1">{txn.category}</Badge>
                                   </div>
                                 </div>
                                 <div className="text-right">
-                                  <p className="text-xl font-bold">${holding.value.toLocaleString()}</p>
-                                  <p className={`text-sm ${holding.profitLoss >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                                    {holding.profitLoss >= 0 ? '+' : ''}${holding.profitLoss.toLocaleString()} ({holding.profitLossPct > 0 ? '+' : ''}{holding.profitLossPct.toFixed(1)}%)
+                                  <p className={`font-medium ${txn.amount.startsWith('+') ? 'text-green-400' : 'text-white'}`}>
+                                    {txn.amount}
                                   </p>
                                 </div>
                               </div>
-                            </div>
-                          );
-                        })}
-                    </div>
-                  </div>
-                )}
-
-                {/* Recent Transactions */}
-                <div>
-                  <h4 className="text-lg font-semibold mb-3 flex items-center gap-2">
-                    <LineChart className="h-5 w-5 text-blue-400" />
-                    Recent Activity
-                  </h4>
-                  <div className="space-y-2">
-                    {(selectedAccount.transactions || currentDemo.transactions.slice(0, 3)).map((txn, idx) => (
-                      <div key={idx} className="bg-white/5 border border-white/10 rounded-lg p-4 flex justify-between items-center">
-                        <div>
-                          <p className="font-medium">{txn.merchant}</p>
-                          <p className="text-sm text-gray-400">{txn.date} · {txn.category}</p>
+                            ))}
+                          </div>
                         </div>
-                        <p className={`font-semibold ${txn.amount.startsWith('+') ? 'text-green-400' : 'text-white'}`}>
-                          {txn.amount}
-                        </p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+                      </Card>
 
-                {/* CTA */}
+                      {/* Credit Card Extra Info */}
+                      {selectedAccount.type === 'Credit' && selectedAccount.creditLimit && (
+                        <Card className="bg-gray-800/50 border-gray-700">
+                          <div className="p-4">
+                            <h3 className="text-white font-semibold mb-4">Credit Card Overview</h3>
+                            <div className="grid grid-cols-2 gap-4">
+                              <div>
+                                <p className="text-sm text-gray-400">Credit Limit</p>
+                                <p className="text-white font-semibold">{selectedAccount.creditLimit}</p>
+                              </div>
+                              <div>
+                                <p className="text-sm text-gray-400">Available Credit</p>
+                                <p className="text-green-400 font-semibold">{selectedAccount.availableCredit}</p>
+                              </div>
+                              <div>
+                                <p className="text-sm text-gray-400">Utilization</p>
+                                <p className="text-white font-semibold">8.2%</p>
+                              </div>
+                              <div>
+                                <p className="text-sm text-gray-400">Payment Due</p>
+                                <p className="text-white font-semibold">Dec 15, 2025</p>
+                              </div>
+                            </div>
+                          </div>
+                        </Card>
+                      )}
+                    </TabsContent>
+
+                    <TabsContent value="details" className="space-y-4 m-0">
+                      <Card className="bg-gray-800/50 border-gray-700">
+                        <div className="p-4">
+                          <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
+                            <CreditCard className="h-5 w-5 text-blue-400" />
+                            Account Information
+                          </h3>
+                          <div className="grid grid-cols-2 gap-4">
+                            <div>
+                              <p className="text-sm text-gray-400">Account Name</p>
+                              <p className="text-white font-medium">{selectedAccount.name}</p>
+                            </div>
+                            <div>
+                              <p className="text-sm text-gray-400">Account Type</p>
+                              <p className="text-white font-medium">{selectedAccount.type}</p>
+                            </div>
+                            <div>
+                              <p className="text-sm text-gray-400">Institution</p>
+                              <p className="text-white font-medium">Chase Bank</p>
+                            </div>
+                            <div>
+                              <p className="text-sm text-gray-400">Routing Number</p>
+                              <p className="text-white font-medium">****9876</p>
+                            </div>
+                            <div>
+                              <p className="text-sm text-gray-400">Connected Via</p>
+                              <p className="text-white font-medium">Teller Banking API</p>
+                            </div>
+                            <div>
+                              <p className="text-sm text-gray-400">Connection Status</p>
+                              <Badge variant="outline" className="text-green-400 border-green-400">
+                                <Check className="h-3 w-3 mr-1" />
+                                Connected
+                              </Badge>
+                            </div>
+                          </div>
+                        </div>
+                      </Card>
+                    </TabsContent>
+
+                    <TabsContent value="settings" className="space-y-4 m-0">
+                      <Card className="bg-gray-800/50 border-gray-700">
+                        <div className="p-4 space-y-4">
+                          <h3 className="text-white font-semibold">Account Settings</h3>
+                          <div className="flex items-center justify-between p-4 rounded-lg bg-gray-700/30">
+                            <div>
+                              <p className="text-white font-medium">Auto-sync Transactions</p>
+                              <p className="text-sm text-gray-400">Automatically fetch new transactions every hour</p>
+                            </div>
+                            <Badge variant="outline" className="text-green-400 border-green-400">Enabled</Badge>
+                          </div>
+                          <div className="flex items-center justify-between p-4 rounded-lg bg-gray-700/30">
+                            <div>
+                              <p className="text-white font-medium">Balance Notifications</p>
+                              <p className="text-sm text-gray-400">Get notified of low balance or large transactions</p>
+                            </div>
+                            <Badge variant="outline" className="text-green-400 border-green-400">Enabled</Badge>
+                          </div>
+                          <div className="border-t border-gray-600 pt-4">
+                            <p className="text-sm text-gray-400 mb-2">This is a demo account. Real accounts can be disconnected from Settings.</p>
+                          </div>
+                        </div>
+                      </Card>
+                    </TabsContent>
+                  </div>
+                </Tabs>
+              )}
+
+              {/* Investment/Crypto Modal - 3 Tabs */}
+              {(selectedAccount.type === 'Investing' || selectedAccount.type === 'Crypto') && (
+                <Tabs defaultValue="overview" className="flex-1 flex flex-col overflow-hidden">
+                  <TabsList className="grid w-full grid-cols-3 bg-gray-800">
+                    <TabsTrigger value="overview">Overview</TabsTrigger>
+                    <TabsTrigger value="holdings">Holdings</TabsTrigger>
+                    <TabsTrigger value="orders">Order History</TabsTrigger>
+                  </TabsList>
+
+                  <div className="flex-1 overflow-y-auto mt-4 space-y-4">
+                    <TabsContent value="overview" className="space-y-4 m-0">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <Card className="bg-gray-800/50 border-gray-700">
+                          <div className="p-4">
+                            <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
+                              <Building2 className="h-5 w-5 text-blue-400" />
+                              Account Information
+                            </h3>
+                            <div className="space-y-3">
+                              <div className="flex justify-between">
+                                <span className="text-gray-400">Institution:</span>
+                                <span className="text-white">{selectedAccount.type === 'Investing' ? 'Fidelity' : 'Coinbase'}</span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span className="text-gray-400">Account Type:</span>
+                                <span className="text-white">{selectedAccount.type === 'Investing' ? 'Brokerage' : 'Crypto Wallet'}</span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span className="text-gray-400">Currency:</span>
+                                <span className="text-white">USD</span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span className="text-gray-400">Status:</span>
+                                <Badge variant="outline" className="text-green-400 border-green-400">
+                                  <Check className="h-3 w-3 mr-1" />
+                                  Active
+                                </Badge>
+                              </div>
+                            </div>
+                          </div>
+                        </Card>
+
+                        <Card className="bg-gray-800/50 border-gray-700">
+                          <div className="p-4">
+                            <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
+                              <DollarSign className="h-5 w-5 text-green-400" />
+                              Balance Summary
+                            </h3>
+                            <div className="space-y-3">
+                              <div className="flex justify-between">
+                                <span className="text-gray-400">Total Balance:</span>
+                                <span className="text-white font-semibold">{selectedAccount.balance}</span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span className="text-gray-400">Cash Available:</span>
+                                <span className="text-white">$5,420.50</span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span className="text-gray-400">Buying Power:</span>
+                                <span className="text-white">$10,841.00</span>
+                              </div>
+                            </div>
+                          </div>
+                        </Card>
+                      </div>
+
+                      <Card className="bg-gray-800/50 border-gray-700">
+                        <div className="p-4">
+                          <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
+                            <Zap className="h-5 w-5 text-blue-400" />
+                            Account Actions
+                          </h3>
+                          <div className="flex gap-3">
+                            <Button className="bg-green-600 hover:bg-green-700 text-white">
+                              Start Trading
+                            </Button>
+                            <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+                              Transfer Funds
+                            </Button>
+                            <Button variant="outline" className="border-gray-600 text-gray-300">
+                              View Statements
+                            </Button>
+                          </div>
+                        </div>
+                      </Card>
+                    </TabsContent>
+
+                    <TabsContent value="holdings" className="space-y-4 m-0">
+                      <Card className="bg-gray-800/50 border-gray-700">
+                        <div className="p-4">
+                          <div className="flex items-center justify-between mb-4">
+                            <h3 className="text-white font-semibold flex items-center gap-2">
+                              <TrendingUp className="h-5 w-5 text-blue-400" />
+                              Current Holdings
+                            </h3>
+                            <div className="bg-blue-600/20 border border-blue-500/30 rounded-full px-3 py-1">
+                              <p className="text-xs font-semibold text-blue-400">✨ Trade & Transfer in Real-Time</p>
+                            </div>
+                          </div>
+                          <div className="space-y-3">
+                            {currentDemo.holdings
+                              .filter(h => 
+                                (selectedAccount.type === 'Investing' && !['BTC', 'ETH', 'SOL'].includes(h.symbol)) ||
+                                (selectedAccount.type === 'Crypto' && ['BTC', 'ETH', 'SOL'].includes(h.symbol))
+                              )
+                              .map((holding, idx) => {
+                                const logoKey = `modal-${holding.symbol}`;
+                                const logoFailed = failedLogos[logoKey];
+                                
+                                return (
+                                  <div key={idx} className="flex items-center justify-between p-4 rounded-lg bg-gray-700/50">
+                                    <div className="flex items-center gap-3">
+                                      <div className="h-10 w-10 rounded-lg bg-white/10 overflow-hidden flex items-center justify-center flex-shrink-0">
+                                        {!logoFailed ? (
+                                          <img 
+                                            src={`https://cdn.brandfetch.io/${getSymbolDomain(holding.symbol)}`}
+                                            alt={holding.symbol}
+                                            className="w-full h-full object-contain p-1"
+                                            onError={() => {
+                                              const key = `modal-${holding.symbol}`;
+                                              setFailedLogos(prev => ({ ...prev, [key]: true }));
+                                            }}
+                                          />
+                                        ) : (
+                                          <span className="text-blue-400 font-bold text-sm">{holding.symbol.substring(0, 2)}</span>
+                                        )}
+                                      </div>
+                                      <div>
+                                        <p className="text-white font-medium">{holding.symbol}</p>
+                                        <p className="text-sm text-gray-400">
+                                          {holding.quantity} shares @ ${holding.avgCost.toFixed(2)}
+                                        </p>
+                                      </div>
+                                    </div>
+                                    <div className="text-right">
+                                      <p className="text-white font-semibold">${holding.value.toLocaleString()}</p>
+                                      <p className={`text-sm ${holding.profitLoss >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                                        {holding.profitLoss >= 0 ? '+' : ''}${holding.profitLoss.toLocaleString()}
+                                      </p>
+                                    </div>
+                                  </div>
+                                );
+                              })}
+                          </div>
+                        </div>
+                      </Card>
+                    </TabsContent>
+
+                    <TabsContent value="orders" className="space-y-4 m-0">
+                      <Card className="bg-gray-800/50 border-gray-700">
+                        <div className="p-4">
+                          <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
+                            <TrendingUp className="h-5 w-5 text-blue-400" />
+                            Recent Orders
+                          </h3>
+                          <div className="space-y-3">
+                            {[
+                              { id: '1', date: 'Nov 15, 2025', type: 'BUY', symbol: 'AAPL', shares: 5, price: 185.20, status: 'FILLED' },
+                              { id: '2', date: 'Nov 14, 2025', type: 'SELL', symbol: 'TSLA', shares: 2, price: 240.50, status: 'FILLED' },
+                              { id: '3', date: 'Nov 13, 2025', type: 'BUY', symbol: 'GOOGL', shares: 3, price: 141.75, status: 'PENDING' },
+                            ].map((order) => (
+                              <div key={order.id} className="flex items-center justify-between p-4 rounded-lg bg-gray-700/50">
+                                <div className="flex items-center gap-3">
+                                  <div className={`w-2 h-2 rounded-full ${order.status === 'FILLED' ? 'bg-green-400' : 'bg-yellow-400'}`} />
+                                  <div>
+                                    <p className="text-white font-medium">
+                                      {order.type} {order.symbol}
+                                    </p>
+                                    <p className="text-sm text-gray-400">
+                                      {order.shares} shares @ ${order.price}
+                                    </p>
+                                  </div>
+                                </div>
+                                <div className="text-right">
+                                  <Badge 
+                                    variant={order.status === 'FILLED' ? 'default' : 'outline'}
+                                    className={order.status === 'FILLED' ? 'bg-green-600' : 'border-yellow-400 text-yellow-400'}
+                                  >
+                                    {order.status}
+                                  </Badge>
+                                  <p className="text-sm text-gray-400 mt-1">{order.date}</p>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </Card>
+                    </TabsContent>
+                  </div>
+                </Tabs>
+              )}
+
+              {/* CTA Footer */}
+              <div className="border-t border-gray-700 pt-4 mt-4">
                 <div className="bg-gradient-to-r from-blue-600/20 to-blue-800/20 border border-blue-500/30 rounded-lg p-6 text-center">
                   <p className="text-lg font-semibold mb-2">Ready to connect your real accounts?</p>
                   <p className="text-sm text-gray-300 mb-4">Get started free with up to 4 accounts</p>
