@@ -74,6 +74,30 @@ interface DemoData {
   subscriptions: DemoSubscription[];
 }
 
+// Helper function to get company domain from stock/crypto symbol for Brandfetch logos
+const getSymbolDomain = (symbol: string): string => {
+  const symbolMap: { [key: string]: string } = {
+    // Stocks
+    'AAPL': 'apple.com',
+    'TSLA': 'tesla.com',
+    'MSFT': 'microsoft.com',
+    'NVDA': 'nvidia.com',
+    'GOOGL': 'google.com',
+    'AMZN': 'amazon.com',
+    'META': 'meta.com',
+    'NFLX': 'netflix.com',
+    // Crypto
+    'BTC': 'bitcoin.org',
+    'ETH': 'ethereum.org',
+    'SOL': 'solana.com',
+    // Exchanges (for account names if needed)
+    'Coinbase': 'coinbase.com',
+    'Binance': 'binance.com',
+    'Kraken': 'kraken.com'
+  };
+  return symbolMap[symbol] || symbol.toLowerCase() + '.com';
+};
+
 // Complete list of supported institutions from SnapTrade and Teller integrations
 const INSTITUTIONS = [
   // Banks (Teller Integration)
@@ -204,6 +228,9 @@ export default function LandingNew() {
   // Account detail modal state
   const [selectedAccount, setSelectedAccount] = useState<DemoAccount | null>(null);
   const [showAccountModal, setShowAccountModal] = useState(false);
+  
+  // Logo loading failure tracking
+  const [failedLogos, setFailedLogos] = useState<Record<string, boolean>>({});
 
   // Refs
   const signupRef = useRef<HTMLDivElement>(null);
@@ -907,26 +934,43 @@ export default function LandingNew() {
                     Portfolio Holdings
                   </h3>
                   <div className="space-y-3">
-                    {currentDemo.holdings.map((holding, idx) => (
-                      <div key={idx} className="flex justify-between items-center p-4 bg-white/5 rounded-lg hover:bg-white/10 transition-colors">
-                        <div className="flex items-center gap-3">
-                          <div className="h-10 w-10 rounded-lg bg-blue-600/20 flex items-center justify-center font-bold text-blue-400">
-                            {holding.symbol.substring(0, 2)}
+                    {currentDemo.holdings.map((holding, idx) => {
+                      const logoKey = `portfolio-${holding.symbol}`;
+                      const logoFailed = failedLogos[logoKey];
+                      
+                      return (
+                        <div key={idx} className="flex justify-between items-center p-4 bg-white/5 rounded-lg hover:bg-white/10 transition-colors">
+                          <div className="flex items-center gap-3">
+                            <div className="h-10 w-10 rounded-lg bg-white/10 overflow-hidden flex items-center justify-center flex-shrink-0">
+                              {!logoFailed ? (
+                                <img 
+                                  src={`https://img.logo.dev/${getSymbolDomain(holding.symbol)}?token=pk_X-WsTzKaQ_C20eGOSz4ZYA&size=40`}
+                                  alt={holding.symbol}
+                                  className="w-full h-full object-contain p-1"
+                                  onError={() => {
+                                    const key = `portfolio-${holding.symbol}`;
+                                    setFailedLogos(prev => ({ ...prev, [key]: true }));
+                                  }}
+                                />
+                              ) : (
+                                <span className="text-blue-400 font-bold text-sm">{holding.symbol.substring(0, 2)}</span>
+                              )}
+                            </div>
+                            <div>
+                              <p className="font-semibold">{holding.symbol}</p>
+                              <p className="text-sm text-gray-400">{holding.quantity} {holding.quantity === 1 ? 'share' : 'shares'} @ ${holding.avgCost.toFixed(2)}</p>
+                            </div>
                           </div>
-                          <div>
-                            <p className="font-semibold">{holding.symbol}</p>
-                            <p className="text-sm text-gray-400">{holding.quantity} {holding.quantity === 1 ? 'share' : 'shares'} @ ${holding.avgCost.toFixed(2)}</p>
+                          <div className="text-right">
+                            <p className="text-lg font-bold">${holding.value.toLocaleString()}</p>
+                            <p className={`text-sm flex items-center justify-end gap-1 ${holding.profitLoss >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                              {holding.profitLoss >= 0 ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
+                              ${Math.abs(holding.profitLoss).toLocaleString()} ({holding.profitLossPct > 0 ? '+' : ''}{holding.profitLossPct.toFixed(1)}%)
+                            </p>
                           </div>
                         </div>
-                        <div className="text-right">
-                          <p className="text-lg font-bold">${holding.value.toLocaleString()}</p>
-                          <p className={`text-sm flex items-center justify-end gap-1 ${holding.profitLoss >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                            {holding.profitLoss >= 0 ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
-                            ${Math.abs(holding.profitLoss).toLocaleString()} ({holding.profitLossPct > 0 ? '+' : ''}{holding.profitLossPct.toFixed(1)}%)
-                          </p>
-                        </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                   <div className="mt-4 p-4 bg-blue-600/10 border border-blue-600/20 rounded-lg">
                     <div className="flex justify-between items-center">
@@ -1563,23 +1607,45 @@ export default function LandingNew() {
                           (selectedAccount.type === 'Investing' && !['BTC', 'ETH', 'SOL'].includes(h.symbol)) ||
                           (selectedAccount.type === 'Crypto' && ['BTC', 'ETH', 'SOL'].includes(h.symbol))
                         )
-                        .map((holding, idx) => (
-                          <div key={idx} className="bg-white/5 border border-white/10 rounded-lg p-4">
-                            <div className="flex justify-between items-start mb-2">
-                              <div>
-                                <p className="font-semibold text-lg">{holding.symbol}</p>
-                                <p className="text-sm text-gray-400">{holding.name}</p>
-                                <p className="text-xs text-gray-500 mt-1">{holding.quantity} @ ${holding.avgCost.toFixed(2)}</p>
-                              </div>
-                              <div className="text-right">
-                                <p className="text-xl font-bold">${holding.value.toLocaleString()}</p>
-                                <p className={`text-sm ${holding.profitLoss >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                                  {holding.profitLoss >= 0 ? '+' : ''}${holding.profitLoss.toLocaleString()} ({holding.profitLossPct > 0 ? '+' : ''}{holding.profitLossPct.toFixed(1)}%)
-                                </p>
+                        .map((holding, idx) => {
+                          const logoKey = `modal-${holding.symbol}`;
+                          const logoFailed = failedLogos[logoKey];
+                          
+                          return (
+                            <div key={idx} className="bg-white/5 border border-white/10 rounded-lg p-4">
+                              <div className="flex justify-between items-start mb-2">
+                                <div className="flex items-start gap-3">
+                                  <div className="h-12 w-12 rounded-lg bg-white/10 overflow-hidden flex items-center justify-center flex-shrink-0">
+                                    {!logoFailed ? (
+                                      <img 
+                                        src={`https://img.logo.dev/${getSymbolDomain(holding.symbol)}?token=pk_X-WsTzKaQ_C20eGOSz4ZYA&size=48`}
+                                        alt={holding.symbol}
+                                        className="w-full h-full object-contain p-1"
+                                        onError={() => {
+                                          const key = `modal-${holding.symbol}`;
+                                          setFailedLogos(prev => ({ ...prev, [key]: true }));
+                                        }}
+                                      />
+                                    ) : (
+                                      <span className="text-blue-400 font-bold">{holding.symbol.substring(0, 2)}</span>
+                                    )}
+                                  </div>
+                                  <div>
+                                    <p className="font-semibold text-lg">{holding.symbol}</p>
+                                    <p className="text-sm text-gray-400">{holding.name}</p>
+                                    <p className="text-xs text-gray-500 mt-1">{holding.quantity} @ ${holding.avgCost.toFixed(2)}</p>
+                                  </div>
+                                </div>
+                                <div className="text-right">
+                                  <p className="text-xl font-bold">${holding.value.toLocaleString()}</p>
+                                  <p className={`text-sm ${holding.profitLoss >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                                    {holding.profitLoss >= 0 ? '+' : ''}${holding.profitLoss.toLocaleString()} ({holding.profitLossPct > 0 ? '+' : ''}{holding.profitLossPct.toFixed(1)}%)
+                                  </p>
+                                </div>
                               </div>
                             </div>
-                          </div>
-                        ))}
+                          );
+                        })}
                     </div>
                   </div>
                 )}
