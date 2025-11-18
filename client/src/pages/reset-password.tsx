@@ -65,15 +65,15 @@ export default function ResetPassword() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-4">
-      <Card className="w-full max-w-md bg-gray-800 border-gray-700">
+      <Card className="w-full max-w-md bg-gray-800 border-gray-700 rounded-xl">
         <CardHeader className="space-y-1">
           <div className="flex items-center justify-center mb-4">
-            <div className="text-3xl font-bold text-blue-500">Flint</div>
+            <div className="apple-h2 font-bold text-blue-500">Flint</div>
           </div>
-          <CardTitle className="text-2xl text-center text-white">
+          <CardTitle className="apple-h2 text-center text-white">
             Reset Your Password
           </CardTitle>
-          <CardDescription className="text-center text-gray-400">
+          <CardDescription className="apple-body text-center text-gray-400">
             Enter your email address and we'll send you a password reset link
           </CardDescription>
         </CardHeader>
@@ -81,14 +81,14 @@ export default function ResetPassword() {
           {showSuccess ? (
             <div className="space-y-6">
               <div className="flex flex-col items-center justify-center py-6 space-y-4">
-                <div className="rounded-full bg-green-500/10 p-3">
+                <div className="rounded-xl bg-green-500/10 p-3">
                   <CheckCircle2 className="h-8 w-8 text-green-500" />
                 </div>
                 <div className="text-center space-y-2">
-                  <h3 className="text-lg font-semibold text-white" data-testid="text-success-title">
+                  <h3 className="apple-body font-semibold text-white" data-testid="text-success-title">
                     Check Your Email
                   </h3>
-                  <p className="text-sm text-gray-400" data-testid="text-success-message">
+                  <p className="apple-caption text-gray-400" data-testid="text-success-message">
                     If an account exists with this email, a password reset link will be sent.
                   </p>
                 </div>
@@ -98,7 +98,7 @@ export default function ResetPassword() {
                 <Button
                   onClick={() => setShowSuccess(false)}
                   variant="outline"
-                  className="w-full border-gray-600 text-gray-300 hover:bg-gray-700"
+                  className="w-full border-gray-600 text-gray-300 hover:bg-gray-700 rounded-xl"
                   data-testid="button-send-another"
                 >
                   <Mail className="mr-2 h-4 w-4" />
@@ -107,7 +107,7 @@ export default function ResetPassword() {
                 
                 <a
                   href="/api/login"
-                  className="flex items-center justify-center w-full h-10 px-4 rounded-md text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 transition-colors"
+                  className="flex items-center justify-center w-full h-10 px-4 rounded-xl apple-caption font-medium bg-blue-600 text-white hover:bg-blue-700 transition-colors"
                   data-testid="link-login"
                 >
                   <ArrowLeft className="mr-2 h-4 w-4" />
@@ -124,7 +124,7 @@ export default function ResetPassword() {
                     name="email"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-gray-200">Email Address</FormLabel>
+                        <FormLabel className="apple-caption text-gray-200">Email Address</FormLabel>
                         <FormControl>
                           <div className="relative">
                             <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
@@ -132,20 +132,20 @@ export default function ResetPassword() {
                               {...field}
                               type="email"
                               placeholder="your.email@example.com"
-                              className="bg-gray-900 border-gray-600 text-white pl-10"
+                              className="bg-gray-900 border-gray-600 text-white pl-10 rounded-xl"
                               data-testid="input-email"
                               autoFocus
                             />
                           </div>
                         </FormControl>
-                        <FormMessage className="text-red-400" />
+                        <FormMessage className="apple-caption text-red-400" />
                       </FormItem>
                     )}
                   />
 
                   <Button
                     type="submit"
-                    className="w-full bg-blue-600 hover:bg-blue-700"
+                    className="w-full bg-blue-600 hover:bg-blue-700 rounded-xl"
                     disabled={isSubmitting}
                     data-testid="button-submit"
                   >
@@ -166,12 +166,12 @@ export default function ResetPassword() {
                   <div className="absolute inset-0 flex items-center">
                     <span className="w-full border-t border-gray-600" />
                   </div>
-                  <div className="relative flex justify-center text-xs uppercase">
+                  <div className="relative flex justify-center apple-caption uppercase">
                     <span className="bg-gray-800 px-2 text-gray-400">Or</span>
                   </div>
                 </div>
 
-                <div className="flex flex-col gap-2 text-center text-sm">
+                <div className="flex flex-col gap-2 text-center apple-caption">
                   <p className="text-gray-400">
                     Remember your password?{" "}
                     <a 

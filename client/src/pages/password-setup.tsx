@@ -175,7 +175,7 @@ export default function PasswordSetup() {
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
         <div className="text-center">
           <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4 text-blue-500" />
-          <p className="text-gray-400">Validating setup link...</p>
+          <p className="apple-caption text-gray-400">Validating setup link...</p>
         </div>
       </div>
     );
@@ -183,15 +183,15 @@ export default function PasswordSetup() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-4">
-      <Card className="w-full max-w-md bg-gray-800 border-gray-700">
+      <Card className="w-full max-w-md bg-gray-800 border-gray-700 rounded-xl">
         <CardHeader className="space-y-1">
           <div className="flex items-center justify-center mb-4">
-            <div className="text-3xl font-bold text-blue-500">Flint</div>
+            <div className="apple-h2 font-bold text-blue-500">Flint</div>
           </div>
-          <CardTitle className="text-2xl text-center text-white">
+          <CardTitle className="apple-h2 text-center text-white">
             Set Up Your Password
           </CardTitle>
-          <CardDescription className="text-center text-gray-400">
+          <CardDescription className="apple-body text-center text-gray-400">
             Create a secure password for your Flint account
           </CardDescription>
         </CardHeader>
@@ -203,14 +203,14 @@ export default function PasswordSetup() {
                 name="password"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-gray-200">New Password</FormLabel>
+                    <FormLabel className="apple-caption text-gray-200">New Password</FormLabel>
                     <FormControl>
                       <div className="relative">
                         <Input
                           {...field}
                           type={showPassword ? "text" : "password"}
                           placeholder="Enter your password"
-                          className="bg-gray-900 border-gray-600 text-white pr-10"
+                          className="bg-gray-900 border-gray-600 text-white pr-10 rounded-xl"
                           data-testid="input-password"
                           onChange={(e) => {
                             field.onChange(e);
@@ -227,7 +227,7 @@ export default function PasswordSetup() {
                         </button>
                       </div>
                     </FormControl>
-                    <FormMessage className="text-red-400" />
+                    <FormMessage className="apple-caption text-red-400" />
                   </FormItem>
                 )}
               />
@@ -235,7 +235,7 @@ export default function PasswordSetup() {
               {/* Password strength indicator */}
               {passwordValue && (
                 <div className="space-y-2" data-testid="password-strength">
-                  <div className="flex justify-between text-sm">
+                  <div className="flex justify-between apple-caption">
                     <span className="text-gray-400">Password Strength</span>
                     <span className={`font-medium ${
                       passwordStrength.label === "Weak" ? "text-red-400" :
@@ -257,14 +257,14 @@ export default function PasswordSetup() {
               {/* Password requirements checklist */}
               {passwordValue && (
                 <div className="space-y-2" data-testid="password-requirements">
-                  <p className="text-sm text-gray-400">Password must include:</p>
+                  <p className="apple-caption text-gray-400">Password must include:</p>
                   <div className="space-y-1">
                     {passwordRequirements.map((req, index) => {
                       const isMet = req.test(passwordValue);
                       return (
                         <div 
                           key={index} 
-                          className="flex items-center gap-2 text-sm"
+                          className="flex items-center gap-2 apple-caption"
                           data-testid={`requirement-${index}`}
                         >
                           {isMet ? (
@@ -287,14 +287,14 @@ export default function PasswordSetup() {
                 name="confirmPassword"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-gray-200">Confirm Password</FormLabel>
+                    <FormLabel className="apple-caption text-gray-200">Confirm Password</FormLabel>
                     <FormControl>
                       <div className="relative">
                         <Input
                           {...field}
                           type={showConfirmPassword ? "text" : "password"}
                           placeholder="Confirm your password"
-                          className="bg-gray-900 border-gray-600 text-white pr-10"
+                          className="bg-gray-900 border-gray-600 text-white pr-10 rounded-xl"
                           data-testid="input-confirm-password"
                         />
                         <button
@@ -307,14 +307,14 @@ export default function PasswordSetup() {
                         </button>
                       </div>
                     </FormControl>
-                    <FormMessage className="text-red-400" />
+                    <FormMessage className="apple-caption text-red-400" />
                   </FormItem>
                 )}
               />
 
               <Button
                 type="submit"
-                className="w-full bg-blue-600 hover:bg-blue-700"
+                className="w-full bg-blue-600 hover:bg-blue-700 rounded-xl"
                 disabled={isSubmitting}
                 data-testid="button-submit"
               >
@@ -331,7 +331,7 @@ export default function PasswordSetup() {
           </Form>
 
           <div className="mt-6 text-center">
-            <p className="text-sm text-gray-400">
+            <p className="apple-caption text-gray-400">
               Already have an account?{" "}
               <a 
                 href="/login" 

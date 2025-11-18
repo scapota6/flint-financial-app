@@ -125,7 +125,7 @@ export default function Login() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-4">
-      <Card className="w-full max-w-md bg-gray-800 border-gray-700">
+      <Card className="w-full max-w-md bg-gray-800 border-gray-700 rounded-xl">
         <CardHeader className="space-y-1">
           <div className="flex items-center justify-center mb-4">
             <img 
@@ -135,18 +135,18 @@ export default function Login() {
               style={{ mixBlendMode: 'screen' }}
             />
           </div>
-          <CardTitle className="text-2xl text-center text-white">
+          <CardTitle className="apple-h2 text-center text-white">
             Welcome Back
           </CardTitle>
-          <CardDescription className="text-center text-gray-400">
+          <CardDescription className="apple-body text-center text-gray-400">
             Log in to your Flint account
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           {errorMessage && (
-            <Alert variant="destructive" className="bg-red-900/20 border-red-900" data-testid="alert-error">
+            <Alert variant="destructive" className="bg-red-900/20 border-red-900 rounded-xl" data-testid="alert-error">
               <AlertCircle className="h-4 w-4" />
-              <AlertDescription data-testid="text-error-message">
+              <AlertDescription className="apple-caption" data-testid="text-error-message">
                 {errorMessage}
                 {errorCode === "EMAIL_NOT_VERIFIED" && (
                   <div className="mt-3">
@@ -155,7 +155,7 @@ export default function Login() {
                       size="sm"
                       onClick={handleResendVerification}
                       disabled={resendVerificationMutation.isPending}
-                      className="w-full bg-blue-600 hover:bg-blue-700 text-white border-blue-700"
+                      className="w-full bg-blue-600 hover:bg-blue-700 text-white border-blue-700 rounded-xl"
                       data-testid="button-resend-verification"
                     >
                       {resendVerificationMutation.isPending ? (
@@ -180,17 +180,17 @@ export default function Login() {
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-gray-200">Email</FormLabel>
+                    <FormLabel className="apple-caption text-gray-200">Email</FormLabel>
                     <FormControl>
                       <Input
                         {...field}
                         type="email"
                         placeholder="Enter your email"
-                        className="bg-gray-900 border-gray-600 text-white"
+                        className="bg-gray-900 border-gray-600 text-white rounded-xl"
                         data-testid="input-email"
                       />
                     </FormControl>
-                    <FormMessage className="text-red-400" />
+                    <FormMessage className="apple-caption text-red-400" />
                   </FormItem>
                 )}
               />
@@ -200,14 +200,14 @@ export default function Login() {
                 name="password"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-gray-200">Password</FormLabel>
+                    <FormLabel className="apple-caption text-gray-200">Password</FormLabel>
                     <FormControl>
                       <div className="relative">
                         <Input
                           {...field}
                           type={showPassword ? "text" : "password"}
                           placeholder="Enter your password"
-                          className="bg-gray-900 border-gray-600 text-white pr-10"
+                          className="bg-gray-900 border-gray-600 text-white pr-10 rounded-xl"
                           data-testid="input-password"
                         />
                         <button
@@ -220,7 +220,7 @@ export default function Login() {
                         </button>
                       </div>
                     </FormControl>
-                    <FormMessage className="text-red-400" />
+                    <FormMessage className="apple-caption text-red-400" />
                   </FormItem>
                 )}
               />
@@ -228,7 +228,7 @@ export default function Login() {
               <div className="flex justify-end">
                 <Link
                   href="/reset-password"
-                  className="text-sm text-blue-400 hover:text-blue-300"
+                  className="apple-caption text-blue-400 hover:text-blue-300"
                   data-testid="link-forgot-password"
                 >
                   Forgot password?
@@ -237,7 +237,7 @@ export default function Login() {
 
               <Button
                 type="submit"
-                className="w-full bg-blue-600 hover:bg-blue-700"
+                className="w-full bg-blue-600 hover:bg-blue-700 rounded-xl"
                 disabled={loginMutation.isPending}
                 data-testid="button-login"
               >
@@ -257,14 +257,14 @@ export default function Login() {
             <div className="absolute inset-0 flex items-center">
               <span className="w-full border-t border-gray-600" />
             </div>
-            <div className="relative flex justify-center text-xs uppercase">
+            <div className="relative flex justify-center apple-caption uppercase">
               <span className="bg-gray-800 px-2 text-gray-400">Or continue with</span>
             </div>
           </div>
 
           <Button
             variant="outline"
-            className="w-full border-gray-600 text-white hover:bg-gray-700"
+            className="w-full border-gray-600 text-white hover:bg-gray-700 rounded-xl"
             onClick={handleOAuthLogin}
             data-testid="button-oauth-login"
           >
@@ -275,7 +275,7 @@ export default function Login() {
           </Button>
 
           <div className="text-center">
-            <p className="text-sm text-gray-400">
+            <p className="apple-caption text-gray-400">
               Don't have an account?{" "}
               <Link 
                 href="/" 
