@@ -229,8 +229,8 @@ export default function Dashboard() {
       <div className="min-h-screen bg-black text-white">
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pb-20 md:pb-6">
           <div className="text-center py-12">
-            <h2 className="text-2xl font-semibold mb-4">Error Loading Dashboard</h2>
-            <p className="text-gray-400">Please try refreshing the page</p>
+            <h2 className="apple-h2 mb-4">Error Loading Dashboard</h2>
+            <p className="apple-body text-gray-400">Please try refreshing the page</p>
           </div>
         </main>
       </div>
@@ -242,10 +242,10 @@ export default function Dashboard() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pb-20 md:pb-6">
         {/* Dashboard Header */}
         <div className="mb-8">
-          <h2 className="text-2xl sm:text-3xl font-semibold mb-2">
+          <h2 className="apple-h2 mb-2">
             Financial Dashboard
           </h2>
-          <p className="text-gray-400 text-sm">Unified view of your total net worth across all accounts</p>
+          <p className="apple-caption text-gray-400">Unified view of your total net worth across all accounts</p>
         </div>
 
         {/* Unified Dashboard - Real API Data Only */}
@@ -253,7 +253,7 @@ export default function Dashboard() {
 
         {/* Portfolio Holdings Section */}
         <div className="mt-12">
-          <h3 className="text-xl font-semibold mb-6">Portfolio Holdings</h3>
+          <h3 className="apple-h3 mb-6">Portfolio Holdings</h3>
           <RealTimeHoldings showAccountProvider={true} maxItems={50} />
         </div>
 

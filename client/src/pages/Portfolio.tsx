@@ -196,16 +196,16 @@ export default function Portfolio() {
             <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-gradient-to-r from-blue-500/20 to-cyan-500/20 flex items-center justify-center">
               <AlertCircle className="h-8 w-8 text-blue-400" />
             </div>
-            <h1 className="h1 bg-gradient-to-r from-white via-cyan-200 to-blue-400 bg-clip-text text-transparent mb-4">
+            <h1 className="apple-h1 bg-gradient-to-r from-white via-cyan-200 to-blue-400 bg-clip-text text-transparent mb-4">
               No Portfolio Data
             </h1>
-            <p className="text-slate-400 mb-8 max-w-md mx-auto">
+            <p className="apple-body text-slate-400 mb-8 max-w-md mx-auto">
               Connect your investment accounts to see your portfolio performance and holdings.
             </p>
             {hasDisconnectedAccounts && (
-              <div className="mt-8 p-4 bg-orange-900/20 border border-orange-700 rounded-lg max-w-md mx-auto">
+              <div className="mt-8 p-4 bg-orange-900/20 border border-orange-700 rounded-xl max-w-md mx-auto">
                 <AlertCircle className="h-5 w-5 text-orange-400 mx-auto mb-2" />
-                <p className="text-orange-200 text-sm">
+                <p className="apple-caption text-orange-200">
                   Some previously connected accounts need to be reconnected to display your complete portfolio.
                 </p>
               </div>
