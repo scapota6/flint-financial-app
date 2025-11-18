@@ -1,5 +1,5 @@
-/* Import modern fonts */
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+/* Apple SF Pro Display & Text Fonts (System Font Stack) */
+/* Uses native -apple-system for SF Pro on Apple devices, with high-quality fallbacks */
 
 @tailwind base;
 @tailwind components;
@@ -233,9 +233,130 @@ img {
 
 /* Unified typography system with consistent color scheme */
 
-/* Global Font Family */
+/* Apple Typography System - SF Pro Display & SF Pro Text */
+
+/* SF Pro Display - Headlines (H1, H2, H3) */
+.apple-display {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* SF Pro Text - Body Copy */
+.apple-text {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Global Font Family - Default to SF Pro Text */
 * {
-  font-family: 'Inter', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, sans-serif;
+}
+
+/* Hero H1 - Apple Spec */
+.apple-h1 {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
+  font-size: 3.75rem; /* 60px desktop */
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+  max-width: 50rem; /* 800px */
+  margin-bottom: 1.5rem; /* 24px */
+}
+
+@media (max-width: 768px) {
+  .apple-h1 {
+    font-size: 2.375rem; /* 38px mobile */
+    line-height: 1.1;
+  }
+}
+
+/* Section Headers H2 - Apple Spec */
+.apple-h2 {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
+  font-size: 2rem; /* 32px */
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  line-height: 1.2;
+  margin-bottom: 1.5rem; /* 24px */
+}
+
+/* Minor Headers H3 - Apple Spec */
+.apple-h3 {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
+  font-size: 1.5rem; /* 24px */
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+  margin-bottom: 1rem; /* 16px */
+}
+
+/* Body Text - Apple Spec */
+.apple-body {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, sans-serif;
+  font-size: 1.125rem; /* 18px */
+  font-weight: 400;
+  line-height: 1.6;
+  max-width: 38.75rem; /* 620px - Apple's max line width */
+  margin-bottom: 1rem; /* 16px */
+}
+
+@media (max-width: 768px) {
+  .apple-body {
+    font-size: 1rem; /* 16px mobile */
+    line-height: 1.5;
+  }
+}
+
+/* Caption/Subtext - Apple Spec */
+.apple-caption {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, sans-serif;
+  font-size: 0.875rem; /* 14px */
+  font-weight: 400;
+  line-height: 1.4;
+  opacity: 0.7;
+}
+
+/* Apple Layout System */
+.apple-container {
+  max-width: 77.5rem; /* 1240px */
+  margin: 0 auto;
+  padding-left: 5rem; /* 80px desktop */
+  padding-right: 5rem; /* 80px desktop */
+}
+
+@media (max-width: 1024px) {
+  .apple-container {
+    padding-left: 3rem; /* 48px tablet */
+    padding-right: 3rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .apple-container {
+    padding-left: 1.5rem; /* 24px mobile */
+    padding-right: 1.5rem;
+  }
+}
+
+/* Apple Section Spacing */
+.apple-section {
+  padding-top: 7.5rem; /* 120px vertical spacing between sections */
+  padding-bottom: 7.5rem;
+}
+
+@media (max-width: 768px) {
+  .apple-section {
+    padding-top: 4rem; /* 64px on mobile */
+    padding-bottom: 4rem;
+  }
+}
+
+/* Apple Internal Spacing */
+.apple-section-inner {
+  padding-top: 2rem; /* 32px internal section spacing */
+  padding-bottom: 2rem;
 }
 
 /* Navbar link hover effects */
@@ -265,11 +386,11 @@ img {
   transition: all 0.2s ease;
 }
 
-/* Consistent card styling */
+/* Consistent card styling - Apple 12-16px radius */
 .flint-card {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 16px;
+  border-radius: 12px; /* Apple spec: 12px max */
   transition: all 0.3s ease;
 }
 
@@ -323,10 +444,10 @@ img {
   --chart-3: 211 100% 52%;    /* Apple blue #0A84FF */
   --chart-4: 199 100% 70%;    /* Apple teal #64D2FF */
   --chart-5: 49 100% 52%;     /* Apple yellow #FFD60A */
-  --radius: 0.75rem;          /* 12px border radius */
-  --radius-lg: 1.75rem;       /* 28px large radius */
-  --radius-md: 1.25rem;       /* 20px medium radius */
-  --radius-sm: 0.875rem;      /* 14px small radius */
+  --radius: 0.75rem;          /* 12px border radius - Apple spec */
+  --radius-lg: 1rem;          /* 16px large radius - Apple spec (max) */
+  --radius-md: 0.875rem;      /* 14px medium radius - Apple spec */
+  --radius-sm: 0.75rem;       /* 12px small radius - Apple spec */
 }
 
 .dark {
@@ -374,24 +495,27 @@ img {
 
   body {
     @apply antialiased;
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, sans-serif;
     background: var(--bg);
     color: var(--text-primary);
   }
 
-  /* Typography */
+  /* Typography - Apple SF Pro Display for headings */
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'JetBrains Mono', monospace;
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
     font-weight: 600;
+    letter-spacing: -0.015em;
   }
 }
 
 @layer utilities {
   /* Flint Button Styles */
   .flint-btn {
-    @apply px-6 py-4 rounded-xl font-medium uppercase tracking-wide transition-all duration-200;
+    @apply px-6 py-4 font-medium transition-all duration-200;
     @apply hover:shadow-lg hover:scale-105;
-    border-radius: 12px;
+    border-radius: 12px; /* Apple spec: 12px */
+    text-transform: none; /* Remove uppercase for cleaner look */
+    letter-spacing: 0;
   }
 
   .flint-btn-primary {
@@ -429,8 +553,8 @@ img {
     background: rgba(24, 27, 31, 0.55);
     backdrop-filter: blur(16px);
     border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 12px;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+    border-radius: 12px; /* Apple spec: 12px */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15); /* Subtle shadow */
   }
 
   .flint-card-accent {
@@ -631,8 +755,8 @@ img {
 .account-card-enhanced {
   background: var(--surface);
   border: 1px solid rgba(10,132,255,0.3);
-  border-radius: 16px;
-  box-shadow: 0 0 8px rgba(10,132,255,0.4);
+  border-radius: 12px; /* Apple spec: 12px max */
+  box-shadow: 0 2px 8px rgba(10,132,255,0.2); /* Subtle shadow */
   transition: all 200ms ease;
   cursor: pointer;
   min-width: 240px;
