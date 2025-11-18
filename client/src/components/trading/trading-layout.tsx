@@ -46,7 +46,7 @@ export default function TradingLayout({ initialSymbol = 'AAPL' }: TradingLayoutP
       {/* Symbol Search Bar */}
       <div className="mb-6">
         <div 
-          className="flex gap-3 p-4 rounded-2xl"
+          className="flex gap-3 p-4 rounded-xl"
           style={{
             background: 'rgba(24, 27, 31, 0.55)',
             backdropFilter: 'blur(16px)',
@@ -79,7 +79,7 @@ export default function TradingLayout({ initialSymbol = 'AAPL' }: TradingLayoutP
         {/* Left Panel - Chart (60% / 3 columns) */}
         <div className="lg:col-span-3">
           <div 
-            className="p-6 rounded-2xl"
+            className="p-6 rounded-xl"
             style={{
               background: 'rgba(24, 27, 31, 0.55)',
               backdropFilter: 'blur(16px)',

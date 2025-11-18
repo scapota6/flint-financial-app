@@ -621,7 +621,7 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-      <div className="w-full max-w-6xl max-h-[95vh] rounded-2xl bg-gradient-to-br from-white via-white to-blue-50 dark:from-gray-900 dark:via-gray-900 dark:to-blue-950/20 border border-blue-100 dark:border-blue-800/30 shadow-2xl shadow-blue-500/10 overflow-hidden">
+      <div className="w-full max-w-6xl max-h-[95vh] rounded-xl bg-gradient-to-br from-white via-white to-blue-50 dark:from-gray-900 dark:via-gray-900 dark:to-blue-950/20 border border-blue-100 dark:border-blue-800/30 shadow-2xl shadow-blue-500/10 overflow-hidden">
         <div className="flex items-center justify-between p-6 border-b border-blue-100 dark:border-blue-800/30 bg-gradient-to-r from-blue-50 to-blue-50 dark:from-blue-950/30 dark:to-blue-950/30">
           <div>
             <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-600 bg-clip-text text-transparent">Account Details</h2>

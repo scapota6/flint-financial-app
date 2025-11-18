@@ -60,7 +60,7 @@ export default function StockDetailView({ symbol }: StockDetailViewProps) {
 
   return (
     <div 
-      className="w-full bg-[#0B0D11] text-[#F2F4F6] p-8 rounded-2xl"
+      className="w-full bg-[#0B0D11] text-[#F2F4F6] p-8 rounded-xl"
       style={{
         background: 'rgba(24, 27, 31, 0.55)',
         backdropFilter: 'blur(16px)',

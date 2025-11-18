@@ -85,7 +85,7 @@ export function EnhancedConnectedAccounts({ accounts, onConnectBank, onConnectBr
             <Card
               key={account.id}
               className="group relative bg-gray-800/50 border-gray-700 hover:border-blue-500/50 
-                rounded-2xl transition-all duration-300 transform hover:scale-[1.03]
+                rounded-xl transition-all duration-300 transform hover:scale-[1.03]
                 shadow-lg hover:shadow-[0_0_20px_rgba(10,132,255,0.4)]
                 min-w-[240px] max-w-[300px]"
               style={{ 
