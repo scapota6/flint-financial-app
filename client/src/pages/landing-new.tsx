@@ -569,7 +569,7 @@ export default function LandingNew() {
                 <p className="text-yellow-200 font-semibold text-lg">Flint Pro for Life</p>
               </Card>
 
-              <Card className="bg-white/10 border-purple-400/30 p-6">
+              <Card className="bg-white/10 border-blue-400/30 p-6">
                 <div className="text-5xl mb-2">📈</div>
                 <h3 className="text-xl font-bold mb-2">Boost Odds</h3>
                 <p className="text-gray-300">Refer friends or upgrade</p>
@@ -583,7 +583,7 @@ export default function LandingNew() {
               </div>
               <div className="w-full bg-white/10 rounded-full h-4 overflow-hidden border border-white/20">
                 <div 
-                  className="h-full bg-gradient-to-r from-blue-500 to-purple-600 rounded-full transition-all duration-500" 
+                  className="h-full bg-gradient-to-r from-blue-500 to-blue-800 rounded-full transition-all duration-500" 
                   style={{ width: '82%' }}
                   data-testid="launch-giveaway-progress"
                 />
@@ -656,7 +656,7 @@ export default function LandingNew() {
                 {[...INSTITUTIONS, ...INSTITUTIONS].map((inst, idx) => (
                   <div key={idx} className="flex-shrink-0 w-40 h-20 bg-white/5 rounded-lg flex items-center justify-center border border-white/10 p-4">
                     <img 
-                      src={`https://img.logo.dev/${inst.domain}?token=pk_X-WsTzKaQ_C20eGOSz4ZYA&size=80`}
+                      src={`https://cdn.brandfetch.io/${inst.domain}`}
                       alt={inst.name}
                       className="max-h-12 max-w-full object-contain filter brightness-0 invert opacity-70 hover:opacity-100 transition-opacity"
                       onError={(e) => {
@@ -777,7 +777,7 @@ export default function LandingNew() {
                     "Clean design, works perfectly. Helps me track crypto and stocks without jumping between apps."
                   </p>
                   <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded-full bg-purple-600/20 flex items-center justify-center text-purple-400 font-semibold">
+                    <div className="h-10 w-10 rounded-full bg-blue-600/20 flex items-center justify-center text-blue-400 font-semibold">
                       SK
                     </div>
                     <div>
@@ -1178,7 +1178,7 @@ export default function LandingNew() {
                   </div>
 
                   {/* Demo Referral Preview */}
-                  <div className="p-6 bg-gradient-to-br from-blue-600/10 to-purple-600/10 border border-blue-600/20 rounded-lg space-y-3">
+                  <div className="p-6 bg-gradient-to-br from-blue-600/10 to-blue-800/10 border border-blue-600/20 rounded-lg space-y-3">
                     <p className="text-sm font-semibold text-white">🔄 Invite & Unlock Rewards</p>
                     <div className="space-y-2 text-xs text-gray-300">
                       <p>• Refer 3 = Unlimited accounts</p>
@@ -1672,7 +1672,7 @@ export default function LandingNew() {
                 </div>
 
                 {/* CTA */}
-                <div className="bg-gradient-to-r from-blue-600/20 to-purple-600/20 border border-blue-500/30 rounded-lg p-6 text-center">
+                <div className="bg-gradient-to-r from-blue-600/20 to-blue-800/20 border border-blue-500/30 rounded-lg p-6 text-center">
                   <p className="text-lg font-semibold mb-2">Ready to connect your real accounts?</p>
                   <p className="text-sm text-gray-300 mb-4">Get started free with up to 4 accounts</p>
                   <Button 
