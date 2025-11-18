@@ -788,35 +788,35 @@ export default function LandingNew() {
         </section>
 
         {/* Features Section */}
-        <section className="py-20 lg:py-32">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6">
+        <section className="apple-section">
+          <div className="apple-container">
             <div className="text-center mb-16">
-              <h2 className="text-4xl lg:text-5xl font-bold mb-4">What You Get</h2>
-              <p className="text-xl text-gray-300">Simple. Fast. Free to try.</p>
+              <h2 className="apple-h2">What You Get</h2>
+              <p className="apple-caption text-gray-300">Simple. Fast. Free to try.</p>
             </div>
 
             <div className="grid md:grid-cols-3 gap-8">
-              <Card className="bg-white/5 border-white/10 p-8 hover:bg-white/10 transition-colors">
-                <Wallet className="h-12 w-12 text-blue-400 mb-4" />
-                <h3 className="text-2xl font-semibold mb-3">All Your Money</h3>
-                <p className="text-gray-300">
-                  See your bank, cards, stocks, and crypto together.
+              <Card className="bg-white/5 border-white/10 rounded-xl p-8 hover:bg-white/10 transition-colors">
+                <Wallet className="h-7 w-7 text-blue-400 mb-4" />
+                <h3 className="apple-h3">All Your Money</h3>
+                <p className="apple-body text-gray-300">
+                  See your bank, cards, stocks, and crypto together
                 </p>
               </Card>
 
-              <Card className="bg-white/5 border-white/10 p-8 hover:bg-white/10 transition-colors">
-                <div className="text-4xl mb-4">🔁</div>
-                <h3 className="text-2xl font-semibold mb-3">Act in Real Time, Not Just Watch</h3>
-                <p className="text-gray-300">
-                  Don't just track your money — move it. Transfer between accounts and buy stocks directly from Flint, without switching apps.
+              <Card className="bg-white/5 border-white/10 rounded-xl p-8 hover:bg-white/10 transition-colors">
+                <span className="text-3xl mb-4 block">🔁</span>
+                <h3 className="apple-h3">Trade & Transfer</h3>
+                <p className="apple-body text-gray-300">
+                  Move money and buy stocks directly from Flint
                 </p>
               </Card>
 
-              <Card className="bg-white/5 border-white/10 p-8 hover:bg-white/10 transition-colors">
-                <TrendingUp className="h-12 w-12 text-blue-400 mb-4" />
-                <h3 className="text-2xl font-semibold mb-3">Do More</h3>
-                <p className="text-gray-300">
-                  Move money and buy stocks right from Flint.
+              <Card className="bg-white/5 border-white/10 rounded-xl p-8 hover:bg-white/10 transition-colors">
+                <TrendingUp className="h-7 w-7 text-blue-400 mb-4" />
+                <h3 className="apple-h3">Grow Wealth</h3>
+                <p className="apple-body text-gray-300">
+                  Track investments and optimize your portfolio
                 </p>
               </Card>
             </div>
@@ -824,25 +824,15 @@ export default function LandingNew() {
         </section>
 
         {/* Interactive Demo Section */}
-        <section className="py-20 lg:py-32 bg-white/5 border-y border-white/10">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6">
-            {/* Banner above demo */}
-            <div className="text-center mb-8">
-              <div className="inline-flex items-center gap-2 bg-blue-600/20 border border-blue-400/30 rounded-full px-6 py-3" data-testid="demo-banner">
-                <Zap className="h-4 w-4 text-blue-400" />
-                <p className="text-blue-400 font-medium">
-                  See how Flint works — try the dashboard now (no sign-up needed)
-                </p>
-              </div>
-            </div>
-
+        <section className="apple-section bg-white/5 border-y border-white/10">
+          <div className="apple-container max-w-5xl">
             <div className="text-center mb-12">
-              <h2 className="text-4xl font-bold mb-4">See How It Works</h2>
-              <p className="text-xl text-gray-300">Watch your money all in one place</p>
+              <h2 className="apple-h2">See How It Works</h2>
+              <p className="apple-caption text-gray-300">Fully interactive demo — click any account to explore</p>
             </div>
 
             {/* Full dashboard mock matching actual dashboard */}
-            <div className="bg-black/40 border border-white/20 rounded-2xl overflow-hidden backdrop-blur-sm">
+            <div className="bg-black/40 border border-white/20 rounded-xl overflow-hidden backdrop-blur-sm">
               {/* Top bar with net worth */}
               <div className="p-6 border-b border-white/10 bg-white/5">
                 <div className="text-center">
@@ -1197,11 +1187,11 @@ export default function LandingNew() {
         </section>
 
         {/* Pricing Section */}
-        <section className="py-20 lg:py-32 bg-white/5 border-y border-white/10">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6">
-            <div className="text-center mb-8">
-              <h2 className="text-4xl font-bold mb-4">Pick Your Plan</h2>
-              <p className="text-xl text-gray-300 mb-6">Start free. Pay when you want more.</p>
+        <section className="apple-section bg-white/5 border-y border-white/10">
+          <div className="apple-container max-w-5xl">
+            <div className="text-center mb-12">
+              <h2 className="apple-h2">Pick Your Plan</h2>
+              <p className="apple-caption text-gray-300">Start free. Upgrade for advanced features.</p>
               
               {/* Monthly/Annual Toggle */}
               <div className="inline-flex items-center gap-3 bg-white/5 border border-white/10 rounded-full p-1">
