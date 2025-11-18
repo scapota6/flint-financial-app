@@ -115,15 +115,15 @@ router.post('/public-register', rateLimits.register, async (req, res) => {
       .limit(1);
 
     if (existingUser) {
-      // Return generic success message to prevent account enumeration
-      // Log internally for monitoring but don't reveal account existence to user
+      // Log internally for monitoring
       logger.warn('Registration attempt with existing email', {
         metadata: { email: lowercaseEmail }
       });
       await jitteredDelay();
-      return res.status(201).json({
-        success: true,
-        message: 'Account created successfully! Please check your email to verify your account.',
+      // Return error for duplicate email (rate limiting provides enumeration protection)
+      return res.status(409).json({
+        success: false,
+        message: 'An account with this email already exists. Try logging in instead.',
       });
     }
 

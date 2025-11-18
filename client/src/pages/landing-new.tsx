@@ -209,6 +209,7 @@ export default function LandingNew() {
   // Signup state
   const [signupData, setSignupData] = useState({ name: '', email: '', password: '' });
   const [signupSuccess, setSignupSuccess] = useState(false);
+  const [passwordFocused, setPasswordFocused] = useState(false);
 
   // Pricing toggle
   const [isAnnual, setIsAnnual] = useState(false);
@@ -384,6 +385,21 @@ export default function LandingNew() {
   const [signupLoading, setSignupLoading] = useState(false);
   const [signupError, setSignupError] = useState('');
 
+  // Password validation helper
+  const validatePassword = (password: string) => {
+    const requirements = {
+      length: password.length >= 8,
+      uppercase: /[A-Z]/.test(password),
+      lowercase: /[a-z]/.test(password),
+      number: /[0-9]/.test(password),
+      special: /[!@#$%^&*(),.?":{}|<>]/.test(password),
+    };
+    return requirements;
+  };
+
+  const passwordRequirements = validatePassword(signupData.password);
+  const isPasswordValid = Object.values(passwordRequirements).every(Boolean);
+
   const handleSignupSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     e.stopPropagation();
@@ -391,6 +407,12 @@ export default function LandingNew() {
     
     if (!signupData.name || !signupData.email || !signupData.password) {
       setSignupError('Please fill in all fields');
+      return;
+    }
+
+    // Client-side password validation
+    if (!isPasswordValid) {
+      setSignupError('Password does not meet security requirements');
       return;
     }
 
@@ -419,8 +441,12 @@ export default function LandingNew() {
           window.location.href = '/login?registered=true';
         }, 2000);
       } else {
-        // Show error message
-        setSignupError(data.message || 'Registration failed. Please try again.');
+        // Show error message with helpful context
+        if (data.message && data.message.toLowerCase().includes('already')) {
+          setSignupError('An account with this email already exists. Try logging in instead.');
+        } else {
+          setSignupError(data.message || 'Registration failed. Please try again.');
+        }
       }
     } catch (error) {
       console.error('Registration error:', error);
@@ -1111,15 +1137,83 @@ export default function LandingNew() {
                       placeholder="Password"
                       value={signupData.password}
                       onChange={(e) => setSignupData({ ...signupData, password: e.target.value })}
+                      onFocus={() => setPasswordFocused(true)}
+                      onBlur={() => setPasswordFocused(false)}
                       className="bg-white/10 border-white/20 text-white placeholder:text-gray-400"
                       required
                       data-testid="input-signup-password"
                     />
+                    
+                    {/* Password Requirements - show when focused or invalid */}
+                    {(passwordFocused || (signupData.password && !isPasswordValid)) && (
+                      <div className="mt-2 p-3 bg-white/5 border border-white/10 rounded-lg text-sm space-y-1" data-testid="password-requirements">
+                        <p className="text-gray-400 font-semibold mb-2">Password must have:</p>
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-2">
+                            {passwordRequirements.length ? (
+                              <Check className="h-4 w-4 text-green-400" />
+                            ) : (
+                              <X className="h-4 w-4 text-gray-500" />
+                            )}
+                            <span className={passwordRequirements.length ? 'text-green-400' : 'text-gray-400'}>
+                              At least 8 characters
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            {passwordRequirements.uppercase ? (
+                              <Check className="h-4 w-4 text-green-400" />
+                            ) : (
+                              <X className="h-4 w-4 text-gray-500" />
+                            )}
+                            <span className={passwordRequirements.uppercase ? 'text-green-400' : 'text-gray-400'}>
+                              One uppercase letter
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            {passwordRequirements.lowercase ? (
+                              <Check className="h-4 w-4 text-green-400" />
+                            ) : (
+                              <X className="h-4 w-4 text-gray-500" />
+                            )}
+                            <span className={passwordRequirements.lowercase ? 'text-green-400' : 'text-gray-400'}>
+                              One lowercase letter
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            {passwordRequirements.number ? (
+                              <Check className="h-4 w-4 text-green-400" />
+                            ) : (
+                              <X className="h-4 w-4 text-gray-500" />
+                            )}
+                            <span className={passwordRequirements.number ? 'text-green-400' : 'text-gray-400'}>
+                              One number
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            {passwordRequirements.special ? (
+                              <Check className="h-4 w-4 text-green-400" />
+                            ) : (
+                              <X className="h-4 w-4 text-gray-500" />
+                            )}
+                            <span className={passwordRequirements.special ? 'text-green-400' : 'text-gray-400'}>
+                              One special character (!@#$%^&*...)
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
 
                   {signupError && (
-                    <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-sm">
+                    <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-sm" data-testid="signup-error">
                       {signupError}
+                      {signupError.includes('already exists') && (
+                        <div className="mt-2">
+                          <Link href="/login" className="text-blue-400 hover:underline font-semibold" data-testid="link-goto-login">
+                            Go to login →
+                          </Link>
+                        </div>
+                      )}
                     </div>
                   )}
 
