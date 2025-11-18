@@ -455,42 +455,53 @@ export default function LandingNew() {
       </header>
 
       <main className="relative z-10">
-        {/* Hero Section */}
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 py-20 lg:py-32">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div className="space-y-8">
-              <h1 className="text-5xl lg:text-6xl font-bold leading-tight">
+        {/* Hero Section - Apple Typography */}
+        <section className="apple-section">
+          <div className="apple-container">
+            <div className="max-w-3xl mx-auto text-center space-y-8">
+              <h1 className="apple-h1 mx-auto">
                 All your money,
                 <span className="text-blue-400"> one place</span>
               </h1>
               
-              <p className="text-xl text-gray-300 leading-relaxed">
+              <p className="apple-body mx-auto text-gray-300">
                 Track all your bank, card, stock, and crypto accounts — in one place. Free forever, no card needed.
               </p>
 
-              <div className="space-y-3">
+              <div className="flex flex-col items-center space-y-4">
                 <Button 
                   type="button"
                   onClick={scrollToSignup} 
-                  size="lg" 
-                  className="bg-blue-600 hover:bg-blue-700 text-xl px-10 py-7 h-auto shadow-2xl shadow-blue-600/50"
+                  className="bg-blue-600 hover:bg-blue-700 text-lg px-12 py-6 h-auto rounded-xl"
                   data-testid="button-hero-cta"
                 >
-                  Get Started Free (No Card Needed)
-                  <ArrowRight className="ml-3 h-6 w-6" />
+                  Get Started Free
+                  <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
                 
-                <p className="text-base text-blue-300 font-medium">
-                  🎉 You're automatically entered in our 10,000-user Flint Launch Pool — where you could win Flint Pro for Life.
+                <p className="apple-caption text-blue-300">
+                  No credit card required · Join 5,000+ users
                 </p>
               </div>
 
-              {/* Money Goals Email Capture */}
-              <div className="pt-6 max-w-md">
-                {!goalsSubmitted ? (
-                  <div className="p-6 bg-white/5 border border-white/10 rounded-lg space-y-4">
-                    <p className="text-base font-semibold text-white">Not ready to connect your accounts?</p>
-                    <p className="text-sm text-gray-300">Tell us your #1 money goal and get a free tip + updates:</p>
+              {/* Interactive Demo Dashboard */}
+              <div className="pt-12">
+                <div className="aspect-video rounded-xl overflow-hidden border border-white/10 max-w-4xl mx-auto">
+                  <img src={dashboardPreview} alt="Flint Dashboard" className="w-full h-full object-cover" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Money Goals Section - Moved below hero */}
+        <section className="apple-section bg-white/5">
+          <div className="apple-container">
+            <div className="max-w-md mx-auto">
+              {!goalsSubmitted ? (
+                <div className="p-8 bg-white/5 border border-white/10 rounded-xl space-y-6 text-center">
+                  <h3 className="apple-h3">What's your #1 money goal?</h3>
+                  <p className="apple-caption text-gray-300">Get a personalized tip when you join</p>
                     
                     <div className="space-y-2">
                       {['Build savings', 'Track spending', 'Cancel bad subscriptions', 'All of the above'].map((goal) => (
@@ -533,27 +544,18 @@ export default function LandingNew() {
                     <p className="text-green-400 font-medium">Thanks! Check your email for your personalized tip!</p>
                   </div>
                 )}
-              </div>
-            </div>
-
-            {/* Dashboard preview */}
-            <div className="relative">
-              <div className="aspect-video rounded-2xl overflow-hidden border border-white/10 shadow-2xl">
-                <img src={dashboardPreview} alt="Flint Dashboard" className="w-full h-full object-cover" />
-              </div>
-              <div className="absolute -inset-4 bg-blue-500/20 blur-3xl -z-10" />
             </div>
           </div>
         </section>
 
-        {/* Launch Giveaway Section */}
-        <section className="py-16 bg-gradient-to-r from-blue-900/30 via-blue-800/30 to-blue-900/30 border-y border-white/20">
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center">
-            <h2 className="text-4xl font-bold mb-4">
+        {/* Launch Giveaway Section - Single Accent Gradient Allowed */}
+        <section className="apple-section bg-gradient-to-r from-blue-900/30 via-blue-800/30 to-blue-900/30 border-y border-white/10">
+          <div className="apple-container text-center">
+            <h2 className="apple-h2">
               🚀 Flint Launch Giveaway
             </h2>
-            <p className="text-xl text-gray-200 mb-8">
-              Join now — help us hit our first 10,000 users and win big:
+            <p className="apple-body mx-auto text-gray-200">
+              Join now — help us hit our first 10,000 users and win big
             </p>
 
             <div className="grid md:grid-cols-3 gap-6 mb-8">
@@ -596,45 +598,39 @@ export default function LandingNew() {
           </div>
         </section>
 
-        {/* Value Proposition Cards */}
-        <section className="py-20 lg:py-24 bg-gradient-to-b from-black to-blue-950/20">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6">
+        {/* Value Proposition Cards - Apple 2-column Grid for Features */}
+        <section className="apple-section">
+          <div className="apple-container">
             <div className="grid md:grid-cols-3 gap-8">
               {/* Cut Hidden Fees */}
-              <Card className="bg-white/5 border-white/10 p-8 hover:bg-white/10 transition-all hover:scale-105 hover:shadow-2xl" data-testid="value-card-fees">
+              <Card className="bg-white/5 border-white/10 rounded-xl p-8 hover:bg-white/10 transition-all" data-testid="value-card-fees">
                 <div className="flex flex-col items-center text-center space-y-4">
-                  <div className="h-16 w-16 rounded-full bg-blue-600/20 flex items-center justify-center">
-                    <DollarSign className="h-8 w-8 text-blue-400" />
-                  </div>
-                  <h3 className="text-2xl font-bold">Cut Hidden Fees</h3>
-                  <p className="text-gray-300 leading-relaxed">
-                    We find and alert you to unnecessary bank charges. Stop losing money to fees you didn't know about.
+                  <DollarSign className="h-7 w-7 text-blue-400" />
+                  <h3 className="apple-h3">Cut Hidden Fees</h3>
+                  <p className="apple-body text-gray-300">
+                    We find and alert you to unnecessary bank charges
                   </p>
                 </div>
               </Card>
 
               {/* Grow Net Worth */}
-              <Card className="bg-white/5 border-white/10 p-8 hover:bg-white/10 transition-all hover:scale-105 hover:shadow-2xl" data-testid="value-card-grow">
+              <Card className="bg-white/5 border-white/10 rounded-xl p-8 hover:bg-white/10 transition-all" data-testid="value-card-grow">
                 <div className="flex flex-col items-center text-center space-y-4">
-                  <div className="h-16 w-16 rounded-full bg-green-600/20 flex items-center justify-center">
-                    <TrendingUp className="h-8 w-8 text-green-400" />
-                  </div>
-                  <h3 className="text-2xl font-bold">Grow Net Worth</h3>
-                  <p className="text-gray-300 leading-relaxed">
-                    All accounts on one screen helps you grow with clarity. See the big picture and make smarter money moves.
+                  <TrendingUp className="h-7 w-7 text-green-400" />
+                  <h3 className="apple-h3">Grow Net Worth</h3>
+                  <p className="apple-body text-gray-300">
+                    See the big picture and make smarter money moves
                   </p>
                 </div>
               </Card>
 
               {/* Stay in Control */}
-              <Card className="bg-white/5 border-white/10 p-8 hover:bg-white/10 transition-all hover:scale-105 hover:shadow-2xl" data-testid="value-card-control">
+              <Card className="bg-white/5 border-white/10 rounded-xl p-8 hover:bg-white/10 transition-all" data-testid="value-card-control">
                 <div className="flex flex-col items-center text-center space-y-4">
-                  <div className="h-16 w-16 rounded-full bg-blue-600/20 flex items-center justify-center">
-                    <Shield className="h-8 w-8 text-blue-400" />
-                  </div>
-                  <h3 className="text-2xl font-bold">Stay in Control</h3>
-                  <p className="text-gray-300 leading-relaxed">
-                    Personalized budgets and tips that work with you, not against you. Your money, your rules.
+                  <Shield className="h-7 w-7 text-blue-400" />
+                  <h3 className="apple-h3">Stay in Control</h3>
+                  <p className="apple-body text-gray-300">
+                    Personalized budgets that work with you, not against you
                   </p>
                 </div>
               </Card>
@@ -643,11 +639,11 @@ export default function LandingNew() {
         </section>
 
         {/* Trust & Partners Section */}
-        <section className="border-y border-white/10 bg-white/5 backdrop-blur-sm py-16">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6">
+        <section className="apple-section border-y border-white/10 bg-white/5">
+          <div className="apple-container">
             <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold mb-4">Our Partners</h2>
-              <p className="text-gray-400">Connect to 25+ banks, brokerages, and crypto exchanges</p>
+              <h2 className="apple-h2">Our Partners</h2>
+              <p className="apple-caption text-gray-400">Connect to 26 trusted financial institutions</p>
             </div>
 
             {/* Scrolling logos with Brandfetch */}
