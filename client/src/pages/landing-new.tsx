@@ -577,7 +577,7 @@ export default function LandingNew() {
             <div className="mb-6">
               <div className="flex items-center justify-between mb-2">
                 <p className="apple-caption text-gray-300 font-medium">Progress to 10,000 users</p>
-                <p className="apple-caption font-bold text-white">3,284 / 10,000</p>
+                <p className="apple-caption font-bold text-white">3,285 / 10,000</p>
               </div>
               <div className="w-full bg-white/10 rounded-xl h-4 overflow-hidden border border-white/20">
                 <div 
@@ -703,7 +703,7 @@ export default function LandingNew() {
                     <div className="h-full bg-blue-600 rounded-xl" style={{ width: '33%' }} data-testid="progress-bar-fill"></div>
                   </div>
                 </div>
-                <p className="apple-h3 text-white" data-testid="progress-text">3,284 / 10,000 early spots claimed!</p>
+                <p className="apple-h3 text-white" data-testid="progress-text">3,285 / 10,000 early spots claimed!</p>
               </div>
             </div>
 
@@ -1018,7 +1018,7 @@ export default function LandingNew() {
         <section className="py-16">
           <div className="max-w-2xl mx-auto px-4 sm:px-6 text-center">
             <h3 className="text-3xl font-bold mb-3">Ready to see your full picture?</h3>
-            <p className="text-xl text-gray-300 mb-6">Join 3,284+ people taking control of their money</p>
+            <p className="text-xl text-gray-300 mb-6">Join 3,285+ people taking control of their money</p>
             
             <Button type="button" onClick={scrollToSignup} size="lg" className="bg-blue-600 hover:bg-blue-700 h-14 px-12 text-lg" data-testid="button-cta-after-demo">
               Get Started Free
@@ -1033,14 +1033,14 @@ export default function LandingNew() {
             <div className="mb-8 p-4 bg-blue-600/10 border border-blue-600/20 rounded-lg">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-semibold text-blue-400">Launch Pool</span>
-                <span className="text-sm text-gray-300">3,284 / 10,000 users</span>
+                <span className="text-sm text-gray-300">3,285 / 10,000 users</span>
               </div>
               <div className="w-full bg-white/10 rounded-full h-2 mb-1">
                 <div className="bg-blue-500 h-2 rounded-full" style={{ width: '33%' }}></div>
               </div>
               <p className="text-xs text-gray-400 flex items-center gap-1">
                 <Check className="h-3 w-3 text-green-400" />
-                3,284 early spots claimed
+                3,285 early spots claimed
               </p>
             </div>
 
