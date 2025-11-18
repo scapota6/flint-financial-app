@@ -401,12 +401,8 @@ export default function LandingNew() {
 
   return (
     <div className="min-h-screen bg-black text-white relative overflow-hidden">
-      {/* Background effects */}
-      <div className="fixed inset-0 bg-gradient-to-br from-blue-900/30 via-black to-blue-900/30 pointer-events-none" />
-      <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute top-20 left-10 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '4s' }} />
-        <div className="absolute bottom-20 right-32 w-96 h-96 bg-blue-600/15 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '5s' }} />
-      </div>
+      {/* Single subtle background gradient */}
+      <div className="fixed inset-0 bg-gradient-to-br from-blue-900/20 via-black to-black pointer-events-none" />
 
       {/* Sticky CTA Nav */}
       <div
@@ -415,18 +411,18 @@ export default function LandingNew() {
         }`}
         data-testid="sticky-nav"
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="h-8 w-8 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center font-bold">
+            <div className="h-8 w-8 rounded-lg bg-blue-600 flex items-center justify-center font-bold">
               F
             </div>
-            <span className="font-bold text-xl">Flint</span>
+            <span className="font-bold">Flint</span>
           </div>
           <Button
             type="button"
             onClick={scrollToSignup}
             size="sm"
-            className="bg-blue-600 hover:bg-blue-700"
+            className="bg-blue-600 hover:bg-blue-700 rounded-lg"
             data-testid="button-sticky-nav-cta"
           >
             Get Started Free
@@ -436,10 +432,10 @@ export default function LandingNew() {
 
       {/* Header */}
       <header className="relative z-40 border-b border-white/10 backdrop-blur-xl">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <img src={flintLogo} alt="Flint" className="h-8 w-auto" />
-            <span className="text-xl font-semibold">Flint</span>
+            <span className="font-semibold">Flint</span>
           </div>
           <div className="flex items-center gap-4">
             <Link href="/login">
@@ -447,7 +443,7 @@ export default function LandingNew() {
                 Log In
               </Button>
             </Link>
-            <Button type="button" onClick={scrollToSignup} className="bg-blue-600 hover:bg-blue-700" data-testid="button-header-signup">
+            <Button type="button" onClick={scrollToSignup} className="bg-blue-600 hover:bg-blue-700 rounded-lg" data-testid="button-header-signup">
               Get Started Free
             </Button>
           </div>
@@ -559,40 +555,40 @@ export default function LandingNew() {
             </p>
 
             <div className="grid md:grid-cols-3 gap-6 mb-8">
-              <Card className="bg-white/10 border-blue-400/30 p-6">
-                <div className="text-5xl mb-2">🎟️</div>
-                <h3 className="text-xl font-bold mb-2">5 Winners</h3>
-                <p className="text-gray-300">Get 1 year of Flint Pro</p>
+              <Card className="bg-white/10 border-blue-400/30 rounded-xl p-6">
+                <span className="text-5xl block mb-2">🎟️</span>
+                <h3 className="apple-h3">5 Winners</h3>
+                <p className="apple-body text-gray-300">Get 1 year of Flint Pro</p>
               </Card>
 
-              <Card className="bg-gradient-to-br from-yellow-600/20 to-orange-600/20 border-yellow-400/40 p-6 transform scale-105">
-                <div className="text-5xl mb-2">🏆</div>
-                <h3 className="text-2xl font-bold mb-2">1 Grand Prize</h3>
-                <p className="text-yellow-200 font-semibold text-lg">Flint Pro for Life</p>
+              <Card className="bg-gradient-to-br from-yellow-600/20 to-orange-600/20 border-yellow-400/40 rounded-xl p-6 transform scale-105">
+                <span className="text-5xl block mb-2">🏆</span>
+                <h3 className="apple-h3">1 Grand Prize</h3>
+                <p className="apple-body text-yellow-200 font-semibold">Flint Pro for Life</p>
               </Card>
 
-              <Card className="bg-white/10 border-blue-400/30 p-6">
-                <div className="text-5xl mb-2">📈</div>
-                <h3 className="text-xl font-bold mb-2">Boost Odds</h3>
-                <p className="text-gray-300">Refer friends or upgrade</p>
+              <Card className="bg-white/10 border-blue-400/30 rounded-xl p-6">
+                <span className="text-5xl block mb-2">📈</span>
+                <h3 className="apple-h3">Boost Odds</h3>
+                <p className="apple-body text-gray-300">Refer friends or upgrade</p>
               </Card>
             </div>
 
             <div className="mb-6">
               <div className="flex items-center justify-between mb-2">
-                <p className="text-sm text-gray-300 font-medium">Progress to 10,000 users</p>
-                <p className="text-sm font-bold text-white">8,200 / 10,000</p>
+                <p className="apple-caption text-gray-300 font-medium">Progress to 10,000 users</p>
+                <p className="apple-caption font-bold text-white">8,200 / 10,000</p>
               </div>
-              <div className="w-full bg-white/10 rounded-full h-4 overflow-hidden border border-white/20">
+              <div className="w-full bg-white/10 rounded-xl h-4 overflow-hidden border border-white/20">
                 <div 
-                  className="h-full bg-gradient-to-r from-blue-500 to-blue-800 rounded-full transition-all duration-500" 
+                  className="h-full bg-blue-600 rounded-xl transition-all duration-500" 
                   style={{ width: '82%' }}
                   data-testid="launch-giveaway-progress"
                 />
               </div>
             </div>
 
-            <p className="text-blue-300 font-medium">
+            <p className="apple-body text-blue-300 font-medium">
               🔔 Winners announced when we hit 10,000
             </p>
           </div>
@@ -696,21 +692,19 @@ export default function LandingNew() {
         </section>
 
         {/* Social Proof Section */}
-        <section className="py-20 lg:py-24 bg-gradient-to-b from-blue-950/20 to-black">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6">
-            {/* Progress Bar */}
+        <section className="apple-section">
+          <div className="apple-container">
             <div className="text-center mb-16">
+              <h2 className="apple-h2 mb-8">Loved by Early Adopters</h2>
               <div className="inline-block bg-blue-600/10 border border-blue-400/30 rounded-xl p-6 mb-6" data-testid="social-proof-progress">
-                <p className="text-sm text-blue-400 font-semibold mb-3">🔥 LAUNCH POOL FILLING FAST</p>
+                <p className="apple-caption text-blue-400 font-semibold mb-3">🔥 LAUNCH POOL FILLING FAST</p>
                 <div className="flex items-center gap-3 mb-3">
-                  <div className="flex-1 h-3 bg-white/10 rounded-full overflow-hidden">
-                    <div className="h-full bg-gradient-to-r from-blue-500 to-blue-600 rounded-full" style={{ width: '82%' }} data-testid="progress-bar-fill"></div>
+                  <div className="flex-1 h-3 bg-white/10 rounded-xl overflow-hidden">
+                    <div className="h-full bg-blue-600 rounded-xl" style={{ width: '82%' }} data-testid="progress-bar-fill"></div>
                   </div>
                 </div>
-                <p className="text-2xl font-bold text-white" data-testid="progress-text">8,200 / 10,000 early spots claimed!</p>
+                <p className="apple-h3 text-white" data-testid="progress-text">8,200 / 10,000 early spots claimed!</p>
               </div>
-              
-              <p className="text-gray-400 text-sm">Loved by early adopters for clarity and ease.</p>
             </div>
 
             {/* Testimonials */}
@@ -836,9 +830,9 @@ export default function LandingNew() {
               {/* Top bar with net worth */}
               <div className="p-6 border-b border-white/10 bg-white/5">
                 <div className="text-center">
-                  <p className="text-sm text-gray-400 mb-1">Total Net Worth</p>
-                  <p className="text-5xl font-bold text-blue-400 mb-2" data-testid="demo-net-worth">{currentDemo.netWorth}</p>
-                  <p className="text-sm text-green-400">+2.4% today</p>
+                  <p className="apple-caption text-gray-400 mb-1">Total Net Worth</p>
+                  <p className="apple-h1 text-blue-400 mb-2" data-testid="demo-net-worth">{currentDemo.netWorth}</p>
+                  <p className="apple-caption text-green-400">+2.4% today</p>
                 </div>
               </div>
 
@@ -847,42 +841,42 @@ export default function LandingNew() {
                 {/* Summary Cards - matching actual dashboard */}
                 <div className="p-6 border-b border-white/10">
                   <div className="grid md:grid-cols-3 gap-4">
-                    <div className="bg-white/5 border border-white/10 rounded-lg p-4">
+                    <div className="bg-white/5 border border-white/10 rounded-xl p-4">
                       <div className="flex items-center gap-2 mb-2">
-                        <TrendingUp className="h-4 w-4 text-blue-400" />
-                        <p className="text-sm text-gray-400">Total Balance</p>
+                        <TrendingUp className="h-5 w-5 text-blue-400" />
+                        <p className="apple-caption text-gray-400">Total Balance</p>
                       </div>
-                      <p className="text-2xl font-bold">{currentDemo.netWorth}</p>
-                      <p className="text-xs text-green-400 mt-1">+2.4% change</p>
+                      <p className="apple-h3">{currentDemo.netWorth}</p>
+                      <p className="apple-caption text-green-400 mt-1">+2.4% change</p>
                     </div>
                     
-                    <div className="bg-white/5 border border-white/10 rounded-lg p-4">
+                    <div className="bg-white/5 border border-white/10 rounded-xl p-4">
                       <div className="flex items-center gap-2 mb-2">
-                        <Building2 className="h-4 w-4 text-blue-400" />
-                        <p className="text-sm text-gray-400">Bank Accounts</p>
+                        <Building2 className="h-5 w-5 text-blue-400" />
+                        <p className="apple-caption text-gray-400">Bank Accounts</p>
                       </div>
-                      <p className="text-2xl font-bold">
+                      <p className="apple-h3">
                         {currentDemo.accounts.find(a => a.type === 'Bank')?.balance || '$0.00'}
                       </p>
-                      <p className="text-xs text-gray-400 mt-1">4% of total</p>
+                      <p className="apple-caption text-gray-400 mt-1">4% of total</p>
                     </div>
                     
-                    <div className="bg-white/5 border border-white/10 rounded-lg p-4">
+                    <div className="bg-white/5 border border-white/10 rounded-xl p-4">
                       <div className="flex items-center gap-2 mb-2">
-                        <LineChart className="h-4 w-4 text-blue-400" />
-                        <p className="text-sm text-gray-400">Investments</p>
+                        <LineChart className="h-5 w-5 text-blue-400" />
+                        <p className="apple-caption text-gray-400">Investments</p>
                       </div>
-                      <p className="text-2xl font-bold">
+                      <p className="apple-h3">
                         {currentDemo.accounts.find(a => a.type === 'Investing')?.balance || '$0.00'}
                       </p>
-                      <p className="text-xs text-green-400 mt-1">+8.7% change</p>
+                      <p className="apple-caption text-green-400 mt-1">+8.7% change</p>
                     </div>
                   </div>
                 </div>
 
                 {/* Connected Accounts */}
                 <div className="p-6 border-b border-white/10">
-                  <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                  <h3 className="apple-h3 mb-4 flex items-center gap-2">
                     <Wallet className="h-5 w-5 text-blue-400" />
                     Connected Accounts
                   </h3>
@@ -894,20 +888,20 @@ export default function LandingNew() {
                           setSelectedAccount(account);
                           setShowAccountModal(true);
                         }}
-                        className="bg-white/5 border border-white/10 rounded-lg p-4 hover:bg-white/10 hover:border-blue-500/50 transition-all text-left cursor-pointer group"
+                        className="bg-white/5 border border-white/10 rounded-xl p-4 hover:bg-white/10 hover:border-blue-500/50 transition-all text-left cursor-pointer group"
                         data-testid={`button-account-${account.id}`}
                       >
                         <div className="flex justify-between items-start mb-2">
                           <div>
                             <p className="font-semibold group-hover:text-blue-400 transition-colors">{account.name}</p>
-                            <p className="text-sm text-gray-400">{account.type}</p>
+                            <p className="apple-caption text-gray-400">{account.type}</p>
                           </div>
-                          <span className={account.change.startsWith('+') ? 'text-green-400 text-sm' : account.change.startsWith('-') ? 'text-red-400 text-sm' : 'text-gray-400 text-sm'}>
+                          <span className={account.change.startsWith('+') ? 'text-green-400 apple-caption' : account.change.startsWith('-') ? 'text-red-400 apple-caption' : 'text-gray-400 apple-caption'}>
                             {account.change}
                           </span>
                         </div>
-                        <p className="text-2xl font-bold">{account.balance}</p>
-                        <p className="text-xs text-blue-400 mt-2 opacity-0 group-hover:opacity-100 transition-opacity">Click for details →</p>
+                        <p className="apple-h3">{account.balance}</p>
+                        <p className="apple-caption text-blue-400 mt-2 opacity-0 group-hover:opacity-100 transition-opacity">Click for details →</p>
                       </button>
                     ))}
                   </div>
@@ -915,7 +909,7 @@ export default function LandingNew() {
 
                 {/* Portfolio Holdings */}
                 <div className="p-6 border-b border-white/10">
-                  <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                  <h3 className="apple-h3 mb-4 flex items-center gap-2">
                     <LineChart className="h-5 w-5 text-blue-400" />
                     Portfolio Holdings
                   </h3>
@@ -1194,10 +1188,10 @@ export default function LandingNew() {
               <p className="apple-caption text-gray-300">Start free. Upgrade for advanced features.</p>
               
               {/* Monthly/Annual Toggle */}
-              <div className="inline-flex items-center gap-3 bg-white/5 border border-white/10 rounded-full p-1">
+              <div className="inline-flex items-center gap-3 bg-white/5 border border-white/10 rounded-xl p-1">
                 <button
                   onClick={() => setIsAnnual(false)}
-                  className={`px-6 py-2 rounded-full text-sm font-medium transition-all ${
+                  className={`px-6 py-2 rounded-lg apple-caption font-medium transition-all ${
                     !isAnnual ? 'bg-blue-600 text-white' : 'text-gray-300 hover:text-white'
                   }`}
                   data-testid="toggle-monthly"
@@ -1206,147 +1200,147 @@ export default function LandingNew() {
                 </button>
                 <button
                   onClick={() => setIsAnnual(true)}
-                  className={`px-6 py-2 rounded-full text-sm font-medium transition-all ${
+                  className={`px-6 py-2 rounded-lg apple-caption font-medium transition-all ${
                     isAnnual ? 'bg-blue-600 text-white' : 'text-gray-300 hover:text-white'
                   }`}
                   data-testid="toggle-annual"
                 >
                   Annual
-                  <span className="ml-2 text-green-400 text-xs">Save 17%</span>
+                  <span className="ml-2 text-green-400 apple-caption">Save 17%</span>
                 </button>
               </div>
             </div>
 
             <div className="grid md:grid-cols-3 gap-6 max-w-6xl mx-auto">
               {/* Free Plan */}
-              <Card className="bg-white/5 border-white/10 p-6">
+              <Card className="bg-white/5 border-white/10 rounded-xl p-6">
                 <div className="mb-6">
-                  <h3 className="text-2xl font-bold mb-2">Free</h3>
+                  <h3 className="apple-h3">Free</h3>
                   <div className="flex items-baseline gap-2 mb-3">
-                    <span className="text-4xl font-bold">$0</span>
-                    <span className="text-gray-400">forever</span>
+                    <span className="apple-h2">$0</span>
+                    <span className="apple-caption text-gray-400">forever</span>
                   </div>
-                  <p className="text-gray-300 text-sm">Try it out</p>
+                  <p className="apple-caption text-gray-300">Try it out</p>
                 </div>
 
                 <ul className="space-y-2 mb-8">
-                  <li className="flex items-start gap-2 text-sm">
-                    <Check className="h-4 w-4 text-green-400 flex-shrink-0 mt-0.5" />
-                    <span>4 accounts</span>
+                  <li className="flex items-start gap-2">
+                    <Check className="h-5 w-5 text-green-400 flex-shrink-0 mt-0.5" />
+                    <span className="apple-caption">4 accounts</span>
                   </li>
-                  <li className="flex items-start gap-2 text-sm">
-                    <Check className="h-4 w-4 text-green-400 flex-shrink-0 mt-0.5" />
-                    <span>See all your money</span>
+                  <li className="flex items-start gap-2">
+                    <Check className="h-5 w-5 text-green-400 flex-shrink-0 mt-0.5" />
+                    <span className="apple-caption">See all your money</span>
                   </li>
-                  <li className="flex items-start gap-2 text-sm">
-                    <Check className="h-4 w-4 text-green-400 flex-shrink-0 mt-0.5" />
-                    <span>Live updates</span>
+                  <li className="flex items-start gap-2">
+                    <Check className="h-5 w-5 text-green-400 flex-shrink-0 mt-0.5" />
+                    <span className="apple-caption">Live updates</span>
                   </li>
-                  <li className="flex items-start gap-2 text-sm">
-                    <Check className="h-4 w-4 text-green-400 flex-shrink-0 mt-0.5" />
-                    <span>Mobile app</span>
+                  <li className="flex items-start gap-2">
+                    <Check className="h-5 w-5 text-green-400 flex-shrink-0 mt-0.5" />
+                    <span className="apple-caption">Mobile app</span>
                   </li>
                 </ul>
 
-                <Button type="button" onClick={scrollToSignup} className="w-full bg-white/10 hover:bg-white/20 border border-white/20" data-testid="button-free-plan">
+                <Button type="button" onClick={scrollToSignup} className="w-full bg-white/10 hover:bg-white/20 border border-white/20 rounded-xl" data-testid="button-free-plan">
                   Start Free
                 </Button>
               </Card>
 
               {/* Standard Plan */}
-              <Card className="bg-gradient-to-br from-blue-600/20 to-blue-900/20 border-blue-400/30 p-6 relative overflow-hidden">
+              <Card className="bg-gradient-to-br from-blue-600/20 to-blue-900/20 border-blue-400/30 rounded-xl p-6 relative overflow-hidden">
                 <div className="absolute top-4 right-4">
-                  <span className="bg-blue-500 text-white text-xs font-semibold px-2 py-1 rounded-full">
+                  <span className="bg-blue-500 text-white apple-caption font-semibold px-2 py-1 rounded-lg">
                     Most Popular
                   </span>
                 </div>
 
                 <div className="mb-6">
-                  <h3 className="text-2xl font-bold mb-2">Standard</h3>
+                  <h3 className="apple-h3">Standard</h3>
                   <div className="flex items-baseline gap-2 mb-2">
-                    <span className="text-4xl font-bold">${isAnnual ? '199' : '19.99'}</span>
-                    <span className="text-gray-400">{isAnnual ? '/year' : '/month'}</span>
+                    <span className="apple-h2">${isAnnual ? '199' : '19.99'}</span>
+                    <span className="apple-caption text-gray-400">{isAnnual ? '/year' : '/month'}</span>
                   </div>
-                  {isAnnual && <p className="text-sm text-green-400 mb-1">$199/year - 2 months free!</p>}
-                  <p className="text-gray-300 text-sm">For active users</p>
+                  {isAnnual && <p className="apple-caption text-green-400 mb-1">$199/year - 2 months free!</p>}
+                  <p className="apple-caption text-gray-300">For active users</p>
                 </div>
 
                 <ul className="space-y-2 mb-8">
-                  <li className="flex items-start gap-2 text-sm">
-                    <Check className="h-4 w-4 text-blue-400 flex-shrink-0 mt-0.5" />
-                    <span className="font-semibold">Unlimited accounts</span>
+                  <li className="flex items-start gap-2">
+                    <Check className="h-5 w-5 text-blue-400 flex-shrink-0 mt-0.5" />
+                    <span className="apple-caption font-semibold">Unlimited accounts</span>
                   </li>
-                  <li className="flex items-start gap-2 text-sm">
-                    <Check className="h-4 w-4 text-blue-400 flex-shrink-0 mt-0.5" />
-                    <span>Everything in Free</span>
+                  <li className="flex items-start gap-2">
+                    <Check className="h-5 w-5 text-blue-400 flex-shrink-0 mt-0.5" />
+                    <span className="apple-caption">Everything in Free</span>
                   </li>
-                  <li className="flex items-start gap-2 text-sm">
-                    <Check className="h-4 w-4 text-blue-400 flex-shrink-0 mt-0.5" />
-                    <span>Price alerts</span>
+                  <li className="flex items-start gap-2">
+                    <Check className="h-5 w-5 text-blue-400 flex-shrink-0 mt-0.5" />
+                    <span className="apple-caption">Price alerts</span>
                   </li>
-                  <li className="flex items-start gap-2 text-sm">
-                    <Check className="h-4 w-4 text-blue-400 flex-shrink-0 mt-0.5" />
-                    <span>Track spending</span>
+                  <li className="flex items-start gap-2">
+                    <Check className="h-5 w-5 text-blue-400 flex-shrink-0 mt-0.5" />
+                    <span className="apple-caption">Track spending</span>
                   </li>
-                  <li className="flex items-start gap-2 text-sm">
-                    <Check className="h-4 w-4 text-blue-400 flex-shrink-0 mt-0.5" />
-                    <span>Email support</span>
+                  <li className="flex items-start gap-2">
+                    <Check className="h-5 w-5 text-blue-400 flex-shrink-0 mt-0.5" />
+                    <span className="apple-caption">Email support</span>
                   </li>
                 </ul>
 
-                <Button type="button" className="w-full bg-blue-600 hover:bg-blue-700" data-testid="button-standard-plan">
+                <Button type="button" className="w-full bg-blue-600 hover:bg-blue-700 rounded-xl" data-testid="button-standard-plan">
                   Get Standard
                 </Button>
               </Card>
 
               {/* Pro Plan */}
-              <Card className="bg-white/5 border-white/10 p-6">
+              <Card className="bg-white/5 border-white/10 rounded-xl p-6">
                 <div className="mb-6">
-                  <h3 className="text-2xl font-bold mb-2">Pro</h3>
+                  <h3 className="apple-h3">Pro</h3>
                   <div className="flex items-baseline gap-2 mb-2">
-                    <span className="text-4xl font-bold">${isAnnual ? '399' : '39.99'}</span>
-                    <span className="text-gray-400">{isAnnual ? '/year' : '/month'}</span>
+                    <span className="apple-h2">${isAnnual ? '399' : '39.99'}</span>
+                    <span className="apple-caption text-gray-400">{isAnnual ? '/year' : '/month'}</span>
                   </div>
-                  {isAnnual && <p className="text-sm text-green-400 mb-1">$399/year - 2 months free!</p>}
-                  <p className="text-gray-300 text-sm">For power users</p>
+                  {isAnnual && <p className="apple-caption text-green-400 mb-1">$399/year - 2 months free!</p>}
+                  <p className="apple-caption text-gray-300">For power users</p>
                 </div>
 
                 <ul className="space-y-2 mb-8">
-                  <li className="flex items-start gap-2 text-sm">
-                    <Check className="h-4 w-4 text-blue-400 flex-shrink-0 mt-0.5" />
-                    <span className="font-semibold">Unlimited accounts</span>
+                  <li className="flex items-start gap-2">
+                    <Check className="h-5 w-5 text-blue-400 flex-shrink-0 mt-0.5" />
+                    <span className="apple-caption font-semibold">Unlimited accounts</span>
                   </li>
-                  <li className="flex items-start gap-2 text-sm">
-                    <Check className="h-4 w-4 text-blue-400 flex-shrink-0 mt-0.5" />
-                    <span>Everything in Standard</span>
+                  <li className="flex items-start gap-2">
+                    <Check className="h-5 w-5 text-blue-400 flex-shrink-0 mt-0.5" />
+                    <span className="apple-caption">Everything in Standard</span>
                   </li>
-                  <li className="flex items-start gap-2 text-sm">
-                    <Check className="h-4 w-4 text-blue-400 flex-shrink-0 mt-0.5" />
-                    <span className="font-semibold">Trading</span>
+                  <li className="flex items-start gap-2">
+                    <Check className="h-5 w-5 text-blue-400 flex-shrink-0 mt-0.5" />
+                    <span className="apple-caption font-semibold">Trading</span>
                   </li>
-                  <li className="flex items-start gap-2 text-sm">
-                    <Check className="h-4 w-4 text-blue-400 flex-shrink-0 mt-0.5" />
-                    <span className="font-semibold">Transfers</span>
+                  <li className="flex items-start gap-2">
+                    <Check className="h-5 w-5 text-blue-400 flex-shrink-0 mt-0.5" />
+                    <span className="apple-caption font-semibold">Transfers</span>
                   </li>
-                  <li className="flex items-start gap-2 text-sm">
-                    <Check className="h-4 w-4 text-blue-400 flex-shrink-0 mt-0.5" />
-                    <span>Advanced charts</span>
+                  <li className="flex items-start gap-2">
+                    <Check className="h-5 w-5 text-blue-400 flex-shrink-0 mt-0.5" />
+                    <span className="apple-caption">Advanced charts</span>
                   </li>
-                  <li className="flex items-start gap-2 text-sm">
-                    <Check className="h-4 w-4 text-blue-400 flex-shrink-0 mt-0.5" />
-                    <span>Custom alerts</span>
+                  <li className="flex items-start gap-2">
+                    <Check className="h-5 w-5 text-blue-400 flex-shrink-0 mt-0.5" />
+                    <span className="apple-caption">Custom alerts</span>
                   </li>
-                  <li className="flex items-start gap-2 text-sm">
-                    <Check className="h-4 w-4 text-blue-400 flex-shrink-0 mt-0.5" />
-                    <span>Fast support</span>
+                  <li className="flex items-start gap-2">
+                    <Check className="h-5 w-5 text-blue-400 flex-shrink-0 mt-0.5" />
+                    <span className="apple-caption">Fast support</span>
                   </li>
-                  <li className="flex items-start gap-2 text-sm">
-                    <Check className="h-4 w-4 text-blue-400 flex-shrink-0 mt-0.5" />
-                    <span>Download reports</span>
+                  <li className="flex items-start gap-2">
+                    <Check className="h-5 w-5 text-blue-400 flex-shrink-0 mt-0.5" />
+                    <span className="apple-caption">Download reports</span>
                   </li>
                 </ul>
 
-                <Button type="button" className="w-full bg-blue-600 hover:bg-blue-700" data-testid="button-pro-plan">
+                <Button type="button" className="w-full bg-blue-600 hover:bg-blue-700 rounded-xl" data-testid="button-pro-plan">
                   Get Pro
                 </Button>
               </Card>
@@ -1363,22 +1357,23 @@ export default function LandingNew() {
         </section>
 
         {/* CTA After Pricing */}
-        <section className="py-16 bg-white/5 border-y border-white/10">
-          <div className="max-w-2xl mx-auto px-4 sm:px-6 text-center">
-            <h3 className="text-3xl font-bold mb-3">Start managing your money better today</h3>
-            <p className="text-xl text-gray-300 mb-6">Free forever. No credit card needed.</p>
+        <section className="apple-section bg-white/5 border-y border-white/10">
+          <div className="apple-container max-w-2xl text-center">
+            <h2 className="apple-h2">Start managing your money better today</h2>
+            <p className="apple-body text-gray-300">Free forever. No credit card needed.</p>
             
-            <Button type="button" onClick={scrollToSignup} size="lg" className="bg-blue-600 hover:bg-blue-700 h-14 px-12 text-lg" data-testid="button-cta-after-pricing">
+            <Button type="button" onClick={scrollToSignup} size="lg" className="bg-blue-600 hover:bg-blue-700 h-14 px-12 rounded-xl" data-testid="button-cta-after-pricing">
               Get Started Free
+              <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
           </div>
         </section>
 
         {/* FAQ Section */}
-        <section className="py-20 lg:py-32">
-          <div className="max-w-3xl mx-auto px-4 sm:px-6">
+        <section className="apple-section">
+          <div className="apple-container max-w-3xl">
             <div className="text-center mb-12">
-              <h2 className="text-4xl font-bold mb-4">Questions?</h2>
+              <h2 className="apple-h2">Questions?</h2>
             </div>
 
             <Accordion type="single" collapsible className="space-y-4">
