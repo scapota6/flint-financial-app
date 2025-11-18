@@ -382,21 +382,52 @@ export default function LandingNew() {
 
   // Signup submission
   const [signupLoading, setSignupLoading] = useState(false);
+  const [signupError, setSignupError] = useState('');
 
-  const handleSignupSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSignupSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     e.stopPropagation();
-    console.log('[Landing New] Signup form submitted', { name: signupData.name, email: signupData.email });
+    setSignupError('');
     
-    if (signupData.name && signupData.email && signupData.password) {
-      console.log('[Landing New] All fields valid, showing success message');
-      setSignupSuccess(true);
-      // Note: This is a demo landing page. Real signup happens through /login or Stripe checkout
-    } else {
-      console.log('[Landing New] Form validation failed', signupData);
+    if (!signupData.name || !signupData.email || !signupData.password) {
+      setSignupError('Please fill in all fields');
+      return;
     }
+
+    setSignupLoading(true);
     
-    return false;
+    try {
+      const response = await fetch('/api/auth/public-register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          firstName: signupData.name,
+          email: signupData.email,
+          password: signupData.password,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        // Show success state
+        setSignupSuccess(true);
+        // Redirect to login after 2 seconds
+        setTimeout(() => {
+          window.location.href = '/login?registered=true';
+        }, 2000);
+      } else {
+        // Show error message
+        setSignupError(data.message || 'Registration failed. Please try again.');
+      }
+    } catch (error) {
+      console.error('Registration error:', error);
+      setSignupError('An error occurred. Please try again.');
+    } finally {
+      setSignupLoading(false);
+    }
   };
 
   return (
@@ -1086,6 +1117,12 @@ export default function LandingNew() {
                     />
                   </div>
 
+                  {signupError && (
+                    <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-sm">
+                      {signupError}
+                    </div>
+                  )}
+
                   <Button 
                     type="submit" 
                     className="w-full bg-blue-600 hover:bg-blue-700 h-12" 
@@ -1146,18 +1183,18 @@ export default function LandingNew() {
             ) : (
               <div className="p-8 bg-green-500/10 border border-green-500/20 rounded-lg text-center space-y-4">
                 <Check className="h-16 w-16 text-green-400 mx-auto" />
-                <h3 className="text-2xl font-bold">You're on the list!</h3>
-                <p className="text-gray-300">This is a demo landing page. To actually create an account, visit our signup page.</p>
+                <h3 className="text-2xl font-bold">Account Created!</h3>
+                <p className="text-gray-300">Redirecting you to login...</p>
                 
                 <div className="mt-6 space-y-4">
-                  {/* Demo Waitlist Preview */}
+                  {/* Waitlist Position */}
                   <div className="p-6 bg-white/5 border border-white/10 rounded-lg">
-                    <p className="text-sm text-gray-400 mb-1">Your Waitlist Position (Demo)</p>
-                    <p className="text-4xl font-bold text-blue-400">#8,247</p>
+                    <p className="text-sm text-gray-400 mb-1">Your Waitlist Position</p>
+                    <p className="text-4xl font-bold text-blue-400">#3,285</p>
                     <p className="text-xs text-gray-400 mt-2">Skip spots by referring friends</p>
                   </div>
 
-                  {/* Demo Referral Preview */}
+                  {/* Referral Preview */}
                   <div className="p-6 bg-gradient-to-br from-blue-600/10 to-blue-800/10 border border-blue-600/20 rounded-lg space-y-3">
                     <p className="text-sm font-semibold text-white">🔄 Invite & Unlock Rewards</p>
                     <div className="space-y-2 text-xs text-gray-300">
@@ -1165,15 +1202,8 @@ export default function LandingNew() {
                       <p>• Refer 5 = 1 free month of Pro</p>
                       <p>• Refer 10 = 5x giveaway entries</p>
                     </div>
-                    <p className="text-sm text-blue-400 font-medium pt-2">Get your unique referral link when you sign up!</p>
+                    <p className="text-sm text-blue-400 font-medium pt-2">Get your unique referral link after you log in!</p>
                   </div>
-
-                  {/* CTA to actual signup */}
-                  <Link href="/login">
-                    <Button className="w-full bg-blue-600 hover:bg-blue-700 h-12" data-testid="button-go-to-login">
-                      Create Real Account →
-                    </Button>
-                  </Link>
                 </div>
               </div>
             )}

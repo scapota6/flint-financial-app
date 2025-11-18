@@ -49,6 +49,12 @@ const loginSchema = z.object({
   mfaCode: z.string().optional(),
 });
 
+const publicRegisterSchema = z.object({
+  firstName: z.string().min(1, 'First name is required'),
+  email: z.string().email('Valid email is required'),
+  password: z.string().min(8, 'Password must be at least 8 characters'),
+});
+
 /**
  * Helper function to add jittered delay (200-500ms)
  * Prevents timing attacks by making all responses take roughly the same time
@@ -85,6 +91,109 @@ async function logLoginAttempt(
     console.error('Failed to log login attempt:', error);
   }
 }
+
+// POST /api/auth/public-register - Public registration endpoint for landing page
+router.post('/public-register', rateLimits.register, async (req, res) => {
+  try {
+    const parseResult = publicRegisterSchema.safeParse(req.body);
+    
+    if (!parseResult.success) {
+      return res.status(400).json({
+        message: 'Validation error',
+        errors: parseResult.error.errors.map(e => e.message),
+      });
+    }
+
+    const { firstName, email, password } = parseResult.data;
+    const lowercaseEmail = email.toLowerCase();
+
+    // Check if user already exists
+    const [existingUser] = await db
+      .select()
+      .from(users)
+      .where(eq(users.email, lowercaseEmail))
+      .limit(1);
+
+    if (existingUser) {
+      // Return generic success message to prevent account enumeration
+      // Log internally for monitoring but don't reveal account existence to user
+      logger.warn('Registration attempt with existing email', {
+        metadata: { email: lowercaseEmail }
+      });
+      await jitteredDelay();
+      return res.status(201).json({
+        success: true,
+        message: 'Account created successfully! Please check your email to verify your account.',
+      });
+    }
+
+    // Validate password strength
+    const validation = validatePassword(password, lowercaseEmail);
+    if (!validation.valid) {
+      return res.status(400).json({
+        message: 'Password does not meet security requirements',
+        errors: validation.errors,
+      });
+    }
+
+    // Hash password using Argon2id
+    const passwordHash = await hashPassword(password);
+
+    // Generate unique user ID
+    const userId = crypto.randomUUID();
+
+    // Initialize password history
+    const passwordHistory = [passwordHash];
+
+    // Create user
+    await db.insert(users).values({
+      id: userId,
+      email: lowercaseEmail,
+      passwordHash,
+      firstName,
+      emailVerified: false, // TODO: Implement email verification flow with token generation and validation
+      subscriptionTier: 'free',
+      subscriptionStatus: 'active',
+      waitlistPosition: 3285, // Static position until live data implemented
+      lastPasswordHashes: passwordHistory,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    });
+
+    // Log successful registration
+    logger.info('User registered via public registration', {
+      metadata: {
+        userId,
+        email: lowercaseEmail,
+        firstName,
+      }
+    });
+
+    // Log structured metric for analytics
+    logger.logMetric('user_registered', {
+      user_id: userId,
+      registration_method: 'public_landing',
+    });
+
+    // Send welcome email (optional - don't fail if email fails)
+    try {
+      await sendWelcomeEmail(lowercaseEmail, firstName);
+    } catch (error) {
+      console.error('Failed to send welcome email:', error);
+      // Continue - don't fail registration if email fails
+    }
+
+    return res.status(201).json({
+      success: true,
+      message: 'Account created successfully! You can now log in.',
+    });
+  } catch (error) {
+    console.error('Public registration error:', error);
+    return res.status(500).json({
+      message: 'An error occurred during registration',
+    });
+  }
+});
 
 // POST /api/auth/login - Authenticate user and issue JWT tokens
 router.post('/login', rateLimits.login, async (req, res) => {

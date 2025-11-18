@@ -154,6 +154,46 @@ export const rateLimits = {
       }
     }
   ]),
+
+  // Registration rate limiter - prevent spam account creation
+  register: createCompositeRateLimit([
+    {
+      windowMs: 60 * 1000, // 1 minute
+      maxRequests: 3,
+      keyGenerator: (req) => `register:minute:${req.ip}`,
+      onLimitReached: (req, res) => {
+        logger.warn('Registration rate limit exceeded (1 minute window)', {
+          metadata: {
+            ip: req.ip,
+            userAgent: req.headers['user-agent'],
+          }
+        });
+        res.status(429).json({
+          error: 'Too many registration attempts',
+          message: 'Too many registration attempts. Please wait a minute before trying again.',
+          retryAfter: 60
+        });
+      }
+    },
+    {
+      windowMs: 60 * 60 * 1000, // 1 hour
+      maxRequests: 10,
+      keyGenerator: (req) => `register:hour:${req.ip}`,
+      onLimitReached: (req, res) => {
+        logger.warn('Registration rate limit exceeded (1 hour window)', {
+          metadata: {
+            ip: req.ip,
+            userAgent: req.headers['user-agent'],
+          }
+        });
+        res.status(429).json({
+          error: 'Too many registration attempts',
+          message: 'Too many registration attempts from your IP address. Please wait an hour before trying again.',
+          retryAfter: 3600
+        });
+      }
+    }
+  ]),
   
   // Moderate limits for trading operations
   trading: createRateLimit({

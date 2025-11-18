@@ -145,6 +145,128 @@ router.post('/create-embedded-checkout', rateLimits.publicCheckout, async (req, 
   }
 });
 
+// POST /api/stripe/checkout/standard - Quick checkout for Standard plan
+router.post('/checkout/standard', rateLimits.publicCheckout, async (req, res) => {
+  try {
+    const { billingPeriod = 'monthly' } = req.body;
+    
+    // Validate billingPeriod
+    if (!['monthly', 'yearly'].includes(billingPeriod)) {
+      return res.status(400).json({ 
+        error: 'Invalid billing period. Must be monthly or yearly' 
+      });
+    }
+
+    // Get pricing plan for Standard (basic tier)
+    const plan = getPriceByTierAndPeriod('basic', billingPeriod);
+    if (!plan) {
+      return res.status(400).json({ error: 'Pricing plan not available' });
+    }
+
+    // Get app URL for success/cancel redirects
+    const appUrl = process.env.REPLIT_DEV_DOMAIN 
+      ? `https://${process.env.REPLIT_DEV_DOMAIN}`
+      : 'http://localhost:5000';
+
+    // Create Checkout Session (redirect mode)
+    const session = await stripe.checkout.sessions.create({
+      mode: 'subscription',
+      payment_method_types: ['card'],
+      line_items: [
+        {
+          price: plan.priceId,
+          quantity: 1,
+        },
+      ],
+      success_url: `${appUrl}/subscribe?success=true&session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${appUrl}/?canceled=true`,
+      metadata: {
+        tier: 'basic',
+        billingPeriod,
+      },
+    });
+
+    logger.info('Created Standard plan checkout session', {
+      metadata: {
+        sessionId: session.id,
+        billingPeriod,
+        priceId: plan.priceId,
+      }
+    });
+
+    res.json({ url: session.url });
+  } catch (error: any) {
+    logger.error('Failed to create Standard checkout session', {
+      error: error.message,
+    });
+    res.status(500).json({
+      error: 'Failed to create checkout session',
+      details: error.message
+    });
+  }
+});
+
+// POST /api/stripe/checkout/pro - Quick checkout for Pro plan
+router.post('/checkout/pro', rateLimits.publicCheckout, async (req, res) => {
+  try {
+    const { billingPeriod = 'monthly' } = req.body;
+    
+    // Validate billingPeriod
+    if (!['monthly', 'yearly'].includes(billingPeriod)) {
+      return res.status(400).json({ 
+        error: 'Invalid billing period. Must be monthly or yearly' 
+      });
+    }
+
+    // Get pricing plan for Pro tier
+    const plan = getPriceByTierAndPeriod('pro', billingPeriod);
+    if (!plan) {
+      return res.status(400).json({ error: 'Pricing plan not available' });
+    }
+
+    // Get app URL for success/cancel redirects
+    const appUrl = process.env.REPLIT_DEV_DOMAIN 
+      ? `https://${process.env.REPLIT_DEV_DOMAIN}`
+      : 'http://localhost:5000';
+
+    // Create Checkout Session (redirect mode)
+    const session = await stripe.checkout.sessions.create({
+      mode: 'subscription',
+      payment_method_types: ['card'],
+      line_items: [
+        {
+          price: plan.priceId,
+          quantity: 1,
+        },
+      ],
+      success_url: `${appUrl}/subscribe?success=true&session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${appUrl}/?canceled=true`,
+      metadata: {
+        tier: 'pro',
+        billingPeriod,
+      },
+    });
+
+    logger.info('Created Pro plan checkout session', {
+      metadata: {
+        sessionId: session.id,
+        billingPeriod,
+        priceId: plan.priceId,
+      }
+    });
+
+    res.json({ url: session.url });
+  } catch (error: any) {
+    logger.error('Failed to create Pro checkout session', {
+      error: error.message,
+    });
+    res.status(500).json({
+      error: 'Failed to create checkout session',
+      details: error.message
+    });
+  }
+});
+
 // Create Stripe Checkout Session (authenticated - legacy for logged-in users)
 router.post('/create-checkout-session', requireAuth, async (req, res) => {
   try {

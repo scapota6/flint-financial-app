@@ -58,6 +58,7 @@ export function validateCSRFToken(req: Request, res: Response, next: NextFunctio
     "/api/me",
     "/api/dashboard",
     "/api/feature-flags",
+    "/api/auth/public-register", // Public registration endpoint for landing page
     "/api/snaptrade/register", // Public SnapTrade registration endpoint
     "/api/snaptrade/reset-user", // DEV ONLY - reset endpoint
     "/api/snaptrade/callback", // Mobile OAuth callback - uses Bearer token auth
