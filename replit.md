@@ -1,86 +1,69 @@
 # Flint - Financial Management Platform
 
 ## Overview
-Flint is a comprehensive financial management web application that unifies diverse financial data. It enables users to connect bank accounts, brokerage accounts, and cryptocurrency wallets, track investments, execute trades, manage transfers, and monitor financial activity. The platform aims to consolidate financial information and facilitate active financial management, aspiring to be a leading tool for both new and experienced investors.
+Flint is a comprehensive financial management web application designed to consolidate diverse financial data. It allows users to connect bank accounts, brokerage accounts, and cryptocurrency wallets, track investments, execute trades, manage transfers, and monitor financial activity. The platform aims to provide a unified tool for active financial management, catering to both new and experienced investors. The business vision is to be a leading platform in the financial technology market by offering an intuitive and powerful solution for personal finance.
 
 ## User Preferences
 Preferred communication style: Simple, everyday language.
 
 ## System Architecture
 
-### Frontend
-- **Frameworks**: React with TypeScript, Wouter for routing, React Query for server state management.
-- **Styling**: Apple 2025 "Liquid Glass" aesthetic (dark neutrals, translucent glass, 16px blur + 140% saturation), Tailwind CSS, Radix UI via shadcn/ui components, Inter font. Emphasizes an Apple-inspired color palette and mobile-responsive design.
-- **UI/UX Decisions**: Fixed top navigation with Liquid Glass effect, animated link glows, responsive account grid, full-screen modals, micro-animations, Apple blue accent, accessibility features, and liquid glass card aesthetics.
-- **Key Features**: Comprehensive banking and brokerage integration, full buy/sell workflow, multi-tab stock detail modal with TradingView charts, unified real-time market data, Accounts Directory, Portfolio Dashboard, Watchlist & Alerts, Money Movement Tracking (transaction analysis, top 10 sources/spend with 3-month averages), and a comprehensive logo system via Brandfetch.
-- **Landing Page (Official - Nov 2025)**: The /new landing page is now the official landing page served at "/" and "/landing" routes. Legacy landing available at "/legacy". Features: Interactive dashboard preview, "As Seen On" section, scrolling institutions banner, FAQ, tiered pricing comparison with monthly/annual toggle, sticky navigation CTA appearing on scroll, exit-intent popup offering free guide, and multiple conversion-optimized CTAs. **Partner Section (Nov 2025)**: Displays "Our Partners" with 26 financial institutions (8 banks via Teller: Chase, Bank of America, Wells Fargo, Citi, Capital One, US Bank, PNC, Truist; 13 brokerages via SnapTrade: Fidelity, Schwab, Robinhood, E*TRADE, Webull, Interactive Brokers, TD Ameritrade, Alpaca, Vanguard, Public, Tradestation, Questrade, Wealthsimple; 3 crypto via SnapTrade: Coinbase, Binance, Kraken; plus Venmo and PayPal). **Social Proof Notifications (Nov 2025)**: 18 signup/referral-focused variations only, no account connection messages, rotating every 5-8 seconds. **Demo Dashboard (Nov 2025)**: Fully interactive preview matching actual dashboard with: clickable account cards opening detailed modals (Overview, Holdings for investments, Recent Activity), live portfolio holdings with Brandfetch logos (React state-driven fallbacks using Record<string, boolean> for failed logo tracking), profit/loss indicators, real transaction history, recurring subscriptions, and Money Movement section showing Money In/Out with top sources/spend and 3-month averages. Net worth display centered using flex-col. CSP whitelists https://img.logo.dev for logo loading.
-- **Live Data Polling**: Aggressive refresh intervals for near real-time updates - Portfolio (2s summary, 5s chart), Connections (2s), Dashboard (3s). Background holdings sync runs every 1 minute.
+### UI/UX Decisions
+The platform features an Apple 2025 "Liquid Glass" aesthetic, utilizing dark neutrals, translucent glass effects (16px blur + 140% saturation), and the Inter font. It employs Tailwind CSS and Radix UI (via shadcn/ui components) for a mobile-responsive design. Key UI elements include a fixed top navigation with a Liquid Glass effect, animated link glows, responsive account grids, full-screen modals, micro-animations, an Apple blue accent, and accessible design principles. The landing page includes an interactive dashboard preview, social proof notifications, a scrolling institutions banner, FAQ, tiered pricing, and conversion-optimized CTAs. Demo dashboards accurately reflect production data, including account-specific transactions, credit card details, debt summaries, and dynamic financial calculations.
 
-### Backend
-- **Runtime**: Node.js with Express.js.
-- **Database**: PostgreSQL with Drizzle ORM on Neon Database.
-- **Authentication**: Custom hardened JWT-based dual-mode authentication (web via httpOnly/SameSite cookies with CSRF, mobile via Bearer tokens). Features Argon2id hashing, multi-device sessions, MFA/TOTP, password reset, rate limiting, and account enumeration protection. All API endpoints use `requireAuth` middleware.
-- **CSRF Protection**: Web requests use CSRF tokens; mobile apps bypass via `X-Mobile-App: true` header.
-- **API Pattern**: RESTful API with JSON responses and robust JSON error handling.
+### Technical Implementations
+-   **Frontend**: Built with React, TypeScript, Wouter for routing, and React Query for server state management. Features include comprehensive banking/brokerage integration, buy/sell workflows, multi-tab stock detail modals with TradingView charts, unified real-time market data, Accounts Directory, Portfolio Dashboard, Watchlist & Alerts, and Money Movement Tracking. A comprehensive logo system uses Brandfetch. Live data polling is aggressive for near real-time updates (e.g., Portfolio at 2-5s, Connections at 2s, Dashboard at 3s).
+-   **Backend**: Node.js with Express.js.
+-   **Database**: PostgreSQL with Drizzle ORM on Neon Database.
+-   **Authentication**: Custom hardened JWT-based system with dual-mode support (web via httpOnly/SameSite cookies with CSRF, mobile via Bearer tokens). Includes Argon2id hashing, multi-device sessions, MFA/TOTP, password reset, rate limiting, and account enumeration protection.
+-   **API Pattern**: RESTful API with JSON responses and robust JSON error handling.
+-   **Performance**: Utilizes route-based lazy loading, component memoization, database indexing, HTTP compression, browser caching, and TanStack Query optimizations. Live market data uses a tiered polling strategy to optimize API usage.
+-   **Security**: AES-256-GCM encryption for credentials, multi-tier rate limiting, activity logging, secure sessions, double-submit-cookie CSRF, SHA-256 hashed password reset tokens, and RBAC middleware.
 
-### Performance Optimizations
-- Route-based lazy loading, component memoization, comprehensive database indexing, HTTP compression, browser caching, and TanStack Query optimizations.
-- **Live Market Data**: Tiered polling strategy (1s for quotes, 2s for orders, 5s for positions, 10s for balances, 15s for historical data) to respect API limits and reduce calls, managed by React Query `refetchInterval`.
+### Feature Specifications
+-   **Public Registration System**: Allows user registration with strong password validation, IP-based rate limiting, and waitlist assignment.
+-   **Subscription System**: Three-tier model (Free, Standard, Pro) using Stripe Checkout for payment processing and feature gating, with a Stripe Customer Portal for management.
+-   **Financial Data Management**: Supports multi-account connections, real-time balance tracking, portfolio management, and trade execution simulation.
+-   **Referral System**: Infrastructure for generating and tracking referral codes.
+-   **Communication Systems**: Resend-based email service and Slack notifications for critical events.
+-   **Feedback Systems**: A public system for feature requests and bug reports, storing feedback and notifying admins.
+-   **Lead Capture System**: Production-ready email lead capture with database persistence, Slack notifications, and rate limiting.
+-   **Alert Monitoring System**: Background service for price alerts with debouncing.
+-   **Wallet Service**: Internal fund management with pre-authorization and hold/release functionality.
+-   **Trading Aggregation Engine**: Intelligent routing, real-time position consolidation, pre-trade validation, and trade APIs.
+-   **Compliance**: Legal disclaimers system with user acknowledgment.
 
-### Key Components
-- **Public Registration System (Nov 2025)**: Production-ready user registration via `/api/auth/public-register` accepting firstName, email, and password. Features Argon2id password hashing, password strength validation (8+ chars, uppercase, lowercase, number, special char) with real-time visual feedback UI, IP-based rate limiting (3 attempts per 15 min per IP), CSRF bypass for public access, and automatic waitlist position assignment (3,285/10,000). Sets emailVerified=false with TODO for proper email verification flow. Integrated with landing page signup form with loading states and redirect to /login on success. **Password Requirements Display**: Interactive password requirements shown on focus with green checkmarks for met criteria and gray X marks for unmet (5 requirements: length, uppercase, lowercase, number, special char). **Duplicate Email Handling**: Returns 409 error "An account with this email already exists. Try logging in instead." with clickable login link for better UX (rate limiting provides enumeration protection).
-- **Application Approval System**: Landing page form for account applications with admin review.
-- **Admin Dashboard**: Restricted access for managing users, accounts, subscriptions, and analytics.
-- **Email Service**: Resend-based email system with automated logging.
-- **Slack Notification System**: Real-time Slack webhooks for business-critical events (new applications, subscriptions, user signups, feature requests/bug reports). Non-blocking notifications with structured error logging.
-- **Alert Monitoring System**: Background service for price alerts with debouncing and notifications.
-- **Financial Data Management**: Multi-account connections, real-time balance tracking, portfolio management, trade execution simulation.
-- **Subscription System**: Three-tier model (Free, Standard, Pro) utilizing Stripe Checkout for payment processing and feature gating. Free: 4 accounts. Standard: $19.99/mo or $199/yr (unlimited accounts, price alerts, spending tracking, email support). Pro: $39.99/mo or $399/yr (unlimited accounts, trading, transfers, advanced charts, custom alerts, fast support, downloadable reports). Includes Stripe Customer Portal for subscription management and webhook-driven lifecycle management. **Public Stripe Checkout Routes (Nov 2025)**: `/api/stripe/checkout/standard` and `/api/stripe/checkout/pro` accept billingPeriod (monthly/yearly) and return Stripe checkout session URL for public access with CSRF bypass and rate limiting.
-- **Referral System Infrastructure**: Backend utilities (`server/utils/referral.ts`) for generating referral codes, tracking waitlist positions, and processing referrals. Ready for future integration into production signup flow but NOT active on demo landing page to preserve email verification and CSRF safeguards.
-- **Security Framework**: AES-256-GCM encryption for credentials, multi-tier rate limiting, activity logging, secure sessions, double-submit-cookie CSRF, SHA-256 hashed password reset tokens, and RBAC middleware.
-- **Wallet Service Architecture**: Internal fund management with pre-authorization and hold/release, integrated with ACH transfers via Teller.
-- **Trading Aggregation Engine**: Intelligent routing, real-time position consolidation, pre-trade validation, trade preview/placement APIs.
-- **Modular Architecture**: Dedicated service layers for encryption, wallet management, trading aggregation, and email delivery.
-- **Compliance Framework**: Legal disclaimers system with user acknowledgment and RBAC.
-- **Teller Integration Architecture**: One enrollment per user with access tokens. Comprehensive mTLS implementation using `undici` for client certificate authentication across all Teller API calls, with `resilientTellerFetch` wrapper for retry logic and error handling.
-- **SnapTrade Integration**: Manages user credentials and brokerage authorizations, consolidated registration, server-side auto-sync, and auto-recovery for orphaned accounts. Includes brokerage capability detection, real-time market data via `/api/quotes/:symbol`, mobile OAuth support, and real-time webhook system for transactional cascading deletion and live data updates.
-  - **Data Mapping (Fixed Nov 2025)**: Orders correctly use `execution_price`, `total_quantity`, `filled_quantity`, `limit_price`; Activities use `net_amount` for cash impact; Positions use nested `symbol.symbol.symbol` structure.
-  - **Live Holdings Sync (Webhook-Driven)**: Primary updates via SnapTrade webhooks for real-time, event-driven data refresh. Webhook handler (`server/routes/snaptrade-webhooks.ts`) immediately refreshes holdings and invalidates balance cache when `ACCOUNT_HOLDINGS_UPDATED` events arrive. Background polling service (`server/services/holdings-sync.ts`) runs every **15 minutes** as backup safety net only. This architecture prevents triggering brokerage security systems (e.g., Schwab 2FA) while maintaining real-time data freshness.
-  - **Orphaned Connection Cleanup System**: Automated background service (`server/services/orphaned-connections-cleanup.ts`) runs every 6 hours to detect and remove truly orphaned records. **Fixed Logic (Nov 2025)**: Only deletes SnapTrade users when the parent Flint user account no longer exists (user deleted their account). Does NOT delete users who temporarily have zero connections. Features atomic cascading deletes with Drizzle transactions, comprehensive error logging with full stack traces, multi-level alerting (CRITICAL/HIGH severity), and detailed VC metrics for monitoring. Webhook events logged for audit trail.
-- **Feature Request & Bug Report System**: Public endpoint for user feedback submission, stored in a `feature_requests` table with validation, Slack notifications, and admin review capabilities.
-- **Lead Capture System (Nov 2025)**: Production-ready email lead capture via `/api/leads` for CRM and drip campaign tracking. Features include: database persistence in `lead_captures` table with email, goals array, and source fields; real-time Slack notifications via `notifyLeadCapture()` in slackNotifier service; IP-based rate limiting (same limits as registration: 3 req/15min per IP); CSRF bypass for public access; integration with landing page exit-intent popup and "What's your #1 money goal?" form. Goals are stored as JSONB array for flexible marketing segmentation. Router mounted at `server/routes/leads.ts`.
-- **Demo Dashboard Enhancements (Nov 2025)**: Interactive landing page preview with production-accurate data representation. **Account-Specific Transactions**: Each account type displays contextually relevant transactions (bank accounts show retail purchases, investment accounts show buy/sell/dividend activities, crypto accounts show trades/deposits, credit cards show purchases with credit details). **Credit Card Features**: Modals display credit limit ($15,000), available credit, utilization percentage, payment due date, and minimum due. **Debt Summary Card**: Four-column summary grid includes Total Balance (assets only), Bank Accounts, Investments, and Debt cards with proper red styling for debt display. **Dynamic Financial Calculations**: Helper functions `parseCurrency()` and `formatCurrency()` ensure accurate math - Net Worth = Total Assets - |Debt| computed in real-time from account balances, eliminating hard-coded values. **Modal UX**: Scrollable with max-height, click-inside doesn't close (only overlay/X button), preventing accidental dismissal.
-
-### Production Infrastructure
-- **Database Backup & Recovery**: Neon Database with continuous data protection and 7-day PITR.
-- **SSL/HTTPS Configuration**: Automatic SSL via Let's Encrypt on Replit.
-- **Error Monitoring & Logging**: Betterstack Logtail for real-time error tracking and log streaming with PII redaction and structured logging, including custom metrics logging.
+### System Design Choices
+-   **Modular Architecture**: Dedicated service layers for encryption, wallet management, trading aggregation, and email delivery.
+-   **Webhook-Driven Data Sync**: Primary data updates (e.g., holdings) are driven by SnapTrade webhooks for real-time, event-driven refresh, with a background polling service as a backup.
+-   **Orphaned Connection Cleanup**: Automated service to detect and remove truly orphaned SnapTrade users.
+-   **Error Monitoring & Logging**: Betterstack Logtail for real-time error tracking, PII redaction, structured logging, and custom metrics.
 
 ## External Dependencies
 
 ### Core Integrations
-- **Teller.io**: Bank account connections, ACH transfers, Zelle-based credit card payments.
-- **SnapTrade**: Brokerage account connections, real-time quotes, trading functionalities.
-- **Stripe**: Subscription management and payment processing (migrating from Whop.com).
-- **Finnhub**: General financial data.
-- **Polygon.io**: Real-time market data and live pricing.
-- **Alpha Vantage**: Fallback for real-time market data.
-- **Brandfetch Logo API**: Provides logos for financial institutions, crypto, stocks, and merchants.
-- **Resend**: Email delivery service.
-- **Betterstack Logtail**: Real-time error monitoring and logging.
-- **Grafana**: Dashboarding and metrics visualization.
+-   **Teller.io**: Bank account connections, ACH transfers, Zelle-based credit card payments, with mTLS implementation.
+-   **SnapTrade**: Brokerage account connections, real-time quotes, trading functionalities, and webhook-driven data synchronization.
+-   **Stripe**: Subscription management and payment processing.
+-   **Finnhub**: General financial data.
+-   **Polygon.io**: Real-time market data and live pricing.
+-   **Alpha Vantage**: Fallback for real-time market data.
+-   **Brandfetch Logo API**: Provides institutional and stock logos.
+-   **Resend**: Email delivery service.
+-   **Betterstack Logtail**: Real-time error monitoring and logging.
+-   **Grafana**: Dashboarding and metrics visualization.
 
 ### Technical Libraries/Frameworks
-- **@neondatabase/serverless**: PostgreSQL connectivity.
-- **drizzle-orm**: Database ORM.
-- **@tanstack/react-query**: Server state management.
-- **@radix-ui/react-\***: UI component primitives.
-- **argon2**: Secure password hashing.
-- **jsonwebtoken**: JWT token generation and verification.
-- **speakeasy**: TOTP/MFA implementation.
-- **undici**: HTTP client with mTLS support for Teller.io authentication.
-- **vite**: Frontend build tool.
-- **typescript**: Language.
-- **tailwindcss**: CSS framework.
-- **esbuild**: Backend bundling.
-- **date-fns**: Date formatting.
+-   **@neondatabase/serverless**: PostgreSQL connectivity.
+-   **drizzle-orm**: Database ORM.
+-   **@tanstack/react-query**: Server state management.
+-   **@radix-ui/react-\***: UI component primitives.
+-   **argon2**: Secure password hashing.
+-   **jsonwebtoken**: JWT token handling.
+-   **speakeasy**: TOTP/MFA implementation.
+-   **undici**: HTTP client with mTLS support.
+-   **vite**: Frontend build tool.
+-   **typescript**: Language.
+-   **tailwindcss**: CSS framework.
+-   **esbuild**: Backend bundling.
+-   **date-fns**: Date formatting utilities.
