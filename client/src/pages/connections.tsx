@@ -227,23 +227,23 @@ export default function Connections() {
           </Button>
         </Link>
         <div>
-          <h1 className="text-3xl font-bold">Connect Accounts</h1>
-          <p className="text-muted-foreground mt-1">
+          <h1 className="apple-h2">Connect Accounts</h1>
+          <p className="apple-body text-muted-foreground mt-1">
             Securely connect your financial accounts to start managing your portfolio
           </p>
         </div>
       </div>
 
       {error && (
-        <Alert variant="destructive" className="mb-6">
+        <Alert variant="destructive" className="mb-6 rounded-xl">
           <AlertCircle className="h-4 w-4" />
-          <AlertDescription>{error}</AlertDescription>
+          <AlertDescription className="apple-caption">{error}</AlertDescription>
         </Alert>
       )}
 
-      <div className="flex items-center gap-2 mb-6 p-3 bg-muted rounded-lg">
+      <div className="flex items-center gap-2 mb-6 p-3 bg-muted rounded-xl">
         <Shield className="h-5 w-5 text-green-600" />
-        <p className="text-sm">
+        <p className="apple-caption">
           Your credentials are encrypted and never stored on our servers
         </p>
       </div>
@@ -256,13 +256,13 @@ export default function Connections() {
         </TabsList>
 
         <TabsContent value="connected" className="space-y-4">
-          <Card>
+          <Card className="rounded-xl">
             <CardHeader>
-              <CardTitle className="flex items-center justify-between">
+              <CardTitle className="apple-h3 flex items-center justify-between">
                 <span>Your Connected Accounts</span>
                 <Badge variant="secondary">{connectedAccounts.length} account{connectedAccounts.length !== 1 ? 's' : ''}</Badge>
               </CardTitle>
-              <CardDescription>
+              <CardDescription className="apple-body">
                 Manage your connected financial accounts and their permissions
               </CardDescription>
             </CardHeader>
@@ -278,21 +278,21 @@ export default function Connections() {
               ) : connectedAccounts.length === 0 ? (
                 <div className="text-center py-8">
                   <Building2 className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                  <h3 className="text-lg font-semibold mb-2">No Connected Accounts</h3>
-                  <p className="text-muted-foreground mb-4">
+                  <h3 className="apple-h3 mb-2">No Connected Accounts</h3>
+                  <p className="apple-body text-muted-foreground mb-4">
                     Connect your first account to start tracking your portfolio
                   </p>
                   <div className="flex gap-2 justify-center">
                     <Button onClick={() => {
                       const tabsElement = document.querySelector('[value="brokerages"]') as HTMLButtonElement;
                       tabsElement?.click();
-                    }}>
+                    }} className="rounded-xl">
                       Add Brokerage
                     </Button>
                     <Button variant="outline" onClick={() => {
                       const tabsElement = document.querySelector('[value="banks"]') as HTMLButtonElement;
                       tabsElement?.click();
-                    }}>
+                    }} className="rounded-xl">
                       Add Bank
                     </Button>
                   </div>
@@ -315,10 +315,10 @@ export default function Connections() {
                   {connectedAccounts.some(acc => acc.provider === 'snaptrade') && (
                     <>
                       <Separator className="my-4" />
-                      <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                      <div className="flex items-center justify-between p-3 bg-muted/50 rounded-xl">
                         <div className="flex items-center gap-2">
                           <Trash2 className="h-4 w-4 text-destructive" />
-                          <span className="text-sm font-medium">Disconnect All Brokerage Accounts</span>
+                          <span className="apple-caption font-medium">Disconnect All Brokerage Accounts</span>
                         </div>
                         <Button
                           variant="destructive"
@@ -342,24 +342,24 @@ export default function Connections() {
         </TabsContent>
 
         <TabsContent value="brokerages" className="space-y-4">
-          <Card>
+          <Card className="rounded-xl">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+              <CardTitle className="apple-h3 flex items-center gap-2">
                 <Building2 className="h-5 w-5" />
                 Connect Brokerage Account
               </CardTitle>
-              <CardDescription>
+              <CardDescription className="apple-body">
                 Trade stocks, ETFs, and more directly from Flint
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                <div className="p-4 border rounded-lg">
-                  <h3 className="font-semibold mb-2">Supported Brokerages</h3>
-                  <p className="text-sm text-muted-foreground mb-3">
+                <div className="p-4 border rounded-xl">
+                  <h3 className="apple-body font-semibold mb-2">Supported Brokerages</h3>
+                  <p className="apple-caption text-muted-foreground mb-3">
                     Connect with 30+ major brokerages including Robinhood, E*TRADE, TD Ameritrade, and more
                   </p>
-                  <ul className="text-sm space-y-1 text-muted-foreground">
+                  <ul className="apple-caption space-y-1 text-muted-foreground">
                     <li>• Real-time portfolio tracking</li>
                     <li>• Execute trades across multiple accounts</li>
                     <li>• View transaction history</li>
@@ -382,24 +382,24 @@ export default function Connections() {
         </TabsContent>
 
         <TabsContent value="banks" className="space-y-4">
-          <Card>
+          <Card className="rounded-xl">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+              <CardTitle className="apple-h3 flex items-center gap-2">
                 <CreditCard className="h-5 w-5" />
                 Connect Bank or Card
               </CardTitle>
-              <CardDescription>
+              <CardDescription className="apple-body">
                 Link your bank accounts and credit cards for complete financial overview
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                <div className="p-4 border rounded-lg">
-                  <h3 className="font-semibold mb-2">Supported Institutions</h3>
-                  <p className="text-sm text-muted-foreground mb-3">
+                <div className="p-4 border rounded-xl">
+                  <h3 className="apple-body font-semibold mb-2">Supported Institutions</h3>
+                  <p className="apple-caption text-muted-foreground mb-3">
                     Connect with thousands of banks and credit unions across the US
                   </p>
-                  <ul className="text-sm space-y-1 text-muted-foreground">
+                  <ul className="apple-caption space-y-1 text-muted-foreground">
                     <li>• View real-time balances</li>
                     <li>• Track spending patterns</li>
                     <li>• Monitor transactions</li>
@@ -422,12 +422,12 @@ export default function Connections() {
         </TabsContent>
       </Tabs>
 
-      <Card className="mt-6">
+      <Card className="mt-6 rounded-xl">
         <CardHeader>
-          <CardTitle className="text-sm">Security & Privacy</CardTitle>
+          <CardTitle className="apple-body">Security & Privacy</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="space-y-2 text-sm text-muted-foreground">
+          <div className="space-y-2 apple-caption text-muted-foreground">
             <p>• Bank-level 256-bit encryption protects your data</p>
             <p>• We never store your login credentials</p>
             <p>• Read-only access by default (upgrade for trading)</p>

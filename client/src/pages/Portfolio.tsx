@@ -229,10 +229,10 @@ export default function Portfolio() {
         <div className="mb-8">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="h1 bg-gradient-to-r from-white via-cyan-200 to-blue-400 bg-clip-text text-transparent">
+              <h1 className="apple-h1 bg-gradient-to-r from-white via-cyan-200 to-blue-400 bg-clip-text text-transparent">
                 Portfolio Overview
               </h1>
-              <p className="text-slate-400 mt-2">
+              <p className="apple-body text-slate-400 mt-2">
                 Your complete financial picture across {totals.accountCount} connected accounts
               </p>
             </div>
@@ -241,9 +241,9 @@ export default function Portfolio() {
 
         {/* Data freshness indicator */}
         {summary?.metadata?.dataDelayed && (
-          <Alert className="mb-8 bg-slate-800/50 border-slate-700 backdrop-blur-sm">
+          <Alert className="mb-8 bg-slate-800/50 border-slate-700 backdrop-blur-sm rounded-xl">
             <Info className="h-4 w-4 text-blue-400" />
-            <AlertDescription className="text-slate-300">
+            <AlertDescription className="apple-caption text-slate-300">
               Some market data may be delayed. Last updated: {new Date(summary.metadata.lastUpdated).toLocaleTimeString()}
             </AlertDescription>
           </Alert>
@@ -251,26 +251,26 @@ export default function Portfolio() {
 
         {/* Key Metrics Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <Card className="bg-slate-800/50 border-slate-700 backdrop-blur-sm hover:bg-slate-800/70 transition-colors">
+          <Card className="bg-slate-800/50 border-slate-700 backdrop-blur-sm hover:bg-slate-800/70 transition-colors rounded-xl">
             <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-slate-400">
+              <CardTitle className="apple-caption text-slate-400">
                 Net Worth
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="stat-number text-white">
+              <div className="apple-h2 text-white">
                 {formatCurrency(netWorth)}
               </div>
-              <div className={`flex items-center mt-2 text-sm ${isPositive ? 'text-green-400' : 'text-red-400'}`}>
+              <div className={`flex items-center mt-2 apple-caption ${isPositive ? 'text-green-400' : 'text-red-400'}`}>
                 {isPositive ? <ArrowUpRight className="h-4 w-4 mr-1" /> : <ArrowDownRight className="h-4 w-4 mr-1" />}
                 <span>{formatPercent(dayPct)} today</span>
               </div>
             </CardContent>
         </Card>
 
-        <Card className="bg-slate-800/50 border-slate-700 backdrop-blur-sm hover:bg-slate-800/70 transition-colors">
+        <Card className="bg-slate-800/50 border-slate-700 backdrop-blur-sm hover:bg-slate-800/70 transition-colors rounded-xl">
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-slate-400">
+            <CardTitle className="apple-caption text-slate-400">
               <div className="flex items-center gap-2">
                 <Wallet className="h-4 w-4" />
                 Investable Assets
@@ -278,18 +278,18 @@ export default function Portfolio() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="stat-number text-white">
+            <div className="apple-h2 text-white">
               {formatCurrency(summary?.totals?.investable || 0)}
             </div>
-            <p className="text-xs text-slate-400 mt-2">
+            <p className="apple-caption text-slate-400 mt-2">
               Stocks & Crypto
             </p>
           </CardContent>
         </Card>
 
-        <Card className="bg-slate-800/50 border-slate-700 backdrop-blur-sm hover:bg-slate-800/70 transition-colors">
+        <Card className="bg-slate-800/50 border-slate-700 backdrop-blur-sm hover:bg-slate-800/70 transition-colors rounded-xl">
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-slate-400">
+            <CardTitle className="apple-caption text-slate-400">
               <div className="flex items-center gap-2">
                 <DollarSign className="h-4 w-4" />
                 Cash & Equivalents
@@ -297,18 +297,18 @@ export default function Portfolio() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="stat-number text-white">
+            <div className="apple-h2 text-white">
               {formatCurrency(summary?.totals?.cash || 0)}
             </div>
-            <p className="text-xs text-slate-400 mt-2">
+            <p className="apple-caption text-slate-400 mt-2">
               Available for investment
             </p>
           </CardContent>
         </Card>
 
-        <Card className="bg-slate-800/50 border-slate-700 backdrop-blur-sm hover:bg-slate-800/70 transition-colors">
+        <Card className="bg-slate-800/50 border-slate-700 backdrop-blur-sm hover:bg-slate-800/70 transition-colors rounded-xl">
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-slate-400">
+            <CardTitle className="apple-caption text-slate-400">
               <div className="flex items-center gap-2">
                 <CreditCard className="h-4 w-4" />
                 Total Debt
@@ -316,10 +316,10 @@ export default function Portfolio() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="stat-number text-red-400">
+            <div className="apple-h2 text-red-400">
               {formatCurrency(Math.abs(summary?.totals?.debt || 0))}
             </div>
-            <p className="text-xs text-slate-400 mt-2">
+            <p className="apple-caption text-slate-400 mt-2">
               Credit cards & loans
             </p>
           </CardContent>

@@ -211,7 +211,7 @@ export default function Settings() {
   if (isLoading) {
     return (
       <div className="container mx-auto p-4 max-w-4xl">
-        <h1 className="text-3xl font-bold mb-6">Settings</h1>
+        <h1 className="apple-h2 mb-6">Settings</h1>
         <div className="space-y-4">
           <Skeleton className="h-96 w-full" />
         </div>
@@ -221,7 +221,7 @@ export default function Settings() {
 
   return (
     <div className="container mx-auto p-4 max-w-4xl">
-      <h1 className="text-3xl font-bold mb-6 bg-gradient-to-r from-blue-400 to-cyan-500 bg-clip-text text-transparent">
+      <h1 className="apple-h2 mb-6 bg-gradient-to-r from-blue-400 to-cyan-500 bg-clip-text text-transparent">
         Settings
       </h1>
 
@@ -251,49 +251,51 @@ export default function Settings() {
 
         {/* Profile Tab */}
         <TabsContent value="profile">
-          <Card>
+          <Card className="rounded-xl">
             <CardHeader>
-              <CardTitle>Profile Information</CardTitle>
-              <CardDescription>
+              <CardTitle className="apple-h3">Profile Information</CardTitle>
+              <CardDescription className="apple-body">
                 Update your personal information
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="firstName">First Name</Label>
+                  <Label htmlFor="firstName" className="apple-caption">First Name</Label>
                   <Input
                     id="firstName"
                     value={profile?.firstName || ''}
                     onChange={(e) => setProfileData({...profileData, firstName: e.target.value})}
                     placeholder="Enter first name"
+                    className="rounded-xl"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="lastName">Last Name</Label>
+                  <Label htmlFor="lastName" className="apple-caption">Last Name</Label>
                   <Input
                     id="lastName"
                     value={profile?.lastName || ''}
                     onChange={(e) => setProfileData({...profileData, lastName: e.target.value})}
                     placeholder="Enter last name"
+                    className="rounded-xl"
                   />
                 </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email" className="apple-caption">Email</Label>
                 <Input
                   id="email"
                   type="email"
                   value={user?.email || ''}
                   disabled
-                  className="bg-gray-50 dark:bg-gray-900"
+                  className="bg-gray-50 dark:bg-gray-900 rounded-xl"
                 />
-                <p className="text-sm text-gray-500">Email cannot be changed</p>
+                <p className="apple-caption text-gray-500">Email cannot be changed</p>
               </div>
               <Button 
                 onClick={() => updateProfileMutation.mutate(profileData)}
                 disabled={updateProfileMutation.isPending}
-                className="w-full sm:w-auto"
+                className="w-full sm:w-auto rounded-xl"
               >
                 {updateProfileMutation.isPending ? 'Saving...' : 'Save Changes'}
               </Button>
@@ -301,21 +303,21 @@ export default function Settings() {
           </Card>
 
           {/* Subscription Management Card */}
-          <Card className="mt-4">
+          <Card className="mt-4 rounded-xl">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+              <CardTitle className="apple-h3 flex items-center gap-2">
                 <CreditCard className="w-5 h-5" />
                 Subscription
               </CardTitle>
-              <CardDescription>
+              <CardDescription className="apple-body">
                 Manage your Flint subscription
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="font-medium">Current Plan</p>
-                  <p className="text-sm text-gray-500">
+                  <p className="apple-body font-medium">Current Plan</p>
+                  <p className="apple-caption text-gray-500">
                     {user?.subscriptionTier === 'free' ? 'Free' : user?.subscriptionTier === 'basic' ? 'Flint Basic' : user?.subscriptionTier === 'pro' ? 'Pro' : 'Free'}
                   </p>
                 </div>
@@ -323,7 +325,7 @@ export default function Settings() {
                   <Button 
                     onClick={handleManageSubscription}
                     variant="outline"
-                    className="gap-2"
+                    className="gap-2 rounded-xl"
                     data-testid="button-manage-subscription"
                   >
                     <CreditCard className="w-4 h-4" />
@@ -333,12 +335,12 @@ export default function Settings() {
               </div>
               {user?.subscriptionTier === 'free' && (
                 <div className="pt-4 border-t">
-                  <p className="text-sm text-gray-500 mb-3">
+                  <p className="apple-body text-gray-500 mb-3">
                     Upgrade to unlock unlimited account connections, portfolio tracking, and more.
                   </p>
                   <Button 
                     onClick={() => window.location.href = '/subscribe'}
-                    className="w-full sm:w-auto"
+                    className="w-full sm:w-auto rounded-xl"
                     data-testid="button-upgrade-plan"
                   >
                     Upgrade Plan
@@ -351,10 +353,10 @@ export default function Settings() {
 
         {/* Notifications Tab */}
         <TabsContent value="notifications">
-          <Card>
+          <Card className="rounded-xl">
             <CardHeader>
-              <CardTitle>Notification Preferences</CardTitle>
-              <CardDescription>
+              <CardTitle className="apple-h3">Notification Preferences</CardTitle>
+              <CardDescription className="apple-body">
                 Configure how and when you receive alerts
               </CardDescription>
             </CardHeader>
@@ -362,11 +364,11 @@ export default function Settings() {
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <div className="space-y-0.5">
-                    <Label htmlFor="email-alerts" className="text-base flex items-center gap-2">
+                    <Label htmlFor="email-alerts" className="apple-body flex items-center gap-2">
                       <Mail className="w-4 h-4" />
                       Email Alerts
                     </Label>
-                    <p className="text-sm text-gray-500">Receive price alerts via email</p>
+                    <p className="apple-caption text-gray-500">Receive price alerts via email</p>
                   </div>
                   <Switch
                     id="email-alerts"
@@ -379,11 +381,11 @@ export default function Settings() {
 
                 <div className="flex items-center justify-between">
                   <div className="space-y-0.5">
-                    <Label htmlFor="push-alerts" className="text-base flex items-center gap-2">
+                    <Label htmlFor="push-alerts" className="apple-body flex items-center gap-2">
                       <Smartphone className="w-4 h-4" />
                       Push Notifications
                     </Label>
-                    <p className="text-sm text-gray-500">Receive alerts on your device</p>
+                    <p className="apple-caption text-gray-500">Receive alerts on your device</p>
                   </div>
                   <Switch
                     id="push-alerts"
@@ -395,11 +397,11 @@ export default function Settings() {
                 </div>
 
                 <div className="space-y-3 pt-4 border-t">
-                  <Label className="text-base flex items-center gap-2">
+                  <Label className="apple-body flex items-center gap-2">
                     <Clock className="w-4 h-4" />
                     Quiet Hours
                   </Label>
-                  <p className="text-sm text-gray-500">Don't send notifications during these hours</p>
+                  <p className="apple-caption text-gray-500">Don't send notifications during these hours</p>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="quiet-start">Start Time</Label>
@@ -432,18 +434,18 @@ export default function Settings() {
 
         {/* Connected Accounts Tab */}
         <TabsContent value="accounts">
-          <Card>
+          <Card className="rounded-xl">
             <CardHeader>
-              <CardTitle>Connected Accounts</CardTitle>
-              <CardDescription>
+              <CardTitle className="apple-h3">Connected Accounts</CardTitle>
+              <CardDescription className="apple-body">
                 Manage your connected financial accounts
               </CardDescription>
             </CardHeader>
             <CardContent>
               {connectedAccounts?.length === 0 ? (
-                <Alert>
+                <Alert className="rounded-xl">
                   <AlertCircle className="h-4 w-4" />
-                  <AlertDescription>
+                  <AlertDescription className="apple-body">
                     No accounts connected yet. Go to Accounts page to connect.
                   </AlertDescription>
                 </Alert>
@@ -498,25 +500,25 @@ export default function Settings() {
 
         {/* Data Export Tab */}
         <TabsContent value="data">
-          <Card>
+          <Card className="rounded-xl">
             <CardHeader>
-              <CardTitle>Export Your Data</CardTitle>
-              <CardDescription>
+              <CardTitle className="apple-h3">Export Your Data</CardTitle>
+              <CardDescription className="apple-body">
                 Download your financial data in CSV format
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid gap-4">
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-4 border rounded-lg">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-4 border rounded-xl">
                   <div className="mb-3 sm:mb-0">
-                    <h3 className="font-medium">Holdings Data</h3>
-                    <p className="text-sm text-gray-500">Export all your current holdings and positions</p>
+                    <h3 className="apple-body font-medium">Holdings Data</h3>
+                    <p className="apple-caption text-gray-500">Export all your current holdings and positions</p>
                   </div>
                   <Button
                     onClick={() => exportDataMutation.mutate('holdings')}
                     disabled={exportDataMutation.isPending}
                     variant="outline"
-                    className="w-full sm:w-auto"
+                    className="w-full sm:w-auto rounded-xl"
                   >
                     <Download className="w-4 h-4 mr-2" />
                     Export Holdings
@@ -553,19 +555,19 @@ export default function Settings() {
 
         {/* Security Tab */}
         <TabsContent value="security">
-          <Card>
+          <Card className="rounded-xl">
             <CardHeader>
-              <CardTitle>Security & Privacy</CardTitle>
-              <CardDescription>
+              <CardTitle className="apple-h3">Security & Privacy</CardTitle>
+              <CardDescription className="apple-body">
                 Manage your account security and privacy settings
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              <Alert className="border-red-200 dark:border-red-900">
+              <Alert className="border-red-200 dark:border-red-900 rounded-xl">
                 <Trash2 className="h-4 w-4 text-red-600" />
                 <AlertDescription className="text-red-600 dark:text-red-400">
-                  <strong>Danger Zone</strong>
-                  <p className="mt-2">
+                  <strong className="apple-body">Danger Zone</strong>
+                  <p className="apple-caption mt-2">
                     Deleting your account is permanent and cannot be undone. 
                     All your data, connections, and settings will be permanently removed.
                   </p>
@@ -574,7 +576,7 @@ export default function Settings() {
 
               <AlertDialog>
                 <AlertDialogTrigger asChild>
-                  <Button variant="destructive" className="w-full sm:w-auto">
+                  <Button variant="destructive" className="w-full sm:w-auto rounded-xl">
                     <Trash2 className="w-4 h-4 mr-2" />
                     Delete Account
                   </Button>
