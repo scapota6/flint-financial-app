@@ -547,7 +547,7 @@ export default function LandingNew() {
         </section>
 
         {/* Launch Giveaway Section */}
-        <section className="py-16 bg-gradient-to-r from-blue-900/30 via-purple-900/30 to-blue-900/30 border-y border-white/20">
+        <section className="py-16 bg-gradient-to-r from-blue-900/30 via-blue-800/30 to-blue-900/30 border-y border-white/20">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center">
             <h2 className="text-4xl font-bold mb-4">
               🚀 Flint Launch Giveaway
@@ -629,8 +629,8 @@ export default function LandingNew() {
               {/* Stay in Control */}
               <Card className="bg-white/5 border-white/10 p-8 hover:bg-white/10 transition-all hover:scale-105 hover:shadow-2xl" data-testid="value-card-control">
                 <div className="flex flex-col items-center text-center space-y-4">
-                  <div className="h-16 w-16 rounded-full bg-purple-600/20 flex items-center justify-center">
-                    <Shield className="h-8 w-8 text-purple-400" />
+                  <div className="h-16 w-16 rounded-full bg-blue-600/20 flex items-center justify-center">
+                    <Shield className="h-8 w-8 text-blue-400" />
                   </div>
                   <h3 className="text-2xl font-bold">Stay in Control</h3>
                   <p className="text-gray-300 leading-relaxed">
@@ -944,7 +944,7 @@ export default function LandingNew() {
                             <div className="h-10 w-10 rounded-lg bg-white/10 overflow-hidden flex items-center justify-center flex-shrink-0">
                               {!logoFailed ? (
                                 <img 
-                                  src={`https://img.logo.dev/${getSymbolDomain(holding.symbol)}?token=pk_X-WsTzKaQ_C20eGOSz4ZYA&size=40`}
+                                  src={`https://cdn.brandfetch.io/${getSymbolDomain(holding.symbol)}`}
                                   alt={holding.symbol}
                                   className="w-full h-full object-contain p-1"
                                   onError={() => {
@@ -1139,7 +1139,7 @@ export default function LandingNew() {
                 </p>
 
                 {/* Referral Unlocks */}
-                <div className="mt-6 p-6 bg-gradient-to-br from-blue-600/10 to-purple-600/10 border border-blue-600/20 rounded-lg">
+                <div className="mt-6 p-6 bg-gradient-to-br from-blue-600/10 to-blue-800/10 border border-blue-600/20 rounded-lg">
                   <h4 className="text-lg font-bold mb-4">🔄 Invite & Unlock</h4>
                   <div className="space-y-3 text-sm">
                     <div className="flex items-center gap-3">
@@ -1149,8 +1149,8 @@ export default function LandingNew() {
                       <p className="text-gray-300"><span className="font-semibold text-white">Refer 3</span> = Unlock unlimited accounts</p>
                     </div>
                     <div className="flex items-center gap-3">
-                      <div className="h-8 w-8 rounded-full bg-purple-600/20 flex items-center justify-center flex-shrink-0">
-                        <span className="text-purple-400 font-bold">5</span>
+                      <div className="h-8 w-8 rounded-full bg-blue-600/20 flex items-center justify-center flex-shrink-0">
+                        <span className="text-blue-400 font-bold">5</span>
                       </div>
                       <p className="text-gray-300"><span className="font-semibold text-white">Refer 5</span> = Get 1 free month of Flint Pro</p>
                     </div>
@@ -1507,7 +1507,7 @@ export default function LandingNew() {
       {/* Social Proof Notification Toast */}
       {showNotification && (
         <div 
-          className="fixed bottom-4 left-4 max-w-sm bg-gradient-to-r from-blue-600/90 to-purple-600/90 backdrop-blur-xl border border-white/20 rounded-lg p-4 shadow-2xl z-50 animate-[slideInLeft_0.3s_ease-out]"
+          className="fixed bottom-4 left-4 max-w-sm bg-gradient-to-r from-blue-600/90 to-blue-800/90 backdrop-blur-xl border border-white/20 rounded-lg p-4 shadow-2xl z-50 animate-[slideInLeft_0.3s_ease-out]"
           data-testid="social-proof-notification"
         >
           <div className="flex items-center gap-3">
@@ -1618,7 +1618,7 @@ export default function LandingNew() {
                                   <div className="h-12 w-12 rounded-lg bg-white/10 overflow-hidden flex items-center justify-center flex-shrink-0">
                                     {!logoFailed ? (
                                       <img 
-                                        src={`https://img.logo.dev/${getSymbolDomain(holding.symbol)}?token=pk_X-WsTzKaQ_C20eGOSz4ZYA&size=48`}
+                                        src={`https://cdn.brandfetch.io/${getSymbolDomain(holding.symbol)}`}
                                         alt={holding.symbol}
                                         className="w-full h-full object-contain p-1"
                                         onError={() => {
