@@ -551,6 +551,27 @@ export const featureRequests = pgTable("feature_requests", {
   index("feature_requests_submitted_idx").on(table.submittedAt),
 ]);
 
+// Lead captures table (exit-intent popup and other lead generation)
+export const leadCaptures = pgTable("lead_captures", {
+  id: serial("id").primaryKey(),
+  email: varchar("email").notNull(),
+  goals: text("goals").array(), // Selected money goals
+  source: varchar("source").notNull().default("exit_intent"), // exit_intent, hero_cta, etc.
+  submittedAt: timestamp("submitted_at").defaultNow(),
+}, (table) => [
+  index("lead_captures_email_idx").on(table.email),
+  index("lead_captures_source_idx").on(table.source),
+  index("lead_captures_submitted_idx").on(table.submittedAt),
+]);
+
+export const insertLeadCaptureSchema = createInsertSchema(leadCaptures).omit({
+  id: true,
+  submittedAt: true,
+});
+
+export type InsertLeadCapture = z.infer<typeof insertLeadCaptureSchema>;
+export type SelectLeadCapture = typeof leadCaptures.$inferSelect;
+
 // Audit logs table (admin actions tracking)
 export const auditLogs = pgTable("audit_logs", {
   id: serial("id").primaryKey(),

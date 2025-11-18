@@ -41,6 +41,9 @@ interface DemoAccount {
   balance: string;
   change: string;
   id: string;
+  creditLimit?: string;
+  availableCredit?: string;
+  transactions?: DemoTransaction[];
 }
 
 interface DemoHolding {
@@ -150,12 +153,58 @@ const INSTITUTIONS = [
 
 // Demo data sets with subscriptions and holdings
 const DEMO_DATA_1: DemoData = {
-  netWorth: '$127,543.21',
+  netWorth: '$106,309.21', // Calculated: (5234.12 + 89432.45 + 12876.64) - 1234.00
   accounts: [
-    { name: 'Chase Checking', type: 'Bank', balance: '$5,234.12', change: '+2.3%', id: 'chase-1' },
-    { name: 'Fidelity Brokerage', type: 'Investing', balance: '$89,432.45', change: '+8.7%', id: 'fidelity-1' },
-    { name: 'Coinbase', type: 'Crypto', balance: '$12,876.64', change: '-3.2%', id: 'coinbase-1' },
-    { name: 'Chase Sapphire', type: 'Credit', balance: '-$1,234.00', change: '0%', id: 'chase-credit-1' }
+    { 
+      name: 'Chase Checking', 
+      type: 'Bank', 
+      balance: '$5,234.12', 
+      change: '+2.3%', 
+      id: 'chase-1',
+      transactions: [
+        { date: 'Nov 16', merchant: 'Whole Foods', amount: '-$87.43', category: 'Groceries' },
+        { date: 'Nov 15', merchant: 'Shell Gas', amount: '-$45.00', category: 'Transportation' },
+        { date: 'Nov 15', merchant: 'Salary Deposit', amount: '+$4,250.00', category: 'Income' }
+      ]
+    },
+    { 
+      name: 'Fidelity Brokerage', 
+      type: 'Investing', 
+      balance: '$89,432.45', 
+      change: '+8.7%', 
+      id: 'fidelity-1',
+      transactions: [
+        { date: 'Nov 16', merchant: 'Bought AAPL', amount: '-$1,894.50', category: 'Buy' },
+        { date: 'Nov 14', merchant: 'Sold TSLA', amount: '+$2,387.70', category: 'Sell' },
+        { date: 'Nov 13', merchant: 'Dividend AAPL', amount: '+$47.50', category: 'Dividend' }
+      ]
+    },
+    { 
+      name: 'Coinbase', 
+      type: 'Crypto', 
+      balance: '$12,876.64', 
+      change: '-3.2%', 
+      id: 'coinbase-1',
+      transactions: [
+        { date: 'Nov 16', merchant: 'Bought ETH', amount: '-$500.00', category: 'Buy' },
+        { date: 'Nov 14', merchant: 'Sold BTC', amount: '+$1,250.00', category: 'Sell' },
+        { date: 'Nov 12', merchant: 'Deposited USD', amount: '+$1,000.00', category: 'Deposit' }
+      ]
+    },
+    { 
+      name: 'Chase Sapphire', 
+      type: 'Credit', 
+      balance: '-$1,234.00', 
+      change: '0%', 
+      id: 'chase-credit-1',
+      creditLimit: '$10,000',
+      availableCredit: '$8,766',
+      transactions: [
+        { date: 'Nov 16', merchant: 'Amazon', amount: '-$42.99', category: 'Shopping' },
+        { date: 'Nov 14', merchant: 'Starbucks', amount: '-$6.75', category: 'Food' },
+        { date: 'Nov 13', merchant: 'Netflix', amount: '-$15.99', category: 'Entertainment' }
+      ]
+    }
   ],
   holdings: [
     { symbol: 'AAPL', name: 'Apple Inc.', quantity: 50, avgCost: 175.20, currentPrice: 189.45, value: 9472.50, profitLoss: 712.50, profitLossPct: 8.1 },
@@ -201,12 +250,58 @@ const DEMO_DATA_1: DemoData = {
 };
 
 const DEMO_DATA_2: DemoData = {
-  netWorth: '$94,821.55',
+  netWorth: '$93,929.40', // Calculated: (3821.33 + 67234.22 + 23766.00) - 892.15
   accounts: [
-    { name: 'Wells Fargo Checking', type: 'Bank', balance: '$3,821.33', change: '+1.2%', id: 'wells-1' },
-    { name: 'Robinhood', type: 'Investing', balance: '$67,234.22', change: '+12.4%', id: 'robinhood-1' },
-    { name: 'Binance', type: 'Crypto', balance: '$23,766.00', change: '+5.6%', id: 'binance-1' },
-    { name: 'Amex Gold Card', type: 'Credit', balance: '-$892.15', change: '0%', id: 'amex-1' }
+    { 
+      name: 'Wells Fargo Checking', 
+      type: 'Bank', 
+      balance: '$3,821.33', 
+      change: '+1.2%', 
+      id: 'wells-1',
+      transactions: [
+        { date: 'Nov 16', merchant: 'Target', amount: '-$124.99', category: 'Shopping' },
+        { date: 'Nov 16', merchant: 'Chipotle', amount: '-$12.45', category: 'Food' },
+        { date: 'Nov 14', merchant: 'Freelance Payment', amount: '+$2,500.00', category: 'Income' }
+      ]
+    },
+    { 
+      name: 'Robinhood', 
+      type: 'Investing', 
+      balance: '$67,234.22', 
+      change: '+12.4%', 
+      id: 'robinhood-1',
+      transactions: [
+        { date: 'Nov 16', merchant: 'Bought MSFT', amount: '-$1,235.00', category: 'Buy' },
+        { date: 'Nov 15', merchant: 'Sold GOOGL', amount: '+$3,450.00', category: 'Sell' },
+        { date: 'Nov 13', merchant: 'Dividend MSFT', amount: '+$78.20', category: 'Dividend' }
+      ]
+    },
+    { 
+      name: 'Binance', 
+      type: 'Crypto', 
+      balance: '$23,766.00', 
+      change: '+5.6%', 
+      id: 'binance-1',
+      transactions: [
+        { date: 'Nov 16', merchant: 'Bought SOL', amount: '-$750.00', category: 'Buy' },
+        { date: 'Nov 14', merchant: 'Sold BTC', amount: '+$2,100.00', category: 'Sell' },
+        { date: 'Nov 13', merchant: 'Deposited USD', amount: '+$500.00', category: 'Deposit' }
+      ]
+    },
+    { 
+      name: 'Amex Gold Card', 
+      type: 'Credit', 
+      balance: '-$892.15', 
+      change: '0%', 
+      id: 'amex-1',
+      creditLimit: '$25,000',
+      availableCredit: '$24,107.85',
+      transactions: [
+        { date: 'Nov 16', merchant: 'Gas Station', amount: '-$52.00', category: 'Transportation' },
+        { date: 'Nov 13', merchant: 'Gym Membership', amount: '-$45.00', category: 'Health' },
+        { date: 'Nov 12', merchant: 'Uber', amount: '-$18.50', category: 'Transportation' }
+      ]
+    }
   ],
   holdings: [
     { symbol: 'MSFT', name: 'Microsoft Corp.', quantity: 30, avgCost: 385.50, currentPrice: 412.30, value: 12369, profitLoss: 804, profitLossPct: 7.0 },
@@ -249,6 +344,23 @@ const DEMO_DATA_2: DemoData = {
     }
   }
 };
+
+// Helper function to parse currency strings with proper negative sign handling
+function parseCurrency(value: string): number {
+  // Remove currency symbols and commas, but preserve the negative sign
+  const cleaned = value.replace(/[$,]/g, '');
+  return parseFloat(cleaned) || 0;
+}
+
+// Helper function to format number as currency
+function formatCurrency(value: number): string {
+  return value.toLocaleString('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+}
 
 export default function LandingNew() {
   // Email capture states
@@ -367,10 +479,34 @@ export default function LandingNew() {
   };
 
   // Money goals submission
-  const handleGoalsSubmit = (e: React.FormEvent) => {
+  const handleGoalsSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (selectedGoals.length > 0 && goalsEmail) {
-      setGoalsSubmitted(true);
+      try {
+        const response = await fetch('/api/leads', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email: goalsEmail,
+            goals: selectedGoals,
+            source: 'money_goals',
+          }),
+        });
+
+        if (response.ok) {
+          setGoalsSubmitted(true);
+        } else {
+          // Still show success to user even if backend fails
+          setGoalsSubmitted(true);
+          console.error('Failed to submit lead capture');
+        }
+      } catch (error) {
+        // Still show success to user even if network fails
+        setGoalsSubmitted(true);
+        console.error('Error submitting lead capture:', error);
+      }
     }
   };
 
@@ -946,7 +1082,16 @@ export default function LandingNew() {
               <div className="p-6 border-b border-white/10 bg-white/5">
                 <div className="flex flex-col items-center text-center">
                   <p className="apple-caption text-gray-400 mb-1">Total Net Worth</p>
-                  <p className="apple-h1 text-blue-400 mb-2" data-testid="demo-net-worth">{currentDemo.netWorth}</p>
+                  <p className="apple-h1 text-blue-400 mb-2" data-testid="demo-net-worth">
+                    {(() => {
+                      const bankBalance = parseCurrency(currentDemo.accounts.find(a => a.type === 'Bank')?.balance || '$0');
+                      const investingBalance = parseCurrency(currentDemo.accounts.find(a => a.type === 'Investing')?.balance || '$0');
+                      const cryptoBalance = parseCurrency(currentDemo.accounts.find(a => a.type === 'Crypto')?.balance || '$0');
+                      const debtBalance = parseCurrency(currentDemo.accounts.find(a => a.type === 'Credit')?.balance || '$0');
+                      const netWorth = bankBalance + investingBalance + cryptoBalance + debtBalance;
+                      return formatCurrency(netWorth);
+                    })()}
+                  </p>
                   <p className="apple-caption text-green-400">+2.4% today</p>
                 </div>
               </div>
@@ -955,37 +1100,57 @@ export default function LandingNew() {
               <div className="max-h-[600px] overflow-y-auto">
                 {/* Summary Cards - matching actual dashboard */}
                 <div className="p-6 border-b border-white/10">
-                  <div className="grid md:grid-cols-3 gap-4">
-                    <div className="bg-white/5 border border-white/10 rounded-xl p-4">
-                      <div className="flex items-center gap-2 mb-2">
-                        <TrendingUp className="h-5 w-5 text-blue-400" />
-                        <p className="apple-caption text-gray-400">Total Balance</p>
-                      </div>
-                      <p className="apple-h3">{currentDemo.netWorth}</p>
-                      <p className="apple-caption text-green-400 mt-1">+2.4% change</p>
-                    </div>
-                    
-                    <div className="bg-white/5 border border-white/10 rounded-xl p-4">
-                      <div className="flex items-center gap-2 mb-2">
-                        <Building2 className="h-5 w-5 text-blue-400" />
-                        <p className="apple-caption text-gray-400">Bank Accounts</p>
-                      </div>
-                      <p className="apple-h3">
-                        {currentDemo.accounts.find(a => a.type === 'Bank')?.balance || '$0.00'}
-                      </p>
-                      <p className="apple-caption text-gray-400 mt-1">4% of total</p>
-                    </div>
-                    
-                    <div className="bg-white/5 border border-white/10 rounded-xl p-4">
-                      <div className="flex items-center gap-2 mb-2">
-                        <LineChart className="h-5 w-5 text-blue-400" />
-                        <p className="apple-caption text-gray-400">Investments</p>
-                      </div>
-                      <p className="apple-h3">
-                        {currentDemo.accounts.find(a => a.type === 'Investing')?.balance || '$0.00'}
-                      </p>
-                      <p className="apple-caption text-green-400 mt-1">+8.7% change</p>
-                    </div>
+                  <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    {(() => {
+                      // Calculate totals using helper function
+                      const bankBalance = parseCurrency(currentDemo.accounts.find(a => a.type === 'Bank')?.balance || '$0');
+                      const investingBalance = parseCurrency(currentDemo.accounts.find(a => a.type === 'Investing')?.balance || '$0');
+                      const cryptoBalance = parseCurrency(currentDemo.accounts.find(a => a.type === 'Crypto')?.balance || '$0');
+                      const debtBalance = parseCurrency(currentDemo.accounts.find(a => a.type === 'Credit')?.balance || '$0');
+                      
+                      const totalAssets = bankBalance + investingBalance + cryptoBalance;
+                      const netWorth = totalAssets + debtBalance; // debtBalance is already negative
+                      
+                      return (
+                        <>
+                          <div className="bg-white/5 border border-white/10 rounded-xl p-4">
+                            <div className="flex items-center gap-2 mb-2">
+                              <TrendingUp className="h-5 w-5 text-blue-400" />
+                              <p className="apple-caption text-gray-400">Total Balance</p>
+                            </div>
+                            <p className="apple-h3">{formatCurrency(totalAssets)}</p>
+                            <p className="apple-caption text-green-400 mt-1">+5.8% change</p>
+                          </div>
+                          
+                          <div className="bg-white/5 border border-white/10 rounded-xl p-4">
+                            <div className="flex items-center gap-2 mb-2">
+                              <Building2 className="h-5 w-5 text-blue-400" />
+                              <p className="apple-caption text-gray-400">Bank Accounts</p>
+                            </div>
+                            <p className="apple-h3">{formatCurrency(bankBalance)}</p>
+                            <p className="apple-caption text-gray-400 mt-1">4% of total</p>
+                          </div>
+                          
+                          <div className="bg-white/5 border border-white/10 rounded-xl p-4">
+                            <div className="flex items-center gap-2 mb-2">
+                              <LineChart className="h-5 w-5 text-blue-400" />
+                              <p className="apple-caption text-gray-400">Investments</p>
+                            </div>
+                            <p className="apple-h3">{formatCurrency(investingBalance)}</p>
+                            <p className="apple-caption text-green-400 mt-1">+8.7% change</p>
+                          </div>
+
+                          <div className="bg-white/5 border border-white/10 rounded-xl p-4">
+                            <div className="flex items-center gap-2 mb-2">
+                              <CreditCard className="h-5 w-5 text-red-400" />
+                              <p className="apple-caption text-gray-400">Debt</p>
+                            </div>
+                            <p className="apple-h3 text-red-400">{formatCurrency(Math.abs(debtBalance))}</p>
+                            <p className="apple-caption text-gray-400 mt-1">Credit cards</p>
+                          </div>
+                        </>
+                      );
+                    })()}
                   </div>
                 </div>
 
@@ -1798,7 +1963,21 @@ export default function LandingNew() {
 
       {/* Account Detail Modal */}
       <Dialog open={showAccountModal} onOpenChange={setShowAccountModal}>
-        <DialogContent className="bg-black border-white/20 max-w-2xl max-h-[80vh] overflow-y-auto">
+        <DialogContent 
+          className="bg-black border-white/20 max-w-2xl max-h-[80vh] overflow-y-auto"
+          onPointerDownOutside={(e) => {
+            // Only close on overlay click, not content click
+            if (e.target === e.currentTarget) {
+              setShowAccountModal(false);
+            }
+          }}
+          onInteractOutside={(e) => {
+            // Prevent closing when clicking inside the modal
+            if ((e.target as HTMLElement).closest('[role="dialog"]')) {
+              e.preventDefault();
+            }
+          }}
+        >
           {selectedAccount && (
             <>
               <DialogTitle className="text-2xl font-bold flex items-center gap-3">
@@ -1819,7 +1998,7 @@ export default function LandingNew() {
                 <div className="bg-white/5 border border-white/10 rounded-lg p-6">
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <p className="text-sm text-gray-400 mb-1">Current Balance</p>
+                      <p className="text-sm text-gray-400 mb-1">{selectedAccount.type === 'Credit' ? 'Current Balance' : 'Current Balance'}</p>
                       <p className="text-3xl font-bold">{selectedAccount.balance}</p>
                     </div>
                     <div>
@@ -1829,6 +2008,19 @@ export default function LandingNew() {
                       </p>
                     </div>
                   </div>
+                  {/* Credit Card Specific Fields */}
+                  {selectedAccount.type === 'Credit' && selectedAccount.creditLimit && (
+                    <div className="grid grid-cols-2 gap-4 mt-4 pt-4 border-t border-white/10">
+                      <div>
+                        <p className="text-sm text-gray-400 mb-1">Credit Limit</p>
+                        <p className="text-lg font-semibold">{selectedAccount.creditLimit}</p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-400 mb-1">Available Credit</p>
+                        <p className="text-lg font-semibold text-green-400">{selectedAccount.availableCredit}</p>
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* Holdings for Investment/Crypto accounts */}
@@ -1899,7 +2091,7 @@ export default function LandingNew() {
                     Recent Activity
                   </h4>
                   <div className="space-y-2">
-                    {currentDemo.transactions.slice(0, 3).map((txn, idx) => (
+                    {(selectedAccount.transactions || currentDemo.transactions.slice(0, 3)).map((txn, idx) => (
                       <div key={idx} className="bg-white/5 border border-white/10 rounded-lg p-4 flex justify-between items-center">
                         <div>
                           <p className="font-medium">{txn.merchant}</p>

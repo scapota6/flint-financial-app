@@ -54,6 +54,16 @@ const BUG_REPORT_QUIPS = [
   "Bug reported! Coffee levels: critical :coffee:",
 ];
 
+const LEAD_CAPTURE_QUIPS = [
+  "New lead alert! Someone's interested :eyes:",
+  "Fresh lead incoming! :rocket:",
+  "Cha-ching! Potential customer detected :moneybag:",
+  "Lead captured! Time to nurture :seedling:",
+  "Another fish on the hook :fish:",
+  "Lead magnet working its magic :magnet:",
+  "Someone wants in on the financial revolution :chart_with_upwards_trend:",
+];
+
 function getRandomQuip(quips: string[]): string {
   return quips[Math.floor(Math.random() * quips.length)];
 }
@@ -361,6 +371,58 @@ export async function notifyFeatureRequest(data: {
         ],
         text: `_${getRandomQuip(quips)}_\n\nFlint to the moon ! :rocket::rocket::rocket:`,
         footer: 'Flint Investment Platform • Review in Admin Panel',
+        ts: Math.floor(data.submissionTime.getTime() / 1000),
+      },
+    ],
+  };
+
+  await sendSlackMessage(message);
+}
+
+/**
+ * Send notification for new lead capture
+ */
+export async function notifyLeadCapture(data: {
+  email: string;
+  goals: string[];
+  source: string;
+  submissionTime: Date;
+}): Promise<void> {
+  const goalsDisplay = data.goals.length > 0 ? data.goals.join(', ') : 'None selected';
+  
+  const message: SlackMessage = {
+    text: ':magnet: *New Lead Captured!*',
+    attachments: [
+      {
+        color: '#10B981', // Emerald green
+        fields: [
+          {
+            title: 'Email',
+            value: data.email,
+            short: true,
+          },
+          {
+            title: 'Source',
+            value: data.source.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase()),
+            short: true,
+          },
+          {
+            title: 'Money Goals',
+            value: goalsDisplay,
+            short: false,
+          },
+          {
+            title: 'Captured',
+            value: data.submissionTime.toLocaleString('en-US', {
+              timeZone: 'America/New_York',
+              dateStyle: 'medium',
+              timeStyle: 'short',
+            }),
+            short: false,
+          },
+        ],
+        text: `_${getRandomQuip(LEAD_CAPTURE_QUIPS)}_\n\n💡 Add to email drip campaign!`,
+        footer: 'Flint Investment Platform • Lead Generation',
         ts: Math.floor(data.submissionTime.getTime() / 1000),
       },
     ],

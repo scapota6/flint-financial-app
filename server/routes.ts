@@ -2485,6 +2485,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.use('/api/auth', authRouter);
   app.use('/api/lemonsqueezy', lemonSqueezyRouter);
   
+  // Mount lead capture routes (public)
+  const leadsRouter = await import('./routes/leads');
+  app.use('/api/leads', leadsRouter.default);
+  
   // Mount Whop payment routes
   const whopRouter = await import('./routes/whop');
   app.use('/api/whop', whopRouter.default);

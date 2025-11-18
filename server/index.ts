@@ -437,6 +437,10 @@ const app = express();
   const featureRequestsRouter = (await import("./routes/feature-requests")).default;
   app.use("/api/feature-requests", featureRequestsRouter);
 
+  // Mount Leads API router
+  const leadsRouter = (await import("./routes/leads")).default;
+  app.use("/api/leads", leadsRouter);
+
   // ========================================
   // IMPORTANT: All API routes must be mounted BEFORE static files
   // ========================================
