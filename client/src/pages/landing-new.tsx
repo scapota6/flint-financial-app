@@ -26,6 +26,8 @@ import {
   Building2,
   LineChart,
   ChevronDown,
+  ChevronLeft,
+  ChevronRight,
   Eye
 } from "lucide-react";
 import { Link } from "wouter";
@@ -66,12 +68,27 @@ interface DemoSubscription {
   nextDate: string;
 }
 
+interface DemoMoneySource {
+  name: string;
+  amount: number;
+}
+
 interface DemoData {
   netWorth: string;
   accounts: DemoAccount[];
   holdings: DemoHolding[];
   transactions: DemoTransaction[];
   subscriptions: DemoSubscription[];
+  moneyMovement: {
+    moneyIn: number;
+    moneyOut: number;
+    topSources: DemoMoneySource[];
+    topSpend: DemoMoneySource[];
+    threeMonthAvg: {
+      moneyIn: number;
+      moneyOut: number;
+    };
+  };
 }
 
 // Helper function to get company domain from stock/crypto symbol for Brandfetch logos
@@ -159,7 +176,28 @@ const DEMO_DATA_1: DemoData = {
     { name: 'Spotify', amount: '$10.99', frequency: 'Monthly', nextDate: 'Dec 18' },
     { name: 'Amazon Prime', amount: '$14.99', frequency: 'Monthly', nextDate: 'Dec 5' },
     { name: 'Apple iCloud', amount: '$2.99', frequency: 'Monthly', nextDate: 'Nov 28' }
-  ]
+  ],
+  moneyMovement: {
+    moneyIn: 8750.00,
+    moneyOut: 3425.86,
+    topSources: [
+      { name: 'Acme Corp Payroll', amount: 4250.00 },
+      { name: 'Freelance Client', amount: 2500.00 },
+      { name: 'Stock Dividend', amount: 1500.00 },
+      { name: 'Interest Income', amount: 500.00 }
+    ],
+    topSpend: [
+      { name: 'Rent Payment', amount: 1850.00 },
+      { name: 'Whole Foods', amount: 542.33 },
+      { name: 'Shell Gas', amount: 245.00 },
+      { name: 'Amazon', amount: 387.43 },
+      { name: 'Restaurants', amount: 401.10 }
+    ],
+    threeMonthAvg: {
+      moneyIn: 8200.00,
+      moneyOut: 3100.00
+    }
+  }
 };
 
 const DEMO_DATA_2: DemoData = {
@@ -189,7 +227,27 @@ const DEMO_DATA_2: DemoData = {
     { name: 'Disney+', amount: '$13.99', frequency: 'Monthly', nextDate: 'Dec 2' },
     { name: 'Adobe Creative', amount: '$54.99', frequency: 'Monthly', nextDate: 'Dec 8' },
     { name: 'YouTube Premium', amount: '$11.99', frequency: 'Monthly', nextDate: 'Dec 15' }
-  ]
+  ],
+  moneyMovement: {
+    moneyIn: 6250.00,
+    moneyOut: 2874.52,
+    topSources: [
+      { name: 'TechCo Salary', amount: 3750.00 },
+      { name: 'Side Project', amount: 2000.00 },
+      { name: 'Tax Refund', amount: 500.00 }
+    ],
+    topSpend: [
+      { name: 'Mortgage Payment', amount: 1450.00 },
+      { name: 'Target', amount: 324.99 },
+      { name: 'Gas Station', amount: 285.00 },
+      { name: 'Groceries', amount: 412.55 },
+      { name: 'Dining Out', amount: 401.98 }
+    ],
+    threeMonthAvg: {
+      moneyIn: 6100.00,
+      moneyOut: 2900.00
+    }
+  }
 };
 
 export default function LandingNew() {
@@ -886,7 +944,7 @@ export default function LandingNew() {
             <div className="bg-black/40 border border-white/20 rounded-xl overflow-hidden backdrop-blur-sm">
               {/* Top bar with net worth */}
               <div className="p-6 border-b border-white/10 bg-white/5">
-                <div className="text-center">
+                <div className="flex flex-col items-center text-center">
                   <p className="apple-caption text-gray-400 mb-1">Total Net Worth</p>
                   <p className="apple-h1 text-blue-400 mb-2" data-testid="demo-net-worth">{currentDemo.netWorth}</p>
                   <p className="apple-caption text-green-400">+2.4% today</p>
@@ -1033,6 +1091,85 @@ export default function LandingNew() {
                         <p className="text-lg font-bold">{sub.amount}</p>
                       </div>
                     ))}
+                  </div>
+                </div>
+
+                {/* Money Movement */}
+                <div className="p-6 border-b border-white/10">
+                  <div className="flex items-center justify-between mb-6">
+                    <h3 className="text-lg font-semibold flex items-center gap-2">
+                      <TrendingUp className="h-5 w-5 text-blue-400" />
+                      Money Movement
+                    </h3>
+                    <div className="flex items-center gap-2">
+                      <button className="p-1 rounded hover:bg-white/10 text-gray-400 cursor-not-allowed" disabled>
+                        <ChevronLeft className="h-4 w-4" />
+                      </button>
+                      <span className="text-sm text-gray-400 font-medium min-w-[80px] text-center">Nov 2025</span>
+                      <button className="p-1 rounded hover:bg-white/10 text-gray-400 cursor-not-allowed" disabled>
+                        <ChevronRight className="h-4 w-4" />
+                      </button>
+                    </div>
+                  </div>
+                  
+                  <div className="grid md:grid-cols-2 gap-6">
+                    {/* Money In Card */}
+                    <div className="bg-white/5 border border-white/10 rounded-xl p-4">
+                      <h4 className="text-sm text-gray-400 mb-2">Money in</h4>
+                      <div className="text-2xl font-bold text-green-400 mb-4">
+                        ${currentDemo.moneyMovement.moneyIn.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}
+                      </div>
+                      
+                      <div className="mb-4">
+                        <p className="text-xs text-gray-400 mb-2">Top sources</p>
+                        <div className="space-y-2">
+                          {currentDemo.moneyMovement.topSources.slice(0, 3).map((source, idx) => (
+                            <div key={idx} className="flex justify-between items-center">
+                              <span className="text-sm text-white">{source.name}</span>
+                              <span className="text-sm text-white font-medium">
+                                ${source.amount.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                      
+                      <div className="pt-3 border-t border-gray-800">
+                        <p className="text-xs text-gray-400 mb-1">Last 3 months average</p>
+                        <p className="text-base font-semibold text-white">
+                          ${(currentDemo.moneyMovement.threeMonthAvg.moneyIn / 1000).toFixed(0)}K
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Money Out Card */}
+                    <div className="bg-white/5 border border-white/10 rounded-xl p-4">
+                      <h4 className="text-sm text-gray-400 mb-2">Money out</h4>
+                      <div className="text-2xl font-bold text-red-400 mb-4">
+                        −${currentDemo.moneyMovement.moneyOut.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}
+                      </div>
+                      
+                      <div className="mb-4">
+                        <p className="text-xs text-gray-400 mb-2">Top spend</p>
+                        <div className="space-y-2">
+                          {currentDemo.moneyMovement.topSpend.slice(0, 3).map((spend, idx) => (
+                            <div key={idx} className="flex justify-between items-center">
+                              <span className="text-sm text-white">{spend.name}</span>
+                              <span className="text-sm text-white font-medium">
+                                −${spend.amount.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                      
+                      <div className="pt-3 border-t border-gray-800">
+                        <p className="text-xs text-gray-400 mb-1">Last 3 months average</p>
+                        <p className="text-base font-semibold text-white">
+                          −${(currentDemo.moneyMovement.threeMonthAvg.moneyOut / 1000).toFixed(0)}K
+                        </p>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
