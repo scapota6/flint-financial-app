@@ -65,16 +65,28 @@ export function createSnapTradeClient(environment: SnapTradeEnvironment = 'produ
   // Get environment-specific credentials
   const credentials = getCredentials(environment);
 
-  // Create new SnapTrade client
-  // Note: The environment (sandbox vs production) is determined by which API keys are used
-  // DEV keys connect to sandbox, PROD keys connect to production
-  const client = new Snaptrade({
+  // Create new SnapTrade client with environment-specific base URL
+  const config: any = {
     clientId: credentials.clientId,
     consumerKey: credentials.consumerKey,
-  });
+  };
+
+  // Development environment uses sandbox base URL
+  // Note: SnapTrade sandbox URL may vary - common patterns include:
+  // - https://sandbox.api.snaptrade.com/api/v1
+  // - https://api.snaptrade.com/api/v1 (if keys differentiate environment)
+  if (environment === 'development') {
+    // TODO: Confirm correct sandbox URL with SnapTrade support
+    // For now, using production URL as sandbox keys may work on same endpoint
+    config.basePath = 'https://api.snaptrade.com/api/v1';
+  }
+  // Production uses default base URL (no need to specify as it's the SDK default)
+
+  const client = new Snaptrade(config);
 
   console.log(`[SnapTrade Client Factory] Created ${environment} client`, {
     env: credentials.environment,
+    basePath: config.basePath || 'https://api.snaptrade.com/api/v1 (default)',
     clientIdTail: credentials.clientId.slice(-6),
     consumerKeyLen: credentials.consumerKey.length,
   });

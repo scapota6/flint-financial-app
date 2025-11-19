@@ -75,6 +75,7 @@ interface User {
   lastName: string;
   subscriptionTier: string;
   subscriptionStatus: string;
+  snaptradeEnvironment?: string | null;
   isAdmin: boolean;
   isBanned: boolean;
   lastLogin: string;
@@ -547,7 +548,7 @@ function UsersTab() {
   const [search, setSearch] = useState('');
   const [tierFilter, setTierFilter] = useState('all');
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
-  const [actionDialog, setActionDialog] = useState<'delete' | 'reset' | 'tier' | 'ban' | 'setPassword' | null>(null);
+  const [actionDialog, setActionDialog] = useState<'delete' | 'reset' | 'tier' | 'ban' | 'setPassword' | 'snaptradeEnv' | null>(null);
   const [newTier, setNewTier] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [dashboardModalOpen, setDashboardModalOpen] = useState(false);
@@ -663,6 +664,19 @@ function UsersTab() {
     },
   });
 
+  const updateSnapTradeEnvMutation = useMutation({
+    mutationFn: ({ userId, snaptradeEnvironment }: { userId: string; snaptradeEnvironment: string }) =>
+      apiRequest(`/api/admin/users/${userId}/snaptrade-environment`, {
+        method: 'PATCH',
+        body: JSON.stringify({ snaptradeEnvironment }),
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/admin-panel/users'], refetchType: 'all' });
+      toast({ title: 'SnapTrade environment updated successfully' });
+      setActionDialog(null);
+    },
+  });
+
   if (isLoading) {
     return <div className="text-center py-8" data-testid="loading-users">Loading users...</div>;
   }
@@ -702,6 +716,7 @@ function UsersTab() {
                 <TableHead>Email</TableHead>
                 <TableHead>Name</TableHead>
                 <TableHead>Tier</TableHead>
+                <TableHead>ST Env</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Last Login</TableHead>
                 <TableHead>Actions</TableHead>
@@ -717,6 +732,14 @@ function UsersTab() {
                   <TableCell>
                     <Badge data-testid={`badge-tier-${user.id}`} className="bg-blue-600">
                       {user.subscriptionTier}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>
+                    <Badge 
+                      data-testid={`badge-snaptrade-env-${user.id}`}
+                      className={user.snaptradeEnvironment === 'development' ? 'bg-orange-600' : 'bg-green-600'}
+                    >
+                      {user.snaptradeEnvironment === 'development' ? 'Dev' : 'Prod'}
                     </Badge>
                   </TableCell>
                   <TableCell>
@@ -783,6 +806,18 @@ function UsersTab() {
                       >
                         <Settings className="h-4 w-4 mr-1" />
                         Tier
+                      </Button>
+                      <Button
+                        size="sm"
+                        className="rounded-full bg-slate-900/40 backdrop-blur-xl border border-slate-700/50 hover:bg-white/10 shadow-sm"
+                        onClick={() => {
+                          setSelectedUser(user);
+                          setActionDialog('snaptradeEnv');
+                        }}
+                        data-testid={`button-snaptrade-env-${user.id}`}
+                      >
+                        <RefreshCw className="h-4 w-4 mr-1" />
+                        ST Env
                       </Button>
                       <Button
                         size="sm"
@@ -1018,6 +1053,44 @@ function UsersTab() {
               data-testid="button-confirm-set-password"
             >
               Set Password
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={actionDialog === 'snaptradeEnv'} onOpenChange={() => setActionDialog(null)}>
+        <DialogContent className="bg-slate-900/40 border border-slate-700/50">
+          <DialogHeader>
+            <DialogTitle>Toggle SnapTrade Environment</DialogTitle>
+            <DialogDescription>
+              Switch SnapTrade environment for {selectedUser?.email}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4 space-y-4">
+            <p className="text-sm text-gray-300">
+              Current environment: <span className="font-semibold">{selectedUser?.snaptradeEnvironment === 'development' ? 'Development (Sandbox)' : 'Production'}</span>
+            </p>
+            <p className="text-sm text-yellow-400">
+              ⚠️ Switching environments will affect which SnapTrade API keys are used for this user.
+            </p>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setActionDialog(null)} data-testid="button-cancel-snaptrade-env">
+              Cancel
+            </Button>
+            <Button
+              onClick={() => {
+                if (!selectedUser) return;
+                const newEnv = selectedUser.snaptradeEnvironment === 'development' ? 'production' : 'development';
+                updateSnapTradeEnvMutation.mutate({ 
+                  userId: selectedUser.id, 
+                  snaptradeEnvironment: newEnv 
+                });
+              }}
+              disabled={updateSnapTradeEnvMutation.isPending}
+              data-testid="button-confirm-snaptrade-env"
+            >
+              Switch to {selectedUser?.snaptradeEnvironment === 'development' ? 'Production' : 'Development'}
             </Button>
           </DialogFooter>
         </DialogContent>

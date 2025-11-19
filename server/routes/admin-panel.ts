@@ -357,6 +357,7 @@ router.get('/users', requireAuth, requireAdmin(), async (req: any, res) => {
         lastName: users.lastName,
         subscriptionTier: users.subscriptionTier,
         subscriptionStatus: users.subscriptionStatus,
+        snaptradeEnvironment: users.snaptradeEnvironment,
         isAdmin: users.isAdmin,
         isBanned: users.isBanned,
         lastLogin: users.lastLogin,
