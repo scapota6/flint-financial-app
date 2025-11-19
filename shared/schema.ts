@@ -55,6 +55,8 @@ export const users = pgTable("users", {
   whopMembershipId: varchar("whop_membership_id"),
   whopCustomerId: varchar("whop_customer_id"),
   whopPlanId: varchar("whop_plan_id"),
+  // SnapTrade environment configuration
+  snaptradeEnvironment: varchar("snaptrade_environment").default("production"), // 'development' | 'production'
   // User metadata
   isAdmin: boolean("is_admin").default(false),
   isBanned: boolean("is_banned").default(false),
