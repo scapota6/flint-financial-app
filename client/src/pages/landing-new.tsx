@@ -1658,15 +1658,15 @@ export default function LandingNew() {
         {/* Pricing Section */}
         <section className="apple-section bg-white/5 border-y border-white/10">
           <div className="apple-container max-w-5xl">
-            <div className="text-center mb-12">
+            <div className="text-center mb-8 sm:mb-12 px-4">
               <h2 className="apple-h2">Pick Your Plan</h2>
               <p className="apple-caption text-gray-300">Start free. Upgrade for advanced features.</p>
               
               {/* Monthly/Annual Toggle */}
-              <div className="inline-flex items-center gap-3 bg-white/5 border border-white/10 rounded-xl p-1">
+              <div className="inline-flex items-center gap-2 sm:gap-3 bg-white/5 border border-white/10 rounded-xl p-1 text-sm sm:text-base">
                 <button
                   onClick={() => setIsAnnual(false)}
-                  className={`px-6 py-2 rounded-lg apple-caption font-medium transition-all ${
+                  className={`px-3 sm:px-6 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-all ${
                     !isAnnual ? 'bg-blue-600 text-white' : 'text-gray-300 hover:text-white'
                   }`}
                   data-testid="toggle-monthly"
@@ -1675,20 +1675,20 @@ export default function LandingNew() {
                 </button>
                 <button
                   onClick={() => setIsAnnual(true)}
-                  className={`px-6 py-2 rounded-lg apple-caption font-medium transition-all ${
+                  className={`px-3 sm:px-6 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-all ${
                     isAnnual ? 'bg-blue-600 text-white' : 'text-gray-300 hover:text-white'
                   }`}
                   data-testid="toggle-annual"
                 >
                   Annual
-                  <span className="ml-2 text-green-400 apple-caption">Save 17%</span>
+                  <span className="ml-1 sm:ml-2 text-green-400 text-xs sm:text-sm">Save 17%</span>
                 </button>
               </div>
             </div>
 
-            <div className="grid md:grid-cols-3 gap-6 max-w-6xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 max-w-6xl mx-auto px-4 sm:px-0">
               {/* Free Plan */}
-              <Card className="bg-white/5 border-white/10 rounded-xl p-6">
+              <Card className="bg-white/5 border-white/10 rounded-xl p-4 sm:p-6">
                 <div className="mb-6">
                   <h3 className="apple-h3">Free</h3>
                   <div className="flex items-baseline gap-2 mb-3">
@@ -1847,12 +1847,12 @@ export default function LandingNew() {
         {/* FAQ Section */}
         <section className="apple-section">
           <div className="apple-container max-w-3xl">
-            <div className="text-center mb-12">
+            <div className="text-center mb-8 sm:mb-12 px-4">
               <h2 className="apple-h2">Questions?</h2>
             </div>
 
-            <Accordion type="single" collapsible className="space-y-4">
-              <AccordionItem value="security" className="bg-white/5 border border-white/10 rounded-lg px-6">
+            <Accordion type="single" collapsible className="space-y-3 sm:space-y-4 px-4 sm:px-0">
+              <AccordionItem value="security" className="bg-white/5 border border-white/10 rounded-lg px-4 sm:px-6">
                 <AccordionTrigger className="text-left hover:no-underline">
                   Is my money safe?
                 </AccordionTrigger>
@@ -1861,16 +1861,16 @@ export default function LandingNew() {
                 </AccordionContent>
               </AccordionItem>
 
-              <AccordionItem value="accounts" className="bg-white/5 border border-white/10 rounded-lg px-6">
-                <AccordionTrigger className="text-left hover:no-underline">
+              <AccordionItem value="accounts" className="bg-white/5 border border-white/10 rounded-lg px-4 sm:px-6">
+                <AccordionTrigger className="text-left hover:no-underline text-sm sm:text-base">
                   How many accounts are free?
                 </AccordionTrigger>
-                <AccordionContent className="text-gray-300">
+                <AccordionContent className="text-gray-300 text-sm">
                   You can connect 4 accounts for free. This means banks, cards, stocks, or crypto.
                 </AccordionContent>
               </AccordionItem>
 
-              <AccordionItem value="cancel" className="bg-white/5 border border-white/10 rounded-lg px-6">
+              <AccordionItem value="cancel" className="bg-white/5 border border-white/10 rounded-lg px-4 sm:px-6">
                 <AccordionTrigger className="text-left hover:no-underline">
                   Can I cancel?
                 </AccordionTrigger>
@@ -1879,7 +1879,7 @@ export default function LandingNew() {
                 </AccordionContent>
               </AccordionItem>
 
-              <AccordionItem value="revenue" className="bg-white/5 border border-white/10 rounded-lg px-6">
+              <AccordionItem value="revenue" className="bg-white/5 border border-white/10 rounded-lg px-4 sm:px-6">
                 <AccordionTrigger className="text-left hover:no-underline">
                   How do you make money?
                 </AccordionTrigger>
@@ -1888,7 +1888,7 @@ export default function LandingNew() {
                 </AccordionContent>
               </AccordionItem>
 
-              <AccordionItem value="upgrade" className="bg-white/5 border border-white/10 rounded-lg px-6">
+              <AccordionItem value="upgrade" className="bg-white/5 border border-white/10 rounded-lg px-4 sm:px-6">
                 <AccordionTrigger className="text-left hover:no-underline">
                   Why go Pro?
                 </AccordionTrigger>
