@@ -695,7 +695,7 @@ export default function LandingNew() {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white relative overflow-hidden">
+    <div className="min-h-screen bg-black text-white relative overflow-x-hidden">
       {/* Single subtle background gradient */}
       <div className="fixed inset-0 bg-gradient-to-br from-blue-900/20 via-black to-black pointer-events-none" />
 
@@ -706,40 +706,42 @@ export default function LandingNew() {
         }`}
         data-testid="sticky-nav"
       >
-        <div className="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="h-8 w-8 rounded-lg bg-blue-600 flex items-center justify-center font-bold">
+            <div className="h-8 w-8 rounded-lg bg-blue-600 flex items-center justify-center font-bold text-sm sm:text-base">
               F
             </div>
-            <span className="font-bold">Flint</span>
+            <span className="font-bold text-sm sm:text-base">Flint</span>
           </div>
           <Button
             type="button"
             onClick={scrollToSignup}
             size="sm"
-            className="bg-blue-600 hover:bg-blue-700 rounded-lg"
+            className="bg-blue-600 hover:bg-blue-700 rounded-lg text-xs sm:text-sm px-3 sm:px-4"
             data-testid="button-sticky-nav-cta"
           >
-            Get Started Free
+            <span className="hidden sm:inline">Get Started Free</span>
+            <span className="sm:hidden">Sign Up</span>
           </Button>
         </div>
       </div>
 
       {/* Header */}
       <header className="relative z-40 border-b border-white/10 backdrop-blur-xl">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <img src={flintLogo} alt="Flint" className="h-8 w-auto" />
-            <span className="font-semibold">Flint</span>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <img src={flintLogo} alt="Flint" className="h-7 sm:h-8 w-auto" />
+            <span className="font-semibold text-sm sm:text-base">Flint</span>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 sm:gap-4">
             <Link href="/login">
-              <Button type="button" variant="ghost" className="text-white hover:text-blue-400" data-testid="button-login">
+              <Button type="button" variant="ghost" className="text-white hover:text-blue-400 text-xs sm:text-sm px-2 sm:px-4" data-testid="button-login">
                 Log In
               </Button>
             </Link>
-            <Button type="button" onClick={scrollToSignup} className="bg-blue-600 hover:bg-blue-700 rounded-lg" data-testid="button-header-signup">
-              Get Started Free
+            <Button type="button" onClick={scrollToSignup} className="bg-blue-600 hover:bg-blue-700 rounded-lg text-xs sm:text-sm px-3 sm:px-4" data-testid="button-header-signup">
+              <span className="hidden sm:inline">Get Started Free</span>
+              <span className="sm:hidden">Sign Up</span>
             </Button>
           </div>
         </div>
@@ -763,7 +765,7 @@ export default function LandingNew() {
                 <Button 
                   type="button"
                   onClick={scrollToSignup} 
-                  className="bg-blue-600 hover:bg-blue-700 text-lg px-12 py-6 h-auto rounded-xl"
+                  className="bg-blue-600 hover:bg-blue-700 text-base sm:text-lg px-8 sm:px-12 py-4 sm:py-6 h-auto rounded-xl w-full sm:w-auto max-w-xs sm:max-w-none"
                   data-testid="button-hero-cta"
                 >
                   Get Started Free
@@ -777,7 +779,7 @@ export default function LandingNew() {
 
               {/* Interactive Demo Dashboard */}
               <div className="pt-12">
-                <div className="aspect-video rounded-xl overflow-hidden border border-white/10 max-w-4xl mx-auto">
+                <div className="aspect-video rounded-lg sm:rounded-xl overflow-hidden border border-white/10 max-w-4xl mx-auto w-full">
                   <img src={dashboardPreview} alt="Flint Dashboard" className="w-full h-full object-cover" />
                 </div>
               </div>
@@ -1115,18 +1117,18 @@ export default function LandingNew() {
         {/* Interactive Demo Section */}
         <section className="apple-section bg-white/5 border-y border-white/10">
           <div className="apple-container max-w-5xl">
-            <div className="text-center mb-12">
+            <div className="text-center mb-8 sm:mb-12 px-4">
               <h2 className="apple-h2">See How It Works</h2>
               <p className="apple-caption text-gray-300">Limited demo — create account to unlock full features</p>
             </div>
 
             {/* Full dashboard mock matching actual dashboard */}
-            <div className="bg-black/40 border border-white/20 rounded-xl overflow-hidden backdrop-blur-sm">
+            <div className="bg-black/40 border border-white/20 rounded-lg sm:rounded-xl overflow-hidden backdrop-blur-sm">
               {/* Top bar with net worth */}
-              <div className="p-6 border-b border-white/10 bg-white/5">
+              <div className="p-4 sm:p-6 border-b border-white/10 bg-white/5">
                 <div className="flex flex-col items-center text-center">
-                  <p className="apple-caption text-gray-400 mb-1">Total Net Worth</p>
-                  <p className="apple-h1 text-blue-400 mb-2" data-testid="demo-net-worth">
+                  <p className="apple-caption text-gray-400 mb-1 text-xs sm:text-sm">Total Net Worth</p>
+                  <p className="text-2xl sm:text-4xl md:text-5xl font-bold text-blue-400 mb-2" data-testid="demo-net-worth">
                     {(() => {
                       const bankBalance = parseCurrency(currentDemo.accounts.find(a => a.type === 'Bank')?.balance || '$0');
                       const investingBalance = parseCurrency(currentDemo.accounts.find(a => a.type === 'Investing')?.balance || '$0');
@@ -1143,10 +1145,10 @@ export default function LandingNew() {
               </div>
 
               {/* Scrollable content area */}
-              <div className="max-h-[600px] overflow-y-auto">
+              <div className="max-h-[400px] sm:max-h-[600px] overflow-y-auto">
                 {/* Summary Cards - matching actual dashboard */}
-                <div className="p-6 border-b border-white/10">
-                  <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="p-4 sm:p-6 border-b border-white/10">
+                  <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
                     {(() => {
                       // Calculate totals using helper function
                       const bankBalance = parseCurrency(currentDemo.accounts.find(a => a.type === 'Bank')?.balance || '$0');
@@ -1202,12 +1204,12 @@ export default function LandingNew() {
                 </div>
 
                 {/* Connected Accounts */}
-                <div className="p-6 border-b border-white/10">
-                  <h3 className="apple-h3 mb-4 flex items-center gap-2">
-                    <Wallet className="h-5 w-5 text-blue-400" />
+                <div className="p-4 sm:p-6 border-b border-white/10">
+                  <h3 className="text-lg sm:text-xl font-semibold mb-4 flex items-center gap-2">
+                    <Wallet className="h-4 w-4 sm:h-5 sm:w-5 text-blue-400" />
                     Connected Accounts
                   </h3>
-                  <div className="grid md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
                     {currentDemo.accounts.map((account, idx) => (
                       <button
                         key={idx}
@@ -2010,24 +2012,24 @@ export default function LandingNew() {
 
       {/* Account Detail Modal - Production-Accurate Tabbed Interface */}
       <Dialog open={showAccountModal} onOpenChange={setShowAccountModal}>
-        <DialogContent className="bg-gray-900 border-gray-700 max-w-3xl max-h-[90vh] overflow-y-auto [&>button]:hidden !z-[60]">
+        <DialogContent className="bg-gray-900 border-gray-700 w-[95vw] sm:w-full max-w-3xl max-h-[90vh] overflow-y-auto [&>button]:hidden !z-[60] p-4 sm:p-6">
           {selectedAccount && (
             <>
               {/* Header */}
               <div className="border-b border-gray-700 pb-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-lg bg-blue-600/20 border border-blue-600/30">
-                      {selectedAccount.type === 'Bank' && <Building className="h-6 w-6 text-blue-400" />}
-                      {selectedAccount.type === 'Investing' && <LineChart className="h-6 w-6 text-blue-400" />}
-                      {selectedAccount.type === 'Crypto' && <Wallet className="h-6 w-6 text-blue-400" />}
-                      {selectedAccount.type === 'Credit' && <CreditCard className="h-6 w-6 text-blue-400" />}
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
+                    <div className="p-1.5 sm:p-2 rounded-lg bg-blue-600/20 border border-blue-600/30 flex-shrink-0">
+                      {selectedAccount.type === 'Bank' && <Building className="h-4 w-4 sm:h-6 sm:w-6 text-blue-400" />}
+                      {selectedAccount.type === 'Investing' && <LineChart className="h-4 w-4 sm:h-6 sm:w-6 text-blue-400" />}
+                      {selectedAccount.type === 'Crypto' && <Wallet className="h-4 w-4 sm:h-6 sm:w-6 text-blue-400" />}
+                      {selectedAccount.type === 'Credit' && <CreditCard className="h-4 w-4 sm:h-6 sm:w-6 text-blue-400" />}
                     </div>
-                    <div>
-                      <DialogTitle className="text-xl font-bold text-white">
+                    <div className="min-w-0 flex-1">
+                      <DialogTitle className="text-base sm:text-xl font-bold text-white truncate">
                         {selectedAccount.name}
                       </DialogTitle>
-                      <p className="text-sm text-gray-400">
+                      <p className="text-xs sm:text-sm text-gray-400 truncate">
                         {selectedAccount.type} • {selectedAccount.type === 'Credit' ? 'Chase Sapphire' : selectedAccount.type === 'Bank' ? 'Chase' : selectedAccount.type === 'Investing' ? 'Fidelity' : 'Coinbase'}
                       </p>
                     </div>
@@ -2038,21 +2040,23 @@ export default function LandingNew() {
                 </div>
 
                 {/* Balance Overview - Always Visible */}
-                <div className="flex items-center gap-6 mt-4">
-                  <div>
-                    <p className="text-sm text-gray-400">{selectedAccount.type === 'Credit' ? 'Current Balance' : 'Available Balance'}</p>
-                    <p className="text-3xl font-bold text-white">{selectedAccount.balance}</p>
+                <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 mt-4">
+                  <div className="flex-1">
+                    <p className="text-xs sm:text-sm text-gray-400">{selectedAccount.type === 'Credit' ? 'Current Balance' : 'Available Balance'}</p>
+                    <p className="text-2xl sm:text-3xl font-bold text-white">{selectedAccount.balance}</p>
                   </div>
-                  <div>
-                    <p className="text-sm text-gray-400">Status</p>
+                  <div className="flex gap-4 sm:gap-6">
+                    <div>
+                      <p className="text-xs sm:text-sm text-gray-400">Status</p>
                     <Badge variant="outline" className="text-green-400 border-green-400">
                       <Check className="h-3 w-3 mr-1" />
                       Active
                     </Badge>
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-400">Last Updated</p>
-                    <p className="text-sm text-white">Just now</p>
+                    </div>
+                    <div>
+                      <p className="text-xs sm:text-sm text-gray-400">Last Updated</p>
+                      <p className="text-xs sm:text-sm text-white">Just now</p>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -2060,10 +2064,16 @@ export default function LandingNew() {
               {/* Bank/Credit Card Modal - 3 Tabs */}
               {(selectedAccount.type === 'Bank' || selectedAccount.type === 'Credit') && (
                 <Tabs defaultValue="transactions" className="mt-4">
-                  <TabsList className="grid w-full grid-cols-3 bg-gray-800">
-                    <TabsTrigger value="transactions">Recent Transactions</TabsTrigger>
-                    <TabsTrigger value="details">Account Details</TabsTrigger>
-                    <TabsTrigger value="settings">Settings</TabsTrigger>
+                  <TabsList className="grid w-full grid-cols-3 bg-gray-800 h-auto">
+                    <TabsTrigger value="transactions" className="text-xs sm:text-sm py-2">
+                      <span className="hidden sm:inline">Recent Transactions</span>
+                      <span className="sm:hidden">Transactions</span>
+                    </TabsTrigger>
+                    <TabsTrigger value="details" className="text-xs sm:text-sm py-2">
+                      <span className="hidden sm:inline">Account Details</span>
+                      <span className="sm:hidden">Details</span>
+                    </TabsTrigger>
+                    <TabsTrigger value="settings" className="text-xs sm:text-sm py-2">Settings</TabsTrigger>
                   </TabsList>
 
                   <div className="mt-4 space-y-4">
