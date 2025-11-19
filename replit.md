@@ -35,7 +35,7 @@ The platform features an Apple 2025 "Liquid Glass" aesthetic, utilizing dark neu
 -   **Subscription System**: Three-tier model (Free, Standard, Pro) using Stripe Checkout for payment processing and feature gating, with a Stripe Customer Portal for management.
 -   **Financial Data Management**: Supports multi-account connections, real-time balance tracking, portfolio management, and trade execution simulation.
 -   **Referral System**: Infrastructure for generating and tracking referral codes.
--   **Communication Systems**: Resend-based email service and Slack notifications for critical events.
+-   **Communication Systems**: Resend-based email service and Slack notifications for critical events including new user signups, subscriptions, applications, feature requests, bug reports, and lead captures.
 -   **Feedback Systems**: A public system for feature requests and bug reports, storing feedback and notifying admins.
 -   **Lead Capture System**: Production-ready email lead capture with database persistence, Slack notifications, and rate limiting.
 -   **Alert Monitoring System**: Background service for price alerts with debouncing.

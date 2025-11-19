@@ -14,6 +14,7 @@ import {
 } from '../lib/argon2-utils';
 import { hashToken, verifyToken, generateSecureToken } from '../lib/token-utils';
 import { sendPasswordResetEmail, sendApprovalEmail, sendWelcomeEmail } from '../services/email';
+import { notifyNewUserSignup } from '../services/slackNotifier';
 import {
   generateAccessToken,
   generateRefreshToken,
@@ -182,6 +183,17 @@ router.post('/public-register', rateLimits.register, async (req, res) => {
       console.error('Failed to send welcome email:', error);
       // Continue - don't fail registration if email fails
     }
+
+    // Send Slack notification (non-blocking)
+    notifyNewUserSignup({
+      name: firstName,
+      email: lowercaseEmail,
+      subscriptionTier: 'free',
+      signupTime: new Date(),
+    }).catch(err => {
+      console.error('Failed to send Slack notification:', err);
+      // Continue - don't fail registration if Slack fails
+    });
 
     return res.status(201).json({
       success: true,
@@ -1604,6 +1616,17 @@ router.post('/signup', rateLimits.login, async (req, res) => {
       subscription_status: 'active',
       signup_source: 'landing_page',
       referral_used: referralProcessed,
+    });
+
+    // Send Slack notification (non-blocking)
+    notifyNewUserSignup({
+      name: `${firstName} ${lastName}`.trim(),
+      email: normalizedEmail,
+      subscriptionTier: 'free',
+      signupTime: new Date(),
+    }).catch(err => {
+      console.error('Failed to send Slack notification:', err);
+      // Continue - don't fail registration if Slack fails
     });
 
     // Return user data with referral stats
