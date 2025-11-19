@@ -386,24 +386,28 @@ img {
   transition: all 0.2s ease;
 }
 
-/* Consistent card styling - Apple 12-16px radius */
+/* Flint Card - Using Apple Theme Styling */
 .flint-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 12px; /* Apple spec: 12px max */
-  transition: all 0.3s ease;
+  background-color: var(--surface);
+  backdrop-filter: blur(16px) saturate(140%);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-md, 16px);
+  padding: var(--space-md, 24px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+  transition: all 0.2s ease;
 }
 
 .dark .flint-card {
   background: rgba(24, 27, 31, 0.55);
-  backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(16px) saturate(140%);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .flint-card:hover {
-  border-color: rgba(10, 132, 255, 0.4);
-  box-shadow: 0 0 8px rgba(10, 132, 255, 0.4);
-  transform: translateY(-4px) scale(1.03);
+  border-color: rgba(255, 255, 255, 0.15);
+  transform: translateY(-2px);
 }
 
 :root {
@@ -509,23 +513,21 @@ img {
 }
 
 @layer utilities {
-  /* Flint Button Styles */
+  /* Flint Button Styles - Apple Theme */
   .flint-btn {
-    @apply px-6 py-4 font-medium transition-all duration-200;
-    @apply hover:shadow-lg hover:scale-105;
-    border-radius: 12px; /* Apple spec: 12px */
-    text-transform: none; /* Remove uppercase for cleaner look */
+    @apply px-6 py-3 font-semibold transition-all duration-200;
+    border-radius: var(--radius-sm, 12px);
+    text-transform: none;
     letter-spacing: 0;
   }
 
   .flint-btn-primary {
-    background: var(--accent);
+    background: var(--primary-color, #0a84ff);
     color: white;
-    box-shadow: 0 0 20px rgba(10, 132, 255, 0.3);
   }
 
   .flint-btn-primary:hover {
-    box-shadow: 0 0 25px rgba(10, 132, 255, 0.5);
+    background: #007aff;
   }
 
   .flint-btn-buy {
@@ -548,15 +550,7 @@ img {
     box-shadow: 0 0 25px rgba(255, 59, 48, 0.5);
   }
 
-  /* Glassmorphism Cards - Apple Liquid Glass */
-  .flint-card {
-    background: rgba(24, 27, 31, 0.55);
-    backdrop-filter: blur(16px);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 12px; /* Apple spec: 12px */
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15); /* Subtle shadow */
-  }
-
+  /* Card variants using Apple theme */
   .flint-card-accent {
     border-color: rgba(10, 132, 255, 0.3);
     box-shadow: 0 4px 16px rgba(10, 132, 255, 0.1);

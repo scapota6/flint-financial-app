@@ -16,20 +16,8 @@
  *    to ensure consistent colours and radii.
  */
 
-/* 1. Root design tokens */
+/* 1. Root design tokens - Light Mode Defaults */
 :root {
-  /* Colour palette */
-  --bg-dark: #0b0d11;             /* Page background */
-  --surface: rgba(24, 27, 31, 0.55);      /* Card/background surface */
-  --surface-strong: rgba(24, 27, 31, 0.72); /* Stronger surface for modals */
-  --primary-color: #0a84ff;       /* Primary accent (CTA buttons, links) */
-  --secondary-color: #64d2ff;     /* Secondary accent */
-  --success-color: #34c759;       /* Success messages */
-  --danger-color: #ff3b30;        /* Error messages */
-  --text-primary: #f2f4f6;        /* Primary text colour */
-  --text-secondary: #a7adba;      /* Secondary/muted text */
-  --divider-color: rgba(255,255,255,0.06); /* Dividers & separators */
-
   /* Typography */
   --font-display: "SF Pro Display", "Inter", sans-serif;
   --font-text: "SF Pro Text", "Inter", sans-serif;
@@ -47,7 +35,19 @@
   --space-sm: 16px;
   --space-xs: 8px;
 
-  /* Shadows */
+  /* Light Mode Colors */
+  --primary-color: #0a84ff;
+  --secondary-color: #64d2ff;
+  --success-color: #34c759;
+  --danger-color: #ff3b30;
+
+  /* Shadows (light mode) */
+  --shadow-md: 0 12px 40px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 24px 80px rgba(0, 0, 0, 0.15);
+}
+
+/* Dark Mode Overrides */
+.dark {
   --shadow-md: 0 12px 40px rgba(0, 0, 0, 0.35);
   --shadow-lg: 0 24px 80px rgba(0, 0, 0, 0.45);
 }
@@ -55,16 +55,6 @@
 /* 2. Base Reset */
 *, *::before, *::after {
   box-sizing: border-box;
-}
-
-body {
-  margin: 0;
-  background-color: var(--bg-dark);
-  color: var(--text-primary);
-  font-family: var(--font-text);
-  line-height: 1.5;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
 }
 
 /* 3. Typography System */
@@ -95,7 +85,6 @@ h3 {
 p {
   margin: 0 0 var(--space-sm);
   font-size: 1rem;
-  color: var(--text-secondary);
 }
 
 /* 4. Layout Utilities */
@@ -120,17 +109,17 @@ p {
   background-color: var(--surface);
   backdrop-filter: blur(16px) saturate(140%);
   -webkit-backdrop-filter: blur(16px) saturate(140%);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid hsl(var(--border));
   border-radius: var(--radius-md);
   padding: var(--space-md);
   box-shadow: var(--shadow-md);
 }
 
 .panel {
-  background-color: var(--surface-strong);
+  background-color: var(--surface);
   backdrop-filter: blur(20px) saturate(160%);
   -webkit-backdrop-filter: blur(20px) saturate(160%);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid hsl(var(--border));
   border-radius: var(--radius-lg);
   padding: var(--space-lg);
   box-shadow: var(--shadow-lg);
