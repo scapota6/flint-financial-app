@@ -1968,7 +1968,7 @@ export default function LandingNew() {
 
       {/* Account Detail Modal - Production-Accurate Tabbed Interface */}
       <Dialog open={showAccountModal} onOpenChange={setShowAccountModal}>
-        <DialogContent className="bg-gray-900 border-gray-700 max-w-3xl max-h-[90vh] overflow-hidden flex flex-col">
+        <DialogContent className="bg-gray-900 border-gray-700 max-w-3xl max-h-[90vh] overflow-y-auto">
           {selectedAccount && (
             <>
               {/* Header */}
@@ -2017,14 +2017,14 @@ export default function LandingNew() {
 
               {/* Bank/Credit Card Modal - 3 Tabs */}
               {(selectedAccount.type === 'Bank' || selectedAccount.type === 'Credit') && (
-                <Tabs defaultValue="transactions" className="flex-1 flex flex-col overflow-hidden">
+                <Tabs defaultValue="transactions" className="mt-4">
                   <TabsList className="grid w-full grid-cols-3 bg-gray-800">
                     <TabsTrigger value="transactions">Recent Transactions</TabsTrigger>
                     <TabsTrigger value="details">Account Details</TabsTrigger>
                     <TabsTrigger value="settings">Settings</TabsTrigger>
                   </TabsList>
 
-                  <div className="flex-1 overflow-y-auto mt-4 space-y-4">
+                  <div className="mt-4 space-y-4">
                     <TabsContent value="transactions" className="space-y-4 m-0">
                       <Card className="bg-gray-800/50 border-gray-700">
                         <div className="p-4">
@@ -2161,14 +2161,14 @@ export default function LandingNew() {
 
               {/* Investment/Crypto Modal - 3 Tabs */}
               {(selectedAccount.type === 'Investing' || selectedAccount.type === 'Crypto') && (
-                <Tabs defaultValue="overview" className="flex-1 flex flex-col overflow-hidden">
+                <Tabs defaultValue="overview" className="mt-4">
                   <TabsList className="grid w-full grid-cols-3 bg-gray-800">
                     <TabsTrigger value="overview">Overview</TabsTrigger>
                     <TabsTrigger value="holdings">Holdings</TabsTrigger>
                     <TabsTrigger value="orders">Order History</TabsTrigger>
                   </TabsList>
 
-                  <div className="flex-1 overflow-y-auto mt-4 space-y-4">
+                  <div className="mt-4 space-y-4">
                     <TabsContent value="overview" className="space-y-4 m-0">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <Card className="bg-gray-800/50 border-gray-700">
