@@ -1,0 +1,13 @@
+2025-11-19 13:38:48.20
+bd025ab2
+User
+{"timestamp":"2025-11-19T18:38:48.201Z","level":"ERROR","message":"Error syncing holdings for account","metadata":{"accountId":"3fd6c710-5a66-4ed0-8102-3b63afd6c8d5","errorMessage":"insert or update on table \"snaptrade_positions\" violates foreign key constraint \"snaptrade_positions_account_id_snaptrade_accounts_id_fk\"","errorStack":"error: insert or update on table \"snaptrade_positions\" violates foreign key constraint \"snaptrade_positions_account_id_snaptrade_accounts_id_fk\"\n at file:///home/runner/workspace/node_modules/@neondatabase/serverless/index.mjs:1345:74\n at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n at async syncAccountHoldings (file:///home/runner/workspace/dist/index.js:6757:7)\n at async syncAllHoldings (file:///home/runner/workspace/dist/index.js:6811:26)","errorDetails":{"length":395,"name":"error","severity":"ERROR","code":"23503","detail":"Key (account_id)=(3fd6c710-5a66-4ed0-8102-3b63afd6c8d5) is not present in table \"snaptrade_accounts\".","schema":"public","table":"snaptrade_positions","constraint":"snaptrade_positions_account_id_snaptrade_accounts_id_fk","file":"ri_triggers.c","line":"2608","routine":"ri_ReportViolation"}}}
+2025-11-19 13:38:48.42
+bd025ab2
+User
+Using fine-grained getUserAccountPositions API (recommended by SnapTrade)
+2025-11-19 13:38:48.54
+bd025ab2
+User
+{"timestamp":"2025-11-19T18:38:48.543Z","level":"ERROR","message":"Error syncing holdings for account","metadata":{"accountId":"538b143d-5d1a-420d-8be8-5fe12d99384d","errorMessage":"insert or update on table \"snaptrade_positions\" violates foreign key constraint \"snaptrade_positions_account_id_snaptrade_accounts_id_fk\"","errorStack":"error: insert or update on table \"snaptrade_positions\" violates foreign key constraint \"snaptrade_positions_account_id_snaptrade_accounts_id_fk\"\n at file:///home/runner/workspace/node_modules/@neondatabase/serverless/index.mjs:1345:74\n at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n at async syncAccountHoldings (file:///home/runner/workspace/dist/index.js:6757:7)\n at async syncAllHoldings (file:///home/runner/workspace/dist/index.js:6811:26)","errorDetails":{"length":395,"name":"error","severity":"ERROR","code":"23503","detail":"Key (account_id)=(538b143d-5d1a-420d-8be8-5fe12d99384d) is not present in table \"snaptrade_accounts\".","schema":"public","table":"snaptrade_positions","constraint":"snaptrade_positions_account_id_snaptrade_accounts_id_fk","file":"ri_triggers.c","line":"2608","routine":"ri_ReportViolation"}}}
+2
