@@ -166,7 +166,7 @@ export default function AdminDashboard() {
       {/* Main Content */}
       <div className="container mx-auto px-4 py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="bg-slate-900/40 backdrop-blur-xl border border-slate-700/50 p-1" data-testid="tabs-admin-navigation">
+          <TabsList className="bg-slate-900/40 backdrop-blur-xl border border-slate-700/50 p-1 overflow-x-auto flex-nowrap w-full justify-start" data-testid="tabs-admin-navigation">
             <TabsTrigger 
               value="overview" 
               data-testid="tab-overview"

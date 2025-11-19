@@ -181,7 +181,7 @@ export const snaptradeAccounts = pgTable('snaptrade_accounts', {
 // SnapTrade account balances table (with 10-second caching for cross-platform consistency)
 export const snaptradeBalances = pgTable('snaptrade_balances', {
   id: serial('id').primaryKey(),
-  accountId: varchar('account_id').notNull().unique().references(() => snaptradeAccounts.id),
+  accountId: varchar('account_id').notNull().unique().references(() => snaptradeAccounts.id, { onDelete: 'cascade' }),
   cash: decimal('cash', { precision: 15, scale: 2 }),
   totalEquity: decimal('total_equity', { precision: 15, scale: 2 }),
   buyingPower: decimal('buying_power', { precision: 15, scale: 2 }),
@@ -196,7 +196,7 @@ export const snaptradeBalances = pgTable('snaptrade_balances', {
 // SnapTrade positions/holdings table
 export const snaptradePositions = pgTable('snaptrade_positions', {
   id: serial('id').primaryKey(),
-  accountId: varchar('account_id').notNull().references(() => snaptradeAccounts.id),
+  accountId: varchar('account_id').notNull().references(() => snaptradeAccounts.id, { onDelete: 'cascade' }),
   symbol: varchar('symbol').notNull(),
   symbolId: varchar('symbol_id'),
   description: varchar('description'),
@@ -215,7 +215,7 @@ export const snaptradePositions = pgTable('snaptrade_positions', {
 // SnapTrade orders table
 export const snaptradeOrders = pgTable('snaptrade_orders', {
   id: varchar('id').primaryKey(), // order UUID from SnapTrade
-  accountId: varchar('account_id').notNull().references(() => snaptradeAccounts.id),
+  accountId: varchar('account_id').notNull().references(() => snaptradeAccounts.id, { onDelete: 'cascade' }),
   symbol: varchar('symbol').notNull(),
   symbolId: varchar('symbol_id'),
   side: varchar('side').notNull(), // BUY/SELL
@@ -241,7 +241,7 @@ export const snaptradeOrders = pgTable('snaptrade_orders', {
 // SnapTrade activities table
 export const snaptradeActivities = pgTable('snaptrade_activities', {
   id: varchar('id').primaryKey(), // activity UUID from SnapTrade
-  accountId: varchar('account_id').notNull().references(() => snaptradeAccounts.id),
+  accountId: varchar('account_id').notNull().references(() => snaptradeAccounts.id, { onDelete: 'cascade' }),
   date: timestamp('date').notNull(),
   type: varchar('type').notNull(), // TRADE/DIVIDEND/INTEREST/FEE/TRANSFER
   description: text('description').notNull(),
@@ -263,7 +263,7 @@ export const snaptradeActivities = pgTable('snaptrade_activities', {
 // SnapTrade option holdings table
 export const snaptradeOptionHoldings = pgTable('snaptrade_option_holdings', {
   id: serial('id').primaryKey(),
-  accountId: varchar('account_id').notNull().references(() => snaptradeAccounts.id),
+  accountId: varchar('account_id').notNull().references(() => snaptradeAccounts.id, { onDelete: 'cascade' }),
   occSymbol: varchar('occ_symbol').notNull(), // OCC symbol format
   description: varchar('description'),
   quantity: decimal('quantity', { precision: 15, scale: 8 }).notNull(),

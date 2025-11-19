@@ -39,6 +39,7 @@ export default function Profile() {
 
   const { data: referralStats, isLoading: referralLoading } = useQuery<ReferralStats>({
     queryKey: ['/api/user/referral'],
+    enabled: !!user,
   });
 
   const [profileData, setProfileData] = useState({
