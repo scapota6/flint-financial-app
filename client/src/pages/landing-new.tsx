@@ -1686,9 +1686,9 @@ export default function LandingNew() {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 max-w-6xl mx-auto px-4 sm:px-0">
+            <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 max-w-6xl mx-auto px-4 sm:px-0">
               {/* Free Plan */}
-              <Card className="bg-white/5 border-white/10 rounded-xl p-4 sm:p-6">
+              <Card className="bg-white/5 border-white/10 rounded-xl p-4 sm:p-6 flex flex-col">
                 <div className="mb-6">
                   <h3 className="apple-h3">Free</h3>
                   <div className="flex items-baseline gap-2 mb-3">
@@ -1977,8 +1977,8 @@ export default function LandingNew() {
 
       {/* Exit Intent Modal */}
       <Dialog open={showExitModal} onOpenChange={setShowExitModal}>
-        <DialogContent className="bg-black border-white/20 max-w-md">
-          <DialogTitle className="text-2xl font-bold">
+        <DialogContent className="bg-black border-white/20 w-[95vw] sm:w-full !max-w-[95vw] sm:!max-w-md">
+          <DialogTitle className="text-xl sm:text-2xl font-bold">
             Not ready yet?
           </DialogTitle>
           <DialogDescription className="text-gray-300 text-base">
@@ -2012,7 +2012,7 @@ export default function LandingNew() {
 
       {/* Account Detail Modal - Production-Accurate Tabbed Interface */}
       <Dialog open={showAccountModal} onOpenChange={setShowAccountModal}>
-        <DialogContent className="bg-gray-900 border-gray-700 w-[95vw] sm:w-full max-w-3xl max-h-[90vh] overflow-y-auto [&>button]:hidden !z-[60] p-4 sm:p-6">
+        <DialogContent className="bg-gray-900 border-gray-700 w-[95vw] sm:w-full !max-w-[95vw] sm:!max-w-3xl max-h-[90vh] overflow-y-auto [&>button]:hidden !z-[60] p-4 sm:p-6">
           {selectedAccount && (
             <>
               {/* Header */}
