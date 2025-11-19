@@ -729,7 +729,7 @@ export default function LandingNew() {
                 </Button>
                 
                 <p className="apple-caption text-blue-300">
-                  No credit card required · Join 5,000+ users
+                  No credit card required · Join 3,000+ users
                 </p>
               </div>
 
@@ -1968,7 +1968,7 @@ export default function LandingNew() {
 
       {/* Account Detail Modal - Production-Accurate Tabbed Interface */}
       <Dialog open={showAccountModal} onOpenChange={setShowAccountModal}>
-        <DialogContent className="bg-gray-900 border-gray-700 max-w-3xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="bg-gray-900 border-gray-700 max-w-3xl max-h-[90vh] overflow-y-auto [&>button]:hidden !z-[60]">
           {selectedAccount && (
             <>
               {/* Header */}
