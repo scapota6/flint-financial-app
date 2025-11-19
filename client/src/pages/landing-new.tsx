@@ -382,6 +382,7 @@ export default function LandingNew() {
   const [signupData, setSignupData] = useState({ name: '', email: '', password: '' });
   const [signupSuccess, setSignupSuccess] = useState(false);
   const [passwordFocused, setPasswordFocused] = useState(false);
+  const [referralCode, setReferralCode] = useState<string | null>(null);
 
   // Pricing toggle
   const [isAnnual, setIsAnnual] = useState(false);
@@ -450,6 +451,15 @@ export default function LandingNew() {
     document.addEventListener('mouseleave', handleMouseLeave);
     return () => document.removeEventListener('mouseleave', handleMouseLeave);
   }, [exitModalSubmitted]);
+
+  // Extract referral code from URL query parameter
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const ref = urlParams.get('ref');
+    if (ref) {
+      setReferralCode(ref);
+    }
+  }, []);
 
   // Email submissions
   const handleHeroEmailSubmit = (e: React.FormEvent) => {
@@ -624,6 +634,7 @@ export default function LandingNew() {
           firstName: signupData.name,
           email: signupData.email,
           password: signupData.password,
+          ...(referralCode && { referralCode }),
         }),
       });
 
@@ -922,7 +933,7 @@ export default function LandingNew() {
               <div className="flex items-center gap-3 justify-center">
                 <Shield className="h-6 w-6 text-blue-400" />
                 <div>
-                  <p className="font-semibold">5,000+ people</p>
+                  <p className="font-semibold">3,000+ people</p>
                   <p className="text-sm text-gray-400">Use Flint every day</p>
                 </div>
               </div>
@@ -1075,7 +1086,7 @@ export default function LandingNew() {
           <div className="apple-container max-w-5xl">
             <div className="text-center mb-12">
               <h2 className="apple-h2">See How It Works</h2>
-              <p className="apple-caption text-gray-300">Fully interactive demo — click any account to explore</p>
+              <p className="apple-caption text-gray-300">Limited demo — create account to unlock full features</p>
             </div>
 
             {/* Full dashboard mock matching actual dashboard */}

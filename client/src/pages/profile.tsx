@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
-import { User, Settings, Shield, Lock } from 'lucide-react';
+import { User, Settings, Shield, Lock, Share2, Copy, Check } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest } from '@/lib/queryClient';
 
@@ -20,13 +20,25 @@ interface UserProfile {
   createdAt: string;
 }
 
+interface ReferralStats {
+  referralCode: string;
+  referralCount: number;
+  referralLink: string;
+  waitlistPosition: number;
+}
+
 export default function Profile() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [isEditing, setIsEditing] = useState(false);
+  const [copied, setCopied] = useState(false);
   
   const { data: user, isLoading } = useQuery<UserProfile>({
     queryKey: ['/api/auth/user'],
+  });
+
+  const { data: referralStats, isLoading: referralLoading } = useQuery<ReferralStats>({
+    queryKey: ['/api/user/referral'],
   });
 
   const [profileData, setProfileData] = useState({
@@ -113,6 +125,18 @@ export default function Profile() {
       currentPassword: passwordData.currentPassword,
       newPassword: passwordData.newPassword,
     });
+  };
+
+  const handleCopyReferralLink = () => {
+    if (referralStats?.referralLink) {
+      navigator.clipboard.writeText(referralStats.referralLink);
+      setCopied(true);
+      toast({
+        title: "Copied!",
+        description: "Referral link copied to clipboard",
+      });
+      setTimeout(() => setCopied(false), 2000);
+    }
   };
 
   if (isLoading) {
@@ -244,6 +268,104 @@ export default function Profile() {
                 {user?.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'Unknown'}
               </p>
             </div>
+          </CardContent>
+        </Card>
+
+        {/* Referral Program */}
+        <Card className="bg-gray-900 border-gray-800">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-white">
+              <Share2 className="h-5 w-5" />
+              Invite & Unlock
+            </CardTitle>
+            <CardDescription className="text-gray-400">
+              Share your referral link and unlock premium features
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {referralLoading ? (
+              <div className="animate-pulse space-y-4">
+                <div className="h-20 bg-gray-800 rounded"></div>
+                <div className="h-8 bg-gray-800 rounded w-1/2"></div>
+              </div>
+            ) : (
+              <>
+                {/* Referral Link */}
+                <div className="space-y-3">
+                  <Label className="text-white">Your Referral Link</Label>
+                  <div className="flex gap-2">
+                    <Input
+                      value={referralStats?.referralLink || 'Loading...'}
+                      readOnly
+                      className="bg-gray-800 border-gray-700 text-white font-mono text-sm"
+                      data-testid="input-referral-link"
+                    />
+                    <Button 
+                      onClick={handleCopyReferralLink}
+                      className="bg-blue-600 hover:bg-blue-700 flex items-center gap-2"
+                      data-testid="button-copy-referral"
+                    >
+                      {copied ? (
+                        <>
+                          <Check className="h-4 w-4" />
+                          Copied!
+                        </>
+                      ) : (
+                        <>
+                          <Copy className="h-4 w-4" />
+                          Copy
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                  <p className="text-sm text-gray-400">
+                    Share this link with friends to earn referral rewards
+                  </p>
+                </div>
+
+                {/* Referral Stats */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-gray-800 rounded-lg">
+                  <div>
+                    <Label className="text-gray-400 text-sm">Your Referral Code</Label>
+                    <p className="text-2xl font-bold text-blue-400 mt-1">
+                      {referralStats?.referralCode || 'N/A'}
+                    </p>
+                  </div>
+                  <div>
+                    <Label className="text-gray-400 text-sm">Successful Referrals</Label>
+                    <p className="text-2xl font-bold text-green-400 mt-1">
+                      {referralStats?.referralCount || 0}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Referral Rewards */}
+                <div className="p-4 bg-gradient-to-br from-blue-600/10 to-blue-800/10 border border-blue-600/20 rounded-lg space-y-3">
+                  <h4 className="font-semibold text-white flex items-center gap-2">
+                    <Shield className="h-4 w-4 text-blue-400" />
+                    Unlock Rewards
+                  </h4>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex items-center gap-3">
+                      <div className="h-8 w-8 rounded-full bg-blue-600/20 flex items-center justify-center flex-shrink-0">
+                        <span className="text-blue-400 font-bold">3</span>
+                      </div>
+                      <p className="text-gray-300">
+                        <span className="font-semibold text-white">Refer 3 friends</span> → Unlock unlimited accounts
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="h-8 w-8 rounded-full bg-blue-600/20 flex items-center justify-center flex-shrink-0">
+                        <span className="text-blue-400 font-bold">5</span>
+                      </div>
+                      <p className="text-gray-300">
+                        <span className="font-semibold text-white">Refer 5 friends</span> → Get 1 month Pro free
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </>
+            )}
           </CardContent>
         </Card>
 

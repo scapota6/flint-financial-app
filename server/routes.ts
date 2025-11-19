@@ -48,6 +48,7 @@ import adminSnapTradeAuditRouter from './routes/admin-snaptrade-audit';
 import userPasswordRouter from './routes/user-password';
 import authRouter from './routes/auth';
 import lemonSqueezyRouter from './routes/lemonsqueezy';
+import { getReferralStats } from './utils/referral';
 
 /**
  * Safely parse decimal values from SnapTrade API responses
@@ -529,6 +530,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // CSRF Token endpoint for mutating requests
   app.get('/api/csrf-token', (req: any, res) => {
     res.json({ csrfToken: req.csrfToken() });
+  });
+
+  // Referral stats endpoint
+  app.get('/api/user/referral', rateLimits.auth, requireAuth, async (req: any, res) => {
+    try {
+      const userId = req.user?.id;
+      if (!userId) {
+        return res.status(401).json({ message: 'Not authenticated' });
+      }
+
+      const stats = await getReferralStats(userId);
+      if (!stats) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+
+      // Generate the shareable referral link using request origin
+      const baseUrl = process.env.FRONTEND_URL || 
+        req.headers.origin || 
+        `${req.protocol}://${req.get('host')}`;
+      const referralLink = `${baseUrl}/new?ref=${stats.referralCode}`;
+
+      res.json({
+        referralCode: stats.referralCode,
+        referralCount: stats.referralCount || 0,
+        referralLink,
+        waitlistPosition: stats.waitlistPosition,
+      });
+    } catch (error) {
+      logger.error('Error fetching referral stats', { error, userId: req.user?.id });
+      res.status(500).json({ message: 'Failed to fetch referral stats' });
+    }
   });
 
   // Helper function: Fetch all Teller accounts in parallel
