@@ -1,0 +1,260 @@
+/*
+ * Apple-inspired Dark Theme for Flint
+ *
+ * This stylesheet defines a refined UI system for Flint’s landing page
+ * that is easy on the eyes, coherent across all components, and aligned
+ * with Apple’s 2025 design sensibilities. It focuses on layout, typography,
+ * colours, border radii and spacing. All existing sign-up flows, pop‑ups
+ * and referral components can remain in place – simply apply these
+ * classes to them to achieve a premium look.
+ *
+ * Usage:
+ *  - Include this CSS file once at the root of your project.
+ *  - Map your existing HTML/React components to the classes defined
+ *    here (e.g. `.card`, `.btn-primary`, `.input`, `.section`).
+ *  - Use CSS variables defined in `:root` for any custom components
+ *    to ensure consistent colours and radii.
+ */
+
+/* 1. Root design tokens */
+:root {
+  /* Colour palette */
+  --bg-dark: #0b0d11;             /* Page background */
+  --surface: rgba(24, 27, 31, 0.55);      /* Card/background surface */
+  --surface-strong: rgba(24, 27, 31, 0.72); /* Stronger surface for modals */
+  --primary-color: #0a84ff;       /* Primary accent (CTA buttons, links) */
+  --secondary-color: #64d2ff;     /* Secondary accent */
+  --success-color: #34c759;       /* Success messages */
+  --danger-color: #ff3b30;        /* Error messages */
+  --text-primary: #f2f4f6;        /* Primary text colour */
+  --text-secondary: #a7adba;      /* Secondary/muted text */
+  --divider-color: rgba(255,255,255,0.06); /* Dividers & separators */
+
+  /* Typography */
+  --font-display: "SF Pro Display", "Inter", sans-serif;
+  --font-text: "SF Pro Text", "Inter", sans-serif;
+
+  /* Radii */
+  --radius-lg: 20px;
+  --radius-md: 16px;
+  --radius-sm: 12px;
+
+  /* Spacing scale (multiples of 4px) */
+  --space-xxl: 64px;
+  --space-xl: 48px;
+  --space-lg: 32px;
+  --space-md: 24px;
+  --space-sm: 16px;
+  --space-xs: 8px;
+
+  /* Shadows */
+  --shadow-md: 0 12px 40px rgba(0, 0, 0, 0.35);
+  --shadow-lg: 0 24px 80px rgba(0, 0, 0, 0.45);
+}
+
+/* 2. Base Reset */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background-color: var(--bg-dark);
+  color: var(--text-primary);
+  font-family: var(--font-text);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* 3. Typography System */
+h1 {
+  font-family: var(--font-display);
+  font-size: clamp(2.5rem, 5vw, 3.75rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin: 0 0 var(--space-sm);
+}
+
+h2 {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 4vw, 2.5rem);
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  margin: 0 0 var(--space-xs);
+}
+
+h3 {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  margin: 0 0 var(--space-xs);
+}
+
+p {
+  margin: 0 0 var(--space-sm);
+  font-size: 1rem;
+  color: var(--text-secondary);
+}
+
+/* 4. Layout Utilities */
+.section {
+  padding: var(--space-xl) 0;
+}
+
+.container {
+  width: min(1100px, 100% - var(--space-lg));
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: var(--space-md);
+}
+
+/* 5. Card & Panel Styles */
+.card {
+  background-color: var(--surface);
+  backdrop-filter: blur(16px) saturate(140%);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  box-shadow: var(--shadow-md);
+}
+
+.panel {
+  background-color: var(--surface-strong);
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  box-shadow: var(--shadow-lg);
+}
+
+/* 6. Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 1.5rem;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn-primary {
+  background-color: var(--primary-color);
+  color: #fff;
+}
+.btn-primary:hover {
+  background-color: #007aff;
+}
+
+.btn-secondary {
+  background-color: transparent;
+  color: var(--primary-color);
+  border: 1px solid var(--primary-color);
+}
+.btn-secondary:hover {
+  background-color: rgba(10, 132, 255, 0.15);
+}
+
+.btn-text {
+  background-color: transparent;
+  color: var(--primary-color);
+  padding: 0.5rem 0;
+}
+.btn-text:hover {
+  text-decoration: underline;
+}
+
+/* 7. Form Fields */
+.input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background-color: rgba(255, 255, 255, 0.05);
+  color: var(--text-primary);
+  font-family: var(--font-text);
+  font-size: 1rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.input::placeholder {
+  color: var(--text-secondary);
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(10, 132, 255, 0.35);
+}
+
+/* 8. Tabs */
+.tabs {
+  display: flex;
+  gap: var(--space-xs);
+}
+
+.tab {
+  padding: 0.5rem 1rem;
+  border-radius: 9999px;
+  background-color: rgba(255, 255, 255, 0.05);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+  font-weight: 500;
+  border: none;
+}
+
+.tab:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+.tab.active {
+  color: var(--text-primary);
+  background-color: rgba(255, 255, 255, 0.1);
+  box-shadow: inset 0 -2px 0 0 var(--primary-color);
+}
+
+/* 9. FAQ & Accordions */
+.faq-item {
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-sm);
+  padding: var(--space-sm);
+  margin-bottom: var(--space-sm);
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.faq-item:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+/* 10. Utility classes */
+.text-center { text-align: center; }
+.mt-sm { margin-top: var(--space-sm); }
+.mt-md { margin-top: var(--space-md); }
+.mt-lg { margin-top: var(--space-lg); }
+.mb-sm { margin-bottom: var(--space-sm); }
+.mb-md { margin-bottom: var(--space-md); }
+.mb-lg { margin-bottom: var(--space-lg); }
+.mx-auto { margin-left: auto; margin-right: auto; }
+
+/* 11. Responsive adjustments */
+@media (max-width: 768px) {
+  h1 { font-size: 2.25rem; }
+  h2 { font-size: 1.75rem; }
+  h3 { font-size: 1.25rem; }
+  .section { padding: var(--space-lg) 0; }
+}
