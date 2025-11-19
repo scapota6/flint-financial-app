@@ -728,51 +728,53 @@ export default function LandingNew() {
 
       {/* Header */}
       <header className="relative z-40 border-b border-white/10 backdrop-blur-xl">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between">
-          <div className="flex items-center gap-2 sm:gap-3">
-            <img src={flintLogo} alt="Flint" className="h-7 sm:h-8 w-auto" />
-            <span className="font-semibold text-sm sm:text-base">Flint</span>
-          </div>
-          <div className="flex items-center gap-2 sm:gap-4">
-            <Link href="/login">
-              <Button type="button" variant="ghost" className="text-white hover:text-blue-400 text-xs sm:text-sm px-2 sm:px-4" data-testid="button-login">
-                Log In
-              </Button>
-            </Link>
-            <Button type="button" onClick={scrollToSignup} className="bg-blue-600 hover:bg-blue-700 rounded-lg text-xs sm:text-sm px-3 sm:px-4" data-testid="button-header-signup">
-              <span className="hidden sm:inline">Get Started Free</span>
-              <span className="sm:hidden">Sign Up</span>
-            </Button>
+        <div className="container">
+          <div className="flex items-center justify-between py-4">
+            <div className="flex items-center gap-2 sm:gap-3">
+              <img src={flintLogo} alt="Flint" className="h-7 sm:h-8 w-auto" />
+              <span className="font-semibold text-sm sm:text-base">Flint</span>
+            </div>
+            <div className="flex items-center gap-2 sm:gap-4">
+              <Link href="/login">
+                <button type="button" className="btn btn-text text-xs sm:text-sm" data-testid="button-login">
+                  Log In
+                </button>
+              </Link>
+              <button type="button" onClick={scrollToSignup} className="btn btn-primary text-xs sm:text-sm" data-testid="button-header-signup">
+                <span className="hidden sm:inline">Get Started Free</span>
+                <span className="sm:hidden">Sign Up</span>
+              </button>
+            </div>
           </div>
         </div>
       </header>
 
       <main className="relative z-10">
-        {/* Hero Section - Apple Typography */}
-        <section className="apple-section">
-          <div className="apple-container">
-            <div className="max-w-3xl mx-auto text-center space-y-8">
-              <h1 className="apple-h1 mx-auto">
+        {/* Hero Section */}
+        <section className="section text-center">
+          <div className="container">
+            <div className="max-w-3xl mx-auto space-y-8">
+              <h1>
                 All your money,
                 <span className="text-blue-400"> one place</span>
               </h1>
               
-              <p className="apple-body mx-auto text-gray-300">
+              <p className="text-center max-w-2xl mx-auto">
                 Track all your bank, card, stock, and crypto accounts — in one place. Free forever, no card needed.
               </p>
 
               <div className="flex flex-col items-center space-y-4">
-                <Button 
+                <button 
                   type="button"
                   onClick={scrollToSignup} 
-                  className="bg-blue-600 hover:bg-blue-700 text-base sm:text-lg px-8 sm:px-12 py-4 sm:py-6 h-auto rounded-xl w-full sm:w-auto max-w-xs sm:max-w-none"
+                  className="btn btn-primary text-base sm:text-lg px-8 sm:px-12 py-4 sm:py-6"
                   data-testid="button-hero-cta"
                 >
                   Get Started Free
                   <ArrowRight className="ml-2 h-5 w-5" />
-                </Button>
+                </button>
                 
-                <p className="apple-caption text-blue-300">
+                <p className="text-sm text-blue-300">
                   No credit card required · Join 3,000+ users
                 </p>
               </div>
@@ -891,42 +893,36 @@ export default function LandingNew() {
           </div>
         </section>
 
-        {/* Value Proposition Cards - Apple 2-column Grid for Features */}
-        <section className="apple-section">
-          <div className="apple-container">
-            <div className="grid md:grid-cols-3 gap-8">
+        {/* Value Proposition Cards */}
+        <section className="section">
+          <div className="container">
+            <div className="cards-grid">
               {/* Cut Hidden Fees */}
-              <Card className="bg-white/5 border-white/10 rounded-xl p-8 hover:bg-white/10 transition-all" data-testid="value-card-fees">
-                <div className="flex flex-col items-center text-center space-y-4">
-                  <DollarSign className="h-7 w-7 text-blue-400" />
-                  <h3 className="apple-h3">Cut Hidden Fees</h3>
-                  <p className="apple-body text-gray-300">
-                    We find and alert you to unnecessary bank charges
-                  </p>
-                </div>
-              </Card>
+              <div className="card text-center" data-testid="value-card-fees">
+                <DollarSign className="h-7 w-7 text-blue-400 mx-auto mb-4" />
+                <h3>Cut Hidden Fees</h3>
+                <p>
+                  We find and alert you to unnecessary bank charges
+                </p>
+              </div>
 
               {/* Grow Net Worth */}
-              <Card className="bg-white/5 border-white/10 rounded-xl p-8 hover:bg-white/10 transition-all" data-testid="value-card-grow">
-                <div className="flex flex-col items-center text-center space-y-4">
-                  <TrendingUp className="h-7 w-7 text-green-400" />
-                  <h3 className="apple-h3">Grow Net Worth</h3>
-                  <p className="apple-body text-gray-300">
-                    See the big picture and make smarter money moves
-                  </p>
-                </div>
-              </Card>
+              <div className="card text-center" data-testid="value-card-grow">
+                <TrendingUp className="h-7 w-7 text-green-400 mx-auto mb-4" />
+                <h3>Grow Net Worth</h3>
+                <p>
+                  See the big picture and make smarter money moves
+                </p>
+              </div>
 
               {/* Stay in Control */}
-              <Card className="bg-white/5 border-white/10 rounded-xl p-8 hover:bg-white/10 transition-all" data-testid="value-card-control">
-                <div className="flex flex-col items-center text-center space-y-4">
-                  <Shield className="h-7 w-7 text-blue-400" />
-                  <h3 className="apple-h3">Stay in Control</h3>
-                  <p className="apple-body text-gray-300">
-                    Personalized budgets that work with you, not against you
-                  </p>
-                </div>
-              </Card>
+              <div className="card text-center" data-testid="value-card-control">
+                <Shield className="h-7 w-7 text-blue-400 mx-auto mb-4" />
+                <h3>Stay in Control</h3>
+                <p>
+                  Personalized budgets that work with you, not against you
+                </p>
+              </div>
             </div>
           </div>
         </section>
@@ -1656,120 +1652,116 @@ export default function LandingNew() {
         </section>
 
         {/* Pricing Section */}
-        <section className="apple-section bg-white/5 border-y border-white/10">
-          <div className="apple-container max-w-5xl">
-            <div className="text-center mb-8 sm:mb-12 px-4">
-              <h2 className="apple-h2">Pick Your Plan</h2>
-              <p className="apple-caption text-gray-300">Start free. Upgrade for advanced features.</p>
+        <section className="section bg-white/5 border-y border-white/10">
+          <div className="container">
+            <div className="text-center mb-8 sm:mb-12">
+              <h2>Pick Your Plan</h2>
+              <p className="text-sm text-gray-300">Start free. Upgrade for advanced features.</p>
               
               {/* Monthly/Annual Toggle */}
-              <div className="inline-flex items-center gap-2 sm:gap-3 bg-white/5 border border-white/10 rounded-xl p-1 text-sm sm:text-base">
+              <div className="tabs inline-flex mt-4">
                 <button
                   onClick={() => setIsAnnual(false)}
-                  className={`px-3 sm:px-6 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-all ${
-                    !isAnnual ? 'bg-blue-600 text-white' : 'text-gray-300 hover:text-white'
-                  }`}
+                  className={`tab ${!isAnnual ? 'active' : ''}`}
                   data-testid="toggle-monthly"
                 >
                   Monthly
                 </button>
                 <button
                   onClick={() => setIsAnnual(true)}
-                  className={`px-3 sm:px-6 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-all ${
-                    isAnnual ? 'bg-blue-600 text-white' : 'text-gray-300 hover:text-white'
-                  }`}
+                  className={`tab ${isAnnual ? 'active' : ''}`}
                   data-testid="toggle-annual"
                 >
                   Annual
-                  <span className="ml-1 sm:ml-2 text-green-400 text-xs sm:text-sm">Save 17%</span>
+                  <span className="ml-2 text-green-400">Save 17%</span>
                 </button>
               </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 max-w-6xl mx-auto px-4 sm:px-0">
+            <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 max-w-6xl mx-auto">
               {/* Free Plan */}
-              <Card className="bg-white/5 border-white/10 rounded-xl p-4 sm:p-6 flex flex-col">
+              <div className="card flex flex-col">
                 <div className="mb-6">
-                  <h3 className="apple-h3">Free</h3>
+                  <h3>Free</h3>
                   <div className="flex items-baseline gap-2 mb-3">
-                    <span className="apple-h2">$0</span>
-                    <span className="apple-caption text-gray-400">forever</span>
+                    <span className="text-4xl font-bold">$0</span>
+                    <span className="text-sm text-gray-400">forever</span>
                   </div>
-                  <p className="apple-caption text-gray-300">Try it out</p>
+                  <p className="text-sm text-gray-300">Try it out</p>
                 </div>
 
                 <ul className="space-y-2 mb-8">
                   <li className="flex items-start gap-2">
                     <Check className="h-5 w-5 text-green-400 flex-shrink-0 mt-0.5" />
-                    <span className="apple-caption">4 accounts</span>
+                    <span className="text-sm">4 accounts</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <Check className="h-5 w-5 text-green-400 flex-shrink-0 mt-0.5" />
-                    <span className="apple-caption">See all your money</span>
+                    <span className="text-sm">See all your money</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <Check className="h-5 w-5 text-green-400 flex-shrink-0 mt-0.5" />
-                    <span className="apple-caption">Live updates</span>
+                    <span className="text-sm">Live updates</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <Check className="h-5 w-5 text-green-400 flex-shrink-0 mt-0.5" />
-                    <span className="apple-caption">Mobile app</span>
+                    <span className="text-sm">Mobile app</span>
                   </li>
                 </ul>
 
-                <Button type="button" onClick={scrollToSignup} className="w-full bg-white/10 hover:bg-white/20 border border-white/20 rounded-xl" data-testid="button-free-plan">
+                <button type="button" onClick={scrollToSignup} className="btn btn-secondary w-full" data-testid="button-free-plan">
                   Start Free
-                </Button>
-              </Card>
+                </button>
+              </div>
 
               {/* Standard Plan */}
-              <Card className="bg-gradient-to-br from-blue-600/20 to-blue-900/20 border-blue-400/30 rounded-xl p-6 relative overflow-hidden">
+              <div className="panel relative overflow-hidden">
                 <div className="absolute top-4 right-4">
-                  <span className="bg-blue-500 text-white apple-caption font-semibold px-2 py-1 rounded-lg">
+                  <span className="bg-blue-500 text-white text-sm font-semibold px-2 py-1 rounded-lg">
                     Most Popular
                   </span>
                 </div>
 
                 <div className="mb-6">
-                  <h3 className="apple-h3">Standard</h3>
+                  <h3>Standard</h3>
                   <div className="flex items-baseline gap-2 mb-2">
-                    <span className="apple-h2">${isAnnual ? '199' : '19.99'}</span>
-                    <span className="apple-caption text-gray-400">{isAnnual ? '/year' : '/month'}</span>
+                    <span className="text-4xl font-bold">${isAnnual ? '199' : '19.99'}</span>
+                    <span className="text-sm text-gray-400">{isAnnual ? '/year' : '/month'}</span>
                   </div>
-                  {isAnnual && <p className="apple-caption text-green-400 mb-1">$199/year - 2 months free!</p>}
-                  <p className="apple-caption text-gray-300">For active users</p>
+                  {isAnnual && <p className="text-sm text-green-400 mb-1">$199/year - 2 months free!</p>}
+                  <p className="text-sm text-gray-300">For active users</p>
                 </div>
 
                 <ul className="space-y-2 mb-8">
                   <li className="flex items-start gap-2">
                     <Check className="h-5 w-5 text-blue-400 flex-shrink-0 mt-0.5" />
-                    <span className="apple-caption font-semibold">Unlimited accounts</span>
+                    <span className="text-sm font-semibold">Unlimited accounts</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <Check className="h-5 w-5 text-blue-400 flex-shrink-0 mt-0.5" />
-                    <span className="apple-caption">Everything in Free</span>
+                    <span className="text-sm">Everything in Free</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <Check className="h-5 w-5 text-blue-400 flex-shrink-0 mt-0.5" />
-                    <span className="apple-caption">Price alerts</span>
+                    <span className="text-sm">Price alerts</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <Check className="h-5 w-5 text-blue-400 flex-shrink-0 mt-0.5" />
-                    <span className="apple-caption">Track spending</span>
+                    <span className="text-sm">Track spending</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <Check className="h-5 w-5 text-blue-400 flex-shrink-0 mt-0.5" />
-                    <span className="apple-caption">Email support</span>
+                    <span className="text-sm">Email support</span>
                   </li>
                 </ul>
 
-                <Button type="button" className="w-full bg-blue-600 hover:bg-blue-700 rounded-xl" data-testid="button-standard-plan">
+                <button type="button" className="btn btn-primary w-full" data-testid="button-standard-plan">
                   Get Standard
-                </Button>
-              </Card>
+                </button>
+              </div>
 
               {/* Pro Plan */}
-              <Card className="bg-white/5 border-white/10 rounded-xl p-6">
+              <div className="card">
                 <div className="mb-6">
                   <h3 className="apple-h3">Pro</h3>
                   <div className="flex items-baseline gap-2 mb-2">
@@ -1815,10 +1807,10 @@ export default function LandingNew() {
                   </li>
                 </ul>
 
-                <Button type="button" className="w-full bg-blue-600 hover:bg-blue-700 rounded-xl" data-testid="button-pro-plan">
+                <button type="button" className="btn btn-primary w-full" data-testid="button-pro-plan">
                   Get Pro
-                </Button>
-              </Card>
+                </button>
+              </div>
             </div>
 
             {/* Guarantee */}
