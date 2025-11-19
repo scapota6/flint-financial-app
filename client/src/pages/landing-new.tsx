@@ -641,12 +641,43 @@ export default function LandingNew() {
       const data = await response.json();
 
       if (response.ok && data.success) {
-        // Show success state
-        setSignupSuccess(true);
-        // Redirect to login after 2 seconds
-        setTimeout(() => {
-          window.location.href = '/login?registered=true';
-        }, 2000);
+        // Registration successful - now automatically log in
+        try {
+          const loginResponse = await fetch('/api/auth/login', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            credentials: 'include', // Important for cookie-based auth
+            body: JSON.stringify({
+              email: signupData.email,
+              password: signupData.password,
+            }),
+          });
+
+          const loginData = await loginResponse.json();
+
+          if (loginResponse.ok && loginData.success) {
+            // Login successful - redirect to dashboard
+            setSignupSuccess(true);
+            setTimeout(() => {
+              window.location.href = '/dashboard';
+            }, 1000);
+          } else {
+            // Registration succeeded but auto-login failed - redirect to manual login
+            setSignupSuccess(true);
+            setTimeout(() => {
+              window.location.href = '/login?registered=true';
+            }, 2000);
+          }
+        } catch (loginError) {
+          console.error('Auto-login error:', loginError);
+          // Registration succeeded but auto-login failed - redirect to manual login
+          setSignupSuccess(true);
+          setTimeout(() => {
+            window.location.href = '/login?registered=true';
+          }, 2000);
+        }
       } else {
         // Show error message with helpful context
         if (data.message && data.message.toLowerCase().includes('already')) {
