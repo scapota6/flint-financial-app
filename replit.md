@@ -9,7 +9,17 @@ Preferred communication style: Simple, everyday language.
 ## System Architecture
 
 ### UI/UX Decisions
-The platform features an Apple 2025 "Liquid Glass" aesthetic, utilizing dark neutrals, translucent glass effects (16px blur + 140% saturation), and the Inter font. It employs Tailwind CSS and Radix UI (via shadcn/ui components) for a mobile-responsive design. Key UI elements include a fixed top navigation with a Liquid Glass effect, animated link glows, responsive account grids, full-screen modals, micro-animations, an Apple blue accent, and accessible design principles. The landing page includes an interactive dashboard preview, social proof notifications, a scrolling institutions banner, FAQ, tiered pricing, and conversion-optimized CTAs. Demo dashboards accurately reflect production data, including account-specific transactions, credit card details, debt summaries, and dynamic financial calculations.
+The platform features an Apple 2025 "Liquid Glass" aesthetic, utilizing dark neutrals, translucent glass effects (16px blur + 140% saturation), and the Inter font. It employs Tailwind CSS and Radix UI (via shadcn/ui components) for a fully responsive, mobile-first design. Key UI elements include a fixed top navigation with a Liquid Glass effect, animated link glows, responsive account grids, full-screen modals, micro-animations, an Apple blue accent, and accessible design principles. The landing page includes an interactive dashboard preview, social proof notifications, a scrolling institutions banner, FAQ, tiered pricing, and conversion-optimized CTAs. Demo dashboards accurately reflect production data, including account-specific transactions, credit card details, debt summaries, and dynamic financial calculations.
+
+**Responsive Design Implementation**: The landing page at /new is fully optimized for all device sizes (320px-2560px) with:
+- Root-level `overflow-x-hidden` to prevent horizontal scrolling
+- Mobile-first responsive patterns using Tailwind breakpoints (sm: 640px, md: 768px, lg: 1024px)
+- Modals using `w-[95vw] sm:w-full !max-w-[95vw] sm:!max-w-{size}` pattern with important flags to override defaults
+- Responsive grids: `grid-cols-2 md:grid-cols-4` (demo cards), `grid-cols-1 md:grid-cols-2` (accounts), `grid-cols-1 md:grid-cols-3` (pricing)
+- Typography scaling: `text-2xl sm:text-4xl md:text-5xl` (hero), `text-xs sm:text-sm` (mobile tabs)
+- Spacing reduction on mobile: `p-4 sm:p-6`, `px-4 sm:px-0`, `gap-3 sm:gap-4`
+- Tab navigation with shortened text on mobile: `<span className="hidden sm:inline">Full</span><span className="sm:hidden">Short</span>`
+- Touch-friendly interactive elements with adequate spacing for 44px+ touch targets
 
 ### Technical Implementations
 -   **Frontend**: Built with React, TypeScript, Wouter for routing, and React Query for server state management. Features include comprehensive banking/brokerage integration, buy/sell workflows, multi-tab stock detail modals with TradingView charts, unified real-time market data, Accounts Directory, Portfolio Dashboard, Watchlist & Alerts, and Money Movement Tracking. A comprehensive logo system uses Brandfetch. Live data polling is aggressive for near real-time updates (e.g., Portfolio at 2-5s, Connections at 2s, Dashboard at 3s).
