@@ -35,6 +35,7 @@ import {
 import { Link } from "wouter";
 import flintLogo from "@assets/flint-logo.png";
 import dashboardPreview from "@assets/dashboard-preview.png";
+import { EmbeddedCheckoutModal } from "@/components/EmbeddedCheckoutModal";
 
 // Type definitions for demo data
 interface DemoAccount {
@@ -386,6 +387,12 @@ export default function LandingNew() {
 
   // Pricing toggle
   const [isAnnual, setIsAnnual] = useState(false);
+  
+  // Stripe checkout modal state
+  const [checkoutModalOpen, setCheckoutModalOpen] = useState(false);
+  const [checkoutEmail, setCheckoutEmail] = useState('');
+  const [checkoutTier, setCheckoutTier] = useState<'basic' | 'pro'>('basic');
+  const [checkoutBillingPeriod, setCheckoutBillingPeriod] = useState<'monthly' | 'yearly'>('monthly');
 
   // Sticky nav
   const [showStickyNav, setShowStickyNav] = useState(false);
@@ -1755,7 +1762,16 @@ export default function LandingNew() {
                   </li>
                 </ul>
 
-                <button type="button" className="btn btn-primary w-full" data-testid="button-standard-plan">
+                <button 
+                  type="button" 
+                  onClick={() => {
+                    setCheckoutTier('basic');
+                    setCheckoutBillingPeriod(isAnnual ? 'yearly' : 'monthly');
+                    setCheckoutModalOpen(true);
+                  }}
+                  className="btn btn-primary w-full" 
+                  data-testid="button-standard-plan"
+                >
                   Get Standard
                 </button>
               </div>
@@ -1807,7 +1823,16 @@ export default function LandingNew() {
                   </li>
                 </ul>
 
-                <button type="button" className="btn btn-primary w-full" data-testid="button-pro-plan">
+                <button 
+                  type="button" 
+                  onClick={() => {
+                    setCheckoutTier('pro');
+                    setCheckoutBillingPeriod(isAnnual ? 'yearly' : 'monthly');
+                    setCheckoutModalOpen(true);
+                  }}
+                  className="btn btn-primary w-full" 
+                  data-testid="button-pro-plan"
+                >
                   Get Pro
                 </button>
               </div>
@@ -2001,6 +2026,15 @@ export default function LandingNew() {
           )}
         </DialogContent>
       </Dialog>
+
+      {/* Stripe Checkout Modal */}
+      <EmbeddedCheckoutModal
+        open={checkoutModalOpen}
+        onOpenChange={setCheckoutModalOpen}
+        email={checkoutEmail}
+        tier={checkoutTier}
+        billingPeriod={checkoutBillingPeriod}
+      />
 
       {/* Account Detail Modal - Production-Accurate Tabbed Interface */}
       <Dialog open={showAccountModal} onOpenChange={setShowAccountModal}>
