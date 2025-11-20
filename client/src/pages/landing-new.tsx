@@ -1874,7 +1874,7 @@ export default function LandingNew() {
                   Is my money safe?
                 </AccordionTrigger>
                 <AccordionContent className="text-gray-300">
-                  Yes! We use bank-level security. Only you can see and move your money based on the accounts you connect. We never access your funds.
+                  Yes! We use bank-level encryption. Flint is read-only — you control all transactions through your connected banks and brokers. We never touch your money.
                 </AccordionContent>
               </AccordionItem>
 
