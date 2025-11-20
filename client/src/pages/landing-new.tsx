@@ -1874,7 +1874,7 @@ export default function LandingNew() {
                   Is my money safe?
                 </AccordionTrigger>
                 <AccordionContent className="text-gray-300">
-                  Yes! We use the same security as banks. We can only look at your accounts. We can't move your money.
+                  Yes! We use bank-level security. Only you can see and move your money based on the accounts you connect. We never access your funds.
                 </AccordionContent>
               </AccordionItem>
 
