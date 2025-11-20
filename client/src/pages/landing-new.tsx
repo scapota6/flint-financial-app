@@ -695,7 +695,7 @@ export default function LandingNew() {
       }
     } catch (error) {
       console.error('Registration error:', error);
-      setSignupError('An error occurred. Please try again.');
+      setSignupError('Network error. Please check your connection and try again.');
     } finally {
       setSignupLoading(false);
     }
