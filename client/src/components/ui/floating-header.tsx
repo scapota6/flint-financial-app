@@ -76,7 +76,7 @@ export function FloatingHeader({ variant = 'authenticated', onSignupClick }: Flo
   return (
     <header
       className={cn(
-        'sticky top-5 z-50',
+        'fixed top-5 left-0 right-0 z-50',
         'mx-auto w-full max-w-5xl rounded-xl border border-gray-800 shadow-2xl',
         'bg-[#1a1a1a]/95 supports-[backdrop-filter]:bg-[#1a1a1a]/80 backdrop-blur-lg',
       )}

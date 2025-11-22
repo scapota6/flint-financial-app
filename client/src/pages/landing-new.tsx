@@ -715,7 +715,7 @@ export default function LandingNew() {
         <FloatingHeader variant="landing" onSignupClick={scrollToSignup} />
       </div>
 
-      <main className="relative z-10">
+      <main className="relative z-10 pt-20">
         {/* Hero Section */}
         <section className="section text-center">
           <div className="container">

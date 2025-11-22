@@ -83,7 +83,7 @@ function Router() {
     <>
       {isAuthenticated && <UpgradeBanner />}
       {isAuthenticated && <ActivityTimeoutModal />}
-      <div className={isAuthenticated ? "authenticated-content px-4 relative" : ""}>
+      <div className={isAuthenticated ? "authenticated-content px-4 relative pt-20" : ""}>
         {isAuthenticated && <FloatingHeader />}
         {isAuthenticated && (
           <div
