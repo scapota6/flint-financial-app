@@ -75,6 +75,19 @@ export default function Dashboard() {
     FinancialAPI.logLogin().catch(console.error);
   }, []);
 
+  // Handle scrolling to hash anchor (e.g., #quick-connect-section)
+  useEffect(() => {
+    if (window.location.hash) {
+      const element = document.querySelector(window.location.hash);
+      if (element) {
+        // Small delay to ensure content is rendered
+        setTimeout(() => {
+          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 100);
+      }
+    }
+  }, [isLoading]); // Run when loading completes
+
   const handleAccountDetail = (account: any) => {
     setSelectedAccount(account);
     setIsAccountModalOpen(true);

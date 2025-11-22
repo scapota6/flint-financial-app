@@ -204,7 +204,7 @@ export default function Portfolio() {
             <p className="text-lg text-slate-300 mb-8 max-w-lg mx-auto">
               Connect your investment accounts to see your portfolio performance and holdings.
             </p>
-            <Link href="/dashboard">
+            <Link href="/dashboard#quick-connect-section">
               <RainbowButton 
                 className="text-base px-8 py-6 h-auto"
                 data-testid="button-connect-accounts"
