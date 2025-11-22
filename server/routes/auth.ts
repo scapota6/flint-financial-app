@@ -146,6 +146,10 @@ router.post('/public-register', rateLimits.register, async (req, res) => {
     // Initialize password history
     const passwordHistory = [passwordHash];
 
+    // Generate referral code for new user
+    const { generateReferralCode } = await import('../utils/referral');
+    const referralCode = await generateReferralCode();
+
     // Create user
     await db.insert(users).values({
       id: userId,
@@ -155,6 +159,7 @@ router.post('/public-register', rateLimits.register, async (req, res) => {
       emailVerified: false, // TODO: Implement email verification flow with token generation and validation
       subscriptionTier: 'free',
       subscriptionStatus: 'active',
+      referralCode,
       waitlistPosition: 3285, // Static position until live data implemented
       lastPasswordHashes: passwordHistory,
       createdAt: new Date(),
