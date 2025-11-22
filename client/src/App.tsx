@@ -8,7 +8,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { ActivityProvider } from "@/contexts/ActivityContext";
 import { ActivityTimeoutModal } from "@/components/ActivityTimeoutModal";
-import GlobalNavbar from "@/components/layout/global-navbar";
+import { FloatingHeader } from "@/components/ui/floating-header";
 import { UpgradeBanner } from "@/components/ui/upgrade-banner";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -81,10 +81,16 @@ function Router() {
 
   return (
     <>
-      {isAuthenticated && <GlobalNavbar />}
       {isAuthenticated && <UpgradeBanner />}
       {isAuthenticated && <ActivityTimeoutModal />}
-      <div className={isAuthenticated ? "pt-16 authenticated-content" : ""}>
+      <div className={isAuthenticated ? "authenticated-content px-4 relative" : ""}>
+        {isAuthenticated && <FloatingHeader />}
+        {isAuthenticated && (
+          <div
+            aria-hidden="true"
+            className="absolute inset-0 -z-10 size-full bg-[radial-gradient(rgba(59,130,246,0.15)_2px,transparent_2px)] bg-[size:12px_12px]"
+          />
+        )}
         <AnimatePresence mode="wait">
           <Suspense fallback={<PageLoader />}>
             <Switch>
