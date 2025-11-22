@@ -13,6 +13,7 @@ import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/compone
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { AuroraBackground } from "@/components/ui/aurora-background";
+import { GlowingEffect } from "@/components/ui/glowing-effect";
 import { 
   Shield, 
   Lock, 
@@ -862,23 +863,32 @@ export default function LandingNew() {
             </p>
 
             <div className="grid md:grid-cols-3 gap-6 mb-8">
-              <Card className="bg-white/10 border-blue-400/30 rounded-xl p-6">
-                <span className="text-5xl block mb-2">🎟️</span>
-                <h3 className="apple-h3">5 Winners</h3>
-                <p className="apple-body text-gray-300">Get 1 year of Flint Pro</p>
-              </Card>
+              <div className="relative h-full rounded-xl border border-white/10 p-2">
+                <GlowingEffect spread={40} glow={true} disabled={false} proximity={64} inactiveZone={0.01} borderWidth={1} />
+                <Card className="bg-white/10 border-blue-400/30 rounded-lg p-6 h-full">
+                  <span className="text-5xl block mb-2">🎟️</span>
+                  <h3 className="apple-h3">5 Winners</h3>
+                  <p className="apple-body text-gray-300">Get 1 year of Flint Pro</p>
+                </Card>
+              </div>
 
-              <Card className="bg-gradient-to-br from-yellow-600/20 to-orange-600/20 border-yellow-400/40 rounded-xl p-6 transform scale-105">
-                <span className="text-5xl block mb-2">🏆</span>
-                <h3 className="apple-h3">1 Grand Prize</h3>
-                <p className="apple-body text-yellow-200 font-semibold">Flint Pro for Life</p>
-              </Card>
+              <div className="relative h-full rounded-xl border border-yellow-400/30 p-2">
+                <GlowingEffect spread={40} glow={true} disabled={false} proximity={64} inactiveZone={0.01} borderWidth={1} variant="default" />
+                <Card className="bg-gradient-to-br from-yellow-600/20 to-orange-600/20 border-yellow-400/40 rounded-lg p-6 transform scale-105 h-full">
+                  <span className="text-5xl block mb-2">🏆</span>
+                  <h3 className="apple-h3">1 Grand Prize</h3>
+                  <p className="apple-body text-yellow-200 font-semibold">Flint Pro for Life</p>
+                </Card>
+              </div>
 
-              <Card className="bg-white/10 border-blue-400/30 rounded-xl p-6">
-                <span className="text-5xl block mb-2">📈</span>
-                <h3 className="apple-h3">Boost Odds</h3>
-                <p className="apple-body text-gray-300">Refer friends or upgrade</p>
-              </Card>
+              <div className="relative h-full rounded-xl border border-white/10 p-2">
+                <GlowingEffect spread={40} glow={true} disabled={false} proximity={64} inactiveZone={0.01} borderWidth={1} />
+                <Card className="bg-white/10 border-blue-400/30 rounded-lg p-6 h-full">
+                  <span className="text-5xl block mb-2">📈</span>
+                  <h3 className="apple-h3">Boost Odds</h3>
+                  <p className="apple-body text-gray-300">Refer friends or upgrade</p>
+                </Card>
+              </div>
             </div>
 
             <div className="mb-6">
@@ -1011,73 +1021,82 @@ export default function LandingNew() {
             {/* Testimonials */}
             <div className="grid md:grid-cols-3 gap-6">
               {/* Testimonial 1 */}
-              <Card className="bg-white/5 border-white/10 p-6" data-testid="testimonial-1">
-                <div className="space-y-4">
-                  <div className="flex gap-1">
-                    {[...Array(5)].map((_, i) => (
-                      <span key={i} className="text-yellow-400">★</span>
-                    ))}
-                  </div>
-                  <p className="text-gray-300 italic">
-                    "Finally, I can see all my accounts in one place. Found $400 in fees I didn't know I was paying!"
-                  </p>
-                  <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded-full bg-blue-600/20 flex items-center justify-center text-blue-400 font-semibold">
-                      JM
+              <div className="relative h-full rounded-xl border border-white/10 p-2">
+                <GlowingEffect spread={40} glow={true} disabled={false} proximity={64} inactiveZone={0.01} borderWidth={1} />
+                <Card className="bg-white/5 border-white/10 p-6 h-full" data-testid="testimonial-1">
+                  <div className="space-y-4">
+                    <div className="flex gap-1">
+                      {[...Array(5)].map((_, i) => (
+                        <span key={i} className="text-yellow-400">★</span>
+                      ))}
                     </div>
-                    <div>
-                      <p className="font-semibold text-white">Jessica M.</p>
-                      <p className="text-sm text-gray-400">Early Adopter</p>
+                    <p className="text-gray-300 italic">
+                      "Finally, I can see all my accounts in one place. Found $400 in fees I didn't know I was paying!"
+                    </p>
+                    <div className="flex items-center gap-3">
+                      <div className="h-10 w-10 rounded-full bg-blue-600/20 flex items-center justify-center text-blue-400 font-semibold">
+                        JM
+                      </div>
+                      <div>
+                        <p className="font-semibold text-white">Jessica M.</p>
+                        <p className="text-sm text-gray-400">Early Adopter</p>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </Card>
+                </Card>
+              </div>
 
               {/* Testimonial 2 */}
-              <Card className="bg-white/5 border-white/10 p-6" data-testid="testimonial-2">
-                <div className="space-y-4">
-                  <div className="flex gap-1">
-                    {[...Array(5)].map((_, i) => (
-                      <span key={i} className="text-yellow-400">★</span>
-                    ))}
-                  </div>
-                  <p className="text-gray-300 italic">
-                    "Super easy to use. I connected 8 accounts in under 5 minutes. The alerts are game-changing."
-                  </p>
-                  <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded-full bg-green-600/20 flex items-center justify-center text-green-400 font-semibold">
-                      DR
+              <div className="relative h-full rounded-xl border border-white/10 p-2">
+                <GlowingEffect spread={40} glow={true} disabled={false} proximity={64} inactiveZone={0.01} borderWidth={1} />
+                <Card className="bg-white/5 border-white/10 p-6 h-full" data-testid="testimonial-2">
+                  <div className="space-y-4">
+                    <div className="flex gap-1">
+                      {[...Array(5)].map((_, i) => (
+                        <span key={i} className="text-yellow-400">★</span>
+                      ))}
                     </div>
-                    <div>
-                      <p className="font-semibold text-white">David R.</p>
-                      <p className="text-sm text-gray-400">Pro User</p>
+                    <p className="text-gray-300 italic">
+                      "Super easy to use. I connected 8 accounts in under 5 minutes. The alerts are game-changing."
+                    </p>
+                    <div className="flex items-center gap-3">
+                      <div className="h-10 w-10 rounded-full bg-green-600/20 flex items-center justify-center text-green-400 font-semibold">
+                        DR
+                      </div>
+                      <div>
+                        <p className="font-semibold text-white">David R.</p>
+                        <p className="text-sm text-gray-400">Pro User</p>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </Card>
+                </Card>
+              </div>
 
               {/* Testimonial 3 */}
-              <Card className="bg-white/5 border-white/10 p-6" data-testid="testimonial-3">
-                <div className="space-y-4">
-                  <div className="flex gap-1">
-                    {[...Array(5)].map((_, i) => (
-                      <span key={i} className="text-yellow-400">★</span>
-                    ))}
-                  </div>
-                  <p className="text-gray-300 italic">
-                    "Clean design, works perfectly. Helps me track crypto and stocks without jumping between apps."
-                  </p>
-                  <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded-full bg-blue-600/20 flex items-center justify-center text-blue-400 font-semibold">
-                      SK
+              <div className="relative h-full rounded-xl border border-white/10 p-2">
+                <GlowingEffect spread={40} glow={true} disabled={false} proximity={64} inactiveZone={0.01} borderWidth={1} />
+                <Card className="bg-white/5 border-white/10 p-6 h-full" data-testid="testimonial-3">
+                  <div className="space-y-4">
+                    <div className="flex gap-1">
+                      {[...Array(5)].map((_, i) => (
+                        <span key={i} className="text-yellow-400">★</span>
+                      ))}
                     </div>
-                    <div>
-                      <p className="font-semibold text-white">Sarah K.</p>
-                      <p className="text-sm text-gray-400">Investor</p>
+                    <p className="text-gray-300 italic">
+                      "Clean design, works perfectly. Helps me track crypto and stocks without jumping between apps."
+                    </p>
+                    <div className="flex items-center gap-3">
+                      <div className="h-10 w-10 rounded-full bg-blue-600/20 flex items-center justify-center text-blue-400 font-semibold">
+                        SK
+                      </div>
+                      <div>
+                        <p className="font-semibold text-white">Sarah K.</p>
+                        <p className="text-sm text-gray-400">Investor</p>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </Card>
+                </Card>
+              </div>
             </div>
           </div>
         </section>
@@ -1091,29 +1110,38 @@ export default function LandingNew() {
             </div>
 
             <div className="grid md:grid-cols-3 gap-8">
-              <Card className="bg-white/5 border-white/10 rounded-xl p-8 hover:bg-white/10 transition-colors">
-                <Wallet className="h-7 w-7 text-blue-400 mb-4" />
-                <h3 className="apple-h3">All Your Money</h3>
-                <p className="apple-body text-gray-300">
-                  See your bank, cards, stocks, and crypto together
-                </p>
-              </Card>
+              <div className="relative h-full rounded-xl border border-white/10 p-2">
+                <GlowingEffect spread={40} glow={true} disabled={false} proximity={64} inactiveZone={0.01} borderWidth={1} />
+                <Card className="bg-white/5 border-white/10 rounded-lg p-8 hover:bg-white/10 transition-colors h-full">
+                  <Wallet className="h-7 w-7 text-blue-400 mb-4" />
+                  <h3 className="apple-h3">All Your Money</h3>
+                  <p className="apple-body text-gray-300">
+                    See your bank, cards, stocks, and crypto together
+                  </p>
+                </Card>
+              </div>
 
-              <Card className="bg-white/5 border-white/10 rounded-xl p-8 hover:bg-white/10 transition-colors">
-                <span className="text-3xl mb-4 block">🔁</span>
-                <h3 className="apple-h3">Trade & Transfer</h3>
-                <p className="apple-body text-gray-300">
-                  Move money and buy stocks directly from Flint
-                </p>
-              </Card>
+              <div className="relative h-full rounded-xl border border-white/10 p-2">
+                <GlowingEffect spread={40} glow={true} disabled={false} proximity={64} inactiveZone={0.01} borderWidth={1} />
+                <Card className="bg-white/5 border-white/10 rounded-lg p-8 hover:bg-white/10 transition-colors h-full">
+                  <span className="text-3xl mb-4 block">🔁</span>
+                  <h3 className="apple-h3">Trade & Transfer</h3>
+                  <p className="apple-body text-gray-300">
+                    Move money and buy stocks directly from Flint
+                  </p>
+                </Card>
+              </div>
 
-              <Card className="bg-white/5 border-white/10 rounded-xl p-8 hover:bg-white/10 transition-colors">
-                <TrendingUp className="h-7 w-7 text-blue-400 mb-4" />
-                <h3 className="apple-h3">Grow Wealth</h3>
-                <p className="apple-body text-gray-300">
-                  Track investments and optimize your portfolio
-                </p>
-              </Card>
+              <div className="relative h-full rounded-xl border border-white/10 p-2">
+                <GlowingEffect spread={40} glow={true} disabled={false} proximity={64} inactiveZone={0.01} borderWidth={1} />
+                <Card className="bg-white/5 border-white/10 rounded-lg p-8 hover:bg-white/10 transition-colors h-full">
+                  <TrendingUp className="h-7 w-7 text-blue-400 mb-4" />
+                  <h3 className="apple-h3">Grow Wealth</h3>
+                  <p className="apple-body text-gray-300">
+                    Track investments and optimize your portfolio
+                  </p>
+                </Card>
+              </div>
             </div>
           </div>
         </section>
