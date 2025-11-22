@@ -1070,3 +1070,82 @@ a:focus-visible,
   0%, 100% { box-shadow: 0 0 8px rgba(10, 132, 255, 0.4); }
   50% { box-shadow: 0 0 16px rgba(10, 132, 255, 0.8); }
 }
+
+/* Glowing Effect Component Styles */
+.glowing-effect-container {
+  --blur: 0px;
+  --spread: 20;
+  --start: 0;
+  --active: 0;
+  --glowingeffect-border-width: 1px;
+  --repeating-conic-gradient-times: 5;
+}
+
+.glowing-effect-container[data-variant="default"] {
+  --gradient: 
+    radial-gradient(circle, #dd7bbb 10%, #dd7bbb00 20%),
+    radial-gradient(circle at 40% 40%, #d79f1e 5%, #d79f1e00 15%),
+    radial-gradient(circle at 60% 60%, #5a922c 10%, #5a922c00 20%), 
+    radial-gradient(circle at 40% 60%, #4c7894 10%, #4c789400 20%),
+    repeating-conic-gradient(
+      from 236.84deg at 50% 50%,
+      #dd7bbb 0%,
+      #d79f1e calc(25% / var(--repeating-conic-gradient-times)),
+      #5a922c calc(50% / var(--repeating-conic-gradient-times)), 
+      #4c7894 calc(75% / var(--repeating-conic-gradient-times)),
+      #dd7bbb calc(100% / var(--repeating-conic-gradient-times))
+    );
+}
+
+.glowing-effect-container[data-variant="white"] {
+  --gradient: repeating-conic-gradient(
+    from 236.84deg at 50% 50%,
+    var(--black),
+    var(--black) calc(25% / var(--repeating-conic-gradient-times))
+  );
+}
+
+.glowing-effect-glow {
+  position: relative;
+  pointer-events: none;
+}
+
+.glowing-effect-glow::after {
+  content: '';
+  position: absolute;
+  inset: calc(-1 * var(--glowingeffect-border-width));
+  border: var(--glowingeffect-border-width) solid transparent;
+  background: var(--gradient);
+  background-attachment: fixed;
+  opacity: var(--active);
+  transition: opacity 300ms;
+  border-radius: inherit;
+  
+  -webkit-mask-clip: padding-box, border-box;
+  mask-clip: padding-box, border-box;
+  
+  -webkit-mask-composite: source-in;
+  mask-composite: intersect;
+  
+  -webkit-mask-image: 
+    linear-gradient(#0000, #0000),
+    conic-gradient(
+      from calc((var(--start) - var(--spread)) * 1deg),
+      #00000000 0deg,
+      #fff,
+      #00000000 calc(var(--spread) * 2deg)
+    );
+  mask-image: 
+    linear-gradient(#0000, #0000),
+    conic-gradient(
+      from calc((var(--start) - var(--spread)) * 1deg),
+      #00000000 0deg,
+      #fff,
+      #00000000 calc(var(--spread) * 2deg)
+    );
+}
+
+.glowing-effect-disabled {
+  display: block !important;
+  opacity: 0 !important;
+}
