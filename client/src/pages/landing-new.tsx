@@ -704,9 +704,8 @@ export default function LandingNew() {
 
   return (
     <AuroraBackground className="min-h-screen text-white relative overflow-x-hidden">
-      <div className="min-h-screen bg-black text-white relative overflow-x-hidden">
-        {/* Single subtle background gradient */}
-        <div className="fixed inset-0 bg-gradient-to-br from-blue-900/20 via-black to-black pointer-events-none" />
+      {/* Single subtle background gradient overlay */}
+      <div className="fixed inset-0 bg-gradient-to-br from-blue-900/20 via-black to-black pointer-events-none" />
 
       {/* Sticky CTA Nav */}
       <div
@@ -2453,7 +2452,6 @@ export default function LandingNew() {
           )}
         </DialogContent>
       </Dialog>
-      </div>
     </AuroraBackground>
   );
 }
