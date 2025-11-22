@@ -1066,7 +1066,7 @@ export default function LandingNew() {
         </section>
 
         {/* Features Section */}
-        <section className="apple-section">
+        <section id="features" className="apple-section">
           <div className="apple-container">
             <div className="text-center mb-16">
               <h2 className="apple-h2">What You Get</h2>
@@ -1660,7 +1660,7 @@ export default function LandingNew() {
         </section>
 
         {/* Pricing Section */}
-        <section className="section bg-white/5 border-y border-white/10">
+        <section id="pricing" className="section bg-white/5 border-y border-white/10">
           <div className="container">
             <div className="text-center mb-8 sm:mb-12">
               <h2>Pick Your Plan</h2>
@@ -1877,7 +1877,7 @@ export default function LandingNew() {
         </section>
 
         {/* FAQ Section */}
-        <section className="apple-section">
+        <section id="faq" className="apple-section">
           <div className="apple-container max-w-3xl">
             <div className="text-center mb-8 sm:mb-12 px-4">
               <h2 className="apple-h2">Questions?</h2>

@@ -61,6 +61,14 @@ export function FloatingHeader({ variant = 'authenticated', onSignupClick }: Flo
     window.location.href = '/api/auth/logout';
   };
 
+  const handleSectionScroll = (sectionId: string) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+    setOpen(false);
+  };
+
   React.useEffect(() => {
     setOpen(false);
   }, [location]);
@@ -84,15 +92,37 @@ export function FloatingHeader({ variant = 'authenticated', onSignupClick }: Flo
 
         {/* Desktop Navigation */}
         <div className="hidden items-center gap-1 lg:flex">
-          {links.map((link) => (
-            link.comingSoon ? (
-              <span
-                key={link.href}
-                className={buttonVariants({ variant: 'ghost', size: 'sm', className: 'text-gray-600 cursor-not-allowed' })}
-              >
-                {link.label}
-              </span>
-            ) : (
+          {links.map((link) => {
+            if (link.comingSoon) {
+              return (
+                <span
+                  key={link.href}
+                  className={buttonVariants({ variant: 'ghost', size: 'sm', className: 'text-gray-600 cursor-not-allowed' })}
+                >
+                  {link.label}
+                </span>
+              );
+            }
+
+            // Handle landing page anchor links
+            if (variant === 'landing' && link.href.startsWith('#')) {
+              const sectionId = link.href.substring(1);
+              return (
+                <button
+                  key={link.href}
+                  onClick={() => handleSectionScroll(sectionId)}
+                  className={cn(
+                    buttonVariants({ variant: 'ghost', size: 'sm' }),
+                    'text-gray-300 hover:text-white'
+                  )}
+                >
+                  {link.label}
+                </button>
+              );
+            }
+
+            // Handle authenticated page links
+            return (
               <Link key={link.href} href={link.href}>
                 <button
                   className={cn(
@@ -105,8 +135,8 @@ export function FloatingHeader({ variant = 'authenticated', onSignupClick }: Flo
                   {link.label}
                 </button>
               </Link>
-            )
-          ))}
+            );
+          })}
         </div>
 
         {/* User Menu & Mobile Toggle */}
@@ -183,18 +213,43 @@ export function FloatingHeader({ variant = 'authenticated', onSignupClick }: Flo
               side="left"
             >
               <div className="grid gap-y-2 overflow-y-auto px-4 pt-12 pb-5">
-                {links.map((link) => (
-                  link.comingSoon ? (
-                    <span
-                      key={link.href}
-                      className={buttonVariants({
-                        variant: 'ghost',
-                        className: 'justify-start text-gray-600 cursor-not-allowed',
-                      })}
-                    >
-                      {link.label}
-                    </span>
-                  ) : (
+                {links.map((link) => {
+                  if (link.comingSoon) {
+                    return (
+                      <span
+                        key={link.href}
+                        className={buttonVariants({
+                          variant: 'ghost',
+                          className: 'justify-start text-gray-600 cursor-not-allowed',
+                        })}
+                      >
+                        {link.label}
+                      </span>
+                    );
+                  }
+
+                  // Handle landing page anchor links
+                  if (variant === 'landing' && link.href.startsWith('#')) {
+                    const sectionId = link.href.substring(1);
+                    return (
+                      <button
+                        key={link.href}
+                        onClick={() => handleSectionScroll(sectionId)}
+                        className={cn(
+                          buttonVariants({
+                            variant: 'ghost',
+                            className: 'justify-start w-full',
+                          }),
+                          'text-gray-300 hover:text-white'
+                        )}
+                      >
+                        {link.label}
+                      </button>
+                    );
+                  }
+
+                  // Handle authenticated page links
+                  return (
                     <Link key={link.href} href={link.href}>
                       <button
                         className={cn(
@@ -210,8 +265,8 @@ export function FloatingHeader({ variant = 'authenticated', onSignupClick }: Flo
                         {link.label}
                       </button>
                     </Link>
-                  )
-                ))}
+                  );
+                })}
               </div>
               <SheetFooter className="flex-col sm:flex-col gap-2">
                 {variant === 'landing' ? (
