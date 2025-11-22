@@ -46,7 +46,6 @@ const TellerCallback = lazy(() => import("@/pages/TellerCallback"));
 const AdminDashboard = lazy(() => import("@/pages/admin"));
 const TermsOfService = lazy(() => import("@/pages/tos"));
 const PrivacyPolicy = lazy(() => import("@/pages/privacy-policy"));
-const GlowingShowcase = lazy(() => import("@/pages/glowing-showcase"));
 
 // Loading fallback component with branding to prevent blank page appearance
 const PageLoader = () => (
@@ -104,7 +103,6 @@ function Router() {
                 <Route path="/reset-password" component={ResetPassword} />
                 <Route path="/tos" component={TermsOfService} />
                 <Route path="/privacy-policy" component={PrivacyPolicy} />
-                <Route path="/components/glowing" component={GlowingShowcase} />
                 {/* Redirect any protected routes to login */}
                 <Route path="/dashboard">
                   {() => { window.location.href = '/api/login'; return null; }}
