@@ -13,6 +13,7 @@ import {
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { useQuery } from '@tanstack/react-query';
 import { cn } from '@/lib/utils';
+import flintLogo from '@assets/flint-logo.png';
 
 interface AuthUser {
   id: string;
@@ -74,11 +75,10 @@ export function FloatingHeader({ variant = 'authenticated', onSignupClick }: Flo
     >
       <nav className="mx-auto flex items-center justify-between p-2">
         {/* Logo */}
-        <Link href="/dashboard">
+        <Link href={variant === 'landing' ? '/' : '/dashboard'}>
           <div className="hover:bg-gray-800/50 flex cursor-pointer items-center gap-2 rounded-md px-3 py-1.5 duration-100">
-            <p className="text-xl font-bold bg-gradient-to-r from-blue-400 via-cyan-500 to-blue-600 bg-clip-text text-transparent">
-              FLINT
-            </p>
+            <img src={flintLogo} alt="Flint" className="h-7 w-auto" />
+            <span className="font-semibold text-sm">Flint</span>
           </div>
         </Link>
 
