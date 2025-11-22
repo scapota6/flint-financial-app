@@ -20,7 +20,6 @@ import Login from "@/pages/login";
 // Code-split remaining pages for optimal bundle size
 const NotFound = lazy(() => import("@/pages/not-found"));
 const LandingNew = lazy(() => import("@/pages/landing-new")); // New official landing page
-const LandingClean = lazy(() => import("@/pages/landing-clean")); // Premium clean landing
 const LandingLegacy = lazy(() => import("@/pages/landing")); // Legacy landing (fallback)
 const SuccessPage = lazy(() => import("@/pages/success"));
 const PaymentSuccessPage = lazy(() => import("@/pages/payment-success"));
@@ -91,9 +90,9 @@ function Router() {
             <Switch>
             {!isAuthenticated ? (
               <>
-                <Route path="/" component={LandingClean} />
-                <Route path="/landing" component={LandingClean} />
-                <Route path="/new" component={LandingClean} />
+                <Route path="/" component={LandingNew} />
+                <Route path="/landing" component={LandingNew} />
+                <Route path="/new" component={LandingNew} />
                 <Route path="/legacy" component={LandingLegacy} />
                 <Route path="/login" component={Login} />
                 <Route path="/success" component={SuccessPage} />

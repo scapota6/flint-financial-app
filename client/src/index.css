@@ -1,9 +1,6 @@
 /* Apple SF Pro Display & Text Fonts (System Font Stack) */
 /* Uses native -apple-system for SF Pro on Apple devices, with high-quality fallbacks */
 
-/* Premium Design System - Apple + 21st.dev Inspired */
-@import './styles/design-system.css';
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
