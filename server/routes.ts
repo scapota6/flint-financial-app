@@ -535,7 +535,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Referral stats endpoint
   app.get('/api/user/referral', rateLimits.auth, requireAuth, async (req: any, res) => {
     try {
-      const userId = req.user?.id;
+      const userId = req.user?.userId;
       if (!userId) {
         return res.status(401).json({ message: 'Not authenticated' });
       }
@@ -558,7 +558,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         waitlistPosition: stats.waitlistPosition,
       });
     } catch (error) {
-      logger.error('Error fetching referral stats', { error, userId: req.user?.id });
+      logger.error('Error fetching referral stats', { error, userId: req.user?.userId });
       res.status(500).json({ message: 'Failed to fetch referral stats' });
     }
   });
