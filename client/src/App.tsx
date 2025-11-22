@@ -85,12 +85,6 @@ function Router() {
       {isAuthenticated && <ActivityTimeoutModal />}
       <div className={isAuthenticated ? "authenticated-content px-4 relative pt-20" : ""}>
         {isAuthenticated && <FloatingHeader />}
-        {isAuthenticated && (
-          <div
-            aria-hidden="true"
-            className="absolute inset-0 -z-10 size-full bg-[radial-gradient(rgba(59,130,246,0.15)_2px,transparent_2px)] bg-[size:12px_12px]"
-          />
-        )}
         <AnimatePresence mode="wait">
           <Suspense fallback={<PageLoader />}>
             <Switch>
