@@ -19,21 +19,35 @@ interface AuthUser {
   email: string;
 }
 
-export function FloatingHeader() {
+interface FloatingHeaderProps {
+  variant?: 'landing' | 'authenticated';
+  onSignupClick?: () => void;
+}
+
+export function FloatingHeader({ variant = 'authenticated', onSignupClick }: FloatingHeaderProps) {
   const [open, setOpen] = React.useState(false);
   const [location] = useLocation();
   
   const { data: user } = useQuery<AuthUser>({
     queryKey: ['/api/auth/user'],
+    enabled: variant === 'authenticated',
   });
 
-  const links = [
+  const authenticatedLinks = [
     { label: 'Dashboard', href: '/dashboard', comingSoon: false },
     { label: 'Portfolio', href: '/portfolio', comingSoon: false },
     { label: 'Accounts', href: '/accounts', comingSoon: false },
     { label: 'Transfers', href: '/transfers', comingSoon: true },
     { label: 'Trading', href: '/trading', comingSoon: true },
   ];
+
+  const landingLinks = [
+    { label: 'Features', href: '#features', comingSoon: false },
+    { label: 'Pricing', href: '#pricing', comingSoon: false },
+    { label: 'FAQ', href: '#faq', comingSoon: false },
+  ];
+
+  const links = variant === 'landing' ? landingLinks : authenticatedLinks;
 
   const isActiveLink = (href: string) => {
     if (href === '/dashboard') {
@@ -97,45 +111,61 @@ export function FloatingHeader() {
 
         {/* User Menu & Mobile Toggle */}
         <div className="flex items-center gap-2">
-          {/* User Profile Dropdown - Desktop */}
-          <div className="hidden lg:block">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="relative h-8 w-8 rounded-full" data-testid="button-profile-menu">
-                  <Avatar className="h-8 w-8">
-                    <AvatarFallback className="bg-blue-600 text-white">
-                      {user?.email?.charAt(0).toUpperCase() || 'U'}
-                    </AvatarFallback>
-                  </Avatar>
+          {/* Landing Page CTAs */}
+          {variant === 'landing' && (
+            <div className="hidden lg:flex items-center gap-2">
+              <Link href="/login">
+                <Button variant="ghost" size="sm" className="text-gray-300 hover:text-white">
+                  Log In
                 </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent 
-                className="w-56 bg-[#1e1e1e] border-gray-700 z-[200]" 
-                side="bottom" 
-                align="end" 
-                sideOffset={8}
-              >
-                <div className="flex items-center justify-start gap-2 p-2">
-                  <div className="flex flex-col space-y-1 leading-none">
-                    <p className="font-medium text-white">{user?.email}</p>
-                    <p className="text-xs text-gray-400">Free Plan</p>
+              </Link>
+              <Button size="sm" onClick={onSignupClick} className="bg-blue-600 hover:bg-blue-700">
+                Get Started
+              </Button>
+            </div>
+          )}
+
+          {/* Authenticated User Profile Dropdown - Desktop */}
+          {variant === 'authenticated' && (
+            <div className="hidden lg:block">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="relative h-8 w-8 rounded-full" data-testid="button-profile-menu">
+                    <Avatar className="h-8 w-8">
+                      <AvatarFallback className="bg-blue-600 text-white">
+                        {user?.email?.charAt(0).toUpperCase() || 'U'}
+                      </AvatarFallback>
+                    </Avatar>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent 
+                  className="w-56 bg-[#1e1e1e] border-gray-700 z-[200]" 
+                  side="bottom" 
+                  align="end" 
+                  sideOffset={8}
+                >
+                  <div className="flex items-center justify-start gap-2 p-2">
+                    <div className="flex flex-col space-y-1 leading-none">
+                      <p className="font-medium text-white">{user?.email}</p>
+                      <p className="text-xs text-gray-400">Free Plan</p>
+                    </div>
                   </div>
-                </div>
-                <DropdownMenuSeparator className="bg-gray-700" />
-                <Link href="/profile">
-                  <DropdownMenuItem>
-                    <User className="h-4 w-4" />
-                    Profile
+                  <DropdownMenuSeparator className="bg-gray-700" />
+                  <Link href="/profile">
+                    <DropdownMenuItem>
+                      <User className="h-4 w-4" />
+                      Profile
+                    </DropdownMenuItem>
+                  </Link>
+                  <DropdownMenuSeparator className="bg-gray-700" />
+                  <DropdownMenuItem onClick={handleLogout}>
+                    <LogOut className="h-4 w-4" />
+                    Sign out
                   </DropdownMenuItem>
-                </Link>
-                <DropdownMenuSeparator className="bg-gray-700" />
-                <DropdownMenuItem onClick={handleLogout}>
-                  <LogOut className="h-4 w-4" />
-                  Sign out
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          )}
 
           {/* Mobile Menu */}
           <Sheet open={open} onOpenChange={setOpen}>
@@ -184,16 +214,31 @@ export function FloatingHeader() {
                 ))}
               </div>
               <SheetFooter className="flex-col sm:flex-col gap-2">
-                <Link href="/profile">
-                  <Button variant="outline" className="w-full border-gray-700">
-                    <User className="h-4 w-4 mr-2" />
-                    Profile
-                  </Button>
-                </Link>
-                <Button onClick={handleLogout} className="w-full bg-red-600 hover:bg-red-700">
-                  <LogOut className="h-4 w-4 mr-2" />
-                  Sign Out
-                </Button>
+                {variant === 'landing' ? (
+                  <>
+                    <Link href="/login">
+                      <Button variant="outline" className="w-full border-gray-700">
+                        Log In
+                      </Button>
+                    </Link>
+                    <Button onClick={onSignupClick} className="w-full bg-blue-600 hover:bg-blue-700">
+                      Get Started
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <Link href="/profile">
+                      <Button variant="outline" className="w-full border-gray-700">
+                        <User className="h-4 w-4 mr-2" />
+                        Profile
+                      </Button>
+                    </Link>
+                    <Button onClick={handleLogout} className="w-full bg-red-600 hover:bg-red-700">
+                      <LogOut className="h-4 w-4 mr-2" />
+                      Sign Out
+                    </Button>
+                  </>
+                )}
               </SheetFooter>
             </SheetContent>
           </Sheet>

@@ -7,6 +7,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Button } from "@/components/ui/button";
 import { RainbowButton } from "@/components/ui/rainbow-button";
+import { FloatingHeader } from "@/components/ui/floating-header";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -709,55 +710,10 @@ export default function LandingNew() {
       {/* Single subtle background gradient overlay */}
       <div className="fixed inset-0 bg-gradient-to-br from-blue-900/20 via-black to-black pointer-events-none" />
 
-      {/* Sticky CTA Nav */}
-      <div
-        className={`fixed top-0 left-0 right-0 z-50 bg-black/90 backdrop-blur-xl border-b border-white/10 transition-transform duration-300 ${
-          showStickyNav ? 'translate-y-0' : '-translate-y-full'
-        }`}
-        data-testid="sticky-nav"
-      >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="h-8 w-8 rounded-lg bg-blue-600 flex items-center justify-center font-bold text-sm sm:text-base">
-              F
-            </div>
-            <span className="font-bold text-sm sm:text-base">Flint</span>
-          </div>
-          <RainbowButton
-            onClick={scrollToSignup}
-            className="text-xs sm:text-sm px-3 sm:px-4"
-            data-testid="button-sticky-nav-cta"
-          >
-            Get Started Free
-          </RainbowButton>
-        </div>
+      {/* Floating Header */}
+      <div className="px-4 pt-2">
+        <FloatingHeader variant="landing" onSignupClick={scrollToSignup} />
       </div>
-
-      {/* Header */}
-      <header className="relative z-40 border-b border-white/10 backdrop-blur-xl">
-        <div className="container">
-          <div className="flex items-center justify-between py-4">
-            <div className="flex items-center gap-2 sm:gap-3">
-              <img src={flintLogo} alt="Flint" className="h-7 sm:h-8 w-auto" />
-              <span className="font-semibold text-sm sm:text-base">Flint</span>
-            </div>
-            <div className="flex items-center gap-2 sm:gap-4">
-              <Link href="/login">
-                <button type="button" className="btn btn-text text-xs sm:text-sm" data-testid="button-login">
-                  Log In
-                </button>
-              </Link>
-              <RainbowButton
-                onClick={scrollToSignup}
-                className="text-xs sm:text-sm px-4"
-                data-testid="button-header-signup"
-              >
-                Get Started Free
-              </RainbowButton>
-            </div>
-          </div>
-        </div>
-      </header>
 
       <main className="relative z-10">
         {/* Hero Section */}
