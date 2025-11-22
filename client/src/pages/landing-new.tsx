@@ -916,30 +916,39 @@ export default function LandingNew() {
           <div className="container">
             <div className="cards-grid">
               {/* Cut Hidden Fees */}
-              <div className="card text-center" data-testid="value-card-fees">
-                <DollarSign className="h-7 w-7 text-blue-400 mx-auto mb-4" />
-                <h3>Cut Hidden Fees</h3>
-                <p>
-                  We find and alert you to unnecessary bank charges
-                </p>
+              <div className="relative h-full rounded-xl border border-white/10 p-2">
+                <GlowingEffect spread={40} glow={true} disabled={false} proximity={64} inactiveZone={0.01} borderWidth={1} />
+                <div className="card text-center h-full" data-testid="value-card-fees">
+                  <DollarSign className="h-7 w-7 text-blue-400 mx-auto mb-4" />
+                  <h3>Cut Hidden Fees</h3>
+                  <p>
+                    We find and alert you to unnecessary bank charges
+                  </p>
+                </div>
               </div>
 
               {/* Grow Net Worth */}
-              <div className="card text-center" data-testid="value-card-grow">
-                <TrendingUp className="h-7 w-7 text-green-400 mx-auto mb-4" />
-                <h3>Grow Net Worth</h3>
-                <p>
-                  See the big picture and make smarter money moves
-                </p>
+              <div className="relative h-full rounded-xl border border-white/10 p-2">
+                <GlowingEffect spread={40} glow={true} disabled={false} proximity={64} inactiveZone={0.01} borderWidth={1} />
+                <div className="card text-center h-full" data-testid="value-card-grow">
+                  <TrendingUp className="h-7 w-7 text-green-400 mx-auto mb-4" />
+                  <h3>Grow Net Worth</h3>
+                  <p>
+                    See the big picture and make smarter money moves
+                  </p>
+                </div>
               </div>
 
               {/* Stay in Control */}
-              <div className="card text-center" data-testid="value-card-control">
-                <Shield className="h-7 w-7 text-blue-400 mx-auto mb-4" />
-                <h3>Stay in Control</h3>
-                <p>
-                  Personalized budgets that work with you, not against you
-                </p>
+              <div className="relative h-full rounded-xl border border-white/10 p-2">
+                <GlowingEffect spread={40} glow={true} disabled={false} proximity={64} inactiveZone={0.01} borderWidth={1} />
+                <div className="card text-center h-full" data-testid="value-card-control">
+                  <Shield className="h-7 w-7 text-blue-400 mx-auto mb-4" />
+                  <h3>Stay in Control</h3>
+                  <p>
+                    Personalized budgets that work with you, not against you
+                  </p>
+                </div>
               </div>
             </div>
           </div>
@@ -1716,154 +1725,163 @@ export default function LandingNew() {
 
             <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 max-w-6xl mx-auto">
               {/* Free Plan */}
-              <div className="card flex flex-col">
-                <div className="mb-6">
-                  <h3>Free</h3>
-                  <div className="flex items-baseline gap-2 mb-3">
-                    <span className="text-4xl font-bold">$0</span>
-                    <span className="text-sm text-gray-400">forever</span>
+              <div className="relative h-full rounded-xl border border-white/10 p-2">
+                <GlowingEffect spread={40} glow={true} disabled={false} proximity={64} inactiveZone={0.01} borderWidth={1} />
+                <div className="card flex flex-col h-full">
+                  <div className="mb-6">
+                    <h3>Free</h3>
+                    <div className="flex items-baseline gap-2 mb-3">
+                      <span className="text-4xl font-bold">$0</span>
+                      <span className="text-sm text-gray-400">forever</span>
+                    </div>
+                    <p className="text-sm text-gray-300">Try it out</p>
                   </div>
-                  <p className="text-sm text-gray-300">Try it out</p>
+
+                  <ul className="space-y-2 mb-8">
+                    <li className="flex items-start gap-2">
+                      <Check className="h-5 w-5 text-green-400 flex-shrink-0 mt-0.5" />
+                      <span className="text-sm">4 accounts</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <Check className="h-5 w-5 text-green-400 flex-shrink-0 mt-0.5" />
+                      <span className="text-sm">See all your money</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <Check className="h-5 w-5 text-green-400 flex-shrink-0 mt-0.5" />
+                      <span className="text-sm">Live updates</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <Check className="h-5 w-5 text-green-400 flex-shrink-0 mt-0.5" />
+                      <span className="text-sm">Mobile app</span>
+                    </li>
+                  </ul>
+
+                  <button type="button" onClick={scrollToSignup} className="btn btn-secondary w-full" data-testid="button-free-plan">
+                    Start Free
+                  </button>
                 </div>
-
-                <ul className="space-y-2 mb-8">
-                  <li className="flex items-start gap-2">
-                    <Check className="h-5 w-5 text-green-400 flex-shrink-0 mt-0.5" />
-                    <span className="text-sm">4 accounts</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <Check className="h-5 w-5 text-green-400 flex-shrink-0 mt-0.5" />
-                    <span className="text-sm">See all your money</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <Check className="h-5 w-5 text-green-400 flex-shrink-0 mt-0.5" />
-                    <span className="text-sm">Live updates</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <Check className="h-5 w-5 text-green-400 flex-shrink-0 mt-0.5" />
-                    <span className="text-sm">Mobile app</span>
-                  </li>
-                </ul>
-
-                <button type="button" onClick={scrollToSignup} className="btn btn-secondary w-full" data-testid="button-free-plan">
-                  Start Free
-                </button>
               </div>
 
               {/* Standard Plan */}
-              <div className="panel relative overflow-hidden">
-                <div className="absolute top-4 right-4">
-                  <span className="bg-blue-500 text-white text-sm font-semibold px-2 py-1 rounded-lg">
-                    Most Popular
-                  </span>
-                </div>
-
-                <div className="mb-6">
-                  <h3>Standard</h3>
-                  <div className="flex items-baseline gap-2 mb-2">
-                    <span className="text-4xl font-bold">${isAnnual ? '199' : '19.99'}</span>
-                    <span className="text-sm text-gray-400">{isAnnual ? '/year' : '/month'}</span>
+              <div className="relative h-full rounded-xl border border-blue-400/30 p-2">
+                <GlowingEffect spread={40} glow={true} disabled={false} proximity={64} inactiveZone={0.01} borderWidth={1} variant="default" />
+                <div className="panel relative overflow-hidden h-full">
+                  <div className="absolute top-4 right-4">
+                    <span className="bg-blue-500 text-white text-sm font-semibold px-2 py-1 rounded-lg">
+                      Most Popular
+                    </span>
                   </div>
-                  {isAnnual && <p className="text-sm text-green-400 mb-1">$199/year - 2 months free!</p>}
-                  <p className="text-sm text-gray-300">For active users</p>
+
+                  <div className="mb-6">
+                    <h3>Standard</h3>
+                    <div className="flex items-baseline gap-2 mb-2">
+                      <span className="text-4xl font-bold">${isAnnual ? '199' : '19.99'}</span>
+                      <span className="text-sm text-gray-400">{isAnnual ? '/year' : '/month'}</span>
+                    </div>
+                    {isAnnual && <p className="text-sm text-green-400 mb-1">$199/year - 2 months free!</p>}
+                    <p className="text-sm text-gray-300">For active users</p>
+                  </div>
+
+                  <ul className="space-y-2 mb-8">
+                    <li className="flex items-start gap-2">
+                      <Check className="h-5 w-5 text-blue-400 flex-shrink-0 mt-0.5" />
+                      <span className="text-sm font-semibold">Unlimited accounts</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <Check className="h-5 w-5 text-blue-400 flex-shrink-0 mt-0.5" />
+                      <span className="text-sm">Everything in Free</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <Check className="h-5 w-5 text-blue-400 flex-shrink-0 mt-0.5" />
+                      <span className="text-sm">Price alerts</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <Check className="h-5 w-5 text-blue-400 flex-shrink-0 mt-0.5" />
+                      <span className="text-sm">Track spending</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <Check className="h-5 w-5 text-blue-400 flex-shrink-0 mt-0.5" />
+                      <span className="text-sm">Email support</span>
+                    </li>
+                  </ul>
+
+                  <button 
+                    type="button" 
+                    onClick={() => {
+                      setCheckoutTier('basic');
+                      setCheckoutBillingPeriod(isAnnual ? 'yearly' : 'monthly');
+                      setCheckoutModalOpen(true);
+                    }}
+                    className="btn btn-primary w-full" 
+                    data-testid="button-standard-plan"
+                  >
+                    Get Standard
+                  </button>
                 </div>
-
-                <ul className="space-y-2 mb-8">
-                  <li className="flex items-start gap-2">
-                    <Check className="h-5 w-5 text-blue-400 flex-shrink-0 mt-0.5" />
-                    <span className="text-sm font-semibold">Unlimited accounts</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <Check className="h-5 w-5 text-blue-400 flex-shrink-0 mt-0.5" />
-                    <span className="text-sm">Everything in Free</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <Check className="h-5 w-5 text-blue-400 flex-shrink-0 mt-0.5" />
-                    <span className="text-sm">Price alerts</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <Check className="h-5 w-5 text-blue-400 flex-shrink-0 mt-0.5" />
-                    <span className="text-sm">Track spending</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <Check className="h-5 w-5 text-blue-400 flex-shrink-0 mt-0.5" />
-                    <span className="text-sm">Email support</span>
-                  </li>
-                </ul>
-
-                <button 
-                  type="button" 
-                  onClick={() => {
-                    setCheckoutTier('basic');
-                    setCheckoutBillingPeriod(isAnnual ? 'yearly' : 'monthly');
-                    setCheckoutModalOpen(true);
-                  }}
-                  className="btn btn-primary w-full" 
-                  data-testid="button-standard-plan"
-                >
-                  Get Standard
-                </button>
               </div>
 
               {/* Pro Plan */}
-              <div className="card">
-                <div className="mb-6">
-                  <h3 className="apple-h3">Pro</h3>
-                  <div className="flex items-baseline gap-2 mb-2">
-                    <span className="apple-h2">${isAnnual ? '399' : '39.99'}</span>
-                    <span className="apple-caption text-gray-400">{isAnnual ? '/year' : '/month'}</span>
+              <div className="relative h-full rounded-xl border border-white/10 p-2">
+                <GlowingEffect spread={40} glow={true} disabled={false} proximity={64} inactiveZone={0.01} borderWidth={1} />
+                <div className="card h-full">
+                  <div className="mb-6">
+                    <h3 className="apple-h3">Pro</h3>
+                    <div className="flex items-baseline gap-2 mb-2">
+                      <span className="apple-h2">${isAnnual ? '399' : '39.99'}</span>
+                      <span className="apple-caption text-gray-400">{isAnnual ? '/year' : '/month'}</span>
+                    </div>
+                    {isAnnual && <p className="apple-caption text-green-400 mb-1">$399/year - 2 months free!</p>}
+                    <p className="apple-caption text-gray-300">For power users</p>
                   </div>
-                  {isAnnual && <p className="apple-caption text-green-400 mb-1">$399/year - 2 months free!</p>}
-                  <p className="apple-caption text-gray-300">For power users</p>
+
+                  <ul className="space-y-2 mb-8">
+                    <li className="flex items-start gap-2">
+                      <Check className="h-5 w-5 text-blue-400 flex-shrink-0 mt-0.5" />
+                      <span className="apple-caption font-semibold">Unlimited accounts</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <Check className="h-5 w-5 text-blue-400 flex-shrink-0 mt-0.5" />
+                      <span className="apple-caption">Everything in Standard</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <Check className="h-5 w-5 text-blue-400 flex-shrink-0 mt-0.5" />
+                      <span className="apple-caption font-semibold">Trading</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <Check className="h-5 w-5 text-blue-400 flex-shrink-0 mt-0.5" />
+                      <span className="apple-caption font-semibold">Transfers</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <Check className="h-5 w-5 text-blue-400 flex-shrink-0 mt-0.5" />
+                      <span className="apple-caption">Advanced charts</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <Check className="h-5 w-5 text-blue-400 flex-shrink-0 mt-0.5" />
+                      <span className="apple-caption">Custom alerts</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <Check className="h-5 w-5 text-blue-400 flex-shrink-0 mt-0.5" />
+                      <span className="apple-caption">Fast support</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <Check className="h-5 w-5 text-blue-400 flex-shrink-0 mt-0.5" />
+                      <span className="apple-caption">Download reports</span>
+                    </li>
+                  </ul>
+
+                  <button 
+                    type="button" 
+                    onClick={() => {
+                      setCheckoutTier('pro');
+                      setCheckoutBillingPeriod(isAnnual ? 'yearly' : 'monthly');
+                      setCheckoutModalOpen(true);
+                    }}
+                    className="btn btn-primary w-full" 
+                    data-testid="button-pro-plan"
+                  >
+                    Get Pro
+                  </button>
                 </div>
-
-                <ul className="space-y-2 mb-8">
-                  <li className="flex items-start gap-2">
-                    <Check className="h-5 w-5 text-blue-400 flex-shrink-0 mt-0.5" />
-                    <span className="apple-caption font-semibold">Unlimited accounts</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <Check className="h-5 w-5 text-blue-400 flex-shrink-0 mt-0.5" />
-                    <span className="apple-caption">Everything in Standard</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <Check className="h-5 w-5 text-blue-400 flex-shrink-0 mt-0.5" />
-                    <span className="apple-caption font-semibold">Trading</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <Check className="h-5 w-5 text-blue-400 flex-shrink-0 mt-0.5" />
-                    <span className="apple-caption font-semibold">Transfers</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <Check className="h-5 w-5 text-blue-400 flex-shrink-0 mt-0.5" />
-                    <span className="apple-caption">Advanced charts</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <Check className="h-5 w-5 text-blue-400 flex-shrink-0 mt-0.5" />
-                    <span className="apple-caption">Custom alerts</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <Check className="h-5 w-5 text-blue-400 flex-shrink-0 mt-0.5" />
-                    <span className="apple-caption">Fast support</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <Check className="h-5 w-5 text-blue-400 flex-shrink-0 mt-0.5" />
-                    <span className="apple-caption">Download reports</span>
-                  </li>
-                </ul>
-
-                <button 
-                  type="button" 
-                  onClick={() => {
-                    setCheckoutTier('pro');
-                    setCheckoutBillingPeriod(isAnnual ? 'yearly' : 'monthly');
-                    setCheckoutModalOpen(true);
-                  }}
-                  className="btn btn-primary w-full" 
-                  data-testid="button-pro-plan"
-                >
-                  Get Pro
-                </button>
               </div>
             </div>
 
