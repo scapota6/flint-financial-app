@@ -318,25 +318,33 @@ img {
   opacity: 0.7;
 }
 
-/* Apple Layout System */
+/* Apple Layout System - Optimized for screen utilization */
 .apple-container {
-  max-width: 77.5rem; /* 1240px */
+  max-width: 90rem; /* 1440px - wider to use more screen */
   margin: 0 auto;
-  padding-left: 5rem; /* 80px desktop */
-  padding-right: 5rem; /* 80px desktop */
+  padding-left: 2rem; /* 32px desktop - reduced from 80px */
+  padding-right: 2rem; /* 32px desktop - reduced from 80px */
+}
+
+@media (min-width: 1536px) {
+  .apple-container {
+    max-width: 96rem; /* 1536px for larger screens */
+    padding-left: 3rem; /* 48px on very large screens */
+    padding-right: 3rem;
+  }
 }
 
 @media (max-width: 1024px) {
   .apple-container {
-    padding-left: 3rem; /* 48px tablet */
-    padding-right: 3rem;
+    padding-left: 1.5rem; /* 24px tablet */
+    padding-right: 1.5rem;
   }
 }
 
 @media (max-width: 768px) {
   .apple-container {
-    padding-left: 1.5rem; /* 24px mobile */
-    padding-right: 1.5rem;
+    padding-left: 1rem; /* 16px mobile */
+    padding-right: 1rem;
   }
 }
 
