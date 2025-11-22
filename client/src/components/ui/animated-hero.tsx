@@ -39,7 +39,10 @@ function AnimatedHero({ onGetStartedClick }: AnimatedHeroProps) {
                     key={index}
                     className="absolute font-semibold text-blue-400"
                     initial={{ opacity: 0, y: -100 }}
-                    transition={{ type: "spring", stiffness: 50 }}
+                    transition={{ 
+                      duration: 0.6,
+                      ease: [0.25, 0.1, 0.25, 1.0]
+                    }}
                     animate={
                       titleNumber === index
                         ? {
