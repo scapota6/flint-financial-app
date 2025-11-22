@@ -404,10 +404,6 @@ export default function LandingNew() {
   const [goalsEmail, setGoalsEmail] = useState('');
   const [goalsSubmitted, setGoalsSubmitted] = useState(false);
 
-  // Social proof notifications
-  const [showNotification, setShowNotification] = useState(false);
-  const [notificationMessage, setNotificationMessage] = useState('');
-
   // Account detail modal state
   const [selectedAccount, setSelectedAccount] = useState<DemoAccount | null>(null);
   const [showAccountModal, setShowAccountModal] = useState(false);
@@ -515,63 +511,6 @@ export default function LandingNew() {
         : [...prev, goal]
     );
   };
-
-  // Social proof notifications - focused on signups and referrals
-  useEffect(() => {
-    const notifications = [
-      "🎉 Alex in San Francisco just joined the Launch Pool!",
-      "⚡ Jordan in Austin just referred 3 friends!",
-      "🌟 Sam in Miami just signed up for Pro!",
-      "🏆 Quinn in Dallas completed 5 referrals!",
-      "🎁 Hayden in Detroit entered the Lifetime Giveaway!",
-      "⚡ Reese in Las Vegas referred 10 friends!",
-      "🌟 Peyton in Tampa just created an account!",
-      "🔥 Taylor in New York just signed up!",
-      "🎉 Morgan in Denver just joined Flint!",
-      "⭐ Cameron in Phoenix just referred 2 friends!",
-      "🚀 Riley in Portland just joined the waitlist!",
-      "💫 Skyler in Minneapolis just signed up!",
-      "🎯 Dakota in Chicago just created an account!",
-      "🌟 Avery in Atlanta just joined the Launch Pool!",
-      "🏆 Blake in Nashville just referred a friend!",
-      "🎁 Parker in Columbus just entered the giveaway!",
-      "⚡ Jamie in Boston just signed up for Standard!",
-      "🔥 Casey in Seattle just joined Flint!"
-    ];
-
-    let activeHideTimer: NodeJS.Timeout | null = null;
-
-    const showRandomNotification = () => {
-      // Clear any existing hide timer before showing new notification
-      if (activeHideTimer) {
-        clearTimeout(activeHideTimer);
-      }
-      
-      const randomMsg = notifications[Math.floor(Math.random() * notifications.length)];
-      setNotificationMessage(randomMsg);
-      setShowNotification(true);
-      
-      // Schedule hide and track this timer
-      activeHideTimer = setTimeout(() => {
-        setShowNotification(false);
-        activeHideTimer = null;
-      }, 5000);
-    };
-
-    // Show first notification after 15 seconds
-    const initialTimer = setTimeout(showRandomNotification, 15000);
-    
-    // Then show notifications every 45 seconds
-    const interval = setInterval(showRandomNotification, 45000);
-
-    return () => {
-      clearInterval(interval);
-      clearTimeout(initialTimer);
-      if (activeHideTimer) {
-        clearTimeout(activeHideTimer);
-      }
-    };
-  }, []);
 
   // Signup submission
   const [signupLoading, setSignupLoading] = useState(false);
@@ -1937,20 +1876,6 @@ export default function LandingNew() {
         <div className="fixed bottom-4 right-4 max-w-sm bg-green-500/10 border border-green-500/20 rounded-lg p-6 shadow-2xl z-50">
           <Check className="h-6 w-6 text-green-400 mb-2" />
           <p className="text-green-400">Thanks for subscribing!</p>
-        </div>
-      )}
-      {/* Social Proof Notification Toast */}
-      {showNotification && (
-        <div 
-          className="fixed bottom-4 left-4 max-w-sm bg-gradient-to-r from-blue-600/90 to-blue-800/90 backdrop-blur-xl border border-white/20 rounded-lg p-4 shadow-2xl z-50 animate-[slideInLeft_0.3s_ease-out]"
-          data-testid="social-proof-notification"
-        >
-          <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0">
-              <span className="text-xl">👤</span>
-            </div>
-            <p className="text-sm font-medium text-white">{notificationMessage}</p>
-          </div>
         </div>
       )}
       {/* Stripe Checkout Modal */}
