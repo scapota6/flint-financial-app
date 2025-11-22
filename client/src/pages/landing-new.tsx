@@ -12,6 +12,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
+import { AuroraBackground } from "@/components/ui/aurora-background";
 import { 
   Shield, 
   Lock, 
@@ -702,9 +703,10 @@ export default function LandingNew() {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white relative overflow-x-hidden">
-      {/* Single subtle background gradient */}
-      <div className="fixed inset-0 bg-gradient-to-br from-blue-900/20 via-black to-black pointer-events-none" />
+    <AuroraBackground className="min-h-screen text-white relative overflow-x-hidden">
+      <div className="min-h-screen bg-black text-white relative overflow-x-hidden">
+        {/* Single subtle background gradient */}
+        <div className="fixed inset-0 bg-gradient-to-br from-blue-900/20 via-black to-black pointer-events-none" />
 
       {/* Sticky CTA Nav */}
       <div
@@ -2451,6 +2453,7 @@ export default function LandingNew() {
           )}
         </DialogContent>
       </Dialog>
-    </div>
+      </div>
+    </AuroraBackground>
   );
 }
