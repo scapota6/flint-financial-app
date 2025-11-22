@@ -725,10 +725,11 @@ export default function LandingNew() {
           </div>
           <RainbowButton
             onClick={scrollToSignup}
-            >Get Started Free"
             className="text-xs sm:text-sm px-3 sm:px-4"
             data-testid="button-sticky-nav-cta"
-          />
+          >
+            Get Started Free
+          </RainbowButton>
         </div>
       </div>
 
@@ -742,16 +743,17 @@ export default function LandingNew() {
             </div>
             <div className="flex items-center gap-2 sm:gap-4">
               <Link href="/login">
-                <button type="button" className="btn btn-text text-xs sm:text-sm<RainbowButton data-testid="button-login">
+                <button type="button" className="btn btn-text text-xs sm:text-sm" data-testid="button-login">
                   Log In
                 </button>
               </Link>
               <RainbowButton
                 onClick={scrollToSignup}
-                >Get Started Free"
                 className="text-xs sm:text-sm px-4"
                 data-testid="button-header-signup"
-              />
+              >
+                Get Started Free
+              </RainbowButton>
             </div>
           </div>
         </div>
@@ -774,10 +776,11 @@ export default function LandingNew() {
               <div className="flex flex-col items-center space-y-4">
                 <RainbowButton 
                   onClick={scrollToSignup}
-                  >Get Started Free"
                   className="text-base sm:text-lg px-8 sm:px-12 py-4 sm:py-6 h-auto"
                   data-testid="button-hero-cta"
-                />
+                >
+                  Get Started Free
+                </RainbowButton>
                 
                 <p className="text-sm text-blue-300">
                   No credit card required · Join 3,000+ users
@@ -914,7 +917,7 @@ export default function LandingNew() {
               {/* Cut Hidden Fees */}
               <div className="relative h-full rounded-xl border border-white/10 p-2">
                 <GlowingEffect spread={40} glow={true} disabled={false} proximity={64} inactiveZone={0.01} borderWidth={1} />
-                <div className="card text-center h-full<RainbowButton data-testid="value-card-fees">
+                <div className="card text-center h-full">
                   <DollarSign className="h-7 w-7 text-blue-400 mx-auto mb-4" />
                   <h3>Cut Hidden Fees</h3>
                   <p>
@@ -926,7 +929,7 @@ export default function LandingNew() {
               {/* Grow Net Worth */}
               <div className="relative h-full rounded-xl border border-white/10 p-2">
                 <GlowingEffect spread={40} glow={true} disabled={false} proximity={64} inactiveZone={0.01} borderWidth={1} />
-                <div className="card text-center h-full<RainbowButton data-testid="value-card-grow">
+                <div className="card text-center h-full">
                   <TrendingUp className="h-7 w-7 text-green-400 mx-auto mb-4" />
                   <h3>Grow Net Worth</h3>
                   <p>
@@ -938,7 +941,7 @@ export default function LandingNew() {
               {/* Stay in Control */}
               <div className="relative h-full rounded-xl border border-white/10 p-2">
                 <GlowingEffect spread={40} glow={true} disabled={false} proximity={64} inactiveZone={0.01} borderWidth={1} />
-                <div className="card text-center h-full<RainbowButton data-testid="value-card-control">
+                <div className="card text-center h-full">
                   <Shield className="h-7 w-7 text-blue-400 mx-auto mb-4" />
                   <h3>Stay in Control</h3>
                   <p>
@@ -1012,14 +1015,14 @@ export default function LandingNew() {
           <div className="apple-container">
             <div className="text-center mb-16">
               <h2 className="apple-h2 mb-8">Loved by Early Adopters</h2>
-              <div className="inline-block bg-blue-600/10 border border-blue-400/30 rounded-xl p-6 mb-6<RainbowButton data-testid="social-proof-progress">
+              <div className="inline-block bg-blue-600/10 border border-blue-400/30 rounded-xl p-6 mb-6">
                 <p className="apple-caption text-blue-400 font-semibold mb-3">🔥 LAUNCH POOL FILLING FAST</p>
                 <div className="flex items-center gap-3 mb-3">
                   <div className="flex-1 h-3 bg-white/10 rounded-xl overflow-hidden">
                     <div className="h-full bg-blue-600 rounded-xl" style={{ width: '33%' }} data-testid="progress-bar-fill"></div>
                   </div>
                 </div>
-                <p className="apple-h3 text-white<RainbowButton data-testid="progress-text">3,285 / 10,000 early spots claimed!</p>
+                <p className="apple-h3 text-white">3,285 / 10,000 early spots claimed!</p>
               </div>
             </div>
 
@@ -1028,7 +1031,7 @@ export default function LandingNew() {
               {/* Testimonial 1 */}
               <div className="relative h-full rounded-xl border border-white/10 p-2">
                 <GlowingEffect spread={40} glow={true} disabled={false} proximity={64} inactiveZone={0.01} borderWidth={1} />
-                <Card className="bg-white/5 border-white/10 p-6 h-full<RainbowButton data-testid="testimonial-1">
+                <Card className="bg-white/5 border-white/10 p-6 h-full">
                   <div className="space-y-4">
                     <div className="flex gap-1">
                       {[...Array(5)].map((_, i) => (
@@ -1054,7 +1057,7 @@ export default function LandingNew() {
               {/* Testimonial 2 */}
               <div className="relative h-full rounded-xl border border-white/10 p-2">
                 <GlowingEffect spread={40} glow={true} disabled={false} proximity={64} inactiveZone={0.01} borderWidth={1} />
-                <Card className="bg-white/5 border-white/10 p-6 h-full<RainbowButton data-testid="testimonial-2">
+                <Card className="bg-white/5 border-white/10 p-6 h-full">
                   <div className="space-y-4">
                     <div className="flex gap-1">
                       {[...Array(5)].map((_, i) => (
@@ -1080,7 +1083,7 @@ export default function LandingNew() {
               {/* Testimonial 3 */}
               <div className="relative h-full rounded-xl border border-white/10 p-2">
                 <GlowingEffect spread={40} glow={true} disabled={false} proximity={64} inactiveZone={0.01} borderWidth={1} />
-                <Card className="bg-white/5 border-white/10 p-6 h-full<RainbowButton data-testid="testimonial-3">
+                <Card className="bg-white/5 border-white/10 p-6 h-full">
                   <div className="space-y-4">
                     <div className="flex gap-1">
                       {[...Array(5)].map((_, i) => (
@@ -1165,7 +1168,7 @@ export default function LandingNew() {
               <div className="p-4 sm:p-6 border-b border-white/10 bg-white/5">
                 <div className="flex flex-col items-center text-center">
                   <p className="apple-caption text-gray-400 mb-1 text-xs sm:text-sm">Total Net Worth</p>
-                  <p className="text-2xl sm:text-4xl md:text-5xl font-bold text-blue-400 mb-2<RainbowButton data-testid="demo-net-worth">
+                  <p className="text-2xl sm:text-4xl md:text-5xl font-bold text-blue-400 mb-2">
                     {(() => {
                       const bankBalance = parseCurrency(currentDemo.accounts.find(a => a.type === 'Bank')?.balance || '$0');
                       const investingBalance = parseCurrency(currentDemo.accounts.find(a => a.type === 'Investing')?.balance || '$0');
@@ -1448,16 +1451,17 @@ export default function LandingNew() {
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center mt-8">
-              <Button type="button" onClick={switchDemoData} size="lg" variant="outline" className="border-white/20 text-white hover:bg-white/10 text-lg px-6<RainbowButton data-testid="button-demo-switch">
+              <Button type="button" onClick={switchDemoData} size="lg" variant="outline" className="border-white/20 text-white hover:bg-white/10 text-lg px-6" data-testid="button-demo-switch">
                 Switch Sample Data
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
               <RainbowButton 
                 onClick={scrollToSignup}
-                >Get Started Free"
                 className="text-lg px-6"
                 data-testid="button-demo-signup"
-              />
+              >
+                Get Started Free
+              </RainbowButton>
             </div>
           </div>
         </section>
@@ -1470,10 +1474,11 @@ export default function LandingNew() {
             
             <RainbowButton 
               onClick={scrollToSignup}
-              >Get Started Free"
               className="text-lg px-12 h-14"
               data-testid="button-cta-after-demo"
-            />
+            >
+              Get Started Free
+            </RainbowButton>
           </div>
         </section>
 
@@ -1540,7 +1545,7 @@ export default function LandingNew() {
                     
                     {/* Password Requirements - show when focused or invalid */}
                     {(passwordFocused || (signupData.password && !isPasswordValid)) && (
-                      <div className="mt-2 p-3 bg-white/5 border border-white/10 rounded-lg text-sm space-y-1<RainbowButton data-testid="password-requirements">
+                      <div className="mt-2 p-3 bg-white/5 border border-white/10 rounded-lg text-sm space-y-1">
                         <p className="text-gray-400 font-semibold mb-2">Password must have:</p>
                         <div className="space-y-1">
                           <div className="flex items-center gap-2">
@@ -1599,11 +1604,11 @@ export default function LandingNew() {
                   </div>
 
                   {signupError && (
-                    <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-sm<RainbowButton data-testid="signup-error">
+                    <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-sm">
                       {signupError}
                       {signupError.includes('already exists') && (
                         <div className="mt-2">
-                          <Link href="/login" className="text-blue-400 hover:underline font-semibold<RainbowButton data-testid="link-goto-login">
+                          <Link href="/login" className="text-blue-400 hover:underline font-semibold">
                             Go to login →
                           </Link>
                         </div>
@@ -1631,10 +1636,10 @@ export default function LandingNew() {
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
-                  <Button type="button" variant="outline" className="border-white/20 text-white hover:bg-white/10<RainbowButton data-testid="button-google-signup">
+                  <Button type="button" variant="outline" className="border-white/20 text-white hover:bg-white/10">
                     Google
                   </Button>
-                  <Button type="button" variant="outline" className="border-white/20 text-white hover:bg-white/10<RainbowButton data-testid="button-apple-signup">
+                  <Button type="button" variant="outline" className="border-white/20 text-white hover:bg-white/10">
                     Apple
                   </Button>
                 </div>
@@ -1760,10 +1765,11 @@ export default function LandingNew() {
 
                   <RainbowButton 
                     onClick={scrollToSignup}
-                    >Start Free"
                     className="w-full"
                     data-testid="button-free-plan"
-                  />
+                  >
+                    Start Free
+                  </RainbowButton>
                 </div>
               </div>
 
@@ -1816,10 +1822,11 @@ export default function LandingNew() {
                       setCheckoutBillingPeriod(isAnnual ? 'yearly' : 'monthly');
                       setCheckoutModalOpen(true);
                     }}
-                    >Get Standard"
                     className="w-full"
                     data-testid="button-standard-plan"
-                  />
+                  >
+                    Get Standard
+                  </RainbowButton>
                 </div>
               </div>
 
@@ -1878,10 +1885,11 @@ export default function LandingNew() {
                       setCheckoutBillingPeriod(isAnnual ? 'yearly' : 'monthly');
                       setCheckoutModalOpen(true);
                     }}
-                    >Get Pro"
                     className="w-full"
                     data-testid="button-pro-plan"
-                  />
+                  >
+                    Get Pro
+                  </RainbowButton>
                 </div>
               </div>
             </div>
@@ -1904,10 +1912,11 @@ export default function LandingNew() {
             
             <RainbowButton 
               onClick={scrollToSignup}
-              >Get Started Free"
               className="h-14 px-12 rounded-xl text-lg"
               data-testid="button-cta-after-pricing"
-            />
+            >
+              Get Started Free
+            </RainbowButton>
           </div>
         </section>
 
@@ -2013,7 +2022,7 @@ export default function LandingNew() {
               className="bg-white/10 border-white/20 text-white placeholder:text-gray-400"
               data-testid="input-scroll-popup-email"
             />
-            <Button type="submit" className="bg-blue-600 hover:bg-blue-700<RainbowButton data-testid="button-scroll-popup-submit">
+            <Button type="submit" className="bg-blue-600 hover:bg-blue-700">
               Subscribe
             </Button>
           </form>
@@ -2063,7 +2072,7 @@ export default function LandingNew() {
                 data-testid="input-exit-modal-email"
                 required
               />
-              <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 h-12 text-base font-semibold<RainbowButton data-testid="button-exit-modal-submit">
+              <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 h-12 text-base font-semibold">
                 Send Me the Free Guide
               </Button>
               <p className="text-xs text-gray-400 text-center">We'll email you the guide right away. No spam, ever.</p>
