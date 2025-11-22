@@ -723,16 +723,12 @@ export default function LandingNew() {
             </div>
             <span className="font-bold text-sm sm:text-base">Flint</span>
           </div>
-          <Button
-            type="button"
+          <ButtonColorful
             onClick={scrollToSignup}
-            size="sm"
-            className="bg-blue-600 hover:bg-blue-700 rounded-lg text-xs sm:text-sm px-3 sm:px-4"
+            label="Get Started Free"
+            className="text-xs sm:text-sm px-3 sm:px-4"
             data-testid="button-sticky-nav-cta"
-          >
-            <span className="hidden sm:inline">Get Started Free</span>
-            <span className="sm:hidden">Sign Up</span>
-          </Button>
+          />
         </div>
       </div>
 
@@ -750,10 +746,12 @@ export default function LandingNew() {
                   Log In
                 </button>
               </Link>
-              <button type="button" onClick={scrollToSignup} className="btn btn-primary text-xs sm:text-sm" data-testid="button-header-signup">
-                <span className="hidden sm:inline">Get Started Free</span>
-                <span className="sm:hidden">Sign Up</span>
-              </button>
+              <ButtonColorful
+                onClick={scrollToSignup}
+                label="Get Started Free"
+                className="text-xs sm:text-sm px-4"
+                data-testid="button-header-signup"
+              />
             </div>
           </div>
         </div>
@@ -1812,18 +1810,16 @@ export default function LandingNew() {
                     </li>
                   </ul>
 
-                  <button 
-                    type="button" 
+                  <ButtonColorful
                     onClick={() => {
                       setCheckoutTier('basic');
                       setCheckoutBillingPeriod(isAnnual ? 'yearly' : 'monthly');
                       setCheckoutModalOpen(true);
                     }}
-                    className="btn btn-primary w-full" 
+                    label="Get Standard"
+                    className="w-full"
                     data-testid="button-standard-plan"
-                  >
-                    Get Standard
-                  </button>
+                  />
                 </div>
               </div>
 
@@ -1876,18 +1872,16 @@ export default function LandingNew() {
                     </li>
                   </ul>
 
-                  <button 
-                    type="button" 
+                  <ButtonColorful
                     onClick={() => {
                       setCheckoutTier('pro');
                       setCheckoutBillingPeriod(isAnnual ? 'yearly' : 'monthly');
                       setCheckoutModalOpen(true);
                     }}
-                    className="btn btn-primary w-full" 
+                    label="Get Pro"
+                    className="w-full"
                     data-testid="button-pro-plan"
-                  >
-                    Get Pro
-                  </button>
+                  />
                 </div>
               </div>
             </div>

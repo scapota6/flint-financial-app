@@ -15,11 +15,11 @@ export function ButtonColorful({
         <button
             className={cn(
                 "relative h-10 px-6 rounded-full overflow-hidden",
-                "bg-gradient-to-r from-indigo-300 via-purple-300 to-pink-300",
-                "text-gray-900 font-medium",
+                "bg-blue-600 hover:bg-blue-700",
+                "text-white font-medium",
                 "transition-all duration-200",
-                "hover:shadow-lg hover:shadow-purple-400/50",
-                "focus:outline-none focus:ring-2 focus:ring-purple-400/50",
+                "hover:shadow-lg hover:shadow-blue-600/50",
+                "focus:outline-none focus:ring-2 focus:ring-blue-500/50",
                 "active:scale-95",
                 "disabled:opacity-50 disabled:cursor-not-allowed",
                 className
