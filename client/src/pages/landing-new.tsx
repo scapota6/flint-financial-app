@@ -6,6 +6,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { Button } from "@/components/ui/button";
+import { ButtonColorful } from "@/components/ui/button-colorful";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -773,15 +774,12 @@ export default function LandingNew() {
               </p>
 
               <div className="flex flex-col items-center space-y-4">
-                <button 
-                  type="button"
-                  onClick={scrollToSignup} 
-                  className="btn btn-primary text-base sm:text-lg px-8 sm:px-12 py-4 sm:py-6"
+                <ButtonColorful 
+                  onClick={scrollToSignup}
+                  label="Get Started Free"
+                  className="text-base sm:text-lg px-8 sm:px-12 py-4 sm:py-6 h-auto"
                   data-testid="button-hero-cta"
-                >
-                  Get Started Free
-                  <ArrowRight className="ml-2 h-5 w-5" />
-                </button>
+                />
                 
                 <p className="text-sm text-blue-300">
                   No credit card required · Join 3,000+ users
@@ -1456,9 +1454,12 @@ export default function LandingNew() {
                 Switch Sample Data
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
-              <Button type="button" onClick={scrollToSignup} size="lg" className="bg-blue-600 hover:bg-blue-700 text-lg px-6 shadow-2xl shadow-blue-600/50" data-testid="button-demo-signup">
-                Get Started Free
-              </Button>
+              <ButtonColorful 
+                onClick={scrollToSignup}
+                label="Get Started Free"
+                className="text-lg px-6"
+                data-testid="button-demo-signup"
+              />
             </div>
           </div>
         </section>
@@ -1469,9 +1470,12 @@ export default function LandingNew() {
             <h3 className="text-3xl font-bold mb-3">Ready to see your full picture?</h3>
             <p className="text-xl text-gray-300 mb-6">Join 3,285+ people taking control of their money</p>
             
-            <Button type="button" onClick={scrollToSignup} size="lg" className="bg-blue-600 hover:bg-blue-700 h-14 px-12 text-lg" data-testid="button-cta-after-demo">
-              Get Started Free
-            </Button>
+            <ButtonColorful 
+              onClick={scrollToSignup}
+              label="Get Started Free"
+              className="text-lg px-12 h-14"
+              data-testid="button-cta-after-demo"
+            />
           </div>
         </section>
 
@@ -1756,9 +1760,12 @@ export default function LandingNew() {
                     </li>
                   </ul>
 
-                  <button type="button" onClick={scrollToSignup} className="btn btn-secondary w-full" data-testid="button-free-plan">
-                    Start Free
-                  </button>
+                  <ButtonColorful 
+                    onClick={scrollToSignup}
+                    label="Start Free"
+                    className="w-full"
+                    data-testid="button-free-plan"
+                  />
                 </div>
               </div>
 
@@ -1901,10 +1908,12 @@ export default function LandingNew() {
             <h2 className="apple-h2">Start managing your money better today</h2>
             <p className="apple-body text-gray-300">Free forever. No credit card needed.</p>
             
-            <Button type="button" onClick={scrollToSignup} size="lg" className="bg-blue-600 hover:bg-blue-700 h-14 px-12 rounded-xl" data-testid="button-cta-after-pricing">
-              Get Started Free
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
+            <ButtonColorful 
+              onClick={scrollToSignup}
+              label="Get Started Free"
+              className="h-14 px-12 rounded-xl text-lg"
+              data-testid="button-cta-after-pricing"
+            />
           </div>
         </section>
 
