@@ -448,6 +448,12 @@ img {
   --chart-3: 211 100% 52%;    /* Apple blue #0A84FF */
   --chart-4: 199 100% 70%;    /* Apple teal #64D2FF */
   --chart-5: 49 100% 52%;     /* Apple yellow #FFD60A */
+  /* Rainbow button colors */
+  --color-1: 211 100% 52%;    /* Blue */
+  --color-2: 134 57% 50%;     /* Green */
+  --color-3: 49 100% 52%;     /* Yellow */
+  --color-4: 3 100% 59%;      /* Red */
+  --color-5: 199 100% 70%;    /* Teal */
   --radius: 0.75rem;          /* 12px border radius - Apple spec */
   --radius-lg: 1rem;          /* 16px large radius - Apple spec (max) */
   --radius-md: 0.875rem;      /* 14px medium radius - Apple spec */
@@ -487,6 +493,12 @@ img {
   --chart-3: 211 100% 52%;     /* Apple blue #0A84FF */
   --chart-4: 199 100% 70%;     /* Apple teal #64D2FF */
   --chart-5: 49 100% 52%;      /* Apple yellow #FFD60A */
+  /* Rainbow button colors */
+  --color-1: 211 100% 52%;     /* Blue */
+  --color-2: 134 57% 50%;      /* Green */
+  --color-3: 49 100% 52%;      /* Yellow */
+  --color-4: 3 100% 59%;       /* Red */
+  --color-5: 199 100% 70%;     /* Teal */
   --radius-lg: 1.75rem;        /* 28px large radius */
   --radius-md: 1.25rem;        /* 20px medium radius */
   --radius-sm: 0.875rem;       /* 14px small radius */
