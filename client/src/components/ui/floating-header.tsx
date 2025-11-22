@@ -3,6 +3,7 @@ import { MenuIcon, User, LogOut } from 'lucide-react';
 import { Link, useLocation } from 'wouter';
 import { Sheet, SheetContent, SheetFooter } from '@/components/ui/sheet';
 import { Button, buttonVariants } from '@/components/ui/button';
+import { RainbowButton } from '@/components/ui/rainbow-button';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -149,9 +150,9 @@ export function FloatingHeader({ variant = 'authenticated', onSignupClick }: Flo
                   Log In
                 </Button>
               </Link>
-              <Button size="sm" onClick={onSignupClick} className="bg-blue-600 hover:bg-blue-700">
+              <RainbowButton onClick={onSignupClick} className="h-9 px-3 text-sm">
                 Get Started
-              </Button>
+              </RainbowButton>
             </div>
           )}
 
@@ -276,9 +277,9 @@ export function FloatingHeader({ variant = 'authenticated', onSignupClick }: Flo
                         Log In
                       </Button>
                     </Link>
-                    <Button onClick={onSignupClick} className="w-full bg-blue-600 hover:bg-blue-700">
+                    <RainbowButton onClick={onSignupClick} className="w-full">
                       Get Started
-                    </Button>
+                    </RainbowButton>
                   </>
                 ) : (
                   <>
