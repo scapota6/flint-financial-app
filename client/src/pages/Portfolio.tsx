@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { Link } from "wouter";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { RainbowButton } from "@/components/ui/rainbow-button";
 import { useAccounts, usePortfolioTotals } from '@/hooks/useAccounts';
 import { 
   TrendingUp, 
@@ -190,22 +192,31 @@ export default function Portfolio() {
   // Empty state when no accounts are connected
   if (isEmptyState) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900/20 to-slate-900">
-        <div className="container mx-auto px-4 pt-24 pb-12 max-w-7xl">
-          <div className="text-center py-12">
-            <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-gradient-to-r from-blue-500/20 to-cyan-500/20 flex items-center justify-center">
-              <AlertCircle className="h-8 w-8 text-blue-400" />
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900/20 to-slate-900 flex items-center justify-center">
+        <div className="container mx-auto px-4 max-w-2xl">
+          <div className="text-center">
+            <div className="w-20 h-20 mx-auto mb-8 rounded-full bg-gradient-to-r from-blue-500/20 to-cyan-500/20 flex items-center justify-center">
+              <AlertCircle className="h-10 w-10 text-blue-400" />
             </div>
-            <h1 className="apple-h1 bg-gradient-to-r from-white via-cyan-200 to-blue-400 bg-clip-text text-transparent mb-4">
+            <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-white via-cyan-200 to-blue-400 bg-clip-text text-transparent mb-4">
               No Portfolio Data
             </h1>
-            <p className="apple-body text-slate-400 mb-8 max-w-md mx-auto">
+            <p className="text-lg text-slate-300 mb-8 max-w-lg mx-auto">
               Connect your investment accounts to see your portfolio performance and holdings.
             </p>
+            <Link href="/dashboard">
+              <RainbowButton 
+                className="text-base px-8 py-6 h-auto"
+                data-testid="button-connect-accounts"
+              >
+                <PlusCircle className="w-5 h-5 mr-2" />
+                Connect Accounts
+              </RainbowButton>
+            </Link>
             {hasDisconnectedAccounts && (
               <div className="mt-8 p-4 bg-orange-900/20 border border-orange-700 rounded-xl max-w-md mx-auto">
                 <AlertCircle className="h-5 w-5 text-orange-400 mx-auto mb-2" />
-                <p className="apple-caption text-orange-200">
+                <p className="text-sm text-orange-200">
                   Some previously connected accounts need to be reconnected to display your complete portfolio.
                 </p>
               </div>
