@@ -8,6 +8,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Button } from "@/components/ui/button";
 import { RainbowButton } from "@/components/ui/rainbow-button";
 import { FloatingHeader } from "@/components/ui/floating-header";
+import { AnimatedHero } from "@/components/ui/animated-hero";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -714,38 +715,15 @@ export default function LandingNew() {
         <FloatingHeader variant="landing" onSignupClick={scrollToSignup} />
       </div>
       <main className="relative z-10 pt-20">
-        {/* Hero Section */}
-        <section className="section text-center">
+        {/* Hero Section with Animated Text */}
+        <AnimatedHero onGetStartedClick={scrollToSignup} />
+        
+        {/* Interactive Demo Dashboard */}
+        <section className="section -mt-8">
           <div className="container">
-            <div className="max-w-3xl mx-auto space-y-8">
-              <h1>
-                All your money,
-                <span className="text-blue-400"> one place</span>
-              </h1>
-              
-              <p className="text-center max-w-2xl mx-auto">
-                Track all your bank, card, stock, and crypto accounts — in one place. Free forever, no card needed.
-              </p>
-
-              <div className="flex flex-col items-center space-y-4">
-                <RainbowButton 
-                  onClick={scrollToSignup}
-                  className="text-base sm:text-lg px-8 sm:px-12 py-4 sm:py-6 h-auto"
-                  data-testid="button-hero-cta"
-                >
-                  Get Started Free
-                </RainbowButton>
-                
-                <p className="text-sm text-blue-300">
-                  No credit card required · Join 3,000+ users
-                </p>
-              </div>
-
-              {/* Interactive Demo Dashboard */}
-              <div className="pt-12">
-                <div className="aspect-video rounded-lg sm:rounded-xl overflow-hidden border border-white/10 max-w-4xl mx-auto w-full">
-                  <img src={dashboardPreview} alt="Flint Dashboard" className="w-full h-full object-cover" />
-                </div>
+            <div className="max-w-4xl mx-auto">
+              <div className="aspect-video rounded-lg sm:rounded-xl overflow-hidden border border-white/10 w-full">
+                <img src={dashboardPreview} alt="Flint Dashboard" className="w-full h-full object-cover" />
               </div>
             </div>
           </div>
