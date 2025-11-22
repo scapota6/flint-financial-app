@@ -5,6 +5,7 @@ import { apiRequest } from '@/lib/queryClient';
 import { useAccounts, usePortfolioTotals } from '@/hooks/useAccounts';
 import { Building2, TrendingUp, DollarSign, Wallet, Eye, PlusCircle, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { RainbowButton } from '@/components/ui/rainbow-button';
 import { useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import AccountDetailsDialog from '../AccountDetailsDialog';
@@ -108,6 +109,13 @@ export default function UnifiedDashboard() {
   
   // Empty state when no accounts are connected
   if (isEmptyState) {
+    const scrollToQuickConnect = () => {
+      const element = document.getElementById('quick-connect-section');
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    };
+
     return (
       <div className="text-center py-12">
         <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-gradient-to-r from-blue-500/20 to-cyan-500/20 flex items-center justify-center">
@@ -119,6 +127,12 @@ export default function UnifiedDashboard() {
         <p className="text-gray-400 mb-6 max-w-md mx-auto">
           Connect your bank accounts and brokerages to see your complete financial picture.
         </p>
+        <RainbowButton 
+          onClick={scrollToQuickConnect}
+          data-testid="button-connect-accounts-empty-state"
+        >
+          Connect Accounts
+        </RainbowButton>
         {hasDisconnectedAccounts && (
           <div className="mt-6 p-4 bg-orange-900/20 border border-orange-700 rounded-lg max-w-md mx-auto">
             <AlertCircle className="h-5 w-5 text-orange-400 mx-auto mb-2" />

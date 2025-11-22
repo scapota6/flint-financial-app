@@ -268,7 +268,7 @@ export default function Dashboard() {
         </div>
 
         {/* Connection Options */}
-        <div className="mt-12">
+        <div id="quick-connect-section" className="mt-12">
           <SimpleConnectButtons 
             accounts={dashboardData?.accounts || []} 
             userTier={dashboardData?.subscriptionTier || "free"}
