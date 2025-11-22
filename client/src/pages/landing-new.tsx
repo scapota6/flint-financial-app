@@ -709,12 +709,10 @@ export default function LandingNew() {
     <AuroraBackground className="min-h-screen text-white relative overflow-x-hidden">
       {/* Single subtle background gradient overlay */}
       <div className="fixed inset-0 bg-gradient-to-br from-blue-900/20 via-black to-black pointer-events-none" />
-
       {/* Floating Header */}
       <div className="px-4 pt-2">
         <FloatingHeader variant="landing" onSignupClick={scrollToSignup} />
       </div>
-
       <main className="relative z-10 pt-20">
         {/* Hero Section */}
         <section className="section text-center">
@@ -914,7 +912,7 @@ export default function LandingNew() {
           <div className="apple-container">
             <div className="text-center mb-12">
               <h2 className="apple-h2">Our Partners</h2>
-              <p className="apple-caption text-gray-400">Connect to 26 trusted financial institutions</p>
+              <p className="apple-caption text-gray-400">Connect to 100+ trusted financial institutions</p>
             </div>
 
             {/* Scrolling logos with Brandfetch */}
@@ -1954,7 +1952,6 @@ export default function LandingNew() {
           </div>
         </footer>
       </main>
-
       {/* Scroll Popup */}
       {showScrollPopup && !scrollPopupSubmitted && (
         <div className="fixed bottom-4 right-4 max-w-sm bg-black border border-white/20 rounded-lg p-6 shadow-2xl z-50 animate-[fadeInUp_0.3s_ease-out]">
@@ -1984,14 +1981,12 @@ export default function LandingNew() {
           </form>
         </div>
       )}
-
       {showScrollPopup && scrollPopupSubmitted && (
         <div className="fixed bottom-4 right-4 max-w-sm bg-green-500/10 border border-green-500/20 rounded-lg p-6 shadow-2xl z-50">
           <Check className="h-6 w-6 text-green-400 mb-2" />
           <p className="text-green-400">Thanks for subscribing!</p>
         </div>
       )}
-
       {/* Social Proof Notification Toast */}
       {showNotification && (
         <div 
@@ -2006,7 +2001,6 @@ export default function LandingNew() {
           </div>
         </div>
       )}
-
       {/* Exit Intent Modal */}
       <Dialog open={showExitModal} onOpenChange={setShowExitModal}>
         <DialogContent className="bg-black border-white/20 w-[95vw] sm:w-full !max-w-[95vw] sm:!max-w-md">
@@ -2041,7 +2035,6 @@ export default function LandingNew() {
           )}
         </DialogContent>
       </Dialog>
-
       {/* Stripe Checkout Modal */}
       <EmbeddedCheckoutModal
         open={checkoutModalOpen}
@@ -2050,7 +2043,6 @@ export default function LandingNew() {
         tier={checkoutTier}
         billingPeriod={checkoutBillingPeriod}
       />
-
       {/* Account Detail Modal - Production-Accurate Tabbed Interface */}
       <Dialog open={showAccountModal} onOpenChange={setShowAccountModal}>
         <DialogContent className="bg-gray-900 border-gray-700 w-[95vw] sm:w-full !max-w-[95vw] sm:!max-w-3xl max-h-[90vh] overflow-y-auto [&>button]:hidden !z-[60] p-4 sm:p-6">
