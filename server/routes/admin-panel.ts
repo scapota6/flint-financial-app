@@ -348,6 +348,21 @@ router.get('/users', requireAuth, requireAdmin(), async (req: any, res) => {
 
     const whereClause = conditions.length > 0 ? and(...conditions) : sql`true`;
 
+    // Determine sort field
+    let sortField;
+    switch (sortBy) {
+      case 'lastLogin':
+        sortField = users.lastLogin;
+        break;
+      case 'email':
+        sortField = users.email;
+        break;
+      case 'createdAt':
+      default:
+        sortField = users.createdAt;
+        break;
+    }
+
     // Get paginated users
     const usersList = await db
       .select({
@@ -365,7 +380,7 @@ router.get('/users', requireAuth, requireAdmin(), async (req: any, res) => {
       })
       .from(users)
       .where(whereClause)
-      .orderBy(sortOrder === 'desc' ? desc(users.createdAt) : users.createdAt)
+      .orderBy(sortOrder === 'desc' ? desc(sortField) : sortField)
       .limit(limitNum)
       .offset(offset);
 

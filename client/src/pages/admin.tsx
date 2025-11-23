@@ -547,6 +547,7 @@ function UsersTab() {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
   const [tierFilter, setTierFilter] = useState('all');
+  const [sortBy, setSortBy] = useState('createdAt');
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [actionDialog, setActionDialog] = useState<'delete' | 'reset' | 'tier' | 'ban' | 'setPassword' | 'snaptradeEnv' | null>(null);
   const [newTier, setNewTier] = useState('');
@@ -571,7 +572,7 @@ function UsersTab() {
   };
 
   const { data, isLoading, refetch } = useQuery<{ users: User[]; pagination: Pagination }>({
-    queryKey: ['/api/admin-panel/users', { page, search, tier: tierFilter }],
+    queryKey: ['/api/admin-panel/users', { page, search, tier: tierFilter, sortBy }],
   });
 
   const deleteMutation = useMutation({
@@ -585,7 +586,7 @@ function UsersTab() {
     onSuccess: async ({ userId }) => {
       // Optimistically remove from cache
       queryClient.setQueryData(
-        ['/api/admin-panel/users', { page, search, tier: tierFilter }],
+        ['/api/admin-panel/users', { page, search, tier: tierFilter, sortBy }],
         (old: any) => {
           if (!old) return old;
           return {
@@ -704,6 +705,16 @@ function UsersTab() {
             <SelectItem value="basic">Basic</SelectItem>
             <SelectItem value="pro">Pro</SelectItem>
             <SelectItem value="premium">Premium</SelectItem>
+          </SelectContent>
+        </Select>
+        <Select value={sortBy} onValueChange={setSortBy}>
+          <SelectTrigger className="w-48 bg-slate-900/40 backdrop-blur-xl border border-slate-700/50" data-testid="select-sort-filter">
+            <SelectValue placeholder="Sort by" />
+          </SelectTrigger>
+          <SelectContent className="bg-slate-900/40 backdrop-blur-xl border border-slate-700/50">
+            <SelectItem value="createdAt">Newest First</SelectItem>
+            <SelectItem value="lastLogin">Recent Login</SelectItem>
+            <SelectItem value="email">Email (A-Z)</SelectItem>
           </SelectContent>
         </Select>
       </div>
