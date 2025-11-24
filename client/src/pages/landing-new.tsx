@@ -847,8 +847,8 @@ export default function LandingNew() {
               <div className="flex items-center gap-3 justify-center">
                 <Shield className="h-6 w-6 text-blue-400" />
                 <div>
-                  <p className="font-semibold">Can't move money</p>
-                  <p className="text-sm text-gray-400">Only you can</p>
+                  <p className="font-semibold">Free to start</p>
+                  <p className="text-sm text-gray-400">No credit card needed</p>
                 </div>
               </div>
             </div>
