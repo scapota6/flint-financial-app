@@ -54,6 +54,7 @@ const publicRegisterSchema = z.object({
   firstName: z.string().min(1, 'First name is required'),
   email: z.string().email('Valid email is required'),
   password: z.string().min(8, 'Password must be at least 8 characters'),
+  referralCode: z.string().optional(), // Optional referral code from referrer
 });
 
 /**
@@ -105,7 +106,7 @@ router.post('/public-register', rateLimits.register, async (req, res) => {
       });
     }
 
-    const { firstName, email, password } = parseResult.data;
+    const { firstName, email, password, referralCode: refCode } = parseResult.data;
     const lowercaseEmail = email.toLowerCase();
 
     // Check if user already exists
@@ -147,7 +148,7 @@ router.post('/public-register', rateLimits.register, async (req, res) => {
     const passwordHistory = [passwordHash];
 
     // Generate referral code for new user
-    const { generateReferralCode } = await import('../utils/referral');
+    const { generateReferralCode, processReferral } = await import('../utils/referral');
     const referralCode = await generateReferralCode();
 
     // Create user
@@ -166,12 +167,25 @@ router.post('/public-register', rateLimits.register, async (req, res) => {
       updatedAt: new Date(),
     });
 
+    // Process referral if a referral code was provided
+    let referralProcessed = false;
+    if (refCode) {
+      referralProcessed = await processReferral(userId, refCode);
+      if (referralProcessed) {
+        logger.info('Referral processed successfully', {
+          metadata: { userId, referralCode: refCode }
+        });
+      }
+    }
+
     // Log successful registration
     logger.info('User registered via public registration', {
       metadata: {
         userId,
         email: lowercaseEmail,
         firstName,
+        referralProcessed,
+        usedReferralCode: refCode || null,
       }
     });
 
@@ -179,6 +193,8 @@ router.post('/public-register', rateLimits.register, async (req, res) => {
     logger.logMetric('user_registered', {
       user_id: userId,
       registration_method: 'public_landing',
+      referral_processed: referralProcessed,
+      referral_code_used: refCode || null,
     });
 
     // Send welcome email (optional - don't fail if email fails)

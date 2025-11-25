@@ -352,7 +352,7 @@ export default function Profile() {
                         <span className="text-blue-400 font-bold">3</span>
                       </div>
                       <p className="text-gray-300">
-                        <span className="font-semibold text-white">Refer 3 friends</span> → Unlock unlimited accounts
+                        <span className="font-semibold text-white">Refer 3 friends</span> → Unlock unlimited accounts for 1 month
                       </p>
                     </div>
                     <div className="flex items-center gap-3">

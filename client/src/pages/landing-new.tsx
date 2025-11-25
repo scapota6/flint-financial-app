@@ -1501,7 +1501,7 @@ export default function LandingNew() {
                       <div className="h-8 w-8 rounded-full bg-blue-600/20 flex items-center justify-center flex-shrink-0">
                         <span className="text-blue-400 font-bold">3</span>
                       </div>
-                      <p className="text-gray-300"><span className="font-semibold text-white">Refer 3</span> = Unlock unlimited accounts</p>
+                      <p className="text-gray-300"><span className="font-semibold text-white">Refer 3</span> = Unlock unlimited accounts for 1 month</p>
                     </div>
                     <div className="flex items-center gap-3">
                       <div className="h-8 w-8 rounded-full bg-blue-600/20 flex items-center justify-center flex-shrink-0">
@@ -1536,7 +1536,7 @@ export default function LandingNew() {
                   <div className="p-6 bg-gradient-to-br from-blue-600/10 to-blue-800/10 border border-blue-600/20 rounded-lg space-y-3">
                     <p className="text-sm font-semibold text-white">🔄 Invite & Unlock Rewards</p>
                     <div className="space-y-2 text-xs text-gray-300">
-                      <p>• Refer 3 = Unlimited accounts</p>
+                      <p>• Refer 3 = Unlimited accounts for 1 month</p>
                       <p>• Refer 5 = 1 free month of Pro</p>
                       <p>• Refer 10 = 5x giveaway entries</p>
                     </div>
