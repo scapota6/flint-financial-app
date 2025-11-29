@@ -4,10 +4,11 @@ import { requireAuth } from '../middleware/jwt-auth';
 import { isAdmin } from '../middleware/rbac';
 import { hashPassword, validatePasswordStrength } from '../lib/password-utils';
 import { db } from '../db';
-import { users, snaptradeConnections, snaptradeAccounts, snaptradePositions, snaptradeBalances, snaptradeOrders, snaptradeActivities, snaptradeOptionHoldings, connectedAccounts } from '@shared/schema';
+import { users, snaptradeConnections, snaptradeAccounts, snaptradePositions, snaptradeBalances, snaptradeOrders, snaptradeActivities, snaptradeOptionHoldings, connectedAccounts, snaptradeUsers } from '@shared/schema';
 import { eq, inArray, and } from 'drizzle-orm';
 import { emailService } from '../services/email';
 import { logger } from '@shared/logger';
+import { listAllSnapTradeUsers, authApi } from '../lib/snaptrade';
 
 const router = Router();
 
@@ -149,6 +150,151 @@ router.post('/test-email', requireAuth, isAdmin(), async (req, res) => {
     console.error('Error sending test email:', error);
     return res.status(500).json({
       message: 'Failed to send test email',
+    });
+  }
+});
+
+/**
+ * GET /api/admin/snaptrade/orphaned-users
+ * List all SnapTrade users that exist in SnapTrade but not in our database
+ * These are "orphaned" users that should be cleaned up
+ */
+router.get('/snaptrade/orphaned-users', requireAuth, isAdmin(), async (req, res) => {
+  try {
+    console.log('[Admin] Listing orphaned SnapTrade users...');
+    
+    // Get all users from SnapTrade API
+    const snaptradeResponse = await listAllSnapTradeUsers();
+    const snaptradeUserIds: string[] = snaptradeResponse.data || [];
+    
+    // Get all users from our database
+    const dbSnaptradeUsers = await db
+      .select({ snaptradeUserId: snaptradeUsers.snaptradeUserId, flintUserId: snaptradeUsers.flintUserId })
+      .from(snaptradeUsers);
+    
+    const dbUserIds = new Set(dbSnaptradeUsers.map(u => u.snaptradeUserId));
+    const flintUserIds = new Set(dbSnaptradeUsers.map(u => u.flintUserId));
+    
+    // Find orphaned users (in SnapTrade but not in our DB)
+    const orphanedUserIds = snaptradeUserIds.filter(id => !dbUserIds.has(id) && !flintUserIds.has(id));
+    
+    console.log(`[Admin] Found ${orphanedUserIds.length} orphaned SnapTrade users out of ${snaptradeUserIds.length} total`);
+    
+    return res.status(200).json({
+      totalSnaptradeUsers: snaptradeUserIds.length,
+      totalDbUsers: dbSnaptradeUsers.length,
+      orphanedCount: orphanedUserIds.length,
+      orphanedUserIds,
+      allSnaptradeUserIds: snaptradeUserIds,
+    });
+  } catch (error: any) {
+    console.error('[Admin] Error listing orphaned SnapTrade users:', error);
+    return res.status(500).json({
+      message: 'Failed to list orphaned SnapTrade users',
+      error: error.message,
+    });
+  }
+});
+
+/**
+ * DELETE /api/admin/snaptrade/users/:snaptradeUserId
+ * Delete a specific user from SnapTrade API (does NOT require user secret)
+ */
+router.delete('/snaptrade/users/:snaptradeUserId', requireAuth, isAdmin(), async (req, res) => {
+  try {
+    const { snaptradeUserId } = req.params;
+    
+    console.log(`[Admin] Deleting SnapTrade user: ${snaptradeUserId}`);
+    
+    // Delete from SnapTrade API
+    await authApi.deleteSnapTradeUser({ userId: snaptradeUserId });
+    
+    // Also clean up any database records if they exist
+    await db.delete(snaptradeUsers).where(eq(snaptradeUsers.snaptradeUserId, snaptradeUserId));
+    await db.delete(snaptradeUsers).where(eq(snaptradeUsers.flintUserId, snaptradeUserId));
+    
+    logger.info('[Admin] SnapTrade user deleted from API', {
+      metadata: {
+        snaptradeUserId,
+        adminUser: (req as any).user?.claims?.email || 'unknown',
+      }
+    });
+    
+    return res.status(200).json({
+      message: 'SnapTrade user deleted successfully',
+      snaptradeUserId,
+    });
+  } catch (error: any) {
+    console.error('[Admin] Error deleting SnapTrade user:', error);
+    return res.status(500).json({
+      message: 'Failed to delete SnapTrade user',
+      error: error.message,
+    });
+  }
+});
+
+/**
+ * POST /api/admin/snaptrade/cleanup-orphaned
+ * Delete ALL orphaned SnapTrade users (users in SnapTrade but not in our database)
+ */
+router.post('/snaptrade/cleanup-orphaned', requireAuth, isAdmin(), async (req, res) => {
+  try {
+    console.log('[Admin] Starting cleanup of orphaned SnapTrade users...');
+    
+    // Get all users from SnapTrade API
+    const snaptradeResponse = await listAllSnapTradeUsers();
+    const snaptradeUserIds: string[] = snaptradeResponse.data || [];
+    
+    // Get all users from our database
+    const dbSnaptradeUsers = await db
+      .select({ snaptradeUserId: snaptradeUsers.snaptradeUserId, flintUserId: snaptradeUsers.flintUserId })
+      .from(snaptradeUsers);
+    
+    const dbUserIds = new Set(dbSnaptradeUsers.map(u => u.snaptradeUserId));
+    const flintUserIds = new Set(dbSnaptradeUsers.map(u => u.flintUserId));
+    
+    // Find orphaned users
+    const orphanedUserIds = snaptradeUserIds.filter(id => !dbUserIds.has(id) && !flintUserIds.has(id));
+    
+    console.log(`[Admin] Found ${orphanedUserIds.length} orphaned users to delete`);
+    
+    const results: { userId: string; success: boolean; error?: string }[] = [];
+    
+    for (const userId of orphanedUserIds) {
+      try {
+        await authApi.deleteSnapTradeUser({ userId });
+        results.push({ userId, success: true });
+        console.log(`[Admin] Deleted orphaned user: ${userId}`);
+      } catch (error: any) {
+        results.push({ userId, success: false, error: error.message });
+        console.error(`[Admin] Failed to delete orphaned user ${userId}:`, error.message);
+      }
+    }
+    
+    const successCount = results.filter(r => r.success).length;
+    const failCount = results.filter(r => !r.success).length;
+    
+    logger.info('[Admin] Orphaned SnapTrade cleanup completed', {
+      metadata: {
+        totalOrphaned: orphanedUserIds.length,
+        successCount,
+        failCount,
+        adminUser: (req as any).user?.claims?.email || 'unknown',
+      }
+    });
+    
+    return res.status(200).json({
+      message: 'Orphaned SnapTrade users cleanup completed',
+      totalOrphaned: orphanedUserIds.length,
+      successCount,
+      failCount,
+      results,
+    });
+  } catch (error: any) {
+    console.error('[Admin] Error cleaning up orphaned SnapTrade users:', error);
+    return res.status(500).json({
+      message: 'Failed to cleanup orphaned SnapTrade users',
+      error: error.message,
     });
   }
 });
