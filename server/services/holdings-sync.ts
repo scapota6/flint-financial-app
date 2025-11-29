@@ -13,8 +13,8 @@ import { storage } from '../storage';
 import { logger } from '@shared/logger';
 import { getPositions } from '../lib/snaptrade';
 import { db } from '../db';
-import { snaptradePositions } from '@shared/schema';
-import { eq } from 'drizzle-orm';
+import { snaptradePositions, snaptradeAccounts, connectedAccounts } from '@shared/schema';
+import { eq, and } from 'drizzle-orm';
 
 interface SyncResult {
   accountId: string;
@@ -33,6 +33,30 @@ export async function syncAccountHoldings(
   accountId: string
 ): Promise<SyncResult> {
   try {
+    // CRITICAL: First check if the account still exists in our database
+    // This prevents FK constraint errors when syncing orphaned/disconnected accounts
+    const [existingAccount] = await db
+      .select()
+      .from(snaptradeAccounts)
+      .where(eq(snaptradeAccounts.id, accountId))
+      .limit(1);
+    
+    if (!existingAccount) {
+      logger.warn('[Holdings Sync] Account not found in database - skipping sync (may be disconnected)', { 
+        metadata: { accountId } 
+      });
+      
+      // Clean up any orphaned positions that might still exist
+      await db.delete(snaptradePositions).where(eq(snaptradePositions.accountId, accountId));
+      
+      return {
+        accountId,
+        success: true,
+        positionsCount: 0,
+        error: 'Account not found - may be disconnected'
+      };
+    }
+    
     // Fetch fresh positions from SnapTrade
     const positionsData = await getPositions(userId, userSecret, accountId);
     const positions = positionsData?.[0]?.positions || [];
@@ -91,6 +115,35 @@ export async function syncAccountHoldings(
   } catch (error: any) {
     const errorMessage = error?.message || String(error);
     const errorStack = error?.stack || '';
+    const errorCode = error?.code || '';
+    
+    // Check for FK constraint error - this means the account was deleted
+    if (errorCode === '23503' || errorMessage.includes('foreign key constraint')) {
+      logger.warn('[Holdings Sync] FK constraint error - account was deleted externally, cleaning up orphaned data', { 
+        metadata: { 
+          accountId,
+          errorCode
+        }
+      });
+      
+      // Clean up orphaned positions
+      try {
+        await db.delete(snaptradePositions).where(eq(snaptradePositions.accountId, accountId));
+        logger.info('[Holdings Sync] Cleaned up orphaned positions for deleted account', { 
+          metadata: { accountId } 
+        });
+      } catch (cleanupError) {
+        logger.error('[Holdings Sync] Failed to clean up orphaned positions', { 
+          metadata: { accountId, cleanupError } 
+        });
+      }
+      
+      return {
+        accountId,
+        success: false,
+        error: 'Account was deleted - cleaned up orphaned data'
+      };
+    }
     
     logger.error('Error syncing holdings for account', { 
       metadata: { 
