@@ -11,8 +11,8 @@
 
 import { CronJob } from 'cron';
 import { db } from '../db';
-import { snaptradeConnections, snaptradeUsers, snaptradeAccounts, snaptradeBalances, snaptradePositions, snaptradeOrders, snaptradeActivities, snaptradeOptionHoldings, users } from '@shared/schema';
-import { eq, sql, inArray, lt } from 'drizzle-orm';
+import { snaptradeConnections, snaptradeUsers, snaptradeAccounts, snaptradeBalances, snaptradePositions, snaptradeOrders, snaptradeActivities, snaptradeOptionHoldings, users, connectedAccounts } from '@shared/schema';
+import { eq, sql, inArray, lt, and } from 'drizzle-orm';
 import { logger } from '@shared/logger';
 
 interface OrphanedConnection {
@@ -141,10 +141,23 @@ async function findStaleConnections(): Promise<StaleConnection[]> {
 
 /**
  * Delete a connection and all its child records (cascading delete)
+ * Also cleans up connected_accounts table to remove from dashboard
  */
 async function deleteConnection(connectionId: number, reason: string): Promise<boolean> {
   try {
     await db.transaction(async (tx) => {
+      // Step 0: Get the connection to find the user ID
+      const [connection] = await tx
+        .select()
+        .from(snaptradeConnections)
+        .where(eq(snaptradeConnections.id, connectionId))
+        .limit(1);
+      
+      if (!connection) {
+        console.log(`[Orphaned Connections Cleanup] Connection ${connectionId} not found, may already be deleted`);
+        return;
+      }
+      
       // Step 1: Find all accounts for this connection
       const accounts = await tx
         .select()
@@ -164,9 +177,23 @@ async function deleteConnection(connectionId: number, reason: string): Promise<b
         
         // Step 3: Delete all accounts
         await tx.delete(snaptradeAccounts).where(inArray(snaptradeAccounts.id, accountIds));
+        
+        // Step 4: CRITICAL - Also delete from connected_accounts table (unified accounts view)
+        // This removes the account from the user's dashboard
+        for (const accountId of accountIds) {
+          await tx.delete(connectedAccounts).where(
+            and(
+              eq(connectedAccounts.userId, connection.flintUserId),
+              eq(connectedAccounts.provider, 'snaptrade'),
+              eq(connectedAccounts.externalAccountId, accountId)
+            )
+          );
+        }
+        
+        console.log(`[Orphaned Connections Cleanup] Cleaned up connected_accounts for ${accountIds.length} accounts`);
       }
       
-      // Step 4: Delete the connection itself
+      // Step 5: Delete the connection itself
       await tx.delete(snaptradeConnections).where(eq(snaptradeConnections.id, connectionId));
     });
 

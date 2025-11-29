@@ -9,9 +9,10 @@ import {
   snaptradePositions,
   snaptradeOrders,
   snaptradeActivities,
-  snaptradeOptionHoldings
+  snaptradeOptionHoldings,
+  connectedAccounts
 } from '@shared/schema';
-import { eq, sql, inArray } from 'drizzle-orm';
+import { eq, sql, inArray, and } from 'drizzle-orm';
 import type { WebhookEvent, WebhookAck, WebhookType, ISODate, UUID } from '@shared/types';
 import { logger } from '@shared/logger';
 
@@ -92,6 +93,8 @@ function mapWebhookType(snaptradeType: string): WebhookType | null {
  * Helper function to delete a SnapTrade connection and all its child records
  * This ensures a clean slate when a connection is broken - no stale data remains
  * Uses transactions and batched IN-clause deletes for atomicity and performance
+ * 
+ * CRITICAL: Also cleans up connected_accounts table to remove from dashboard
  */
 async function deleteConnectionAndChildren(authorizationId: string, requestId: string): Promise<void> {
   try {
@@ -111,7 +114,7 @@ async function deleteConnectionAndChildren(authorizationId: string, requestId: s
         return;
       }
       
-      console.log(`[SnapTrade Webhook ${requestId}] Found connection ID:`, connection.id);
+      console.log(`[SnapTrade Webhook ${requestId}] Found connection ID:`, connection.id, 'for user:', connection.flintUserId);
       
       // Step 2: Find all accounts for this connection
       const accounts = await tx
@@ -137,21 +140,50 @@ async function deleteConnectionAndChildren(authorizationId: string, requestId: s
         // Step 4: Delete all accounts in a single query
         await tx.delete(snaptradeAccounts).where(inArray(snaptradeAccounts.id, accountIds));
         
-        console.log(`[SnapTrade Webhook ${requestId}] Deleted ${accountIds.length} accounts`);
+        console.log(`[SnapTrade Webhook ${requestId}] Deleted ${accountIds.length} SnapTrade accounts`);
+        
+        // Step 5: CRITICAL - Also delete from connected_accounts table (unified accounts view)
+        // This removes the account from the user's dashboard
+        for (const accountId of accountIds) {
+          await tx.delete(connectedAccounts).where(
+            and(
+              eq(connectedAccounts.userId, connection.flintUserId),
+              eq(connectedAccounts.provider, 'snaptrade'),
+              eq(connectedAccounts.externalAccountId, accountId)
+            )
+          );
+        }
+        
+        console.log(`[SnapTrade Webhook ${requestId}] Cleaned up connected_accounts for ${accountIds.length} accounts`);
       }
       
-      // Step 5: Delete the connection itself
+      // Step 6: Delete the connection itself
       await tx
         .delete(snaptradeConnections)
         .where(eq(snaptradeConnections.id, connection.id));
       
       console.log(`[SnapTrade Webhook ${requestId}] ✅ Successfully deleted connection and all child records for:`, authorizationId);
     });
+    
+    // Log metric for monitoring
+    logger.logMetric('snaptrade_connection_cleanup', {
+      authorization_id: authorizationId,
+      request_id: requestId,
+      success: true
+    });
+    
   } catch (error: any) {
     console.error(`[SnapTrade Webhook ${requestId}] ❌ Error during cascading deletion:`, {
       authorizationId,
       error: error.message,
       stack: error.stack
+    });
+    
+    logger.logMetric('snaptrade_connection_cleanup', {
+      authorization_id: authorizationId,
+      request_id: requestId,
+      success: false,
+      error: error.message
     });
     // Don't throw - we still want to acknowledge the webhook
   }
