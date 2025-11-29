@@ -4,7 +4,7 @@
  * Focus: Simple messaging, clear CTAs, interactive demos
  */
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { Button } from "@/components/ui/button";
 import { RainbowButton } from "@/components/ui/rainbow-button";
 import { FloatingHeader } from "@/components/ui/floating-header";
@@ -17,6 +17,26 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { AuroraBackground } from "@/components/ui/aurora-background";
 import { GlowingEffect } from "@/components/ui/glowing-effect";
+
+// Hook to detect mobile/touch devices for performance optimization
+const useIsMobile = () => {
+  const [isMobile, setIsMobile] = useState(false);
+  
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(
+        window.matchMedia('(max-width: 768px)').matches ||
+        'ontouchstart' in window ||
+        navigator.maxTouchPoints > 0
+      );
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+  
+  return isMobile;
+};
 import { 
   Shield, 
   Lock, 
@@ -371,6 +391,9 @@ function formatCurrency(value: number): string {
 }
 
 export default function LandingNew() {
+  // Mobile detection for performance - disables heavy animations on mobile
+  const isMobile = useIsMobile();
+  
   // Email capture states
   const [heroEmail, setHeroEmail] = useState('');
   const [heroEmailSubmitted, setHeroEmailSubmitted] = useState(false);
@@ -414,10 +437,10 @@ export default function LandingNew() {
   // Refs
   const signupRef = useRef<HTMLDivElement>(null);
 
-  // Scroll to signup
-  const scrollToSignup = () => {
+  // Scroll to signup - memoized to prevent unnecessary re-renders of child components
+  const scrollToSignup = useCallback(() => {
     signupRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
+  }, []);
 
   // Scroll tracking for popup and sticky nav
   useEffect(() => {
@@ -708,7 +731,7 @@ export default function LandingNew() {
 
             <div className="grid md:grid-cols-3 gap-6 mb-8">
               <div className="relative h-full rounded-xl border border-white/10 p-2">
-                <GlowingEffect spread={40} glow={true} disabled={false} proximity={64} inactiveZone={0.01} borderWidth={1} />
+                <GlowingEffect spread={40} glow={true} disabled={isMobile} proximity={64} inactiveZone={0.01} borderWidth={1} />
                 <Card className="bg-white/10 border-blue-400/30 rounded-lg p-6 h-full">
                   <span className="text-5xl block mb-2">🎟️</span>
                   <h3 className="apple-h3">5 Winners</h3>
@@ -717,7 +740,7 @@ export default function LandingNew() {
               </div>
 
               <div className="relative h-full rounded-xl border border-yellow-400/30 p-2">
-                <GlowingEffect spread={40} glow={true} disabled={false} proximity={64} inactiveZone={0.01} borderWidth={1} variant="default" />
+                <GlowingEffect spread={40} glow={true} disabled={isMobile} proximity={64} inactiveZone={0.01} borderWidth={1} variant="default" />
                 <Card className="bg-gradient-to-br from-yellow-600/20 to-orange-600/20 border-yellow-400/40 rounded-lg p-6 transform scale-105 h-full">
                   <span className="text-5xl block mb-2">🏆</span>
                   <h3 className="apple-h3">1 Grand Prize</h3>
@@ -726,7 +749,7 @@ export default function LandingNew() {
               </div>
 
               <div className="relative h-full rounded-xl border border-white/10 p-2">
-                <GlowingEffect spread={40} glow={true} disabled={false} proximity={64} inactiveZone={0.01} borderWidth={1} />
+                <GlowingEffect spread={40} glow={true} disabled={isMobile} proximity={64} inactiveZone={0.01} borderWidth={1} />
                 <Card className="bg-white/10 border-blue-400/30 rounded-lg p-6 h-full">
                   <span className="text-5xl block mb-2">📈</span>
                   <h3 className="apple-h3">Boost Odds</h3>
@@ -761,7 +784,7 @@ export default function LandingNew() {
             <div className="cards-grid">
               {/* Cut Hidden Fees */}
               <div className="relative h-full rounded-xl border border-white/10 p-2">
-                <GlowingEffect spread={40} glow={true} disabled={false} proximity={64} inactiveZone={0.01} borderWidth={1} />
+                <GlowingEffect spread={40} glow={true} disabled={isMobile} proximity={64} inactiveZone={0.01} borderWidth={1} />
                 <div className="card text-center h-full">
                   <DollarSign className="h-7 w-7 text-blue-400 mx-auto mb-4" />
                   <h3>Cut Hidden Fees</h3>
@@ -773,7 +796,7 @@ export default function LandingNew() {
 
               {/* Grow Net Worth */}
               <div className="relative h-full rounded-xl border border-white/10 p-2">
-                <GlowingEffect spread={40} glow={true} disabled={false} proximity={64} inactiveZone={0.01} borderWidth={1} />
+                <GlowingEffect spread={40} glow={true} disabled={isMobile} proximity={64} inactiveZone={0.01} borderWidth={1} />
                 <div className="card text-center h-full">
                   <TrendingUp className="h-7 w-7 text-green-400 mx-auto mb-4" />
                   <h3>Grow Net Worth</h3>
@@ -785,7 +808,7 @@ export default function LandingNew() {
 
               {/* Stay in Control */}
               <div className="relative h-full rounded-xl border border-white/10 p-2">
-                <GlowingEffect spread={40} glow={true} disabled={false} proximity={64} inactiveZone={0.01} borderWidth={1} />
+                <GlowingEffect spread={40} glow={true} disabled={isMobile} proximity={64} inactiveZone={0.01} borderWidth={1} />
                 <div className="card text-center h-full">
                   <Shield className="h-7 w-7 text-blue-400 mx-auto mb-4" />
                   <h3>Stay in Control</h3>
@@ -875,7 +898,7 @@ export default function LandingNew() {
             <div className="grid md:grid-cols-3 gap-6">
               {/* Testimonial 1 */}
               <div className="relative h-full rounded-xl border border-white/10 p-2">
-                <GlowingEffect spread={40} glow={true} disabled={false} proximity={64} inactiveZone={0.01} borderWidth={1} />
+                <GlowingEffect spread={40} glow={true} disabled={isMobile} proximity={64} inactiveZone={0.01} borderWidth={1} />
                 <Card className="bg-white/5 border-white/10 p-6 h-full">
                   <div className="space-y-4">
                     <div className="flex gap-1">
@@ -901,7 +924,7 @@ export default function LandingNew() {
 
               {/* Testimonial 2 */}
               <div className="relative h-full rounded-xl border border-white/10 p-2">
-                <GlowingEffect spread={40} glow={true} disabled={false} proximity={64} inactiveZone={0.01} borderWidth={1} />
+                <GlowingEffect spread={40} glow={true} disabled={isMobile} proximity={64} inactiveZone={0.01} borderWidth={1} />
                 <Card className="bg-white/5 border-white/10 p-6 h-full">
                   <div className="space-y-4">
                     <div className="flex gap-1">
@@ -927,7 +950,7 @@ export default function LandingNew() {
 
               {/* Testimonial 3 */}
               <div className="relative h-full rounded-xl border border-white/10 p-2">
-                <GlowingEffect spread={40} glow={true} disabled={false} proximity={64} inactiveZone={0.01} borderWidth={1} />
+                <GlowingEffect spread={40} glow={true} disabled={isMobile} proximity={64} inactiveZone={0.01} borderWidth={1} />
                 <Card className="bg-white/5 border-white/10 p-6 h-full">
                   <div className="space-y-4">
                     <div className="flex gap-1">
@@ -964,7 +987,7 @@ export default function LandingNew() {
 
             <div className="grid md:grid-cols-3 gap-8">
               <div className="relative h-full rounded-xl border border-white/10 p-2">
-                <GlowingEffect spread={40} glow={true} disabled={false} proximity={64} inactiveZone={0.01} borderWidth={1} />
+                <GlowingEffect spread={40} glow={true} disabled={isMobile} proximity={64} inactiveZone={0.01} borderWidth={1} />
                 <Card className="bg-white/5 border-white/10 rounded-lg p-8 hover:bg-white/10 transition-colors h-full">
                   <Wallet className="h-7 w-7 text-blue-400 mb-4" />
                   <h3 className="apple-h3">All Your Money</h3>
@@ -975,7 +998,7 @@ export default function LandingNew() {
               </div>
 
               <div className="relative h-full rounded-xl border border-white/10 p-2">
-                <GlowingEffect spread={40} glow={true} disabled={false} proximity={64} inactiveZone={0.01} borderWidth={1} />
+                <GlowingEffect spread={40} glow={true} disabled={isMobile} proximity={64} inactiveZone={0.01} borderWidth={1} />
                 <Card className="bg-white/5 border-white/10 rounded-lg p-8 hover:bg-white/10 transition-colors h-full">
                   <span className="text-3xl mb-4 block">🔁</span>
                   <h3 className="apple-h3">Trade & Transfer</h3>
@@ -986,7 +1009,7 @@ export default function LandingNew() {
               </div>
 
               <div className="relative h-full rounded-xl border border-white/10 p-2">
-                <GlowingEffect spread={40} glow={true} disabled={false} proximity={64} inactiveZone={0.01} borderWidth={1} />
+                <GlowingEffect spread={40} glow={true} disabled={isMobile} proximity={64} inactiveZone={0.01} borderWidth={1} />
                 <Card className="bg-white/5 border-white/10 rounded-lg p-8 hover:bg-white/10 transition-colors h-full">
                   <TrendingUp className="h-7 w-7 text-blue-400 mb-4" />
                   <h3 className="apple-h3">Grow Wealth</h3>
@@ -1578,7 +1601,7 @@ export default function LandingNew() {
             <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 max-w-6xl mx-auto">
               {/* Free Plan */}
               <div className="relative h-full rounded-xl border border-white/10 p-2">
-                <GlowingEffect spread={40} glow={true} disabled={false} proximity={64} inactiveZone={0.01} borderWidth={1} />
+                <GlowingEffect spread={40} glow={true} disabled={isMobile} proximity={64} inactiveZone={0.01} borderWidth={1} />
                 <div className="card flex flex-col h-full">
                   <div className="mb-6">
                     <h3>Free</h3>
@@ -1620,7 +1643,7 @@ export default function LandingNew() {
 
               {/* Standard Plan */}
               <div className="relative h-full rounded-xl border border-blue-400/30 p-2">
-                <GlowingEffect spread={40} glow={true} disabled={false} proximity={64} inactiveZone={0.01} borderWidth={1} variant="default" />
+                <GlowingEffect spread={40} glow={true} disabled={isMobile} proximity={64} inactiveZone={0.01} borderWidth={1} variant="default" />
                 <div className="panel relative overflow-hidden h-full">
                   <div className="absolute top-4 right-4">
                     <span className="bg-blue-500 text-white text-sm font-semibold px-2 py-1 rounded-lg">
@@ -1677,7 +1700,7 @@ export default function LandingNew() {
 
               {/* Pro Plan */}
               <div className="relative h-full rounded-xl border border-white/10 p-2">
-                <GlowingEffect spread={40} glow={true} disabled={false} proximity={64} inactiveZone={0.01} borderWidth={1} />
+                <GlowingEffect spread={40} glow={true} disabled={isMobile} proximity={64} inactiveZone={0.01} borderWidth={1} />
                 <div className="card h-full">
                   <div className="mb-6">
                     <h3 className="apple-h3">Pro</h3>
