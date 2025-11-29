@@ -14,6 +14,7 @@ import { db } from '../db';
 import { snaptradeConnections, snaptradeUsers, snaptradeAccounts, snaptradeBalances, snaptradePositions, snaptradeOrders, snaptradeActivities, snaptradeOptionHoldings, users, connectedAccounts } from '@shared/schema';
 import { eq, sql, inArray, lt, and } from 'drizzle-orm';
 import { logger } from '@shared/logger';
+import { listAllSnapTradeUsers, authApi } from '../lib/snaptrade';
 
 interface OrphanedConnection {
   id: number;
@@ -265,6 +266,91 @@ async function deleteOrphanedUser(flintUserId: string): Promise<boolean> {
 }
 
 /**
+ * Find and delete SnapTrade API-level orphans
+ * These are users that exist in SnapTrade's system but NOT in our database
+ * This prevents the issue where users show up in SnapTrade dashboard but can't be managed
+ */
+async function cleanupSnapTradeApiOrphans(): Promise<{ found: number; deleted: number; failed: number }> {
+  const results = { found: 0, deleted: 0, failed: 0 };
+  
+  try {
+    // Step 1: Get all users from SnapTrade API
+    console.log('[Orphaned Connections Cleanup] Checking SnapTrade API for orphaned users...');
+    const snaptradeResponse = await listAllSnapTradeUsers();
+    const snaptradeUserIds: string[] = snaptradeResponse.data || [];
+    
+    if (snaptradeUserIds.length === 0) {
+      console.log('[Orphaned Connections Cleanup] No users in SnapTrade API');
+      return results;
+    }
+    
+    // Step 2: Get all users from our database
+    const dbSnaptradeUsers = await db
+      .select({ 
+        snaptradeUserId: snaptradeUsers.snaptradeUserId, 
+        flintUserId: snaptradeUsers.flintUserId 
+      })
+      .from(snaptradeUsers);
+    
+    // Create sets for fast lookup (check both snaptradeUserId and flintUserId)
+    const dbUserIds = new Set(dbSnaptradeUsers.map(u => u.snaptradeUserId));
+    const flintUserIds = new Set(dbSnaptradeUsers.map(u => u.flintUserId));
+    
+    // Step 3: Find orphaned users (in SnapTrade API but not in our DB)
+    const orphanedUserIds = snaptradeUserIds.filter(id => 
+      !dbUserIds.has(id) && !flintUserIds.has(id)
+    );
+    
+    results.found = orphanedUserIds.length;
+    
+    if (orphanedUserIds.length === 0) {
+      console.log('[Orphaned Connections Cleanup] No API-level orphans found');
+      return results;
+    }
+    
+    console.log(`[Orphaned Connections Cleanup] Found ${orphanedUserIds.length} API-level orphans to delete`);
+    
+    // Step 4: Delete each orphaned user from SnapTrade API
+    for (const userId of orphanedUserIds) {
+      try {
+        await authApi.deleteSnapTradeUser({ userId });
+        results.deleted++;
+        console.log(`[Orphaned Connections Cleanup] Deleted API orphan: ${userId}`);
+        
+        logger.logMetric('snaptrade_api_orphan_deleted', {
+          user_id: userId,
+          cleanup_type: 'automatic'
+        });
+      } catch (error: any) {
+        results.failed++;
+        console.error(`[Orphaned Connections Cleanup] Failed to delete API orphan ${userId}:`, error.message);
+        
+        logger.error('Failed to delete SnapTrade API orphan', {
+          metadata: {
+            userId,
+            error: error.message,
+            status: error.response?.status
+          }
+        });
+      }
+    }
+    
+    return results;
+  } catch (error: any) {
+    console.error('[Orphaned Connections Cleanup] Error checking SnapTrade API orphans:', error.message);
+    
+    logger.error('SnapTrade API orphan check failed', {
+      metadata: {
+        error: error.message,
+        stack: error.stack
+      }
+    });
+    
+    return results;
+  }
+}
+
+/**
  * Main cleanup function - runs the entire detection and cleanup process
  */
 async function runCleanup(): Promise<void> {
@@ -331,7 +417,11 @@ async function runCleanup(): Promise<void> {
       }
     }
     
-    // 3. Find stale connections (report only, don't auto-delete yet)
+    // 3. Clean up SnapTrade API-level orphans (users in SnapTrade but not in our DB)
+    const apiOrphanResults = await cleanupSnapTradeApiOrphans();
+    console.log(`[Orphaned Connections Cleanup] API orphan cleanup: found=${apiOrphanResults.found}, deleted=${apiOrphanResults.deleted}, failed=${apiOrphanResults.failed}`);
+    
+    // 4. Find stale connections (report only, don't auto-delete yet)
     const staleConnections = await findStaleConnections();
     console.log(`[Orphaned Connections Cleanup] Found ${staleConnections.length} stale connections (30+ days since sync)`);
     
@@ -350,7 +440,7 @@ async function runCleanup(): Promise<void> {
     }
     
     const duration = Date.now() - startTime;
-    const totalFailures = connectionsFailed + usersFailed;
+    const totalFailures = connectionsFailed + usersFailed + apiOrphanResults.failed;
     const hadFailures = totalFailures > 0;
     
     // Summary log
@@ -359,6 +449,8 @@ async function runCleanup(): Promise<void> {
     console.log(`  - Orphaned connections FAILED: ${connectionsFailed}`);
     console.log(`  - Orphaned users deleted: ${usersDeleted}`);
     console.log(`  - Orphaned users FAILED: ${usersFailed}`);
+    console.log(`  - API orphans deleted: ${apiOrphanResults.deleted}`);
+    console.log(`  - API orphans FAILED: ${apiOrphanResults.failed}`);
     console.log(`  - Stale connections detected: ${staleConnections.length}`);
     
     if (hadFailures) {
@@ -387,6 +479,9 @@ async function runCleanup(): Promise<void> {
       connections_failed: connectionsFailed,
       users_deleted: usersDeleted,
       users_failed: usersFailed,
+      api_orphans_found: apiOrphanResults.found,
+      api_orphans_deleted: apiOrphanResults.deleted,
+      api_orphans_failed: apiOrphanResults.failed,
       stale_connections: staleConnections.length,
       total_failures: totalFailures
     });

@@ -46,9 +46,17 @@ The platform features an Apple 2025 "Liquid Glass" aesthetic, utilizing dark neu
 ### System Design Choices
 -   **Modular Architecture**: Dedicated service layers for encryption, wallet management, trading aggregation, and email delivery.
 -   **Webhook-Driven Data Sync**: Primary data updates (e.g., holdings) are driven by SnapTrade webhooks for real-time, event-driven refresh, with a background polling service as a backup.
--   **Orphaned Connection Cleanup**: Automated service to detect and remove truly orphaned SnapTrade users. Includes cleanup of `connected_accounts` table to ensure disconnected accounts don't appear in dashboard.
+-   **Orphaned Connection Cleanup**: Automated service (runs every 6 hours) to detect and remove orphaned SnapTrade users. Includes:
+    - Database-level orphan cleanup (connections/users without parent records)
+    - **SnapTrade API-level orphan cleanup** (users in SnapTrade that don't exist in our database)
+    - Cleanup of `connected_accounts` table to ensure disconnected accounts don't appear in dashboard
+    - Stale connection detection (30+ days without sync)
 -   **Defensive Holdings Sync**: Background sync checks account existence before syncing, handles FK constraint errors gracefully, and auto-cleans orphaned positions.
--   **Admin Cleanup Endpoint**: `POST /api/admin/users/:userId/cleanup-snaptrade` allows manual cleanup of disconnected SnapTrade accounts for specific users.
+-   **Admin Cleanup Endpoints**:
+    - `POST /api/admin/users/:userId/cleanup-snaptrade` - Manual cleanup for specific user
+    - `GET /api/admin/snaptrade/orphaned-users` - List orphaned SnapTrade users
+    - `DELETE /api/admin/snaptrade/users/:snaptradeUserId` - Delete specific SnapTrade user from API
+    - `POST /api/admin/snaptrade/cleanup-orphaned` - Delete all orphaned SnapTrade users
 -   **Error Monitoring & Logging**: Betterstack Logtail for real-time error tracking, PII redaction, structured logging, and custom metrics.
 
 ## External Dependencies
