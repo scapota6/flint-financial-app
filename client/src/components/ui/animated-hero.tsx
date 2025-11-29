@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, memo } from "react";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { RainbowButton } from "@/components/ui/rainbow-button";
@@ -7,7 +7,7 @@ interface AnimatedHeroProps {
   onGetStartedClick?: () => void;
 }
 
-function AnimatedHero({ onGetStartedClick }: AnimatedHeroProps) {
+const AnimatedHero = memo(function AnimatedHeroInner({ onGetStartedClick }: AnimatedHeroProps) {
   const [titleNumber, setTitleNumber] = useState(0);
   const titles = useMemo(
     () => ["simple", "powerful", "secure", "unified", "smart"],
@@ -32,7 +32,7 @@ function AnimatedHero({ onGetStartedClick }: AnimatedHeroProps) {
           <div className="flex gap-4 flex-col">
             <h1 className="text-4xl sm:text-5xl md:text-7xl max-w-4xl tracking-tighter text-center font-regular">
               <span className="text-white">All your money,</span>
-              <span className="relative flex w-full justify-center overflow-hidden text-center md:pb-4 md:pt-1">
+              <span className="relative flex w-full justify-center overflow-hidden text-center md:pb-4 md:pt-1" style={{ transform: "translateZ(0)" }}>
                 &nbsp;
                 {titles.map((title, index) => (
                   <motion.span
@@ -54,6 +54,10 @@ function AnimatedHero({ onGetStartedClick }: AnimatedHeroProps) {
                             opacity: 0,
                           }
                     }
+                    style={{ 
+                      willChange: titleNumber === index ? "transform, opacity" : "auto",
+                      backfaceVisibility: "hidden"
+                    }}
                   >
                     {title}
                   </motion.span>
@@ -82,6 +86,8 @@ function AnimatedHero({ onGetStartedClick }: AnimatedHeroProps) {
       </div>
     </div>
   );
-}
+});
+
+AnimatedHero.displayName = "AnimatedHero";
 
 export { AnimatedHero };

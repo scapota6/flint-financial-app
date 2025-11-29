@@ -1,12 +1,12 @@
 import { cn } from "@/lib/utils";
-import React, { ReactNode } from "react";
+import React, { ReactNode, memo } from "react";
 
 interface AuroraBackgroundProps extends React.HTMLProps<HTMLDivElement> {
   children: ReactNode;
   showRadialGradient?: boolean;
 }
 
-export const AuroraBackground = ({
+export const AuroraBackground = memo(({
   className,
   children,
   showRadialGradient = true,
@@ -30,16 +30,25 @@ export const AuroraBackground = ({
             background-position: 50% 50%;
             animation: aurora-shift 60s linear infinite;
             filter: blur(10px);
+            will-change: background-position;
+            transform: translateZ(0);
+            backface-visibility: hidden;
           }
           
           @keyframes aurora-shift {
             0% { background-position: 50% 50%, 50% 50%; }
             100% { background-position: 350% 50%, 350% 50%; }
           }
+          
+          @media (prefers-reduced-motion: reduce) {
+            .aurora-bg-layer {
+              animation: none;
+            }
+          }
         }
       `}</style>
       
-      <div className="absolute inset-0 overflow-hidden">
+      <div className="absolute inset-0 overflow-hidden" style={{ transform: 'translateZ(0)' }}>
         <div 
           className={cn(
             "aurora-bg-layer absolute inset-0 opacity-60",
@@ -54,4 +63,6 @@ export const AuroraBackground = ({
       {children}
     </div>
   );
-};
+});
+
+AuroraBackground.displayName = "AuroraBackground";

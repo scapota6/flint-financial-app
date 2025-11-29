@@ -31,10 +31,18 @@ const GlowingEffect = memo(
     const containerRef = useRef<HTMLDivElement>(null);
     const lastPosition = useRef({ x: 0, y: 0 });
     const animationFrameRef = useRef<number>(0);
+    const lastUpdateTime = useRef<number>(0);
+    const THROTTLE_MS = 32; // ~30fps throttle for performance
 
     const handleMove = useCallback(
       (e?: MouseEvent | { x: number; y: number }) => {
         if (!containerRef.current) return;
+
+        const now = performance.now();
+        if (now - lastUpdateTime.current < THROTTLE_MS) {
+          return;
+        }
+        lastUpdateTime.current = now;
 
         if (animationFrameRef.current) {
           cancelAnimationFrame(animationFrameRef.current);
@@ -138,6 +146,9 @@ const GlowingEffect = memo(
               "--active": "0",
               "--glowingeffect-border-width": `${borderWidth}px`,
               "--repeating-conic-gradient-times": "5",
+              transform: "translateZ(0)",
+              willChange: "opacity",
+              backfaceVisibility: "hidden",
             } as React.CSSProperties
           }
           className={cn(
@@ -150,7 +161,7 @@ const GlowingEffect = memo(
             `glowing-effect-container-${variant}`
           )}
         >
-          <div className="glowing-effect-glow rounded-[inherit]" />
+          <div className="glowing-effect-glow rounded-[inherit]" style={{ transform: "translateZ(0)" }} />
         </div>
       </>
     );
