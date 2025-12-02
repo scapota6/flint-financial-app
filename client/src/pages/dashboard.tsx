@@ -12,7 +12,7 @@ import { useToast } from "@/hooks/use-toast";
 import { isUnauthorizedError } from "@/lib/authUtils";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import RealTimeHoldings from '@/components/portfolio/real-time-holdings';
+import RobinhoodHoldings from '@/components/portfolio/robinhood-holdings';
 import RecurringSubscriptions from '@/components/subscriptions/recurring-subscriptions';
 import MoneyMovement from '@/components/money/money-movement';
 import FeatureRequestModal from "@/components/FeatureRequestModal";
@@ -264,10 +264,10 @@ export default function Dashboard() {
         {/* Unified Dashboard - Real API Data Only */}
         <UnifiedDashboard />
 
-        {/* Portfolio Holdings Section */}
+        {/* Portfolio Holdings Section - Robinhood Style */}
         <div className="mt-12">
           <h3 className="apple-h3 mb-6">Portfolio Holdings</h3>
-          <RealTimeHoldings showAccountProvider={true} maxItems={50} />
+          <RobinhoodHoldings onHoldingClick={handleAddToWatchlist} />
         </div>
 
         {/* Recurring Subscriptions Section */}
