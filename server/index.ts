@@ -88,6 +88,11 @@ const app = express();
           'https://whop.com',
           'https://us.i.posthog.com',
           'https://us-assets.i.posthog.com',
+          // MetaMask SDK - for crypto wallet integration
+          'https://metamask-sdk.api.cx.metamask.io',
+          'wss://metamask-sdk.api.cx.metamask.io',
+          'https://*.infura.io',
+          'wss://*.infura.io',
           // add your exact Replit base (scheme+host+port) if you ever call absolute URLs
         ],
         imgSrc: [SELF, 'data:', 'https://cdn.brandfetch.io', 'https://img.logo.dev'],
