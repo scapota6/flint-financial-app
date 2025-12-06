@@ -3,6 +3,7 @@ import { createRoot } from "react-dom/client";
 import App from "./App";
 import { ErrorBoundary } from "./components/error-boundary";
 import { PostHogProvider } from 'posthog-js/react';
+import { MetaMaskProvider } from "@metamask/sdk-react";
 import "./index.css";
 import "./styles/flint-glass.css";
 import "./styles/apple-theme.css";
@@ -14,16 +15,26 @@ const posthogOptions = {
   autocapture: true,
 };
 
-// Render app with error boundary and PostHog provider
+// Render app with error boundary, PostHog provider, and MetaMask provider
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <PostHogProvider 
       apiKey={import.meta.env.VITE_PUBLIC_POSTHOG_KEY || 'phc_ucEZRx85Wj0m5hW2b8BEpf0C9GfwoFzWCXs1R2tUyyJ'} 
       options={posthogOptions}
     >
-      <ErrorBoundary>
-        <App />
-      </ErrorBoundary>
+      <MetaMaskProvider
+        sdkOptions={{
+          dappMetadata: {
+            name: "Flint",
+            url: window.location.href,
+          },
+          infuraAPIKey: import.meta.env.VITE_INFURA_API_KEY,
+        }}
+      >
+        <ErrorBoundary>
+          <App />
+        </ErrorBoundary>
+      </MetaMaskProvider>
     </PostHogProvider>
   </StrictMode>
 );

@@ -14,7 +14,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { TellerAPI } from "@/lib/teller-api";
 import { SnapTradeAPI } from "@/lib/snaptrade-api";
 import { canAccessFeature } from "@/lib/feature-flags";
-import { MetaMaskSDK } from "@metamask/sdk";
+import { useSDK } from "@metamask/sdk-react";
 
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { getCsrfToken } from "@/lib/csrf";
@@ -38,46 +38,30 @@ export default function SimpleConnectButtons({ accounts, userTier, isAdmin }: Si
   const queryClient = useQueryClient();
   const { user } = useAuth();
   
-  // MetaMask state (only for internal testers)
-  const [metamaskAccount, setMetamaskAccount] = useState<string | null>(null);
-  const [isConnectingMetamask, setIsConnectingMetamask] = useState(false);
+  // MetaMask SDK hook (only used by internal testers)
+  const { sdk, connected: metamaskConnected, connecting: isConnectingMetamask, account: metamaskAccount } = useSDK();
   const showMetamask = canAccessFeature('metamask', user?.email);
   
-  // MetaMask connect handler
+  // MetaMask connect handler using SDK hook (opens in-page popup)
   const connectMetamask = useCallback(async () => {
-    setIsConnectingMetamask(true);
     try {
-      const MMSDK = new MetaMaskSDK({
-        dappMetadata: {
-          name: "Flint",
-          url: window.location.href,
-        },
-        ...(import.meta.env.VITE_INFURA_API_KEY && { 
-          infuraAPIKey: import.meta.env.VITE_INFURA_API_KEY 
-        }),
+      await sdk?.connect();
+      toast({
+        title: "Wallet Connected",
+        description: "Your MetaMask wallet is now connected",
       });
-
-      const accounts = await MMSDK.connect();
-      
-      if (accounts && accounts.length > 0) {
-        const connectedAccount = accounts[0];
-        setMetamaskAccount(connectedAccount);
-        toast({
-          title: "Wallet Connected",
-          description: `Connected to ${connectedAccount.slice(0, 6)}...${connectedAccount.slice(-4)}`,
-        });
-      }
     } catch (err: any) {
       console.error("MetaMask connection failed", err);
-      toast({
-        title: "Connection Failed",
-        description: err?.message || "Failed to connect wallet",
-        variant: "destructive",
-      });
-    } finally {
-      setIsConnectingMetamask(false);
+      // Don't show error toast if user cancelled
+      if (!err?.message?.includes('User rejected') && !err?.message?.includes('cancelled')) {
+        toast({
+          title: "Connection Failed",
+          description: err?.message || "Failed to connect wallet",
+          variant: "destructive",
+        });
+      }
     }
-  }, [toast]);
+  }, [sdk, toast]);
   
   // Listen for postMessage from SnapTrade callback
   useEffect(() => {
@@ -462,7 +446,7 @@ export default function SimpleConnectButtons({ accounts, userTier, isAdmin }: Si
                   </div>
                 </div>
                 
-                {metamaskAccount ? (
+                {metamaskConnected && metamaskAccount ? (
                   <div className="flex items-center space-x-2">
                     <Badge className="bg-green-600 text-white">Connected</Badge>
                     <span className="text-gray-400 text-sm font-mono">
