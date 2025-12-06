@@ -39,18 +39,49 @@ export default function SimpleConnectButtons({ accounts, userTier, isAdmin }: Si
   const { user } = useAuth();
   
   // MetaMask SDK hook (only used by internal testers)
-  const { sdk, connected: metamaskConnected, connecting: isConnectingMetamask, account: metamaskAccount } = useSDK();
+  const { sdk, connected: metamaskConnected, connecting: sdkConnecting, account: metamaskAccount } = useSDK();
   const showMetamask = canAccessFeature('metamask', user?.email);
+  const [localConnecting, setLocalConnecting] = useState(false);
   
-  // MetaMask connect handler using SDK hook (opens in-page popup)
+  // Combined connecting state with timeout protection
+  const isConnectingMetamask = localConnecting || sdkConnecting;
+  
+  // MetaMask connect handler with timeout
   const connectMetamask = useCallback(async () => {
+    // Check if MetaMask extension is available
+    const hasExtension = typeof window !== 'undefined' && (window as any).ethereum?.isMetaMask;
+    
+    if (!hasExtension) {
+      // No extension - show helpful message and let SDK show QR/install modal
+      toast({
+        title: "MetaMask Not Detected",
+        description: "Install MetaMask or scan QR code with mobile app",
+      });
+    }
+    
+    setLocalConnecting(true);
+    
+    // Set a timeout to prevent infinite connecting state
+    const timeout = setTimeout(() => {
+      setLocalConnecting(false);
+      if (!metamaskConnected) {
+        toast({
+          title: "Connection Timeout",
+          description: "MetaMask didn't respond. Make sure it's installed and unlocked.",
+          variant: "destructive",
+        });
+      }
+    }, 30000); // 30 second timeout
+    
     try {
       await sdk?.connect();
+      clearTimeout(timeout);
       toast({
         title: "Wallet Connected",
         description: "Your MetaMask wallet is now connected",
       });
     } catch (err: any) {
+      clearTimeout(timeout);
       console.error("MetaMask connection failed", err);
       // Don't show error toast if user cancelled
       if (!err?.message?.includes('User rejected') && !err?.message?.includes('cancelled')) {
@@ -60,8 +91,10 @@ export default function SimpleConnectButtons({ accounts, userTier, isAdmin }: Si
           variant: "destructive",
         });
       }
+    } finally {
+      setLocalConnecting(false);
     }
-  }, [sdk, toast]);
+  }, [sdk, toast, metamaskConnected]);
   
   // Listen for postMessage from SnapTrade callback
   useEffect(() => {
