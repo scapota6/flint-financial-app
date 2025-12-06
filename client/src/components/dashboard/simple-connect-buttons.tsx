@@ -3,15 +3,18 @@
  * Post-connect work = only display/data mapping. No flow/endpoint changes.
  */
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Building, TrendingUp, ExternalLink, AlertCircle } from "lucide-react";
+import { Building, TrendingUp, ExternalLink, AlertCircle, Wallet, Loader2 } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/useAuth";
 import { TellerAPI } from "@/lib/teller-api";
 import { SnapTradeAPI } from "@/lib/snaptrade-api";
+import { canAccessFeature } from "@/lib/feature-flags";
+import { MetaMaskSDK } from "@metamask/sdk";
 
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { getCsrfToken } from "@/lib/csrf";
@@ -33,7 +36,48 @@ interface SimpleConnectButtonsProps {
 export default function SimpleConnectButtons({ accounts, userTier, isAdmin }: SimpleConnectButtonsProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  // Removed loading animations as requested by user
+  const { user } = useAuth();
+  
+  // MetaMask state (only for internal testers)
+  const [metamaskAccount, setMetamaskAccount] = useState<string | null>(null);
+  const [isConnectingMetamask, setIsConnectingMetamask] = useState(false);
+  const showMetamask = canAccessFeature('metamask', user?.email);
+  
+  // MetaMask connect handler
+  const connectMetamask = useCallback(async () => {
+    setIsConnectingMetamask(true);
+    try {
+      const MMSDK = new MetaMaskSDK({
+        dappMetadata: {
+          name: "Flint",
+          url: window.location.href,
+        },
+        ...(import.meta.env.VITE_INFURA_API_KEY && { 
+          infuraAPIKey: import.meta.env.VITE_INFURA_API_KEY 
+        }),
+      });
+
+      const accounts = await MMSDK.connect();
+      
+      if (accounts && accounts.length > 0) {
+        const connectedAccount = accounts[0];
+        setMetamaskAccount(connectedAccount);
+        toast({
+          title: "Wallet Connected",
+          description: `Connected to ${connectedAccount.slice(0, 6)}...${connectedAccount.slice(-4)}`,
+        });
+      }
+    } catch (err: any) {
+      console.error("MetaMask connection failed", err);
+      toast({
+        title: "Connection Failed",
+        description: err?.message || "Failed to connect wallet",
+        variant: "destructive",
+      });
+    } finally {
+      setIsConnectingMetamask(false);
+    }
+  }, [toast]);
   
   // Listen for postMessage from SnapTrade callback
   useEffect(() => {
@@ -313,7 +357,7 @@ export default function SimpleConnectButtons({ accounts, userTier, isAdmin }: Si
           </div>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className={`grid grid-cols-1 ${showMetamask ? 'md:grid-cols-3' : 'md:grid-cols-2'} gap-4`}>
             {/* Bank/Credit Connection */}
             <div className="p-4 bg-gray-800 rounded-lg">
               <div className="flex items-center space-x-3 mb-3">
@@ -395,6 +439,58 @@ export default function SimpleConnectButtons({ accounts, userTier, isAdmin }: Si
                 </Button>
               )}
             </div>
+
+            {/* MetaMask Wallet Connection - Internal Testers Only */}
+            {showMetamask && (
+              <div className="p-4 bg-gray-800 rounded-lg">
+                <div className="flex items-center space-x-3 mb-3">
+                  <div className="w-10 h-10 rounded-full flex items-center justify-center overflow-hidden bg-[#F6851B]">
+                    <img 
+                      src="https://cdn.brandfetch.io/metamask.io" 
+                      alt="MetaMask" 
+                      className="w-6 h-6 object-contain"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).style.display = 'none';
+                        (e.target as HTMLImageElement).nextElementSibling?.classList.remove('hidden');
+                      }}
+                    />
+                    <Wallet className="h-5 w-5 text-white hidden" />
+                  </div>
+                  <div>
+                    <h3 className="text-white font-medium">MetaMask Wallet</h3>
+                    <p className="text-gray-400 text-sm">Connect Crypto Wallet</p>
+                  </div>
+                </div>
+                
+                {metamaskAccount ? (
+                  <div className="flex items-center space-x-2">
+                    <Badge className="bg-green-600 text-white">Connected</Badge>
+                    <span className="text-gray-400 text-sm font-mono">
+                      {metamaskAccount.slice(0, 6)}...{metamaskAccount.slice(-4)}
+                    </span>
+                  </div>
+                ) : (
+                  <Button
+                    onClick={connectMetamask}
+                    disabled={isConnectingMetamask}
+                    className="w-full bg-[#F6851B] hover:bg-[#E2761B] text-white"
+                    data-testid="button-connect-metamask"
+                  >
+                    {isConnectingMetamask ? (
+                      <>
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                        Connecting...
+                      </>
+                    ) : (
+                      <>
+                        <Wallet className="h-4 w-4 mr-2" />
+                        Connect MetaMask
+                      </>
+                    )}
+                  </Button>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Account Limit Warning */}
