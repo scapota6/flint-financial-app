@@ -1,0 +1,110 @@
+metamask-wallet-view.tsx:149  POST https://mainnet.infura.io/v3/291c9aba113d4558bb7db42c7a0cf4cb 429 (Too Many Requests)
+(anonymous) @ @metamask_sdk-react.js?v=7872eb68:10929
+(anonymous) @ @metamask_sdk-react.js?v=7872eb68:2641
+qt @ @metamask_sdk-react.js?v=7872eb68:2620
+(anonymous) @ @metamask_sdk-react.js?v=7872eb68:10924
+(anonymous) @ @metamask_sdk-react.js?v=7872eb68:10935
+(anonymous) @ @metamask_sdk-react.js?v=7872eb68:2641
+qt @ @metamask_sdk-react.js?v=7872eb68:2620
+C2 @ @metamask_sdk-react.js?v=7872eb68:10902
+(anonymous) @ @metamask_sdk-react.js?v=7872eb68:11034
+(anonymous) @ @metamask_sdk-react.js?v=7872eb68:2641
+qt @ @metamask_sdk-react.js?v=7872eb68:2620
+w2.request @ @metamask_sdk-react.js?v=7872eb68:11033
+(anonymous) @ metamask-wallet-view.tsx:149
+await in (anonymous)
+(anonymous) @ metamask-wallet-view.tsx:182
+(anonymous) @ metamask-wallet-view.tsx:188
+commitHookEffectListMount @ chunk-6G2PLVCX.js?v=7872eb68:16915
+commitPassiveMountOnFiber @ chunk-6G2PLVCX.js?v=7872eb68:18156
+commitPassiveMountEffects_complete @ chunk-6G2PLVCX.js?v=7872eb68:18129
+commitPassiveMountEffects_begin @ chunk-6G2PLVCX.js?v=7872eb68:18119
+commitPassiveMountEffects @ chunk-6G2PLVCX.js?v=7872eb68:18109
+flushPassiveEffectsImpl @ chunk-6G2PLVCX.js?v=7872eb68:19490
+flushPassiveEffects @ chunk-6G2PLVCX.js?v=7872eb68:19447
+commitRootImpl @ chunk-6G2PLVCX.js?v=7872eb68:19416
+commitRoot @ chunk-6G2PLVCX.js?v=7872eb68:19277
+performSyncWorkOnRoot @ chunk-6G2PLVCX.js?v=7872eb68:18895
+flushSyncCallbacks @ chunk-6G2PLVCX.js?v=7872eb68:9119
+(anonymous) @ chunk-6G2PLVCX.js?v=7872eb68:18627
+setTimeout
+systemSetTimeoutZero @ @tanstack_react-query.js?v=7872eb68:103
+flush @ @tanstack_react-query.js?v=7872eb68:610
+batch @ @tanstack_react-query.js?v=7872eb68:628
+dispatch_fn @ @tanstack_react-query.js?v=7872eb68:1260
+setData @ @tanstack_react-query.js?v=7872eb68:931
+fetch @ @tanstack_react-query.js?v=7872eb68:1153
+await in fetch
+executeFetch_fn @ @tanstack_react-query.js?v=7872eb68:1639
+onSubscribe @ @tanstack_react-query.js?v=7872eb68:1335
+subscribe @ @tanstack_react-query.js?v=7872eb68:24
+(anonymous) @ @tanstack_react-query.js?v=7872eb68:3298
+subscribeToStore @ chunk-6G2PLVCX.js?v=7872eb68:11984
+commitHookEffectListMount @ chunk-6G2PLVCX.js?v=7872eb68:16915
+commitPassiveMountOnFiber @ chunk-6G2PLVCX.js?v=7872eb68:18156
+commitPassiveMountEffects_complete @ chunk-6G2PLVCX.js?v=7872eb68:18129
+commitPassiveMountEffects_begin @ chunk-6G2PLVCX.js?v=7872eb68:18119
+commitPassiveMountEffects @ chunk-6G2PLVCX.js?v=7872eb68:18109
+flushPassiveEffectsImpl @ chunk-6G2PLVCX.js?v=7872eb68:19490
+flushPassiveEffects @ chunk-6G2PLVCX.js?v=7872eb68:19447
+(anonymous) @ chunk-6G2PLVCX.js?v=7872eb68:19328
+workLoop @ chunk-6G2PLVCX.js?v=7872eb68:197
+flushWork @ chunk-6G2PLVCX.js?v=7872eb68:176
+performWorkUntilDeadline @ chunk-6G2PLVCX.js?v=7872eb68:384Understand this error
+metamask-wallet-view.tsx:149 [initializeMobileProvider: sendRequest()] method=eth_call readOnlyRPCRequest failed: Error: Server responded with a status of 429
+    at @metamask_sdk-react.js?v=7872eb68:10933:27
+    at Generator.next (<anonymous>)
+    at s2 (@metamask_sdk-react.js?v=7872eb68:2623:15)
+(anonymous) @ rrweb-plugin-console-record.js:2447
+(anonymous) @ @metamask_sdk-react.js?v=7872eb68:10938
+a2 @ @metamask_sdk-react.js?v=7872eb68:2630
+Promise.then
+c2 @ @metamask_sdk-react.js?v=7872eb68:2639
+(anonymous) @ @metamask_sdk-react.js?v=7872eb68:2641
+qt @ @metamask_sdk-react.js?v=7872eb68:2620
+C2 @ @metamask_sdk-react.js?v=7872eb68:10902
+(anonymous) @ @metamask_sdk-react.js?v=7872eb68:11034
+(anonymous) @ @metamask_sdk-react.js?v=7872eb68:2641
+qt @ @metamask_sdk-react.js?v=7872eb68:2620
+w2.request @ @metamask_sdk-react.js?v=7872eb68:11033
+(anonymous) @ metamask-wallet-view.tsx:149
+await in (anonymous)
+(anonymous) @ metamask-wallet-view.tsx:182
+(anonymous) @ metamask-wallet-view.tsx:188
+commitHookEffectListMount @ chunk-6G2PLVCX.js?v=7872eb68:16915
+commitPassiveMountOnFiber @ chunk-6G2PLVCX.js?v=7872eb68:18156
+commitPassiveMountEffects_complete @ chunk-6G2PLVCX.js?v=7872eb68:18129
+commitPassiveMountEffects_begin @ chunk-6G2PLVCX.js?v=7872eb68:18119
+commitPassiveMountEffects @ chunk-6G2PLVCX.js?v=7872eb68:18109
+flushPassiveEffectsImpl @ chunk-6G2PLVCX.js?v=7872eb68:19490
+flushPassiveEffects @ chunk-6G2PLVCX.js?v=7872eb68:19447
+commitRootImpl @ chunk-6G2PLVCX.js?v=7872eb68:19416
+commitRoot @ chunk-6G2PLVCX.js?v=7872eb68:19277
+performSyncWorkOnRoot @ chunk-6G2PLVCX.js?v=7872eb68:18895
+flushSyncCallbacks @ chunk-6G2PLVCX.js?v=7872eb68:9119
+(anonymous) @ chunk-6G2PLVCX.js?v=7872eb68:18627
+setTimeout
+systemSetTimeoutZero @ @tanstack_react-query.js?v=7872eb68:103
+flush @ @tanstack_react-query.js?v=7872eb68:610
+batch @ @tanstack_react-query.js?v=7872eb68:628
+dispatch_fn @ @tanstack_react-query.js?v=7872eb68:1260
+setData @ @tanstack_react-query.js?v=7872eb68:931
+fetch @ @tanstack_react-query.js?v=7872eb68:1153
+await in fetch
+executeFetch_fn @ @tanstack_react-query.js?v=7872eb68:1639
+onSubscribe @ @tanstack_react-query.js?v=7872eb68:1335
+subscribe @ @tanstack_react-query.js?v=7872eb68:24
+(anonymous) @ @tanstack_react-query.js?v=7872eb68:3298
+subscribeToStore @ chunk-6G2PLVCX.js?v=7872eb68:11984
+commitHookEffectListMount @ chunk-6G2PLVCX.js?v=7872eb68:16915
+commitPassiveMountOnFiber @ chunk-6G2PLVCX.js?v=7872eb68:18156
+commitPassiveMountEffects_complete @ chunk-6G2PLVCX.js?v=7872eb68:18129
+commitPassiveMountEffects_begin @ chunk-6G2PLVCX.js?v=7872eb68:18119
+commitPassiveMountEffects @ chunk-6G2PLVCX.js?v=7872eb68:18109
+flushPassiveEffectsImpl @ chunk-6G2PLVCX.js?v=7872eb68:19490
+flushPassiveEffects @ chunk-6G2PLVCX.js?v=7872eb68:19447
+(anonymous) @ chunk-6G2PLVCX.js?v=7872eb68:19328
+workLoop @ chunk-6G2PLVCX.js?v=7872eb68:197
+flushWork @ chunk-6G2PLVCX.js?v=7872eb68:176
+performWorkUntilDeadline @ chunk-6G2PLVCX.js?v=7872eb68:384Understand this warning
+metamask-wallet-view.tsx:149  POST https://mainnet.infura.io/v3/291c9aba113d4558bb7db42c7a0cf4cb 429 (Too Many Requests)

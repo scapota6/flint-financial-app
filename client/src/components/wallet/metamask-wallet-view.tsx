@@ -130,7 +130,7 @@ export function MetaMaskWalletView({ compact = false }: MetaMaskWalletViewProps)
     }
   }, [provider, account, toast]);
 
-  // Fetch ERC-20 token balances
+  // Fetch ERC-20 token balances with rate limiting
   const fetchTokenBalances = useCallback(async () => {
     if (!provider || !account || chainId !== '0x1') {
       setTokenBalances([]);
@@ -140,9 +140,19 @@ export function MetaMaskWalletView({ compact = false }: MetaMaskWalletViewProps)
     setIsLoadingTokens(true);
     const balances: TokenBalance[] = [];
     
+    // Helper to add delay between requests to avoid rate limiting
+    const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+    
     try {
-      for (const token of COMMON_TOKENS) {
+      // Only fetch first 3 tokens to reduce API calls and avoid rate limits
+      const tokensToFetch = COMMON_TOKENS.slice(0, 3);
+      
+      for (let i = 0; i < tokensToFetch.length; i++) {
+        const token = tokensToFetch[i];
         try {
+          // Add delay between requests (except first one)
+          if (i > 0) await delay(500);
+          
           const paddedAddress = account.slice(2).toLowerCase().padStart(64, '0');
           const data = BALANCE_OF_SIGNATURE + paddedAddress;
           
@@ -164,8 +174,13 @@ export function MetaMaskWalletView({ compact = false }: MetaMaskWalletViewProps)
               decimals: token.decimals,
             });
           }
-        } catch (tokenError) {
-          console.warn(`Failed to fetch ${token.symbol} balance:`, tokenError);
+        } catch (tokenError: any) {
+          // Silently skip rate-limited requests
+          if (tokenError?.message?.includes('429') || tokenError?.message?.includes('Too Many')) {
+            console.warn(`Rate limited, skipping remaining tokens`);
+            break;
+          }
+          console.warn(`Failed to fetch ${token.symbol} balance`);
         }
       }
       
@@ -177,9 +192,11 @@ export function MetaMaskWalletView({ compact = false }: MetaMaskWalletViewProps)
     }
   }, [provider, account, chainId]);
 
-  // Fetch all balances
+  // Fetch all balances - ETH first, then tokens with delay
   const fetchAllBalances = useCallback(async () => {
-    await Promise.all([fetchBalance(), fetchTokenBalances()]);
+    await fetchBalance();
+    // Small delay before fetching tokens to avoid rate limits
+    setTimeout(() => fetchTokenBalances(), 1000);
   }, [fetchBalance, fetchTokenBalances]);
 
   // Fetch balance on mount and when account changes
