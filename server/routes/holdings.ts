@@ -2,6 +2,9 @@ import { Router } from 'express';
 import { listAccounts, getPositions } from '../lib/snaptrade';
 import { getSnapUser } from '../store/snapUsers';
 import { requireAuth } from '../middleware/jwt-auth';
+import { db } from '../db';
+import { connectedAccounts, holdings as holdingsTable } from '@shared/schema';
+import { eq, and } from 'drizzle-orm';
 
 const router = Router();
 
@@ -18,9 +21,71 @@ router.get('/portfolio-holdings', requireAuth, async (req: any, res) => {
     const rec = await getSnapUser(userId);
     console.log('[Holdings API] SnapTrade user found:', rec ? 'yes' : 'no', 'userId:', rec?.userId);
     
+    // Fetch MetaMask/crypto holdings from database first
+    const cryptoHoldings: any[] = [];
+    try {
+      // Get MetaMask accounts for this user
+      const metamaskAccounts = await db.select()
+        .from(connectedAccounts)
+        .where(and(
+          eq(connectedAccounts.userId, userId),
+          eq(connectedAccounts.provider, 'metamask'),
+          eq(connectedAccounts.status, 'connected')
+        ));
+      
+      // Get holdings for each MetaMask account
+      for (const account of metamaskAccounts) {
+        const accountHoldings = await db.select()
+          .from(holdingsTable)
+          .where(eq(holdingsTable.accountId, account.id));
+        
+        for (const holding of accountHoldings) {
+          const quantity = parseFloat(holding.quantity?.toString() || '0');
+          const currentPrice = parseFloat(holding.currentPrice?.toString() || '0');
+          const avgPrice = parseFloat(holding.averagePrice?.toString() || '0');
+          const marketValue = parseFloat(holding.marketValue?.toString() || '0');
+          const profitLoss = parseFloat(holding.gainLoss?.toString() || '0');
+          const profitLossPct = parseFloat(holding.gainLossPercentage?.toString() || '0');
+          
+          cryptoHoldings.push({
+            accountId: account.id.toString(),
+            accountName: account.accountName,
+            brokerageName: 'MetaMask',
+            symbol: holding.symbol,
+            name: holding.name,
+            quantity,
+            averageCost: avgPrice,
+            currentPrice,
+            currentValue: marketValue,
+            totalCost: avgPrice * quantity,
+            profitLoss,
+            profitLossPercent: profitLossPct,
+            currency: 'USD',
+            type: 'crypto',
+            value: marketValue,
+            shares: quantity,
+            gainLoss: profitLoss,
+            gainLossPercent: profitLossPct,
+          });
+        }
+      }
+      console.log(`[Holdings API] Found ${cryptoHoldings.length} MetaMask holdings`);
+    } catch (cryptoError) {
+      console.error('[Holdings API] Error fetching crypto holdings:', cryptoError);
+    }
+
     if (!rec?.userSecret) {
-      console.log('SnapTrade not connected — returning empty holdings');
-      return res.status(200).json({ holdings: [] });
+      console.log('SnapTrade not connected — returning crypto-only holdings');
+      // Still return crypto holdings even if SnapTrade not connected
+      const summary = {
+        totalValue: cryptoHoldings.reduce((sum, h) => sum + h.currentValue, 0),
+        totalCost: cryptoHoldings.reduce((sum, h) => sum + h.totalCost, 0),
+        totalProfitLoss: cryptoHoldings.reduce((sum, h) => sum + h.profitLoss, 0),
+        totalProfitLossPercent: 0,
+        positionCount: cryptoHoldings.length,
+        accountCount: cryptoHoldings.length > 0 ? 1 : 0,
+      };
+      return res.status(200).json({ holdings: cryptoHoldings, summary, accounts: [] });
     }
 
     try {
@@ -101,25 +166,28 @@ router.get('/portfolio-holdings', requireAuth, async (req: any, res) => {
       );
       
       // Flatten all positions into a single array and filter out empty positions
-      const holdings = positionsArrays.flat().filter(h => h.quantity > 0 && h.symbol !== 'N/A');
+      const snaptradeHoldings = positionsArrays.flat().filter(h => h.quantity > 0 && h.symbol !== 'N/A');
       
-      console.log(`DEBUG: Final holdings count after filtering: ${holdings.length}`);
+      // Combine SnapTrade holdings with crypto holdings
+      const allHoldings = [...snaptradeHoldings, ...cryptoHoldings];
+      
+      console.log(`DEBUG: Final holdings count - SnapTrade: ${snaptradeHoldings.length}, Crypto: ${cryptoHoldings.length}, Total: ${allHoldings.length}`);
       
       // Calculate summary
       const summary = {
-        totalValue: holdings.reduce((sum, h) => sum + h.currentValue, 0),
-        totalCost: holdings.reduce((sum, h) => sum + h.totalCost, 0),
-        totalProfitLoss: holdings.reduce((sum, h) => sum + h.profitLoss, 0),
+        totalValue: allHoldings.reduce((sum, h) => sum + h.currentValue, 0),
+        totalCost: allHoldings.reduce((sum, h) => sum + h.totalCost, 0),
+        totalProfitLoss: allHoldings.reduce((sum, h) => sum + h.profitLoss, 0),
         totalProfitLossPercent: 0,
-        positionCount: holdings.length,
-        accountCount: accounts.length,
+        positionCount: allHoldings.length,
+        accountCount: accounts.length + (cryptoHoldings.length > 0 ? 1 : 0),
       };
       
       if (summary.totalCost > 0) {
         summary.totalProfitLossPercent = (summary.totalProfitLoss / summary.totalCost) * 100;
       }
       
-      return res.json({ holdings, summary, accounts });
+      return res.json({ holdings: allHoldings, summary, accounts });
     } catch (e:any) {
       const body = e?.responseBody || {};
       if (e?.status===401 && String(body?.code)==='1083') {

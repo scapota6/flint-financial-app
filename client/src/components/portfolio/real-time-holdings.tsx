@@ -51,18 +51,20 @@ const RealTimeHoldings = memo(function RealTimeHoldings({
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
-  // Check if user has any SnapTrade investment accounts
+  // Check if user has any investment/crypto accounts
   const hasSnapTradeAccounts = dashboardData?.accounts?.some((acc: any) => acc.provider === 'snaptrade') || false;
+  const hasMetaMaskAccounts = dashboardData?.accounts?.some((acc: any) => acc.provider === 'metamask') || false;
   const isSnapTradeConnected = hasSnapTradeAccounts && dashboardData?.investmentBalance > 0;
+  const hasAnyInvestmentAccounts = isSnapTradeConnected || hasMetaMaskAccounts;
 
-  // Clear holdings cache when SnapTrade disconnects
+  // Clear holdings cache when all investment accounts disconnect
   useEffect(() => {
-    if (dashboardData && !isSnapTradeConnected) {
+    if (dashboardData && !hasAnyInvestmentAccounts) {
       queryClient.removeQueries({ queryKey: ['/api/portfolio-holdings'] });
     }
-  }, [isSnapTradeConnected, dashboardData, queryClient]);
+  }, [hasAnyInvestmentAccounts, dashboardData, queryClient]);
 
-  // Fetch user's holdings with real-time data - only when SnapTrade is connected
+  // Fetch user's holdings with real-time data - when SnapTrade or MetaMask is connected
   const { data: holdingsData = [], isLoading, error } = useQuery<Holding[]>({
     queryKey: ['/api/portfolio-holdings'],
     queryFn: async () => {
@@ -77,8 +79,8 @@ const RealTimeHoldings = memo(function RealTimeHoldings({
       // Handle both direct array and object with holdings property
       return Array.isArray(data) ? data : (data.holdings || []);
     },
-    enabled: isSnapTradeConnected, // Only fetch when SnapTrade is connected
-    refetchInterval: isSnapTradeConnected ? 5000 : false, // Refresh every 5 seconds (positions aggregate)
+    enabled: hasAnyInvestmentAccounts, // Fetch when SnapTrade OR MetaMask is connected
+    refetchInterval: hasAnyInvestmentAccounts ? 5000 : false, // Refresh every 5 seconds
     staleTime: 2000, // Fresh for 2 seconds
     retry: 2, // Only retry twice on failure
     retryDelay: 3000, // Wait 3 seconds between retries
