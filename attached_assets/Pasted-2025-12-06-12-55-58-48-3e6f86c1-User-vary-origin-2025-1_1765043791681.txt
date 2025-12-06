@@ -1,0 +1,147 @@
+2025-12-06 12:55:58.48
+3e6f86c1
+User
+"vary": "origin",
+2025-12-06 12:55:58.48
+3e6f86c1
+User
+"x-ratelimit-limit": "250",
+2025-12-06 12:55:58.48
+3e6f86c1
+User
+}
+2025-12-06 12:55:58.48
+3e6f86c1
+User
+"connection": "keep-alive",
+2025-12-06 12:55:58.48
+3e6f86c1
+User
+at Generator.throw ()
+2025-12-06 12:55:58.48
+3e6f86c1
+User
+"referrer-policy": "same-origin",
+2025-12-06 12:55:58.48
+3e6f86c1
+User
+}
+2025-12-06 12:55:58.48
+3e6f86c1
+User
+statusText: 'Unauthorized',
+2025-12-06 12:55:58.48
+3e6f86c1
+User
+"x-request-id": "0b31eb475d4fe172957ccb9785fc25a4",
+2025-12-06 12:55:58.48
+3e6f86c1
+User
+"cross-origin-opener-policy": "same-origin"
+2025-12-06 12:55:58.48
+3e6f86c1
+User
+code: 'ERR_BAD_REQUEST',
+2025-12-06 12:55:58.48
+3e6f86c1
+User
+status: 401,
+2025-12-06 12:55:58.48
+3e6f86c1
+User
+"content-length": "82",
+2025-12-06 12:55:58.48
+3e6f86c1
+User
+RESPONSE HEADERS:
+2025-12-06 12:55:58.48
+3e6f86c1
+User
+"cross-origin-opener-policy": "same-origin"
+2025-12-06 12:55:58.48
+3e6f86c1
+User
+"x-frame-options": "DENY",
+2025-12-06 12:55:58.48
+3e6f86c1
+User
+at /home/runner/workspace/node_modules/snaptrade-typescript-sdk/dist/common.js:182:31
+2025-12-06 12:55:58.48
+3e6f86c1
+User
+"x-request-id": "0b31eb475d4fe172957ccb9785fc25a4",
+2025-12-06 12:55:58.48
+3e6f86c1
+User
+statusText: 'Unauthorized',
+2025-12-06 12:55:58.48
+3e6f86c1
+User
+}
+2025-12-06 12:55:58.48
+3e6f86c1
+User
+"referrer-policy": "same-origin",
+2025-12-06 12:55:58.48
+3e6f86c1
+User
+at Generator.throw ()
+2025-12-06 12:55:58.48
+3e6f86c1
+User
+at rejected (/home/runner/workspace/node_modules/snaptrade-typescript-sdk/dist/common.js:18:65)
+2025-12-06 12:55:58.48
+3e6f86c1
+User
+"server": "gunicorn",
+2025-12-06 12:55:58.48
+3e6f86c1
+User
+method: 'GET',
+2025-12-06 12:55:58.48
+3e6f86c1
+User
+"x-ratelimit-remaining": "250",
+2025-12-06 12:55:58.48
+3e6f86c1
+User
+Error fetching SnapTrade accounts: SnaptradeError: Request failed with status code 401
+2025-12-06 12:55:58.48
+3e6f86c1
+User
+status_code: 401,
+2025-12-06 12:55:58.48
+3e6f86c1
+User
+"content-type": "application/json",
+2025-12-06 12:55:58.48
+3e6f86c1
+User
+"x-content-type-options": "nosniff",
+2025-12-06 12:55:58.48
+3e6f86c1
+User
+"connection": "keep-alive",
+2025-12-06 12:55:58.48
+3e6f86c1
+User
+"date": "Sat, 06 Dec 2025 17:55:58 GMT",
+2025-12-06 12:55:58.48
+3e6f86c1
+User
+responseBody: {
+2025-12-06 12:55:58.48
+3e6f86c1
+User
+"allow": "GET, HEAD, OPTIONS",
+2025-12-06 12:55:58.48
+3e6f86c1
+User
+}
+2025-12-06 12:55:58.48
+3e6f86c1
+User
+"x-ratelimit-limit": "250",
+2025-12-06 12:55:58.48
+3e6f86c1
+User
