@@ -991,6 +991,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
         snapTradeError = 'fetch_failed';
       }
 
+      // Fetch MetaMask/crypto accounts from connected_accounts table
+      const metamaskAccounts = connectedAccounts.filter(acc => acc.provider === 'metamask' && acc.status === 'connected');
+      for (const metamaskAccount of metamaskAccounts) {
+        const ethBalance = parseFloat(metamaskAccount.balance?.toString() || '0');
+        // TODO: Get real ETH price from market data service
+        const ethPrice = 2200; // Placeholder
+        const ethUsdValue = ethBalance * ethPrice;
+        
+        enrichedAccounts.push({
+          id: metamaskAccount.id,
+          provider: 'metamask',
+          accountName: metamaskAccount.accountName,
+          accountNumber: metamaskAccount.externalAccountId,
+          balance: ethUsdValue,
+          type: 'crypto' as const,
+          institution: 'MetaMask',
+          lastUpdated: metamaskAccount.lastSynced?.toISOString() || new Date().toISOString(),
+          currency: 'USD',
+          needsReconnection: false,
+          holdings: ethBalance,
+          ethBalance: ethBalance,
+        });
+        
+        cryptoValue += ethUsdValue;
+        totalBalance += ethUsdValue;
+      }
+
       // Skip legacy connected accounts - only show accounts we can validate via API
       // This ensures the dashboard only displays accounts that are truly accessible
       
