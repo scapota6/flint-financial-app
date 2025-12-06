@@ -29,6 +29,7 @@ createRoot(document.getElementById("root")!).render(
             url: window.location.href,
           },
           infuraAPIKey: import.meta.env.VITE_INFURA_API_KEY,
+          enableAnalytics: false,
         }}
       >
         <ErrorBoundary>
