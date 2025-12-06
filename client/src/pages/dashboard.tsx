@@ -16,6 +16,7 @@ import RobinhoodHoldings from '@/components/portfolio/robinhood-holdings';
 import RecurringSubscriptions from '@/components/subscriptions/recurring-subscriptions';
 import MoneyMovement from '@/components/money/money-movement';
 import FeatureRequestModal from "@/components/FeatureRequestModal";
+import MetaMaskWalletView from "@/components/wallet/metamask-wallet-view";
 import { MessageSquare } from "lucide-react";
 
 // import TransactionHistory from '@/components/activity/transaction-history';
@@ -287,6 +288,11 @@ export default function Dashboard() {
             userTier={dashboardData?.subscriptionTier || "free"}
             isAdmin={dashboardData?.isAdmin || false}
           />
+        </div>
+
+        {/* MetaMask Wallet - Internal Testers Only */}
+        <div className="mt-8">
+          <MetaMaskWalletView />
         </div>
       </main>
 
