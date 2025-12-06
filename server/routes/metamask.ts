@@ -10,8 +10,6 @@ import { requireAuth } from '../middleware/jwt-auth';
 import { db } from '../db';
 import { connectedAccounts, holdings } from '@shared/schema';
 import { eq, and } from 'drizzle-orm';
-import { logger } from '@shared/logger';
-import { canAccessFeature } from '@shared/feature-flags';
 
 const router = Router();
 
@@ -68,12 +66,7 @@ router.post('/', requireAuth, async (req: any, res) => {
         .where(eq(connectedAccounts.id, existing[0].id))
         .returning();
       
-      logger.info({
-        message: 'MetaMask wallet updated',
-        userId,
-        walletAddress: walletAddress.toLowerCase(),
-        accountId: updated[0].id,
-      });
+      console.log('[MetaMask] Wallet updated:', { userId, walletAddress: walletAddress.toLowerCase(), accountId: updated[0].id });
       
       return res.json({ 
         success: true, 
@@ -100,12 +93,7 @@ router.post('/', requireAuth, async (req: any, res) => {
       lastSynced: new Date(),
     }).returning();
     
-    logger.info({
-      message: 'MetaMask wallet connected',
-      userId,
-      walletAddress: walletAddress.toLowerCase(),
-      accountId: newAccount[0].id,
-    });
+    console.log('[MetaMask] Wallet connected:', { userId, walletAddress: walletAddress.toLowerCase(), accountId: newAccount[0].id });
     
     return res.json({ 
       success: true, 
@@ -114,10 +102,7 @@ router.post('/', requireAuth, async (req: any, res) => {
     });
     
   } catch (error: any) {
-    logger.error({
-      message: 'Failed to connect MetaMask wallet',
-      error: error.message,
-    });
+    console.error('[MetaMask] Failed to connect wallet:', error.message);
     return res.status(500).json({ error: 'Failed to connect wallet' });
   }
 });
@@ -135,7 +120,7 @@ router.post('/sync', requireAuth, async (req: any, res) => {
       return res.status(403).json({ error: 'Not authorized' });
     }
     
-    const { walletAddress, ethBalance, tokens } = req.body;
+    const { walletAddress, ethBalance, ethPrice, tokens } = req.body;
     
     if (!walletAddress) {
       return res.status(400).json({ error: 'Wallet address required' });
@@ -173,9 +158,9 @@ router.post('/sync', requireAuth, async (req: any, res) => {
     // Add ETH holding if balance > 0
     const ethBalanceNum = parseFloat(ethBalance) || 0;
     if (ethBalanceNum > 0) {
-      // TODO: Get real ETH price from market data service
-      const ethPrice = 2200; // Placeholder - should use market data service
-      const marketValue = ethBalanceNum * ethPrice;
+      // Use real ETH price from Ethplorer API (passed by frontend)
+      const ethPriceNum = parseFloat(ethPrice) || 0;
+      const marketValue = ethBalanceNum * ethPriceNum;
       
       await db.insert(holdings).values({
         userId,
@@ -185,42 +170,39 @@ router.post('/sync', requireAuth, async (req: any, res) => {
         assetType: 'crypto',
         quantity: ethBalanceNum.toString(),
         averagePrice: '0', // Cost basis unknown from wallet
-        currentPrice: ethPrice.toString(),
+        currentPrice: ethPriceNum.toString(),
         marketValue: marketValue.toString(),
         gainLoss: '0', // Unknown without cost basis
         gainLossPercentage: '0',
       });
     }
     
-    // Add token holdings
+    // Add token holdings with USD values from Ethplorer
     if (tokens && Array.isArray(tokens)) {
       for (const token of tokens) {
-        if (token.balance && parseFloat(token.balance) > 0) {
-          // TODO: Get real token prices
+        const tokenBalance = parseFloat(token.balance) || 0;
+        if (tokenBalance > 0) {
+          const usdPrice = token.usdPrice || 0;
+          const usdValue = token.usdValue || (tokenBalance * usdPrice);
+          
           await db.insert(holdings).values({
             userId,
             accountId,
             symbol: token.symbol,
             name: token.name || token.symbol,
             assetType: 'crypto',
-            quantity: token.balance,
-            averagePrice: '0',
-            currentPrice: '0',
-            marketValue: '0',
-            gainLoss: '0',
+            quantity: tokenBalance.toString(),
+            averagePrice: '0', // Cost basis unknown
+            currentPrice: usdPrice.toString(),
+            marketValue: usdValue.toString(),
+            gainLoss: '0', // Unknown without cost basis
             gainLossPercentage: '0',
           });
         }
       }
     }
     
-    logger.info({
-      message: 'MetaMask holdings synced',
-      userId,
-      walletAddress: walletAddress.toLowerCase(),
-      ethBalance: ethBalanceNum,
-      tokenCount: tokens?.length || 0,
-    });
+    console.log('[MetaMask] Holdings synced:', { userId, walletAddress: walletAddress.toLowerCase(), ethBalance: ethBalanceNum, tokenCount: tokens?.length || 0 });
     
     return res.json({ 
       success: true, 
@@ -228,10 +210,7 @@ router.post('/sync', requireAuth, async (req: any, res) => {
     });
     
   } catch (error: any) {
-    logger.error({
-      message: 'Failed to sync MetaMask holdings',
-      error: error.message,
-    });
+    console.error('[MetaMask] Failed to sync holdings:', error.message);
     return res.status(500).json({ error: 'Failed to sync holdings' });
   }
 });
@@ -272,11 +251,7 @@ router.delete('/:walletAddress', requireAuth, async (req: any, res) => {
     await db.delete(connectedAccounts)
       .where(eq(connectedAccounts.id, account[0].id));
     
-    logger.info({
-      message: 'MetaMask wallet disconnected',
-      userId,
-      walletAddress: walletAddress.toLowerCase(),
-    });
+    console.log('[MetaMask] Wallet disconnected:', { userId, walletAddress: walletAddress.toLowerCase() });
     
     return res.json({ 
       success: true, 
@@ -284,10 +259,7 @@ router.delete('/:walletAddress', requireAuth, async (req: any, res) => {
     });
     
   } catch (error: any) {
-    logger.error({
-      message: 'Failed to disconnect MetaMask wallet',
-      error: error.message,
-    });
+    console.error('[MetaMask] Failed to disconnect wallet:', error.message);
     return res.status(500).json({ error: 'Failed to disconnect wallet' });
   }
 });

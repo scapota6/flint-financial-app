@@ -40,39 +40,22 @@ const CHAIN_NAMES: Record<string, string> = {
   '0x38': 'BNB Smart Chain',
 };
 
-// Common ERC-20 tokens on Ethereum Mainnet
-const COMMON_TOKENS: { symbol: string; name: string; address: string; decimals: number }[] = [
-  { symbol: 'USDC', name: 'USD Coin', address: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', decimals: 6 },
-  { symbol: 'USDT', name: 'Tether USD', address: '0xdAC17F958D2ee523a2206206994597C13D831ec7', decimals: 6 },
-  { symbol: 'DAI', name: 'Dai Stablecoin', address: '0x6B175474E89094C44Da98b954EedeAC495271d0F', decimals: 18 },
-  { symbol: 'WETH', name: 'Wrapped Ether', address: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2', decimals: 18 },
-  { symbol: 'LINK', name: 'Chainlink', address: '0x514910771AF9Ca656af840dff83E8264EcF986CA', decimals: 18 },
-  { symbol: 'UNI', name: 'Uniswap', address: '0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984', decimals: 18 },
-  { symbol: 'AAVE', name: 'Aave', address: '0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9', decimals: 18 },
-];
-
-// ERC-20 balanceOf function signature
-const BALANCE_OF_SIGNATURE = '0x70a08231';
+// Ethplorer API for discovering all tokens in wallet (free tier)
+const ETHPLORER_API_KEY = 'freekey';
 
 interface TokenBalance {
   symbol: string;
   name: string;
   balance: string;
   decimals: number;
+  usdValue?: number;
+  usdPrice?: number;
 }
 
 // Format wei to ETH
 function formatEther(wei: string): string {
   const etherValue = parseInt(wei, 16) / 1e18;
   return etherValue.toFixed(4);
-}
-
-// Format token balance with decimals
-function formatTokenBalance(balanceHex: string, decimals: number): string {
-  const balance = parseInt(balanceHex, 16) / Math.pow(10, decimals);
-  if (balance === 0) return '0';
-  if (balance < 0.0001) return '<0.0001';
-  return balance.toFixed(4);
 }
 
 // Format address for display
@@ -96,6 +79,7 @@ export function MetaMaskWalletView({ compact = false }: MetaMaskWalletViewProps)
   // Token balances state
   const [tokenBalances, setTokenBalances] = useState<TokenBalance[]>([]);
   const [isLoadingTokens, setIsLoadingTokens] = useState(false);
+  const [ethPrice, setEthPrice] = useState<number>(0);
   
   // Send transaction state
   const [showSendForm, setShowSendForm] = useState(false);
@@ -131,67 +115,72 @@ export function MetaMaskWalletView({ compact = false }: MetaMaskWalletViewProps)
     }
   }, [provider, account, toast]);
 
-  // Fetch ERC-20 token balances with rate limiting
+  // Fetch ALL token balances using Ethplorer API (discovers all tokens in wallet)
   const fetchTokenBalances = useCallback(async () => {
-    if (!provider || !account || chainId !== '0x1') {
+    if (!account || chainId !== '0x1') {
       setTokenBalances([]);
       return;
     }
     
     setIsLoadingTokens(true);
-    const balances: TokenBalance[] = [];
-    
-    // Helper to add delay between requests to avoid rate limiting
-    const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
     
     try {
-      // Only fetch first 3 tokens to reduce API calls and avoid rate limits
-      const tokensToFetch = COMMON_TOKENS.slice(0, 3);
+      // Use Ethplorer to get all tokens in the wallet
+      const response = await fetch(
+        `https://api.ethplorer.io/getAddressInfo/${account}?apiKey=${ETHPLORER_API_KEY}`
+      );
       
-      for (let i = 0; i < tokensToFetch.length; i++) {
-        const token = tokensToFetch[i];
-        try {
-          // Add delay between requests (except first one)
-          if (i > 0) await delay(500);
+      if (!response.ok) {
+        throw new Error('Failed to fetch wallet info from Ethplorer');
+      }
+      
+      const data = await response.json();
+      
+      // Extract ETH price from Ethplorer response
+      if (data.ETH?.price?.rate) {
+        setEthPrice(data.ETH.price.rate);
+        console.log(`[MetaMask] ETH price from Ethplorer: $${data.ETH.price.rate.toFixed(2)}`);
+      }
+      
+      // Process token balances from Ethplorer response
+      const balances: TokenBalance[] = [];
+      
+      if (data.tokens && Array.isArray(data.tokens)) {
+        for (const token of data.tokens) {
+          const decimals = parseInt(token.tokenInfo?.decimals || '18');
+          const rawBalance = parseFloat(token.balance || '0');
+          const actualBalance = rawBalance / Math.pow(10, decimals);
           
-          const paddedAddress = account.slice(2).toLowerCase().padStart(64, '0');
-          const data = BALANCE_OF_SIGNATURE + paddedAddress;
-          
-          const result = await provider.request({
-            method: 'eth_call',
-            params: [{
-              to: token.address,
-              data: data,
-            }, 'latest'],
-          }) as string;
-          
-          const formattedBalance = formatTokenBalance(result, token.decimals);
-          
-          if (formattedBalance !== '0') {
+          // Only include tokens with non-zero balance
+          if (actualBalance > 0) {
+            const usdPrice = token.tokenInfo?.price?.rate || 0;
+            const usdValue = actualBalance * usdPrice;
+            
             balances.push({
-              symbol: token.symbol,
-              name: token.name,
-              balance: formattedBalance,
-              decimals: token.decimals,
+              symbol: token.tokenInfo?.symbol || 'UNKNOWN',
+              name: token.tokenInfo?.name || 'Unknown Token',
+              balance: actualBalance < 0.0001 ? '<0.0001' : actualBalance.toFixed(4),
+              decimals: decimals,
+              usdPrice: usdPrice,
+              usdValue: usdValue,
             });
           }
-        } catch (tokenError: any) {
-          // Silently skip rate-limited requests
-          if (tokenError?.message?.includes('429') || tokenError?.message?.includes('Too Many')) {
-            console.warn(`Rate limited, skipping remaining tokens`);
-            break;
-          }
-          console.warn(`Failed to fetch ${token.symbol} balance`);
         }
       }
       
+      // Sort by USD value (highest first)
+      balances.sort((a, b) => (b.usdValue || 0) - (a.usdValue || 0));
+      
+      console.log(`[MetaMask] Found ${balances.length} tokens in wallet via Ethplorer`);
       setTokenBalances(balances);
+      
     } catch (error) {
-      console.error('Failed to fetch token balances:', error);
+      console.error('Failed to fetch token balances from Ethplorer:', error);
+      setTokenBalances([]);
     } finally {
       setIsLoadingTokens(false);
     }
-  }, [provider, account, chainId]);
+  }, [account, chainId]);
 
   // Fetch all balances - ETH first, then tokens with delay
   const fetchAllBalances = useCallback(async () => {
@@ -249,16 +238,21 @@ export function MetaMaskWalletView({ compact = false }: MetaMaskWalletViewProps)
           body: JSON.stringify({
             walletAddress: account,
             ethBalance: balance,
+            ethPrice: ethPrice,
             tokens: tokenBalances.map(t => ({
               symbol: t.symbol,
               name: t.name,
               balance: t.balance,
+              usdPrice: t.usdPrice || 0,
+              usdValue: t.usdValue || 0,
             })),
           }),
         });
         
         // Invalidate holdings to refresh portfolio
         queryClient.invalidateQueries({ queryKey: ['/api/holdings'] });
+        queryClient.invalidateQueries({ queryKey: ['/api/portfolio-holdings'] });
+        queryClient.invalidateQueries({ queryKey: ['/api/dashboard'] });
         
       } catch (error) {
         console.error('Failed to sync holdings:', error);
@@ -266,10 +260,10 @@ export function MetaMaskWalletView({ compact = false }: MetaMaskWalletViewProps)
     };
     
     // Debounce the sync - only sync after token balances are loaded
-    if (balance !== null && !isLoadingTokens) {
+    if (balance !== null && !isLoadingTokens && ethPrice > 0) {
       syncHoldings();
     }
-  }, [connected, account, balance, tokenBalances, isLoadingTokens, hasAccess]);
+  }, [connected, account, balance, tokenBalances, isLoadingTokens, hasAccess, ethPrice]);
 
   // Copy address to clipboard
   const copyAddress = useCallback(async () => {
