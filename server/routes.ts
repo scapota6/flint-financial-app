@@ -2474,6 +2474,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.use('/api/connections', connectionsRouter.default);
   
+  // Mount MetaMask wallet routes (internal testers only)
+  const metamaskRouter = await import('./routes/metamask');
+  app.use('/api/connections/metamask', metamaskRouter.default);
+  
   const portfolioRouter = await import('./routes/portfolio');
   app.use('/api/portfolio', portfolioRouter.default);
   
