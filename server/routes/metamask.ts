@@ -264,4 +264,47 @@ router.delete('/:walletAddress', requireAuth, async (req: any, res) => {
   }
 });
 
+/**
+ * Proxy Ethplorer API request (avoids CSP issues in browser)
+ * GET /api/connections/metamask/ethplorer/:walletAddress
+ */
+router.get('/ethplorer/:walletAddress', requireAuth, async (req: any, res) => {
+  try {
+    const userId = req.user?.claims?.sub;
+    const userEmail = req.user?.claims?.email;
+    
+    if (!userId || !isInternalTester(userEmail)) {
+      return res.status(403).json({ error: 'Not authorized' });
+    }
+    
+    const { walletAddress } = req.params;
+    
+    if (!walletAddress || !/^0x[a-fA-F0-9]{40}$/.test(walletAddress)) {
+      return res.status(400).json({ error: 'Invalid wallet address' });
+    }
+    
+    // Fetch from Ethplorer API (free tier)
+    const response = await fetch(
+      `https://api.ethplorer.io/getAddressInfo/${walletAddress}?apiKey=freekey`
+    );
+    
+    if (!response.ok) {
+      throw new Error(`Ethplorer API error: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    console.log('[MetaMask] Ethplorer proxy response:', { 
+      wallet: walletAddress.slice(0, 10) + '...', 
+      ethBalance: data.ETH?.balance,
+      tokenCount: data.tokens?.length || 0 
+    });
+    
+    return res.json(data);
+    
+  } catch (error: any) {
+    console.error('[MetaMask] Ethplorer proxy failed:', error.message);
+    return res.status(500).json({ error: 'Failed to fetch wallet data' });
+  }
+});
+
 export default router;

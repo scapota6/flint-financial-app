@@ -40,8 +40,7 @@ const CHAIN_NAMES: Record<string, string> = {
   '0x38': 'BNB Smart Chain',
 };
 
-// Ethplorer API for discovering all tokens in wallet (free tier)
-const ETHPLORER_API_KEY = 'freekey';
+// Ethplorer API is called via backend proxy to avoid CSP issues
 
 interface TokenBalance {
   symbol: string;
@@ -117,7 +116,7 @@ export function MetaMaskWalletView({ compact = false }: MetaMaskWalletViewProps)
     }
   }, [provider, account, toast]);
 
-  // Fetch ALL token balances using Ethplorer API (discovers all tokens in wallet)
+  // Fetch ALL token balances using Ethplorer API via backend proxy (avoids CSP issues)
   const fetchTokenBalances = useCallback(async () => {
     if (!account) {
       setTokenBalances([]);
@@ -126,15 +125,15 @@ export function MetaMaskWalletView({ compact = false }: MetaMaskWalletViewProps)
     
     // Ethplorer only works for Ethereum mainnet, but fetch anyway for the ETH price
     // The API will return mainnet holdings regardless of what chain MetaMask is on
-    console.log('[MetaMask] Fetching tokens from Ethplorer, chainId:', chainId);
+    console.log('[MetaMask] Fetching tokens from Ethplorer via backend, chainId:', chainId);
     
     setIsLoadingTokens(true);
     
     try {
-      // Use Ethplorer to get all tokens in the wallet
-      const response = await fetch(
-        `https://api.ethplorer.io/getAddressInfo/${account}?apiKey=${ETHPLORER_API_KEY}`
-      );
+      // Use backend proxy to avoid CSP issues
+      const response = await fetch(`/api/connections/metamask/ethplorer/${account}`, {
+        credentials: 'include',
+      });
       
       if (!response.ok) {
         throw new Error('Failed to fetch wallet info from Ethplorer');
@@ -197,7 +196,7 @@ export function MetaMaskWalletView({ compact = false }: MetaMaskWalletViewProps)
     }
   }, [account, chainId]);
 
-  // Fetch balance and tokens when wallet connects
+  // Fetch balance and tokens when wallet connects (via backend proxy to avoid CSP issues)
   useEffect(() => {
     const doFetch = async () => {
       if (!account) {
@@ -205,16 +204,16 @@ export function MetaMaskWalletView({ compact = false }: MetaMaskWalletViewProps)
         return;
       }
       
-      console.log('[MetaMask] Wallet connected, fetching from Ethplorer...');
+      console.log('[MetaMask] Wallet connected, fetching from Ethplorer via backend...');
       
-      // Fetch from Ethplorer directly (doesn't require connected state or provider)
+      // Fetch from backend proxy (avoids CSP issues with direct API calls)
       try {
-        const response = await fetch(
-          `https://api.ethplorer.io/getAddressInfo/${account}?apiKey=${ETHPLORER_API_KEY}`
-        );
+        const response = await fetch(`/api/connections/metamask/ethplorer/${account}`, {
+          credentials: 'include',
+        });
         
         if (!response.ok) {
-          throw new Error('Ethplorer API error');
+          throw new Error('Ethplorer proxy error');
         }
         
         const data = await response.json();
