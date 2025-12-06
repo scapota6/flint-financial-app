@@ -64,6 +64,7 @@ The platform features an Apple 2025 "Liquid Glass" aesthetic, utilizing dark neu
 ### Core Integrations
 -   **Teller.io**: Bank account connections, ACH transfers, Zelle-based credit card payments, with mTLS implementation.
 -   **SnapTrade**: Brokerage account connections, real-time quotes, trading functionalities, and webhook-driven data synchronization.
+-   **MetaMask SDK**: Crypto wallet connection for internal testers (scapota@flint-investing.com, seba.rod136@gmail.com). Uses existing `connected_accounts` table with `accountType='crypto'` and `provider='metamask'`. Holdings stored in `holdings` table. Endpoints: POST/DELETE `/api/connections/metamask`, POST `/api/connections/metamask/sync`. Frontend auto-registers wallet on connect and syncs holdings to Portfolio Holdings section.
 -   **Stripe**: Subscription management and payment processing.
 -   **Finnhub**: General financial data.
 -   **Polygon.io**: Real-time market data and live pricing.

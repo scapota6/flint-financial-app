@@ -26,10 +26,10 @@ function isInternalTester(email: string | undefined): boolean {
  * Connect MetaMask wallet
  * POST /api/connections/metamask
  */
-router.post('/', requireAuth, async (req, res) => {
+router.post('/', requireAuth, async (req: any, res) => {
   try {
-    const userId = req.user?.userId;
-    const userEmail = req.user?.email;
+    const userId = req.user?.claims?.sub;
+    const userEmail = req.user?.claims?.email;
     
     if (!userId) {
       return res.status(401).json({ error: 'User not authenticated' });
@@ -126,10 +126,10 @@ router.post('/', requireAuth, async (req, res) => {
  * Sync MetaMask holdings
  * POST /api/connections/metamask/sync
  */
-router.post('/sync', requireAuth, async (req, res) => {
+router.post('/sync', requireAuth, async (req: any, res) => {
   try {
-    const userId = req.user?.userId;
-    const userEmail = req.user?.email;
+    const userId = req.user?.claims?.sub;
+    const userEmail = req.user?.claims?.email;
     
     if (!userId || !isInternalTester(userEmail)) {
       return res.status(403).json({ error: 'Not authorized' });
@@ -240,10 +240,10 @@ router.post('/sync', requireAuth, async (req, res) => {
  * Disconnect MetaMask wallet
  * DELETE /api/connections/metamask/:walletAddress
  */
-router.delete('/:walletAddress', requireAuth, async (req, res) => {
+router.delete('/:walletAddress', requireAuth, async (req: any, res) => {
   try {
-    const userId = req.user?.userId;
-    const userEmail = req.user?.email;
+    const userId = req.user?.claims?.sub;
+    const userEmail = req.user?.claims?.email;
     const { walletAddress } = req.params;
     
     if (!userId || !isInternalTester(userEmail)) {
