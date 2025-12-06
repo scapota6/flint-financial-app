@@ -79,8 +79,9 @@ export function MetaMaskWalletView({ compact = false }: MetaMaskWalletViewProps)
   
   // Token balances state
   const [tokenBalances, setTokenBalances] = useState<TokenBalance[]>([]);
-  const [isLoadingTokens, setIsLoadingTokens] = useState(false);
+  const [isLoadingTokens, setIsLoadingTokens] = useState(true); // Start as true to wait for fetch
   const [ethPrice, setEthPrice] = useState<number>(0);
+  const [ethBalanceMainnet, setEthBalanceMainnet] = useState<number>(0); // ETH balance from Ethplorer (mainnet)
   
   // Send transaction state
   const [showSendForm, setShowSendForm] = useState(false);
@@ -118,10 +119,14 @@ export function MetaMaskWalletView({ compact = false }: MetaMaskWalletViewProps)
 
   // Fetch ALL token balances using Ethplorer API (discovers all tokens in wallet)
   const fetchTokenBalances = useCallback(async () => {
-    if (!account || chainId !== '0x1') {
+    if (!account) {
       setTokenBalances([]);
       return;
     }
+    
+    // Ethplorer only works for Ethereum mainnet, but fetch anyway for the ETH price
+    // The API will return mainnet holdings regardless of what chain MetaMask is on
+    console.log('[MetaMask] Fetching tokens from Ethplorer, chainId:', chainId);
     
     setIsLoadingTokens(true);
     
@@ -136,6 +141,14 @@ export function MetaMaskWalletView({ compact = false }: MetaMaskWalletViewProps)
       }
       
       const data = await response.json();
+      console.log('[MetaMask] Ethplorer response:', data);
+      
+      // Extract ETH balance from Ethplorer (mainnet balance)
+      if (data.ETH?.balance !== undefined) {
+        const ethBalanceFromApi = parseFloat(data.ETH.balance) || 0;
+        setEthBalanceMainnet(ethBalanceFromApi);
+        console.log(`[MetaMask] ETH balance from Ethplorer (mainnet): ${ethBalanceFromApi}`);
+      }
       
       // Extract ETH price from Ethplorer response
       if (data.ETH?.price?.rate) {
@@ -184,19 +197,88 @@ export function MetaMaskWalletView({ compact = false }: MetaMaskWalletViewProps)
     }
   }, [account, chainId]);
 
-  // Fetch all balances - ETH first, then tokens with delay
-  const fetchAllBalances = useCallback(async () => {
-    await fetchBalance();
-    // Small delay before fetching tokens to avoid rate limits
-    setTimeout(() => fetchTokenBalances(), 1000);
-  }, [fetchBalance, fetchTokenBalances]);
-
-  // Fetch balance on mount and when account changes
+  // Fetch balance and tokens when wallet connects
   useEffect(() => {
-    if (connected && account && provider) {
-      fetchAllBalances();
+    const doFetch = async () => {
+      if (!account) {
+        console.log('[MetaMask] No account, skipping fetch');
+        return;
+      }
+      
+      console.log('[MetaMask] Wallet connected, fetching from Ethplorer...');
+      
+      // Fetch from Ethplorer directly (doesn't require connected state or provider)
+      try {
+        const response = await fetch(
+          `https://api.ethplorer.io/getAddressInfo/${account}?apiKey=${ETHPLORER_API_KEY}`
+        );
+        
+        if (!response.ok) {
+          throw new Error('Ethplorer API error');
+        }
+        
+        const data = await response.json();
+        console.log('[MetaMask] Ethplorer data received:', {
+          ethBalance: data.ETH?.balance,
+          ethPrice: data.ETH?.price?.rate,
+          tokenCount: data.tokens?.length || 0,
+        });
+        
+        // Set ETH price and balance
+        if (data.ETH?.price?.rate) {
+          setEthPrice(data.ETH.price.rate);
+        }
+        if (data.ETH?.balance !== undefined) {
+          setEthBalanceMainnet(parseFloat(data.ETH.balance) || 0);
+        }
+        
+        // Process tokens
+        const tokens: TokenBalance[] = [];
+        if (data.tokens && Array.isArray(data.tokens)) {
+          for (const token of data.tokens) {
+            const decimals = parseInt(token.tokenInfo?.decimals || '18');
+            const rawBalance = parseFloat(token.balance || '0');
+            const actualBalance = rawBalance / Math.pow(10, decimals);
+            
+            // Include all tokens with non-zero balance, even without price data
+            if (actualBalance > 0) {
+              const usdPrice = token.tokenInfo?.price?.rate || 0;
+              const usdValue = actualBalance * usdPrice;
+              
+              tokens.push({
+                symbol: token.tokenInfo?.symbol || 'UNKNOWN',
+                name: token.tokenInfo?.name || 'Unknown Token',
+                balance: actualBalance < 0.0001 ? '<0.0001' : actualBalance.toFixed(4),
+                balanceRaw: actualBalance,
+                decimals,
+                usdPrice,
+                usdValue,
+              });
+            }
+          }
+        }
+        
+        tokens.sort((a, b) => (b.usdValue || 0) - (a.usdValue || 0));
+        console.log('[MetaMask] Processed tokens:', tokens.length);
+        setTokenBalances(tokens);
+        
+      } catch (error) {
+        console.error('[MetaMask] Ethplorer fetch failed:', error);
+      } finally {
+        setIsLoadingTokens(false);
+      }
+    };
+    
+    doFetch();
+  }, [account]);
+
+  // Fetch ETH balance when provider connects
+  useEffect(() => {
+    if (provider && account) {
+      console.log('[MetaMask] Provider ready, fetching ETH balance...');
+      fetchBalance();
     }
-  }, [connected, account, provider, fetchAllBalances]);
+  }, [provider, account, fetchBalance]);
 
   // Register wallet with backend when connected
   useEffect(() => {
@@ -232,14 +314,23 @@ export function MetaMaskWalletView({ compact = false }: MetaMaskWalletViewProps)
   // Sync holdings when balances change
   useEffect(() => {
     const syncHoldings = async () => {
-      if (!connected || !account || !hasAccess || balance === null) return;
+      if (!connected || !account || !hasAccess) return;
+      
+      // Use mainnet ETH balance from Ethplorer, not RPC balance (which varies by chain)
+      const ethBalanceToSync = ethBalanceMainnet;
+      
+      console.log('[MetaMask] Syncing holdings:', {
+        ethBalanceMainnet,
+        ethPrice,
+        tokenCount: tokenBalances.length,
+      });
       
       try {
         await apiRequest('/api/connections/metamask/sync', {
           method: 'POST',
           body: JSON.stringify({
             walletAddress: account,
-            ethBalance: balance,
+            ethBalance: ethBalanceToSync.toString(),
             ethPrice: ethPrice,
             tokens: tokenBalances.map(t => ({
               symbol: t.symbol,
@@ -261,12 +352,11 @@ export function MetaMaskWalletView({ compact = false }: MetaMaskWalletViewProps)
       }
     };
     
-    // Debounce the sync - only sync after token balances are loaded
-    // Sync even if ethPrice is 0 (API might not return price)
-    if (balance !== null && !isLoadingTokens) {
+    // Only sync after Ethplorer data is loaded (token balances fetched)
+    if (!isLoadingTokens && ethPrice > 0) {
       syncHoldings();
     }
-  }, [connected, account, balance, tokenBalances, isLoadingTokens, hasAccess, ethPrice]);
+  }, [connected, account, ethBalanceMainnet, tokenBalances, isLoadingTokens, hasAccess, ethPrice]);
 
   // Copy address to clipboard
   const copyAddress = useCallback(async () => {
@@ -330,7 +420,8 @@ export function MetaMaskWalletView({ compact = false }: MetaMaskWalletViewProps)
       setSendAmount('');
       setShowSendForm(false);
       
-      setTimeout(fetchAllBalances, 3000);
+      // Refresh balance after transaction
+      setTimeout(fetchBalance, 3000);
       
     } catch (error: any) {
       console.error('Transaction failed:', error);
@@ -344,7 +435,7 @@ export function MetaMaskWalletView({ compact = false }: MetaMaskWalletViewProps)
     } finally {
       setIsSending(false);
     }
-  }, [provider, account, sendTo, sendAmount, toast, fetchAllBalances]);
+  }, [provider, account, sendTo, sendAmount, toast, fetchBalance]);
 
   // Disconnect wallet
   const disconnect = useCallback(async () => {
@@ -436,7 +527,7 @@ export function MetaMaskWalletView({ compact = false }: MetaMaskWalletViewProps)
           <Button 
             variant="ghost" 
             size="sm" 
-            onClick={fetchAllBalances}
+            onClick={() => { fetchBalance(); fetchTokenBalances(); }}
             disabled={isLoadingBalance || isLoadingTokens}
           >
             <RefreshCw className={`h-4 w-4 ${(isLoadingBalance || isLoadingTokens) ? 'animate-spin' : ''}`} />
@@ -487,46 +578,49 @@ export function MetaMaskWalletView({ compact = false }: MetaMaskWalletViewProps)
           </div>
         </div>
 
-        {/* Token Holdings */}
-        {chainId === '0x1' && (
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <p className="text-xs text-gray-400">Token Holdings</p>
-              {isLoadingTokens && <Loader2 className="h-3 w-3 animate-spin text-gray-400" />}
-            </div>
-            
-            {tokenBalances.length > 0 ? (
-              <div className="space-y-2">
-                {tokenBalances.map((token) => (
-                  <div 
-                    key={token.symbol}
-                    className="flex items-center justify-between p-2 bg-gray-800/50 rounded-lg"
-                    data-testid={`token-${token.symbol.toLowerCase()}`}
-                  >
-                    <div className="flex items-center gap-2">
-                      <div className="w-5 h-5 rounded-full bg-gray-600 flex items-center justify-center">
-                        <span className="text-xs text-white">{token.symbol[0]}</span>
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium text-white">{token.symbol}</p>
-                        <p className="text-xs text-gray-500">{token.name}</p>
-                      </div>
-                    </div>
-                    <span className="text-sm font-mono text-white">{token.balance}</span>
-                  </div>
-                ))}
-              </div>
-            ) : !isLoadingTokens ? (
-              <p className="text-xs text-gray-500 text-center py-2">No token balances found</p>
-            ) : null}
+        {/* Token Holdings (shows mainnet holdings from Ethplorer regardless of connected chain) */}
+        <div className="space-y-2">
+          <div className="flex items-center justify-between">
+            <p className="text-xs text-gray-400">Token Holdings (Mainnet)</p>
+            {isLoadingTokens && <Loader2 className="h-3 w-3 animate-spin text-gray-400" />}
           </div>
-        )}
+          
+          {tokenBalances.length > 0 ? (
+            <div className="space-y-2">
+              {tokenBalances.map((token) => (
+                <div 
+                  key={token.symbol}
+                  className="flex items-center justify-between p-2 bg-gray-800/50 rounded-lg"
+                  data-testid={`token-${token.symbol.toLowerCase()}`}
+                >
+                  <div className="flex items-center gap-2">
+                    <div className="w-5 h-5 rounded-full bg-gray-600 flex items-center justify-center">
+                      <span className="text-xs text-white">{token.symbol[0]}</span>
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-white">{token.symbol}</p>
+                      <p className="text-xs text-gray-500">{token.name}</p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <span className="text-sm font-mono text-white">{token.balance}</span>
+                    {token.usdValue && token.usdValue > 0 && (
+                      <p className="text-xs text-gray-400">${token.usdValue.toFixed(2)}</p>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : !isLoadingTokens ? (
+            <p className="text-xs text-gray-500 text-center py-2">No token balances found</p>
+          ) : null}
+        </div>
 
         {chainId !== '0x1' && (
-          <div className="p-2 bg-yellow-900/20 border border-yellow-600/30 rounded-lg">
-            <p className="text-xs text-yellow-500 flex items-center gap-1">
+          <div className="p-2 bg-blue-900/20 border border-blue-600/30 rounded-lg">
+            <p className="text-xs text-blue-400 flex items-center gap-1">
               <AlertCircle className="h-3 w-3" />
-              Token balances only available on Ethereum Mainnet
+              Showing Ethereum Mainnet holdings. Switch to Mainnet for live balances.
             </p>
           </div>
         )}
