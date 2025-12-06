@@ -4,8 +4,9 @@
  */
 
 import { Router } from 'express';
-import { registerUser, createLoginUrl } from '../lib/snaptrade';
-import { getSnapUser, saveSnapUser } from '../store/snapUsers';
+import { registerUser, createLoginUrl, deleteSnapTradeUser } from '../lib/snaptrade';
+import { getSnapUser, saveSnapUser, deleteSnapUser } from '../store/snapUsers';
+import { logger } from '@shared/logger';
 
 const r = Router();
 
@@ -61,11 +62,99 @@ r.post('/connections/snaptrade/register', async (req, res) => {
     }
 
     // Create Connection Portal URL (expires ~5 min)
-    const url = await createLoginUrl({
-      userId: rec.userId,
-      userSecret: rec.userSecret,
-      redirect: process.env.SNAPTRADE_REDIRECT_URI!,
-    });
+    // With auto-recovery for invalid userSecret (code 1083)
+    let url: string | null = null;
+    try {
+      url = await createLoginUrl({
+        userId: rec.userId,
+        userSecret: rec.userSecret,
+        redirect: process.env.SNAPTRADE_REDIRECT_URI!,
+      });
+    } catch (loginError: any) {
+      // Check for "Invalid userID or userSecret" error (code 1083)
+      const errorCode = loginError?.responseBody?.code || loginError?.code;
+      const isInvalidCredentials = errorCode === '1083' || errorCode === 1083 || 
+        loginError?.responseBody?.detail?.includes('Invalid userID or userSecret');
+      
+      if (isInvalidCredentials) {
+        // Store the SnapTrade userId before we delete the record
+        // Note: rec.userId comes from getSnapUser which returns snaptradeUserId from database
+        // This is different from the Flint userId which was passed in the request
+        const snaptradeUserId = rec.userId;
+        
+        // Defensive validation: ensure we have distinct IDs to prevent accidental deletion
+        if (!snaptradeUserId) {
+          console.error('[SnapTrade] Cannot auto-recover: no snaptradeUserId found in stored record');
+          throw new Error('Auto-recovery failed: missing SnapTrade user ID');
+        }
+        
+        console.log('[SnapTrade] Detected stale userSecret (code 1083), auto-recovering...', {
+          flintUserId: userId,
+          snaptradeUserId: snaptradeUserId,
+          idsAreSame: userId === snaptradeUserId
+        });
+        logger.logMetric('snaptrade_stale_secret_detected', { 
+          flint_user_id: userId,
+          snaptrade_user_id: snaptradeUserId,
+          ids_match: userId === snaptradeUserId
+        });
+        
+        try {
+          // Step 1: Delete from local database (uses Flint userId)
+          await deleteSnapUser(userId);
+          console.log('[SnapTrade] Deleted stale local record for Flint user:', userId);
+          
+          // Step 2: Try to delete from SnapTrade API (uses SnapTrade userId)
+          if (snaptradeUserId) {
+            try {
+              await deleteSnapTradeUser(snaptradeUserId);
+              console.log('[SnapTrade] Deleted from SnapTrade API (snaptradeUserId):', snaptradeUserId);
+            } catch (deleteApiError: any) {
+              // Ignore if user doesn't exist in SnapTrade (expected in some cases)
+              console.log('[SnapTrade] Note: User may not exist in SnapTrade API (expected):', deleteApiError?.message);
+            }
+          } else {
+            console.log('[SnapTrade] No snaptradeUserId found, skipping API deletion');
+          }
+          
+          // Step 3: Re-register with fresh credentials
+          const freshUser = await registerUser(userId);
+          if (!freshUser?.data?.userSecret) {
+            throw new Error('SnapTrade did not return userSecret after re-registration');
+          }
+          
+          rec = { 
+            userId: freshUser.data.userId as string, 
+            userSecret: freshUser.data.userSecret as string 
+          };
+          await saveSnapUser({ ...rec, flintUserId: userId });
+          console.log('[SnapTrade] Successfully re-registered with fresh userSecret len:', rec.userSecret.length);
+          
+          logger.logMetric('snaptrade_stale_secret_recovered', { user_id: userId });
+          
+          // Step 4: Create login URL with fresh credentials
+          url = await createLoginUrl({
+            userId: rec.userId,
+            userSecret: rec.userSecret,
+            redirect: process.env.SNAPTRADE_REDIRECT_URI!,
+          });
+        } catch (recoveryError: any) {
+          console.error('[SnapTrade] Auto-recovery failed:', recoveryError?.message || recoveryError);
+          logger.error('SnapTrade auto-recovery failed', {
+            metadata: {
+              userId,
+              error: recoveryError?.message,
+              originalError: loginError?.message
+            }
+          });
+          throw new Error(`Auto-recovery failed: ${recoveryError?.message || 'Unknown error'}`);
+        }
+      } else {
+        // Not a stale credentials error, rethrow
+        throw loginError;
+      }
+    }
+    
     if (!url) throw new Error('No Connection Portal URL returned');
 
     return res.status(200).json({ connect: { url } });
