@@ -1,0 +1,372 @@
+# All endpoints
+
+The following lists all the network endpoints supported by Infura.
+
+Ensure that you replace `<YOUR-API-KEY>` with an API key from your [MetaMask Developer dashboard](https://docs.metamask.io/developer-tools/dashboard/).
+
+
+## Arbitrum​
+
+| Network | Description | URL |
+| --- | --- | --- |
+| Mainnet | JSON-RPC over HTTPS | https://arbitrum-mainnet.infura.io/v3/<YOUR-API-KEY> |
+| Mainnet | JSON-RPC over WebSocket | wss://arbitrum-mainnet.io/ws/v3/<YOUR-API-KEY> |
+| Testnet (Sepolia) | JSON-RPC over HTTPS | https://arbitrum-sepolia.infura.io/v3/<YOUR-API-KEY> |
+| Testnet (Sepolia) | JSON-RPC over WebSocket | wss://arbitrum-sepolia.infura.io/ws/v3/<YOUR-API-KEY> |
+
+
+## Avalanche (C-Chain)​
+
+| Network | Description | URL |
+| --- | --- | --- |
+| Mainnet | JSON-RPC over HTTPS | https://avalanche-mainnet.infura.io/v3/<YOUR-API-KEY> |
+| Mainnet | JSON-RPC over WebSocket | wss://avalanche-mainnet.io/ws/v3/<YOUR-API-KEY> |
+| Testnet (Fuji) | JSON-RPC over HTTPS | https://avalanche-fuji.infura.io/v3/<YOUR-API-KEY> |
+| Testnet (Fuji) | JSON-RPC over WebSocket | wss://avalanche-fuji.infura.io/ws/v3/<YOUR-API-KEY> |
+
+
+## Base​
+
+| Network | Transport type | URL |
+| --- | --- | --- |
+| Mainnet | JSON-RPC over HTTPS | https://base-mainnet.infura.io/v3/<YOUR-API-KEY> |
+| Mainnet | JSON-RPC over WebSocket | wss://base-mainnet.infura.io/ws/v3/<YOUR-API-KEY> |
+| Testnet (Sepolia) | JSON-RPC over HTTPS | https://base-sepolia.infura.io/v3/<YOUR-API-KEY> |
+| Testnet (Sepolia) | JSON-RPC over WebSocket | wss://base-sepolia.infura.io/ws/v3/<YOUR-API-KEY> |
+
+
+## Blast​
+
+| Network | Description | URL |
+| --- | --- | --- |
+| Mainnet | JSON-RPC over HTTPS | https://blast-mainnet.infura.io/v3/<YOUR-API-KEY> |
+| Mainnet | JSON-RPC over WebSocket | wss://blast-mainnet.infura.io/ws/v3/<YOUR-API-KEY> |
+| Testnet (Sepolia) | JSON-RPC over HTTPS | https://blast-sepolia.infura.io/v3/<YOUR-API-KEY> |
+
+
+## Binance Smart Chain​
+
+| Network | Transport type | URL |
+| --- | --- | --- |
+| Mainnet | JSON-RPC over HTTPS | https://bsc-mainnet.infura.io/v3/<YOUR-API-KEY> |
+| Mainnet | JSON-RPC over WebSocket | wss://bsc-mainnet.infura.io/ws/v3/<YOUR-API-KEY> |
+| Testnet | JSON-RPC over HTTPS | https://bsc-testnet.infura.io/v3/<YOUR-API-KEY> |
+
+
+## Celo​
+
+As communicated by the
+[Celo Foundation](https://forum.celo.org/t/introducing-celo-sepolia-celo-s-new-ethereum-l2-testnet/12155)
+and Ethereum Foundation, the Holesky testnet has reached end of life as of September 30th, 2025. Celo Alfajores builds upon Holesky, which means it has also reached its end of life.
+
+| Network | Description | URL |
+| --- | --- | --- |
+| Mainnet | JSON-RPC over HTTPS | https://celo-mainnet.infura.io/v3/<YOUR-API-KEY> |
+| Mainnet | JSON-RPC over WebSocket | wss://celo-mainnet.infura.io/ws/v3/<YOUR-API-KEY> |
+| Testnet (Alfajores) | JSON-RPC over HTTPS | https://celo-alfajores.infura.io/v3/<YOUR-API-KEY> |
+| Testnet (Alfajores) | JSON-RPC over WebSocket | wss://celo-alfajores.infura.io/ws/v3/<YOUR-API-KEY> |
+
+
+## Ethereum​
+
+| Network | Description | URL |
+| --- | --- | --- |
+| Mainnet | JSON-RPC over HTTPS | https://mainnet.infura.io/v3/<YOUR-API-KEY> |
+| Mainnet | JSON-RPC over WebSocket | wss://mainnet.infura.io/ws/v3/<YOUR-API-KEY> |
+| Testnet (Hoodi) | JSON-RPC over HTTPS | https://hoodi.infura.io/v3/<YOUR-API-KEY> |
+| Testnet (Hoodi) | JSON-RPC over WebSocket | wss://hoodi.infura.io/ws/v3/<YOUR-API-KEY> |
+| Testnet (Sepolia) | JSON-RPC over HTTPS | https://sepolia.infura.io/v3/<YOUR-API-KEY> |
+| Testnet (Sepolia) | JSON-RPC over WebSocket | wss://sepolia.infura.io/ws/v3/<YOUR-API-KEY> |
+
+
+## Hemi​
+
+| Network | Description | URL |
+| --- | --- | --- |
+| Mainnet | JSON-RPC over HTTPS | https://hemi-mainnet.infura.io/v3/<YOUR-API-KEY> |
+| Testnet | JSON-RPC over HTTPS | https://hemi-testnet.infura.io/v3/<YOUR-API-KEY> |
+
+
+## IPFS​
+
+New IPFS key creation is disabled for all users. Only IPFS keys that were active in late 2024 continue
+to have access to the IPFS network.
+
+| Network | Description | URL |
+| --- | --- | --- |
+| Mainnet | HTTP API | https://ipfs.infura.io:5001 |
+
+Include your authentication details when [making IPFS requests](https://docs.metamask.io/services/reference/ipfs/quickstart/).
+
+
+## Linea​
+
+| Network | Description | URL |
+| --- | --- | --- |
+| Mainnet | JSON-RPC over HTTPS | https://linea-mainnet.infura.io/v3/<YOUR-API-KEY> |
+| Mainnet | JSON-RPC over WebSocket | wss://linea-mainnet.infura.io/ws/v3/<YOUR-API-KEY> |
+| Testnet (Sepolia) | JSON-RPC over HTTPS | https://linea-sepolia.infura.io/v3/<YOUR-API-KEY> |
+| Testnet (Sepolia) | JSON-RPC over WebSocket | wss://linea-sepolia.infura.io/ws/v3/<YOUR-API-KEY> |
+
+
+## Mantle​
+
+| Network | Description | URL |
+| --- | --- | --- |
+| Mainnet | JSON-RPC over HTTPS | https://mantle-mainnet.infura.io/v3/<YOUR-API-KEY> |
+| Mainnet | JSON-RPC over WebSocket | wss://mantle-mainnet.infura.io/ws/v3/<YOUR-API-KEY> |
+| Testnet (Sepolia) | JSON-RPC over HTTPS | https://mantle-sepolia.infura.io/v3/<YOUR-API-KEY> |
+
+
+## Monad​
+
+| Network | Description | URL |
+| --- | --- | --- |
+| Mainnet | JSON-RPC over HTTPS | https://monad-mainnet.infura.io/v3/<YOUR-API-KEY> |
+| Testnet | JSON-RPC over HTTPS | https://monad-testnet.infura.io/v3/<YOUR-API-KEY> |
+
+
+## opBNB​
+
+| Network | Transport type | URL |
+| --- | --- | --- |
+| Mainnet | JSON-RPC over HTTPS | https://opbnb-mainnet.infura.io/v3/<YOUR-API-KEY> |
+| Mainnet | JSON-RPC over WebSocket | wss://opbnb-mainnet.infura.io/ws/v3/<YOUR-API-KEY> |
+| Testnet | JSON-RPC over HTTPS | https://opbnb-testnet.infura.io/v3/<YOUR-API-KEY> |
+
+
+## Optimism​
+
+| Network | Transport type | URL |
+| --- | --- | --- |
+| Mainnet | JSON-RPC over HTTPS | https://optimism-mainnet.infura.io/v3/<YOUR-API-KEY> |
+| Mainnet | JSON-RPC over WebSocket | wss://optimism-mainnet.infura.io/ws/v3/<YOUR-API-KEY> |
+| Testnet (Sepolia) | JSON-RPC over HTTPS | https://optimism-sepolia.infura.io/v3/<YOUR-API-KEY> |
+| Testnet (Sepolia) | JSON-RPC over WebSocket | wss://optimism-sepolia.infura.io/ws/v3/<YOUR-API-KEY> |
+
+
+## Palm​
+
+| Network | Description | URL |
+| --- | --- | --- |
+| Mainnet | JSON-RPC over HTTPS | https://palm-mainnet.infura.io/v3/<YOUR-API-KEY> |
+| Testnet | JSON-RPC over HTTPS | https://palm-testnet.infura.io/v3/<YOUR-API-KEY> |
+
+
+## Polygon PoS​
+
+| Network | Description | URL |
+| --- | --- | --- |
+| Mainnet | JSON-RPC over HTTPS | https://polygon-mainnet.infura.io/v3/<YOUR-API-KEY> |
+| Mainnet | JSON-RPC over WebSocket | wss://polygon-mainnet.infura.io/ws/v3/<YOUR-API-KEY> |
+| Testnet (Amoy) | JSON-RPC over HTTPS | https://polygon-amoy.infura.io/v3/<YOUR-API-KEY> |
+| Testnet (Amoy) | JSON-RPC over WebSocket | wss://polygon-amoy.infura.io/ws/v3/<YOUR-API-KEY> |
+
+
+## Scroll​
+
+| Network | Description | URL |
+| --- | --- | --- |
+| Mainnet | JSON-RPC over HTTPS | https://scroll-mainnet.infura.io/v3/<YOUR-API-KEY> |
+| Sepolia | JSON-RPC over HTTPS | https://scroll-sepolia.infura.io/v3/<YOUR-API-KEY> |
+
+
+## Sei​
+
+| Network | Description | URL |
+| --- | --- | --- |
+| Mainnet | JSON-RPC over HTTPS | https://sei-mainnet.infura.io/v3/<YOUR-API-KEY> |
+| Testnet | JSON-RPC over HTTPS | https://sei-testnet.infura.io/v3/<YOUR-API-KEY> |
+
+
+## Solana​
+
+Solana access is currently limited to select customers. [Contact us](https://www.infura.io/contact)
+if you're interested in accessing these methods.
+
+| Network | Description | URL |
+| --- | --- | --- |
+| Mainnet | JSON-RPC over HTTPS | https://solana-mainnet.infura.io/v3/<YOUR-API-KEY> |
+| Testnet (Devnet) | JSON-RPC over HTTPS | https://solana-devnet.infura.io/v3/<YOUR-API-KEY> |
+
+
+## Starknet​
+
+| Network | Description | URL |
+| --- | --- | --- |
+| Mainnet | JSON-RPC over HTTPS | https://starknet-mainnet.infura.io/v3/<YOUR-API-KEY> |
+| Testnet (Sepolia) | JSON-RPC over HTTPS | https://starknet-sepolia.infura.io/v3/<YOUR-API-KEY> |
+
+
+## Swellchain​
+
+| Network | Description | URL |
+| --- | --- | --- |
+| Mainnet | JSON-RPC over HTTPS | https://swellchain-mainnet.infura.io/v3/<YOUR-API-KEY> |
+| Testnet | JSON-RPC over HTTPS | https://swellchain-testnet.infura.io/v3/<YOUR-API-KEY> |
+
+
+## Unichain​
+
+| Network | Description | URL |
+| --- | --- | --- |
+| Mainnet | JSON-RPC over HTTPS | https://unichain-mainnet.infura.io/v3/<YOUR-API-KEY> |
+| Sepolia | JSON-RPC over HTTPS | https://unichain-sepolia.infura.io/v3/<YOUR-API-KEY> |
+
+
+## ZKsync Era​
+
+ZKsync Era WebSockets are supported on Mainnet only.
+
+| Network | Description | URL |
+| --- | --- | --- |
+| Mainnet | JSON-RPC over HTTPS | https://zksync-mainnet.infura.io/v3/<YOUR-API-KEY> |
+| Mainnet | JSON-RPC over WebSocket | wss://zksync-mainnet.infura.io/ws/v3/<YOUR-API-KEY> |
+| Testnet (Sepolia) | JSON-RPC over HTTPS | https://zksync-sepolia.infura.io/v3/<YOUR-API-KEY> |
+
+
+## Gas API​
+
+The [Gas REST API](https://docs.metamask.io/services/reference/gas-api/) supports multiple networks.
+
+Specify the chain ID in your request to interact with the relevant network.
+
+| Network | Chain ID |
+| --- | --- |
+| ETHEREUM | 1 |
+| OPTIMISM | 10 |
+| CRONOS | 25 |
+| LUKSO | 42 |
+| XDC | 50 |
+| BNB | 56 |
+| BNB TESTNET | 97 |
+| GNOSIS | 100 |
+| UNICHAIN | 130 |
+| POLYGON | 137 |
+| MONAD | 143 |
+| SONIC | 146 |
+| OMNI | 166 |
+| MANTA | 169 |
+| MINT | 185 |
+| OPBNB | 204 |
+| MIND | 228 |
+| LENS | 232 |
+| FANTOM | 250 |
+| FRAXTAL | 252 |
+| ORDERLY | 291 |
+| FILECOIN | 314 |
+| ZKSYNC | 324 |
+| PULSECHAIN | 369 |
+| REDSTONE | 690 |
+| MATCHAIN | 698 |
+| FLOW | 747 |
+| RIVALZ | 752 |
+| LYRA | 957 |
+| HYPEREVM | 999 |
+| LISK | 1135 |
+| UNICHAIN SEPOLIA | 1301 |
+| SEI | 1329 |
+| GRAVITY | 1625 |
+| REYA | 1729 |
+| INJECTIVE | 1776 |
+| PLAYBLOCK | 1829 |
+| SONEIUM | 1868 |
+| LYDIA | 1989 |
+| SANKO | 1996 |
+| EDGELESS | 2026 |
+| GAME 7 | 2187 |
+| DOGELON | 2420 |
+| INEVM | 2525 |
+| ABSTRACT | 2741 |
+| HYTOPIA | 2911 |
+| BOTANIX TESTNET | 3636 |
+| BOTANIX | 3637 |
+| COMETH | 4078 |
+| SX ROLLUP | 4162 |
+| MEGAETH MAINNET | 4326 |
+| TRUMPCHAIN | 4547 |
+| API 3 | 4913 |
+| MANTLE | 5000 |
+| HAM | 5112 |
+| DUCK | 5545 |
+| OPBNB TESTNET | 5611 |
+| MEGAETH TESTNET | 6342 |
+| MEGAETH TESTNET V 2 | 6343 |
+| ZETACHAIN | 7000 |
+| ZETACHAIN TESTNET | 7001 |
+| KINTO | 7887 |
+| BASE | 8453 |
+| CLINK | 8818 |
+| PLASMA | 9745 |
+| MONAD TESTNET | 10143 |
+| HUDDLE 01 | 12323 |
+| IMMUTABLE | 13371 |
+| IMMUTABLE TESTNET | 13473 |
+| ETHEREUM HOLESKY | 17000 |
+| ONCHAIN POINTS | 17071 |
+| EVERCLEAR | 25327 |
+| APECHAIN | 33139 |
+| SLINGSHOTDAO | 33401 |
+| MODE | 34443 |
+| ALEPH ZERO | 41455 |
+| EDUCHAIN | 41923 |
+| ARBITRUM ONE | 42161 |
+| ARBITRUM NOVA | 42170 |
+| HEMI | 43111 |
+| AVALANCHE | 43114 |
+| BLESSNET | 45513 |
+| CITRONUS | 50000 |
+| CHAINBOUNTY | 51828 |
+| DODO | 53456 |
+| SUPERPOSITION | 55244 |
+| LINEA SEPOLIA | 59141 |
+| LINEA | 59144 |
+| PROOF OF PLAY APEX | 70700 |
+| PROOF OF PLAY BOSS | 70701 |
+| FUSION | 75978 |
+| POLYGON MUMBAI | 80001 |
+| POLYGON AMOY | 80002 |
+| BERACHAIN | 80094 |
+| GEO GENESIS | 80451 |
+| ONYX | 80888 |
+| FORTA | 80931 |
+| BLAST | 81457 |
+| VEMP | 82614 |
+| BASE SEPOLIA TESTNET | 84532 |
+| UNITE | 88899 |
+| HENEZ | 91111 |
+| MIRACLE | 92278 |
+| LUMITERRA | 94168 |
+| IDEX | 94524 |
+| PLUME | 98866 |
+| REAL | 111188 |
+| EVENTUM | 161803 |
+| TAIKO | 167000 |
+| TAIKO KATLA | 167008 |
+| TAIKO HEKLA | 167009 |
+| BLOCKFIT | 202424 |
+| CHEESE | 383353 |
+| LAYER K | 529375 |
+| SCROLL SEPOLIA | 534351 |
+| SCROLL | 534352 |
+| HOODI | 560048 |
+| XAI | 660279 |
+| CONWAI | 668668 |
+| KATANA | 747474 |
+| WINR | 777777 |
+| LOGX | 936369 |
+| SCOREKOUNT | 1000080 |
+| ZORA | 7777777 |
+| FLUENCE | 9999999 |
+| SPOTLIGHT | 10058111 |
+| ALIENX | 10241024 |
+| ALIENX TESTNET | 10241025 |
+| ETHEREUM SEPOLIA | 11155111 |
+| OPTIMISM SEPOLIA | 11155420 |
+| DERI | 20231119 |
+| CORN | 21000000 |
+| BLAST SEPOLIA | 168587773 |
+| DEGEN CHAIN | 666666666 |
+| ANXIENT 8 | 888888888 |
+| RARIBLE | 1380012617 |
+

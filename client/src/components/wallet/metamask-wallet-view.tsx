@@ -47,6 +47,7 @@ interface TokenBalance {
   symbol: string;
   name: string;
   balance: string;
+  balanceRaw: number; // Numeric balance for backend sync
   decimals: number;
   usdValue?: number;
   usdPrice?: number;
@@ -160,6 +161,7 @@ export function MetaMaskWalletView({ compact = false }: MetaMaskWalletViewProps)
               symbol: token.tokenInfo?.symbol || 'UNKNOWN',
               name: token.tokenInfo?.name || 'Unknown Token',
               balance: actualBalance < 0.0001 ? '<0.0001' : actualBalance.toFixed(4),
+              balanceRaw: actualBalance, // Preserve numeric value for backend
               decimals: decimals,
               usdPrice: usdPrice,
               usdValue: usdValue,
@@ -242,7 +244,7 @@ export function MetaMaskWalletView({ compact = false }: MetaMaskWalletViewProps)
             tokens: tokenBalances.map(t => ({
               symbol: t.symbol,
               name: t.name,
-              balance: t.balance,
+              balance: t.balanceRaw.toString(), // Use raw numeric value
               usdPrice: t.usdPrice || 0,
               usdValue: t.usdValue || 0,
             })),
@@ -260,7 +262,8 @@ export function MetaMaskWalletView({ compact = false }: MetaMaskWalletViewProps)
     };
     
     // Debounce the sync - only sync after token balances are loaded
-    if (balance !== null && !isLoadingTokens && ethPrice > 0) {
+    // Sync even if ethPrice is 0 (API might not return price)
+    if (balance !== null && !isLoadingTokens) {
       syncHoldings();
     }
   }, [connected, account, balance, tokenBalances, isLoadingTokens, hasAccess, ethPrice]);
