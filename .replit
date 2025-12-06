@@ -132,3 +132,6 @@ integrations = ["resend:1.0.0", "javascript_stripe:1.0.0", "javascript_log_in_wi
 
 [userenv.production]
 FRONTEND_URL = "https://flint-investing.com"
+
+[userenv.development]
+VITE_FEATURE_METAMASK = "true"
