@@ -40,10 +40,40 @@ const CHAIN_NAMES: Record<string, string> = {
   '0x38': 'BNB Smart Chain',
 };
 
+// Common ERC-20 tokens on Ethereum Mainnet
+const COMMON_TOKENS: { symbol: string; name: string; address: string; decimals: number; logo?: string }[] = [
+  { symbol: 'USDC', name: 'USD Coin', address: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', decimals: 6, logo: 'https://cryptologos.cc/logos/usd-coin-usdc-logo.svg' },
+  { symbol: 'USDT', name: 'Tether USD', address: '0xdAC17F958D2ee523a2206206994597C13D831ec7', decimals: 6, logo: 'https://cryptologos.cc/logos/tether-usdt-logo.svg' },
+  { symbol: 'DAI', name: 'Dai Stablecoin', address: '0x6B175474E89094C44Da98b954EedeAC495271d0F', decimals: 18, logo: 'https://cryptologos.cc/logos/multi-collateral-dai-dai-logo.svg' },
+  { symbol: 'WETH', name: 'Wrapped Ether', address: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2', decimals: 18, logo: 'https://cryptologos.cc/logos/ethereum-eth-logo.svg' },
+  { symbol: 'LINK', name: 'Chainlink', address: '0x514910771AF9Ca656af840dff83E8264EcF986CA', decimals: 18, logo: 'https://cryptologos.cc/logos/chainlink-link-logo.svg' },
+  { symbol: 'UNI', name: 'Uniswap', address: '0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984', decimals: 18, logo: 'https://cryptologos.cc/logos/uniswap-uni-logo.svg' },
+  { symbol: 'AAVE', name: 'Aave', address: '0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9', decimals: 18, logo: 'https://cryptologos.cc/logos/aave-aave-logo.svg' },
+];
+
+// ERC-20 balanceOf function signature
+const BALANCE_OF_SIGNATURE = '0x70a08231';
+
+interface TokenBalance {
+  symbol: string;
+  name: string;
+  balance: string;
+  decimals: number;
+  logo?: string;
+}
+
 // Format wei to ETH
 function formatEther(wei: string): string {
   const etherValue = parseInt(wei, 16) / 1e18;
   return etherValue.toFixed(4);
+}
+
+// Format token balance with decimals
+function formatTokenBalance(balanceHex: string, decimals: number): string {
+  const balance = parseInt(balanceHex, 16) / Math.pow(10, decimals);
+  if (balance === 0) return '0';
+  if (balance < 0.0001) return '<0.0001';
+  return balance.toFixed(4);
 }
 
 // Format address for display
@@ -63,6 +93,10 @@ export function MetaMaskWalletView({ compact = false }: MetaMaskWalletViewProps)
   const [balance, setBalance] = useState<string | null>(null);
   const [isLoadingBalance, setIsLoadingBalance] = useState(false);
   const [copied, setCopied] = useState(false);
+  
+  // Token balances state
+  const [tokenBalances, setTokenBalances] = useState<TokenBalance[]>([]);
+  const [isLoadingTokens, setIsLoadingTokens] = useState(false);
   
   // Send transaction state
   const [showSendForm, setShowSendForm] = useState(false);
@@ -104,12 +138,68 @@ export function MetaMaskWalletView({ compact = false }: MetaMaskWalletViewProps)
     }
   }, [provider, account, toast]);
 
+  // Fetch ERC-20 token balances
+  const fetchTokenBalances = useCallback(async () => {
+    if (!provider || !account || chainId !== '0x1') {
+      // Only fetch on Ethereum Mainnet
+      setTokenBalances([]);
+      return;
+    }
+    
+    setIsLoadingTokens(true);
+    const balances: TokenBalance[] = [];
+    
+    try {
+      for (const token of COMMON_TOKENS) {
+        try {
+          // Encode balanceOf(address) call data
+          const paddedAddress = account.slice(2).toLowerCase().padStart(64, '0');
+          const data = BALANCE_OF_SIGNATURE + paddedAddress;
+          
+          const result = await provider.request({
+            method: 'eth_call',
+            params: [{
+              to: token.address,
+              data: data,
+            }, 'latest'],
+          }) as string;
+          
+          const formattedBalance = formatTokenBalance(result, token.decimals);
+          
+          // Only add tokens with non-zero balance
+          if (formattedBalance !== '0') {
+            balances.push({
+              symbol: token.symbol,
+              name: token.name,
+              balance: formattedBalance,
+              decimals: token.decimals,
+              logo: token.logo,
+            });
+          }
+        } catch (tokenError) {
+          console.warn(`Failed to fetch ${token.symbol} balance:`, tokenError);
+        }
+      }
+      
+      setTokenBalances(balances);
+    } catch (error) {
+      console.error('Failed to fetch token balances:', error);
+    } finally {
+      setIsLoadingTokens(false);
+    }
+  }, [provider, account, chainId]);
+
+  // Fetch all balances
+  const fetchAllBalances = useCallback(async () => {
+    await Promise.all([fetchBalance(), fetchTokenBalances()]);
+  }, [fetchBalance, fetchTokenBalances]);
+
   // Fetch balance on mount and when account changes
   useEffect(() => {
     if (connected && account && provider) {
-      fetchBalance();
+      fetchAllBalances();
     }
-  }, [connected, account, provider, fetchBalance]);
+  }, [connected, account, provider, fetchAllBalances]);
 
   // Copy address to clipboard
   const copyAddress = async () => {
@@ -190,7 +280,7 @@ export function MetaMaskWalletView({ compact = false }: MetaMaskWalletViewProps)
       setShowSendForm(false);
       
       // Refresh balance after a short delay
-      setTimeout(fetchBalance, 3000);
+      setTimeout(fetchAllBalances, 3000);
       
     } catch (error: any) {
       console.error('Transaction failed:', error);
@@ -286,10 +376,10 @@ export function MetaMaskWalletView({ compact = false }: MetaMaskWalletViewProps)
           <Button 
             variant="ghost" 
             size="sm" 
-            onClick={fetchBalance}
-            disabled={isLoadingBalance}
+            onClick={fetchAllBalances}
+            disabled={isLoadingBalance || isLoadingTokens}
           >
-            <RefreshCw className={`h-4 w-4 ${isLoadingBalance ? 'animate-spin' : ''}`} />
+            <RefreshCw className={`h-4 w-4 ${(isLoadingBalance || isLoadingTokens) ? 'animate-spin' : ''}`} />
           </Button>
         </div>
       </CardHeader>
@@ -336,6 +426,57 @@ export function MetaMaskWalletView({ compact = false }: MetaMaskWalletViewProps)
             )}
           </div>
         </div>
+
+        {/* Token Holdings */}
+        {chainId === '0x1' && (
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <p className="text-xs text-gray-400">Token Holdings</p>
+              {isLoadingTokens && <Loader2 className="h-3 w-3 animate-spin text-gray-400" />}
+            </div>
+            
+            {tokenBalances.length > 0 ? (
+              <div className="space-y-2">
+                {tokenBalances.map((token) => (
+                  <div 
+                    key={token.symbol}
+                    className="flex items-center justify-between p-2 bg-gray-800/50 rounded-lg"
+                    data-testid={`token-${token.symbol.toLowerCase()}`}
+                  >
+                    <div className="flex items-center gap-2">
+                      {token.logo && (
+                        <img 
+                          src={token.logo} 
+                          alt={token.symbol} 
+                          className="w-5 h-5 rounded-full"
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).style.display = 'none';
+                          }}
+                        />
+                      )}
+                      <div>
+                        <p className="text-sm font-medium text-white">{token.symbol}</p>
+                        <p className="text-xs text-gray-500">{token.name}</p>
+                      </div>
+                    </div>
+                    <span className="text-sm font-mono text-white">{token.balance}</span>
+                  </div>
+                ))}
+              </div>
+            ) : !isLoadingTokens ? (
+              <p className="text-xs text-gray-500 text-center py-2">No token balances found</p>
+            ) : null}
+          </div>
+        )}
+
+        {chainId !== '0x1' && (
+          <div className="p-2 bg-yellow-900/20 border border-yellow-600/30 rounded-lg">
+            <p className="text-xs text-yellow-500 flex items-center gap-1">
+              <AlertCircle className="h-3 w-3" />
+              Token balances only available on Ethereum Mainnet
+            </p>
+          </div>
+        )}
 
         <Separator className="bg-gray-700" />
 
