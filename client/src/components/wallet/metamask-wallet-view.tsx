@@ -26,6 +26,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { canAccessFeature } from "@/lib/feature-flags";
+import { apiRequest, queryClient } from "@/lib/queryClient";
 
 // Chain ID to name mapping
 const CHAIN_NAMES: Record<string, string> = {
@@ -206,6 +207,70 @@ export function MetaMaskWalletView({ compact = false }: MetaMaskWalletViewProps)
     }
   }, [connected, account, provider, fetchAllBalances]);
 
+  // Register wallet with backend when connected
+  useEffect(() => {
+    const registerWallet = async () => {
+      if (!connected || !account || !hasAccess) return;
+      
+      try {
+        await apiRequest('/api/connections/metamask', {
+          method: 'POST',
+          body: JSON.stringify({
+            walletAddress: account,
+            chainId: chainId,
+            ethBalance: balance || '0',
+          }),
+        });
+        
+        // Invalidate accounts queries to refresh the dashboard
+        queryClient.invalidateQueries({ queryKey: ['/api/accounts'] });
+        queryClient.invalidateQueries({ queryKey: ['/api/snaptrade/accounts'] });
+        queryClient.invalidateQueries({ queryKey: ['/api/holdings'] });
+        
+      } catch (error) {
+        console.error('Failed to register wallet with backend:', error);
+      }
+    };
+    
+    // Only register after balance is fetched
+    if (balance !== null) {
+      registerWallet();
+    }
+  }, [connected, account, chainId, balance, hasAccess]);
+
+  // Sync holdings when balances change
+  useEffect(() => {
+    const syncHoldings = async () => {
+      if (!connected || !account || !hasAccess || balance === null) return;
+      
+      try {
+        await apiRequest('/api/connections/metamask/sync', {
+          method: 'POST',
+          body: JSON.stringify({
+            walletAddress: account,
+            ethBalance: balance,
+            tokens: tokenBalances.map(t => ({
+              symbol: t.symbol,
+              name: t.name,
+              balance: t.balance,
+            })),
+          }),
+        });
+        
+        // Invalidate holdings to refresh portfolio
+        queryClient.invalidateQueries({ queryKey: ['/api/holdings'] });
+        
+      } catch (error) {
+        console.error('Failed to sync holdings:', error);
+      }
+    };
+    
+    // Debounce the sync - only sync after token balances are loaded
+    if (balance !== null && !isLoadingTokens) {
+      syncHoldings();
+    }
+  }, [connected, account, balance, tokenBalances, isLoadingTokens, hasAccess]);
+
   // Copy address to clipboard
   const copyAddress = useCallback(async () => {
     if (!account) return;
@@ -287,6 +352,21 @@ export function MetaMaskWalletView({ compact = false }: MetaMaskWalletViewProps)
   // Disconnect wallet
   const disconnect = useCallback(async () => {
     try {
+      // Remove from backend first
+      if (account) {
+        try {
+          await apiRequest(`/api/connections/metamask/${account}`, {
+            method: 'DELETE',
+          });
+          
+          // Invalidate queries to refresh dashboard
+          queryClient.invalidateQueries({ queryKey: ['/api/accounts'] });
+          queryClient.invalidateQueries({ queryKey: ['/api/holdings'] });
+        } catch (backendError) {
+          console.warn('Failed to remove wallet from backend:', backendError);
+        }
+      }
+      
       await sdk?.terminate();
       toast({
         title: "Wallet Disconnected",
@@ -295,7 +375,7 @@ export function MetaMaskWalletView({ compact = false }: MetaMaskWalletViewProps)
     } catch (error) {
       console.error('Disconnect failed:', error);
     }
-  }, [sdk, toast]);
+  }, [sdk, account, toast]);
 
   // Early returns AFTER all hooks
   if (!hasAccess) {
