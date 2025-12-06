@@ -2,7 +2,7 @@
  * MetaMask Wallet Connection Component
  * 
  * Allows users to connect their MetaMask wallet for crypto functionality.
- * Protected by feature flag - only shows when VITE_FEATURE_METAMASK=true
+ * Protected by feature flag - only shows for internal testers
  */
 
 import { useState, useCallback } from "react";
@@ -11,7 +11,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Wallet, ExternalLink, Copy, Check, AlertCircle, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { featureFlags } from "@/lib/feature-flags";
+import { useAuth } from "@/hooks/useAuth";
+import { canAccessFeature } from "@/lib/feature-flags";
 
 interface MetaMaskConnectProps {
   onConnect?: (account: string) => void;
@@ -25,9 +26,10 @@ export function MetaMaskConnect({ onConnect, onDisconnect, compact = false }: Me
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
+  const { user } = useAuth();
 
-  // Don't render if feature flag is disabled
-  if (!featureFlags.metamask) {
+  // Only show for internal testers when feature flag is enabled
+  if (!canAccessFeature('metamask', user?.email)) {
     return null;
   }
 
