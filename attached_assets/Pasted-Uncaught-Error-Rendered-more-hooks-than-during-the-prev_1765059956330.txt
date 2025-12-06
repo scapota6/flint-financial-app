@@ -1,0 +1,74 @@
+Uncaught Error: Rendered more hooks than during the previous render.
+    at updateWorkInProgressHook (chunk-6G2PLVCX.js?v=7872eb68:11678:21)
+    at updateCallback (chunk-6G2PLVCX.js?v=7872eb68:12177:22)
+    at Object.useCallback (chunk-6G2PLVCX.js?v=7872eb68:12693:22)
+    at useCallback (chunk-KOIQ6ZEG.js?v=7872eb68:1090:29)
+    at MetaMaskWalletView (metamask-wallet-view.tsx:118:24)
+    at renderWithHooks (chunk-6G2PLVCX.js?v=7872eb68:11548:26)
+    at updateFunctionComponent (chunk-6G2PLVCX.js?v=7872eb68:14582:28)
+    at beginWork (chunk-6G2PLVCX.js?v=7872eb68:15924:22)
+    at HTMLUnknownElement.callCallback2 (chunk-6G2PLVCX.js?v=7872eb68:3674:22)
+    at Object.invokeGuardedCallbackDev (chunk-6G2PLVCX.js?v=7872eb68:3699:24)
+updateWorkInProgressHook @ chunk-6G2PLVCX.js?v=7872eb68:11678
+updateCallback @ chunk-6G2PLVCX.js?v=7872eb68:12177
+useCallback @ chunk-6G2PLVCX.js?v=7872eb68:12693
+useCallback @ chunk-KOIQ6ZEG.js?v=7872eb68:1090
+MetaMaskWalletView @ metamask-wallet-view.tsx:118
+renderWithHooks @ chunk-6G2PLVCX.js?v=7872eb68:11548
+updateFunctionComponent @ chunk-6G2PLVCX.js?v=7872eb68:14582
+beginWork @ chunk-6G2PLVCX.js?v=7872eb68:15924
+callCallback2 @ chunk-6G2PLVCX.js?v=7872eb68:3674
+invokeGuardedCallbackDev @ chunk-6G2PLVCX.js?v=7872eb68:3699
+invokeGuardedCallback @ chunk-6G2PLVCX.js?v=7872eb68:3733
+beginWork$1 @ chunk-6G2PLVCX.js?v=7872eb68:19765
+performUnitOfWork @ chunk-6G2PLVCX.js?v=7872eb68:19198
+workLoopSync @ chunk-6G2PLVCX.js?v=7872eb68:19137
+renderRootSync @ chunk-6G2PLVCX.js?v=7872eb68:19116
+recoverFromConcurrentError @ chunk-6G2PLVCX.js?v=7872eb68:18736
+performConcurrentWorkOnRoot @ chunk-6G2PLVCX.js?v=7872eb68:18684
+workLoop @ chunk-6G2PLVCX.js?v=7872eb68:197
+flushWork @ chunk-6G2PLVCX.js?v=7872eb68:176
+performWorkUntilDeadline @ chunk-6G2PLVCX.js?v=7872eb68:384Understand this error
+rrweb-plugin-console-record.js:2447 The above error occurred in the <MetaMaskWalletView> component:
+
+    at MetaMaskWalletView (https://28036d48-949d-4fd5-9e63-54ed8b7fd662-00-1i1qwnyczdy9x.kirk.replit.dev/src/components/wallet/metamask-wallet-view.tsx:72:38)
+    at div
+    at main
+    at div
+    at Dashboard (https://28036d48-949d-4fd5-9e63-54ed8b7fd662-00-1i1qwnyczdy9x.kirk.replit.dev/src/pages/dashboard.tsx:38:20)
+    at Route (https://28036d48-949d-4fd5-9e63-54ed8b7fd662-00-1i1qwnyczdy9x.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=7872eb68:206:16)
+    at Switch (https://28036d48-949d-4fd5-9e63-54ed8b7fd662-00-1i1qwnyczdy9x.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=7872eb68:262:17)
+    at Suspense
+    at PresenceChild (https://28036d48-949d-4fd5-9e63-54ed8b7fd662-00-1i1qwnyczdy9x.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/framer-motion.js?v=7872eb68:116:24)
+    at AnimatePresence (https://28036d48-949d-4fd5-9e63-54ed8b7fd662-00-1i1qwnyczdy9x.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/framer-motion.js?v=7872eb68:205:26)
+    at div
+    at Router (https://28036d48-949d-4fd5-9e63-54ed8b7fd662-00-1i1qwnyczdy9x.kirk.replit.dev/src/App.tsx?v=ID2a3OoFRSwFazPeKnWoS:135:42)
+    at div
+    at TooltipProvider (https://28036d48-949d-4fd5-9e63-54ed8b7fd662-00-1i1qwnyczdy9x.kirk.replit.dev/src/components/ui/tooltip.tsx:20:35)
+    at ActivityProvider (https://28036d48-949d-4fd5-9e63-54ed8b7fd662-00-1i1qwnyczdy9x.kirk.replit.dev/src/contexts/ActivityContext.tsx:24:36)
+    at ThemeProvider (https://28036d48-949d-4fd5-9e63-54ed8b7fd662-00-1i1qwnyczdy9x.kirk.replit.dev/src/contexts/ThemeContext.tsx:20:33)
+    at QueryClientProvider (https://28036d48-949d-4fd5-9e63-54ed8b7fd662-00-1i1qwnyczdy9x.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=7872eb68:3081:3)
+    at App
+    at ErrorBoundary (https://28036d48-949d-4fd5-9e63-54ed8b7fd662-00-1i1qwnyczdy9x.kirk.replit.dev/src/components/error-boundary.tsx?v=ID2a3OoFRSwFazPeKnWoS:9:5)
+    at Py (https://28036d48-949d-4fd5-9e63-54ed8b7fd662-00-1i1qwnyczdy9x.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@metamask_sdk-react.js?v=7872eb68:13407:23)
+    at Ly (https://28036d48-949d-4fd5-9e63-54ed8b7fd662-00-1i1qwnyczdy9x.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@metamask_sdk-react.js?v=7872eb68:13499:23)
+    at PostHogProvider (https://28036d48-949d-4fd5-9e63-54ed8b7fd662-00-1i1qwnyczdy9x.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/posthog-js_react.js?v=7872eb68:4394:21)
+
+React will try to recreate this component tree from scratch using the error boundary you provided, ErrorBoundary.
+(anonymous) @ rrweb-plugin-console-record.js:2447
+logCapturedError @ chunk-6G2PLVCX.js?v=7872eb68:14032
+callback @ chunk-6G2PLVCX.js?v=7872eb68:14078
+callCallback @ chunk-6G2PLVCX.js?v=7872eb68:11248
+commitUpdateQueue @ chunk-6G2PLVCX.js?v=7872eb68:11265
+commitLayoutEffectOnFiber @ chunk-6G2PLVCX.js?v=7872eb68:17075
+commitLayoutMountEffects_complete @ chunk-6G2PLVCX.js?v=7872eb68:17980
+commitLayoutEffects_begin @ chunk-6G2PLVCX.js?v=7872eb68:17969
+commitLayoutEffects @ chunk-6G2PLVCX.js?v=7872eb68:17920
+commitRootImpl @ chunk-6G2PLVCX.js?v=7872eb68:19353
+commitRoot @ chunk-6G2PLVCX.js?v=7872eb68:19277
+finishConcurrentRender @ chunk-6G2PLVCX.js?v=7872eb68:18760
+performConcurrentWorkOnRoot @ chunk-6G2PLVCX.js?v=7872eb68:18718
+workLoop @ chunk-6G2PLVCX.js?v=7872eb68:197
+flushWork @ chunk-6G2PLVCX.js?v=7872eb68:176
+performWorkUntilDeadline @ chunk-6G2PLVCX.js?v=7872eb68:384Understand this error
+error-boundary.tsx:32 Error c

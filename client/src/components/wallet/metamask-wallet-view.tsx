@@ -14,7 +14,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { 
-  Wallet, 
   RefreshCw, 
   Send, 
   Copy, 
@@ -41,14 +40,14 @@ const CHAIN_NAMES: Record<string, string> = {
 };
 
 // Common ERC-20 tokens on Ethereum Mainnet
-const COMMON_TOKENS: { symbol: string; name: string; address: string; decimals: number; logo?: string }[] = [
-  { symbol: 'USDC', name: 'USD Coin', address: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', decimals: 6, logo: 'https://cryptologos.cc/logos/usd-coin-usdc-logo.svg' },
-  { symbol: 'USDT', name: 'Tether USD', address: '0xdAC17F958D2ee523a2206206994597C13D831ec7', decimals: 6, logo: 'https://cryptologos.cc/logos/tether-usdt-logo.svg' },
-  { symbol: 'DAI', name: 'Dai Stablecoin', address: '0x6B175474E89094C44Da98b954EedeAC495271d0F', decimals: 18, logo: 'https://cryptologos.cc/logos/multi-collateral-dai-dai-logo.svg' },
-  { symbol: 'WETH', name: 'Wrapped Ether', address: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2', decimals: 18, logo: 'https://cryptologos.cc/logos/ethereum-eth-logo.svg' },
-  { symbol: 'LINK', name: 'Chainlink', address: '0x514910771AF9Ca656af840dff83E8264EcF986CA', decimals: 18, logo: 'https://cryptologos.cc/logos/chainlink-link-logo.svg' },
-  { symbol: 'UNI', name: 'Uniswap', address: '0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984', decimals: 18, logo: 'https://cryptologos.cc/logos/uniswap-uni-logo.svg' },
-  { symbol: 'AAVE', name: 'Aave', address: '0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9', decimals: 18, logo: 'https://cryptologos.cc/logos/aave-aave-logo.svg' },
+const COMMON_TOKENS: { symbol: string; name: string; address: string; decimals: number }[] = [
+  { symbol: 'USDC', name: 'USD Coin', address: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', decimals: 6 },
+  { symbol: 'USDT', name: 'Tether USD', address: '0xdAC17F958D2ee523a2206206994597C13D831ec7', decimals: 6 },
+  { symbol: 'DAI', name: 'Dai Stablecoin', address: '0x6B175474E89094C44Da98b954EedeAC495271d0F', decimals: 18 },
+  { symbol: 'WETH', name: 'Wrapped Ether', address: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2', decimals: 18 },
+  { symbol: 'LINK', name: 'Chainlink', address: '0x514910771AF9Ca656af840dff83E8264EcF986CA', decimals: 18 },
+  { symbol: 'UNI', name: 'Uniswap', address: '0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984', decimals: 18 },
+  { symbol: 'AAVE', name: 'Aave', address: '0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9', decimals: 18 },
 ];
 
 // ERC-20 balanceOf function signature
@@ -59,7 +58,6 @@ interface TokenBalance {
   name: string;
   balance: string;
   decimals: number;
-  logo?: string;
 }
 
 // Format wei to ETH
@@ -104,15 +102,9 @@ export function MetaMaskWalletView({ compact = false }: MetaMaskWalletViewProps)
   const [sendAmount, setSendAmount] = useState('');
   const [isSending, setIsSending] = useState(false);
 
-  // Only show for internal testers
-  if (!canAccessFeature('metamask', user?.email)) {
-    return null;
-  }
-
-  // Don't render if not connected
-  if (!connected || !account) {
-    return null;
-  }
+  // Check access
+  const hasAccess = canAccessFeature('metamask', user?.email);
+  const isConnected = connected && account;
 
   // Fetch ETH balance
   const fetchBalance = useCallback(async () => {
@@ -141,7 +133,6 @@ export function MetaMaskWalletView({ compact = false }: MetaMaskWalletViewProps)
   // Fetch ERC-20 token balances
   const fetchTokenBalances = useCallback(async () => {
     if (!provider || !account || chainId !== '0x1') {
-      // Only fetch on Ethereum Mainnet
       setTokenBalances([]);
       return;
     }
@@ -152,7 +143,6 @@ export function MetaMaskWalletView({ compact = false }: MetaMaskWalletViewProps)
     try {
       for (const token of COMMON_TOKENS) {
         try {
-          // Encode balanceOf(address) call data
           const paddedAddress = account.slice(2).toLowerCase().padStart(64, '0');
           const data = BALANCE_OF_SIGNATURE + paddedAddress;
           
@@ -166,14 +156,12 @@ export function MetaMaskWalletView({ compact = false }: MetaMaskWalletViewProps)
           
           const formattedBalance = formatTokenBalance(result, token.decimals);
           
-          // Only add tokens with non-zero balance
           if (formattedBalance !== '0') {
             balances.push({
               symbol: token.symbol,
               name: token.name,
               balance: formattedBalance,
               decimals: token.decimals,
-              logo: token.logo,
             });
           }
         } catch (tokenError) {
@@ -202,7 +190,7 @@ export function MetaMaskWalletView({ compact = false }: MetaMaskWalletViewProps)
   }, [connected, account, provider, fetchAllBalances]);
 
   // Copy address to clipboard
-  const copyAddress = async () => {
+  const copyAddress = useCallback(async () => {
     if (!account) return;
     try {
       await navigator.clipboard.writeText(account);
@@ -215,13 +203,12 @@ export function MetaMaskWalletView({ compact = false }: MetaMaskWalletViewProps)
     } catch (error) {
       console.error('Failed to copy:', error);
     }
-  };
+  }, [account, toast]);
 
   // Send ETH transaction
-  const sendTransaction = async () => {
+  const sendTransaction = useCallback(async () => {
     if (!provider || !account || !sendTo || !sendAmount) return;
     
-    // Validate address
     if (!/^0x[a-fA-F0-9]{40}$/.test(sendTo)) {
       toast({
         title: "Invalid Address",
@@ -231,7 +218,6 @@ export function MetaMaskWalletView({ compact = false }: MetaMaskWalletViewProps)
       return;
     }
     
-    // Validate amount
     const amountNum = parseFloat(sendAmount);
     if (isNaN(amountNum) || amountNum <= 0) {
       toast({
@@ -244,7 +230,6 @@ export function MetaMaskWalletView({ compact = false }: MetaMaskWalletViewProps)
     
     setIsSending(true);
     try {
-      // Convert ETH to wei (hex)
       const weiValue = BigInt(Math.floor(amountNum * 1e18));
       const hexValue = '0x' + weiValue.toString(16);
       
@@ -259,27 +244,13 @@ export function MetaMaskWalletView({ compact = false }: MetaMaskWalletViewProps)
       
       toast({
         title: "Transaction Sent",
-        description: (
-          <div className="flex items-center gap-2">
-            <span>TX: {shortenAddress(txHash as string)}</span>
-            <a 
-              href={`https://etherscan.io/tx/${txHash}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-blue-400 hover:underline"
-            >
-              <ExternalLink className="h-3 w-3" />
-            </a>
-          </div>
-        ),
+        description: `TX: ${shortenAddress(txHash as string)}`,
       });
       
-      // Reset form
       setSendTo('');
       setSendAmount('');
       setShowSendForm(false);
       
-      // Refresh balance after a short delay
       setTimeout(fetchAllBalances, 3000);
       
     } catch (error: any) {
@@ -294,10 +265,10 @@ export function MetaMaskWalletView({ compact = false }: MetaMaskWalletViewProps)
     } finally {
       setIsSending(false);
     }
-  };
+  }, [provider, account, sendTo, sendAmount, toast, fetchAllBalances]);
 
   // Disconnect wallet
-  const disconnect = async () => {
+  const disconnect = useCallback(async () => {
     try {
       await sdk?.terminate();
       toast({
@@ -307,7 +278,16 @@ export function MetaMaskWalletView({ compact = false }: MetaMaskWalletViewProps)
     } catch (error) {
       console.error('Disconnect failed:', error);
     }
-  };
+  }, [sdk, toast]);
+
+  // Early returns AFTER all hooks
+  if (!hasAccess) {
+    return null;
+  }
+
+  if (!isConnected) {
+    return null;
+  }
 
   const chainName = chainId ? CHAIN_NAMES[chainId] || `Chain ${chainId}` : 'Unknown';
 
@@ -316,14 +296,7 @@ export function MetaMaskWalletView({ compact = false }: MetaMaskWalletViewProps)
     return (
       <div className="flex items-center gap-3 p-3 bg-gray-800/50 rounded-lg">
         <div className="w-8 h-8 rounded-full bg-[#F6851B] flex items-center justify-center">
-          <img 
-            src="https://cdn.brandfetch.io/metamask.io" 
-            alt="MetaMask" 
-            className="w-5 h-5"
-            onError={(e) => {
-              (e.target as HTMLImageElement).style.display = 'none';
-            }}
-          />
+          <span className="text-white text-xs font-bold">MM</span>
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
@@ -356,14 +329,7 @@ export function MetaMaskWalletView({ compact = false }: MetaMaskWalletViewProps)
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-[#F6851B] flex items-center justify-center">
-              <img 
-                src="https://cdn.brandfetch.io/metamask.io" 
-                alt="MetaMask" 
-                className="w-6 h-6"
-                onError={(e) => {
-                  (e.target as HTMLImageElement).style.display = 'none';
-                }}
-              />
+              <span className="text-white text-sm font-bold">MM</span>
             </div>
             <div>
               <CardTitle className="text-lg text-white">MetaMask Wallet</CardTitle>
@@ -444,16 +410,9 @@ export function MetaMaskWalletView({ compact = false }: MetaMaskWalletViewProps)
                     data-testid={`token-${token.symbol.toLowerCase()}`}
                   >
                     <div className="flex items-center gap-2">
-                      {token.logo && (
-                        <img 
-                          src={token.logo} 
-                          alt={token.symbol} 
-                          className="w-5 h-5 rounded-full"
-                          onError={(e) => {
-                            (e.target as HTMLImageElement).style.display = 'none';
-                          }}
-                        />
-                      )}
+                      <div className="w-5 h-5 rounded-full bg-gray-600 flex items-center justify-center">
+                        <span className="text-xs text-white">{token.symbol[0]}</span>
+                      </div>
                       <div>
                         <p className="text-sm font-medium text-white">{token.symbol}</p>
                         <p className="text-xs text-gray-500">{token.name}</p>
