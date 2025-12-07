@@ -265,6 +265,11 @@ export default function Dashboard() {
         {/* Unified Dashboard - Real API Data Only */}
         <UnifiedDashboard />
 
+        {/* MetaMask Wallet - Internal Testers Only (Part of Connected Accounts) */}
+        <div className="mt-6">
+          <MetaMaskWalletView />
+        </div>
+
         {/* Portfolio Holdings Section - Robinhood Style */}
         <div className="mt-12">
           <h3 className="apple-h3 mb-6">Portfolio Holdings</h3>
@@ -288,11 +293,6 @@ export default function Dashboard() {
             userTier={dashboardData?.subscriptionTier || "free"}
             isAdmin={dashboardData?.isAdmin || false}
           />
-        </div>
-
-        {/* MetaMask Wallet - Internal Testers Only */}
-        <div className="mt-8">
-          <MetaMaskWalletView />
         </div>
       </main>
 

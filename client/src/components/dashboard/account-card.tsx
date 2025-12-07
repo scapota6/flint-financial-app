@@ -29,7 +29,7 @@ import AccountDetailsDialog from '../AccountDetailsDialog';
 interface AccountCardProps {
   account: {
     id: string;
-    provider: 'teller' | 'snaptrade';
+    provider: 'teller' | 'snaptrade' | 'metamask';
     accountName: string;
     accountNumber?: string;
     balance: number;

@@ -33,6 +33,7 @@ import {
   users,
   snaptradeUsers,
   snaptradeConnections,
+  holdings,
 } from "@shared/schema";
 import { eq } from "drizzle-orm";
 import { db } from "./db";
@@ -992,30 +993,54 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // Fetch MetaMask/crypto accounts from connected_accounts table
+      // Calculate total crypto value from holdings table (includes all tokens, not just ETH)
       const metamaskAccounts = connectedAccounts.filter(acc => acc.provider === 'metamask' && acc.status === 'connected');
-      for (const metamaskAccount of metamaskAccounts) {
-        const ethBalance = parseFloat(metamaskAccount.balance?.toString() || '0');
-        // TODO: Get real ETH price from market data service
-        const ethPrice = 2200; // Placeholder
-        const ethUsdValue = ethBalance * ethPrice;
+      
+      // Batch fetch all holdings for all MetaMask accounts in parallel (non-blocking)
+      const metamaskResults = await Promise.all(
+        metamaskAccounts.map(async (metamaskAccount) => {
+          const accountHoldings = await db.select()
+            .from(holdings)
+            .where(eq(holdings.accountId, metamaskAccount.id));
+          
+          // Sum up all market values from holdings (use Number() for robust conversion)
+          let accountTotalValue = 0;
+          for (const holding of accountHoldings) {
+            const value = Number(holding.marketValue) || 0;
+            if (!isNaN(value)) {
+              accountTotalValue += value;
+            }
+          }
+          
+          return {
+            account: metamaskAccount,
+            totalValue: accountTotalValue,
+            holdingsCount: accountHoldings.length,
+          };
+        })
+      );
+      
+      // Process MetaMask results
+      for (const result of metamaskResults) {
+        const { account: metamaskAccount, totalValue: accountTotalValue, holdingsCount } = result;
         
         enrichedAccounts.push({
           id: metamaskAccount.id,
           provider: 'metamask',
           accountName: metamaskAccount.accountName,
           accountNumber: metamaskAccount.externalAccountId,
-          balance: ethUsdValue,
+          balance: accountTotalValue, // Total USD value from all holdings
           type: 'crypto' as const,
           institution: 'MetaMask',
           lastUpdated: metamaskAccount.lastSynced?.toISOString() || new Date().toISOString(),
           currency: 'USD',
           needsReconnection: false,
-          holdings: ethBalance,
-          ethBalance: ethBalance,
+          holdings: accountTotalValue, // Total USD value for frontend compatibility
+          holdingsCount: holdingsCount, // Number of tokens held
         });
         
-        cryptoValue += ethUsdValue;
-        totalBalance += ethUsdValue;
+        cryptoValue += accountTotalValue;
+        totalBalance += accountTotalValue;
       }
 
       // Skip legacy connected accounts - only show accounts we can validate via API

@@ -12,6 +12,9 @@ import { logger } from "@shared/logger";
 import { resilientTellerFetch } from "../teller/client";
 import { getTellerAccessToken } from "../store/tellerUsers";
 import { getBrokerageCapabilities } from "../lib/brokerage-capabilities";
+import { db } from "../db";
+import { holdings } from "@shared/schema";
+import { eq } from "drizzle-orm";
 
 const router = Router();
 
@@ -24,19 +27,45 @@ router.get("/", requireAuth, async (req: any, res) => {
   try {
     const userId = req.user.claims.sub;
     
-    // Get all connected accounts from both providers
-    const [bankAccounts, brokerageAccounts] = await Promise.all([
+    // Get all connected accounts from all providers (bank, brokerage, crypto)
+    const [bankAccounts, brokerageAccounts, cryptoAccounts] = await Promise.all([
       storage.getConnectedAccountsByProvider(userId, 'teller'),
-      storage.getConnectedAccountsByProvider(userId, 'snaptrade')
+      storage.getConnectedAccountsByProvider(userId, 'snaptrade'),
+      storage.getConnectedAccountsByProvider(userId, 'metamask')
     ]);
     
     // Filter only connected accounts
     const connectedBankAccounts = (bankAccounts || []).filter(account => account.status === 'connected');
     const connectedBrokerageAccounts = (brokerageAccounts || []).filter(account => account.status === 'connected');
+    const connectedCryptoAccounts = (cryptoAccounts || []).filter(account => account.status === 'connected');
     
     // Get disconnected accounts for UI warnings
     const disconnectedBankAccounts = (bankAccounts || []).filter(account => account.status === 'disconnected');
     const disconnectedBrokerageAccounts = (brokerageAccounts || []).filter(account => account.status === 'disconnected');
+    const disconnectedCryptoAccounts = (cryptoAccounts || []).filter(account => account.status === 'disconnected');
+    
+    // Fetch holdings for crypto accounts to calculate real balances (parallel)
+    const cryptoAccountsWithBalances = await Promise.all(
+      connectedCryptoAccounts.map(async (account) => {
+        const accountHoldings = await db.select()
+          .from(holdings)
+          .where(eq(holdings.accountId, account.id));
+        
+        // Sum up all market values from holdings (use Number() for robust conversion)
+        let totalValue = 0;
+        for (const holding of accountHoldings) {
+          const value = Number(holding.marketValue) || 0;
+          if (!isNaN(value)) {
+            totalValue += value;
+          }
+        }
+        
+        return {
+          ...account,
+          calculatedBalance: totalValue,
+        };
+      })
+    );
     
     // Combine all connected accounts
     const allConnectedAccounts = [
@@ -46,9 +75,9 @@ router.get("/", requireAuth, async (req: any, res) => {
         accountName: account.accountName || account.institutionName,
         accountNumber: account.accountNumber,
         balance: account.balance || 0,
-        type: account.type || 'bank',
+        type: account.accountType || 'bank',
         institution: account.institutionName,
-        lastUpdated: account.lastUpdated || new Date().toISOString(),
+        lastUpdated: account.updatedAt?.toISOString() || new Date().toISOString(),
         currency: account.currency || 'USD',
         status: account.status,
         lastCheckedAt: account.lastCheckedAt
@@ -61,8 +90,21 @@ router.get("/", requireAuth, async (req: any, res) => {
         balance: account.balance || 0,
         type: 'investment' as const,
         institution: account.institutionName,
-        lastUpdated: account.lastUpdated || new Date().toISOString(),
+        lastUpdated: account.updatedAt?.toISOString() || new Date().toISOString(),
         currency: account.currency || 'USD',
+        status: account.status,
+        lastCheckedAt: account.lastCheckedAt
+      })),
+      ...cryptoAccountsWithBalances.map(account => ({
+        id: account.id,
+        provider: account.provider,
+        accountName: account.accountName || account.institutionName,
+        accountNumber: account.externalAccountId, // Wallet address
+        balance: account.calculatedBalance, // Derived from holdings
+        type: 'crypto' as const,
+        institution: account.institutionName || 'MetaMask',
+        lastUpdated: account.updatedAt?.toISOString() || new Date().toISOString(),
+        currency: 'USD',
         status: account.status,
         lastCheckedAt: account.lastCheckedAt
       }))
@@ -81,6 +123,13 @@ router.get("/", requireAuth, async (req: any, res) => {
         id: account.id,
         name: account.accountName || account.institutionName,
         institutionName: account.institutionName,
+        status: account.status || 'disconnected',
+        lastCheckedAt: account.lastCheckedAt || new Date().toISOString()
+      })),
+      ...disconnectedCryptoAccounts.map(account => ({
+        id: account.id,
+        name: account.accountName || account.institutionName,
+        institutionName: account.institutionName || 'MetaMask',
         status: account.status || 'disconnected',
         lastCheckedAt: account.lastCheckedAt || new Date().toISOString()
       }))
