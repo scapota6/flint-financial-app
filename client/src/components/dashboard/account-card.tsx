@@ -57,6 +57,20 @@ export default function AccountCard({ account }: AccountCardProps) {
   const getBankLogo = () => {
     const institution = account.institution.toLowerCase();
     
+    // MetaMask specific logo
+    if (account.provider === 'metamask') {
+      return (
+        <img 
+          src="https://cdn.brandfetch.io/metamask.io" 
+          alt="MetaMask" 
+          className="h-4 w-4 object-contain"
+          onError={(e) => {
+            (e.target as HTMLImageElement).style.display = 'none';
+          }}
+        />
+      );
+    }
+    
     // Bank-specific logos
     if (institution.includes('capitalone') || institution.includes('capital one')) {
       return <SiCapitalone className="h-3 w-3 text-red-500" />;

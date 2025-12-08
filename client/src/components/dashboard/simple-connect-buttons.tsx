@@ -500,7 +500,12 @@ export default function SimpleConnectButtons({ accounts, userTier, isAdmin }: Si
                       </>
                     ) : (
                       <>
-                        <Wallet className="h-4 w-4 mr-2" />
+                        <img 
+                          src="https://cdn.brandfetch.io/metamask.io" 
+                          alt="MetaMask" 
+                          className="h-4 w-4 mr-2 object-contain"
+                          onError={(e) => (e.target as HTMLImageElement).style.display = 'none'}
+                        />
                         Connect MetaMask
                       </>
                     )}
