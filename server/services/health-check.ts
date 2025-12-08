@@ -81,6 +81,10 @@ export class HealthCheckService {
                 status = 'disconnected';
               }
             }
+          } else if (account.provider === 'metamask') {
+            // MetaMask wallets don't need external health checks
+            // If there's a wallet address, it's considered connected
+            status = account.externalAccountId ? 'connected' : 'disconnected';
           }
 
           // Update status in database

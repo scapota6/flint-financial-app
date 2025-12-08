@@ -1218,6 +1218,63 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
                   </div>
                 </section>
               </>
+            ) : data.provider === 'metamask' ? (
+              /* CRYPTO WALLET LAYOUT - MetaMask accounts */
+              <>
+                {/* 1. Wallet Information */}
+                <section>
+                  <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center">
+                    <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-orange-500 to-amber-500 flex items-center justify-center text-white font-bold text-sm mr-3">🦊</div>
+                    Wallet Information
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    <Info label="Wallet" value={data.account?.name || 'MetaMask'} />
+                    <Info label="Address" value={data.account?.accountNumber || data.account?.walletAddress?.slice(0, 10) + '...' || '—'} />
+                    <Info label="Status" value={data.account?.status || 'connected'} />
+                  </div>
+                </section>
+
+                {/* 2. Portfolio Value */}
+                <section>
+                  <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center">
+                    <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center text-white font-bold text-sm mr-3">💰</div>
+                    Portfolio Value
+                  </h3>
+                  <div className="mb-6 p-6 bg-gradient-to-r from-orange-50 to-amber-50 dark:from-orange-900/20 dark:to-amber-900/20 rounded-lg border border-orange-200 dark:border-orange-800">
+                    <div className="text-center">
+                      <div className="text-xs font-medium text-orange-600 dark:text-orange-400 uppercase tracking-wide mb-2">Total Value</div>
+                      <div className="text-4xl font-bold text-orange-700 dark:text-orange-300">
+                        {fmtMoney(data.balancesAndHoldings?.totalValue || data.account?.balance || 0)}
+                      </div>
+                    </div>
+                  </div>
+                </section>
+
+                {/* 3. Token Holdings */}
+                {data.positions && data.positions.length > 0 && (
+                  <section>
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center">
+                      <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white font-bold text-sm mr-3">🪙</div>
+                      Token Holdings ({data.positions.length})
+                    </h3>
+                    <div className="space-y-3">
+                      {data.positions.map((pos: any, idx: number) => (
+                        <div key={idx} className="p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 flex justify-between items-center">
+                          <div>
+                            <div className="font-bold text-gray-900 dark:text-white">{pos.symbol}</div>
+                            <div className="text-sm text-gray-500 dark:text-gray-400">{pos.name}</div>
+                            <div className="text-xs text-gray-400 dark:text-gray-500">{pos.quantity?.toFixed(6)} tokens</div>
+                          </div>
+                          <div className="text-right">
+                            <div className="font-bold text-gray-900 dark:text-white">{fmtMoney(pos.marketValue || pos.currentValue || 0)}</div>
+                            <div className="text-sm text-gray-500 dark:text-gray-400">@ {fmtMoney(pos.currentPrice || 0)}</div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </section>
+                )}
+              </>
             ) : (
               /* BROKERAGE ACCOUNT LAYOUT - SnapTrade accounts */
               <>

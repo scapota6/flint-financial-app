@@ -3075,6 +3075,74 @@ export async function registerRoutes(app: Express): Promise<Server> {
           });
         }
         
+      } else if (account.provider === 'metamask') {
+        // Handle MetaMask crypto wallet accounts
+        try {
+          // Get holdings for this MetaMask account from database
+          const accountHoldings = await db.select()
+            .from(holdings)
+            .where(eq(holdings.accountId, account.id));
+          
+          // Calculate total value from holdings
+          const totalValue = accountHoldings.reduce((sum, h) => {
+            return sum + Number(h.marketValue || 0);
+          }, 0);
+          
+          // Map holdings to positions format
+          const positions = accountHoldings.map(h => ({
+            symbol: h.symbol,
+            name: h.name,
+            quantity: Number(h.quantity || 0),
+            averageCost: Number(h.averagePrice || 0),
+            currentPrice: Number(h.currentPrice || 0),
+            marketValue: Number(h.marketValue || 0),
+            currentValue: Number(h.marketValue || 0),
+            unrealized: Number(h.gainLoss || 0),
+            profitLoss: Number(h.gainLoss || 0),
+            profitLossPercent: Number(h.gainLossPercentage || 0),
+            type: 'crypto',
+            currency: 'USD'
+          }));
+          
+          res.json({
+            provider: 'metamask',
+            account: {
+              id: account.id,
+              name: account.accountName,
+              institution: 'MetaMask',
+              accountType: 'Crypto Wallet',
+              balance: totalValue,
+              currency: 'USD',
+              accountNumber: account.externalAccountId?.slice(0, 6) + '...' + account.externalAccountId?.slice(-4),
+              walletAddress: account.externalAccountId,
+              status: account.status || 'connected',
+              lastSync: account.lastSynced?.toISOString() || new Date().toISOString()
+            },
+            positions: positions,
+            balancesAndHoldings: {
+              cash: 0,
+              equity: totalValue,
+              totalValue: totalValue
+            },
+            metadata: {
+              fetched_at: new Date().toISOString(),
+              account_type: 'crypto',
+              is_crypto_wallet: true,
+              holdings_count: positions.length
+            }
+          });
+        } catch (error: any) {
+          logger.error('Failed to fetch MetaMask account details', { 
+            error: error.message, 
+            accountId: account.id,
+            userId 
+          });
+          res.status(500).json({ 
+            message: "Failed to fetch MetaMask account details",
+            error: error.message 
+          });
+        }
+        
       } else {
         res.status(400).json({ message: "Unknown account provider" });
       }

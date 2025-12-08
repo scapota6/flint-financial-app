@@ -143,10 +143,12 @@ router.post('/sync', requireAuth, async (req: any, res) => {
     
     const accountId = account[0].id;
     
-    // Update account balance
+    // Update account balance and ensure active status
     await db.update(connectedAccounts)
       .set({
         balance: ethBalance?.toString() || '0',
+        status: 'connected',
+        isActive: true,
         lastSynced: new Date(),
         updatedAt: new Date(),
       })
@@ -178,6 +180,19 @@ router.post('/sync', requireAuth, async (req: any, res) => {
       });
     }
     
+    // Spam token filter - common patterns used by airdrop scams
+    const isSpamToken = (symbol: string, name: string, usdValue: number) => {
+      const combined = `${symbol} ${name}`.toLowerCase();
+      const spamPatterns = [
+        'visit', 'website', '.org', '.com', '.fund', '.io', 
+        'claim', 'reward', 'airdrop', 'free', 'catcoin', 'floki holder',
+        '$cat', 'https://', 'http://', 'aicc', 'ai chain'
+      ];
+      // Also filter tokens with $0 value and very large quantities (likely spam airdrops)
+      const isZeroValueWithLargeQuantity = usdValue === 0 && parseFloat(name) > 1000;
+      return spamPatterns.some(pattern => combined.includes(pattern)) || isZeroValueWithLargeQuantity;
+    };
+    
     // Add token holdings with USD values from Ethplorer
     if (tokens && Array.isArray(tokens)) {
       for (const token of tokens) {
@@ -185,6 +200,12 @@ router.post('/sync', requireAuth, async (req: any, res) => {
         if (tokenBalance > 0) {
           const usdPrice = token.usdPrice || 0;
           const usdValue = token.usdValue || (tokenBalance * usdPrice);
+          
+          // Skip spam tokens
+          if (isSpamToken(token.symbol || '', token.name || '', usdValue)) {
+            console.log('[MetaMask] Filtered spam token:', token.symbol);
+            continue;
+          }
           
           await db.insert(holdings).values({
             userId,
