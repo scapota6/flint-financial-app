@@ -60,6 +60,7 @@ router.post('/', requireAuth, async (req: any, res) => {
         .set({
           balance: ethBalance?.toString() || '0',
           status: 'connected',
+          isActive: true,
           lastSynced: new Date(),
           updatedAt: new Date(),
         })
