@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
@@ -11,8 +11,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { formatCurrency } from '@/lib/utils';
 import { trackAccountDisconnectedShown, trackReconnectClicked, trackReconnectSuccess, trackReconnectFailed } from '@/lib/analytics';
+import { useSDK } from '@metamask/sdk-react';
 import { 
   TrendingUp, 
   TrendingDown, 
@@ -23,7 +25,9 @@ import {
   X,
   Info as InfoIcon,
   AlertCircle,
-  RefreshCw
+  RefreshCw,
+  Send,
+  Loader2
 } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import OrderPreviewDialog from './OrderPreviewDialog';
@@ -243,6 +247,89 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
   const [customPaymentAmount, setCustomPaymentAmount] = useState('');
   const { toast } = useToast();
   const { user: currentUser, isLoading: authLoading, isAuthenticated } = useAuth();
+  
+  // MetaMask SDK for ETH transfers
+  const { sdk, connected: metamaskConnected, account: metamaskAccount } = useSDK();
+  const [ethTransferAddress, setEthTransferAddress] = useState('');
+  const [ethTransferAmount, setEthTransferAmount] = useState('');
+  const [isTransferring, setIsTransferring] = useState(false);
+  
+  // ETH transfer handler using MetaMask SDK
+  const handleEthTransfer = useCallback(async () => {
+    if (!metamaskAccount || !ethTransferAddress || !ethTransferAmount) {
+      toast({
+        title: "Missing Information",
+        description: "Please enter a recipient address and amount",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    // Validate Ethereum address
+    if (!/^0x[a-fA-F0-9]{40}$/.test(ethTransferAddress)) {
+      toast({
+        title: "Invalid Address",
+        description: "Please enter a valid Ethereum address",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    // Validate amount
+    const amount = parseFloat(ethTransferAmount);
+    if (isNaN(amount) || amount <= 0) {
+      toast({
+        title: "Invalid Amount",
+        description: "Please enter a valid amount greater than 0",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    setIsTransferring(true);
+    
+    try {
+      // Convert ETH amount to Wei (1 ETH = 10^18 Wei) using string parsing for precision
+      // Split the amount into integer and decimal parts to avoid floating point errors
+      const [intPart, decPart = ''] = ethTransferAmount.split('.');
+      const paddedDecimal = decPart.padEnd(18, '0').slice(0, 18);
+      const weiString = intPart + paddedDecimal;
+      const weiAmount = BigInt(weiString);
+      const hexValue = '0x' + weiAmount.toString(16);
+      
+      // Request ETH transfer via MetaMask
+      const provider = sdk?.getProvider();
+      if (!provider) throw new Error('MetaMask provider not available');
+      
+      const txHash = await provider.request({
+        method: 'eth_sendTransaction',
+        params: [{
+          from: metamaskAccount,
+          to: ethTransferAddress,
+          value: hexValue,
+        }],
+      });
+      
+      toast({
+        title: "Transfer Initiated",
+        description: `Transaction sent! Hash: ${(txHash as string).slice(0, 10)}...`,
+      });
+      
+      // Clear form
+      setEthTransferAddress('');
+      setEthTransferAmount('');
+      
+    } catch (err: any) {
+      console.error('ETH transfer failed:', err);
+      toast({
+        title: "Transfer Failed",
+        description: err?.message || "Failed to send transaction",
+        variant: "destructive",
+      });
+    } finally {
+      setIsTransferring(false);
+    }
+  }, [metamaskAccount, ethTransferAddress, ethTransferAmount, sdk, toast]);
 
   // Payment mutation
   const paymentMutation = useMutation({
@@ -1274,6 +1361,82 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
                     </div>
                   </section>
                 )}
+
+                {/* 4. Send ETH */}
+                <section>
+                  <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center">
+                    <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center text-white font-bold text-sm mr-3">
+                      <Send className="h-4 w-4" />
+                    </div>
+                    Send ETH
+                  </h3>
+                  <div className="p-6 bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20 rounded-xl border border-blue-200 dark:border-blue-800">
+                    {metamaskConnected && metamaskAccount ? (
+                      <div className="space-y-4">
+                        <div>
+                          <Label htmlFor="eth-recipient" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                            Recipient Address
+                          </Label>
+                          <Input
+                            id="eth-recipient"
+                            type="text"
+                            placeholder="0x..."
+                            value={ethTransferAddress}
+                            onChange={(e) => setEthTransferAddress(e.target.value)}
+                            className="mt-1 font-mono text-sm"
+                            data-testid="input-eth-recipient"
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="eth-amount" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                            Amount (ETH)
+                          </Label>
+                          <Input
+                            id="eth-amount"
+                            type="number"
+                            step="0.0001"
+                            min="0"
+                            placeholder="0.01"
+                            value={ethTransferAmount}
+                            onChange={(e) => setEthTransferAmount(e.target.value)}
+                            className="mt-1"
+                            data-testid="input-eth-amount"
+                          />
+                        </div>
+                        <Button
+                          onClick={handleEthTransfer}
+                          disabled={isTransferring || !ethTransferAddress || !ethTransferAmount}
+                          className="w-full bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white"
+                          data-testid="button-send-eth"
+                        >
+                          {isTransferring ? (
+                            <>
+                              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                              Sending...
+                            </>
+                          ) : (
+                            <>
+                              <Send className="h-4 w-4 mr-2" />
+                              Send ETH
+                            </>
+                          )}
+                        </Button>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 text-center">
+                          MetaMask will prompt you to confirm the transaction
+                        </p>
+                      </div>
+                    ) : (
+                      <div className="text-center py-4">
+                        <p className="text-gray-600 dark:text-gray-400 mb-2">
+                          Connect your MetaMask wallet to send ETH
+                        </p>
+                        <p className="text-xs text-gray-500 dark:text-gray-500">
+                          Use the Connect MetaMask button on your dashboard
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </section>
               </>
             ) : (
               /* BROKERAGE ACCOUNT LAYOUT - SnapTrade accounts */
