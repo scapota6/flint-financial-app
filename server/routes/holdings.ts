@@ -8,6 +8,64 @@ import { eq, and } from 'drizzle-orm';
 
 const router = Router();
 
+// Cache for 24-hour price changes to avoid excessive API calls
+const priceChangeCache: Record<string, { change24hPercent: number; timestamp: number }> = {};
+const CACHE_DURATION = 60000; // 1 minute cache
+
+// Fetch 24-hour price change from CoinGecko (free tier)
+async function get24hPriceChange(symbol: string): Promise<number | undefined> {
+  const cacheKey = symbol.toUpperCase();
+  const now = Date.now();
+  
+  // Return cached value if fresh
+  if (priceChangeCache[cacheKey] && (now - priceChangeCache[cacheKey].timestamp) < CACHE_DURATION) {
+    return priceChangeCache[cacheKey].change24hPercent;
+  }
+  
+  try {
+    // Map common symbols to CoinGecko IDs
+    const coinGeckoIds: Record<string, string> = {
+      'ETH': 'ethereum',
+      'BTC': 'bitcoin',
+      'USDT': 'tether',
+      'USDC': 'usd-coin',
+      'BNB': 'binancecoin',
+      'SOL': 'solana',
+      'XRP': 'ripple',
+      'DOGE': 'dogecoin',
+      'ADA': 'cardano',
+      'AVAX': 'avalanche-2',
+      'DOT': 'polkadot',
+      'LINK': 'chainlink',
+      'MATIC': 'matic-network',
+      'UNI': 'uniswap',
+      'ATOM': 'cosmos',
+      'XLM': 'stellar',
+    };
+    
+    const coinId = coinGeckoIds[cacheKey];
+    if (!coinId) return undefined;
+    
+    const response = await fetch(
+      `https://api.coingecko.com/api/v3/simple/price?ids=${coinId}&vs_currencies=usd&include_24hr_change=true`
+    );
+    
+    if (!response.ok) return undefined;
+    
+    const data = await response.json();
+    const change24h = data[coinId]?.usd_24h_change;
+    
+    if (typeof change24h === 'number') {
+      priceChangeCache[cacheKey] = { change24hPercent: change24h, timestamp: now };
+      return change24h;
+    }
+  } catch (error) {
+    console.error(`[Holdings] Failed to fetch 24h change for ${symbol}:`, error);
+  }
+  
+  return undefined;
+}
+
 router.get('/portfolio-holdings', requireAuth, async (req: any, res) => {
   try {
     // Get user ID from authenticated session (use sub, not email)
@@ -47,6 +105,9 @@ router.get('/portfolio-holdings', requireAuth, async (req: any, res) => {
           const profitLoss = parseFloat(holding.gainLoss?.toString() || '0');
           const profitLossPct = parseFloat(holding.gainLossPercentage?.toString() || '0');
           
+          // Fetch 24-hour price change for this crypto
+          const change24hPercent = await get24hPriceChange(holding.symbol);
+          
           cryptoHoldings.push({
             accountId: account.id.toString(),
             accountName: account.accountName,
@@ -66,6 +127,7 @@ router.get('/portfolio-holdings', requireAuth, async (req: any, res) => {
             shares: quantity,
             gainLoss: profitLoss,
             gainLossPercent: profitLossPct,
+            change24hPercent, // Include 24-hour price change
           });
         }
       }

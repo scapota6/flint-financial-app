@@ -21,6 +21,7 @@ interface Holding {
   profitLossPercent: number;
   currency: string;
   type: string;
+  change24hPercent?: number;
 }
 
 interface RobinhoodHoldingsProps {
@@ -62,7 +63,7 @@ const MiniSparkline = memo(function MiniSparkline({
   symbol: string;
 }) {
   const data = useMemo(() => generateSparklineData(isPositive, symbol), [isPositive, symbol]);
-  const color = isPositive ? '#22c55e' : '#f97316';
+  const color = isPositive ? '#22c55e' : '#ef4444';
   
   return (
     <div className="w-16 h-8 sm:w-20 sm:h-10">
@@ -110,7 +111,7 @@ const PricePill = memo(function PricePill({
       className={`px-3 py-1.5 sm:px-4 sm:py-2 rounded-md text-sm sm:text-base font-semibold ${
         isPositive 
           ? 'bg-green-500 text-white' 
-          : 'bg-orange-500 text-white'
+          : 'bg-red-500 text-white'
       }`}
       data-testid={`price-pill-${isPositive ? 'positive' : 'negative'}`}
     >
@@ -132,7 +133,10 @@ const HoldingRow = memo(function HoldingRow({
                    holding.symbol.includes('-USDT') ||
                    ['BTC', 'ETH', 'USDT', 'BNB', 'SOL', 'XRP', 'DOGE', 'MATIC', 'XLM', 'ADA', 'AVAX', 'DOT'].includes(cleanSymbol.toUpperCase());
   
-  const isPositive = holding.profitLoss >= 0;
+  // Use 24-hour price change if available, otherwise fall back to profit/loss
+  const isPositive = holding.change24hPercent !== undefined 
+    ? holding.change24hPercent >= 0 
+    : holding.profitLoss >= 0;
   
   const formatQuantity = (qty: number) => {
     if (qty >= 1) {
@@ -317,9 +321,9 @@ const RobinhoodHoldings = memo(function RobinhoodHoldings({
             subtitle="Offered by Robinhood Crypto"
           />
           <div className="divide-y divide-gray-800/50">
-            {cryptoHoldings.map((holding) => (
+            {cryptoHoldings.map((holding, index) => (
               <HoldingRow
-                key={`${holding.accountId}-${holding.symbol}`}
+                key={`crypto-${holding.accountId}-${holding.symbol}-${index}`}
                 holding={holding}
                 onClick={() => onHoldingClick?.(holding.symbol, holding.name)}
               />
@@ -332,9 +336,9 @@ const RobinhoodHoldings = memo(function RobinhoodHoldings({
         <div>
           <SectionHeader title="Stocks & ETFs" />
           <div className="divide-y divide-gray-800/50">
-            {stockHoldings.map((holding) => (
+            {stockHoldings.map((holding, index) => (
               <HoldingRow
-                key={`${holding.accountId}-${holding.symbol}`}
+                key={`stock-${holding.accountId}-${holding.symbol}-${index}`}
                 holding={holding}
                 onClick={() => onHoldingClick?.(holding.symbol, holding.name)}
               />
