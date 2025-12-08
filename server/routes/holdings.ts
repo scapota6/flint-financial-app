@@ -10,57 +10,157 @@ const router = Router();
 
 // Cache for 24-hour price changes to avoid excessive API calls
 const priceChangeCache: Record<string, { change24hPercent: number; timestamp: number }> = {};
-const CACHE_DURATION = 60000; // 1 minute cache
+const CACHE_DURATION = 300000; // 5 minute cache to avoid rate limits
 
-// Fetch 24-hour price change from CoinGecko (free tier)
+// CoinGecko IDs for crypto symbols
+const coinGeckoIds: Record<string, string> = {
+  'ETH': 'ethereum',
+  'BTC': 'bitcoin',
+  'USDT': 'tether',
+  'USDC': 'usd-coin',
+  'BNB': 'binancecoin',
+  'SOL': 'solana',
+  'XRP': 'ripple',
+  'DOGE': 'dogecoin',
+  'ADA': 'cardano',
+  'AVAX': 'avalanche-2',
+  'DOT': 'polkadot',
+  'LINK': 'chainlink',
+  'MATIC': 'matic-network',
+  'UNI': 'uniswap',
+  'ATOM': 'cosmos',
+  'XLM': 'stellar',
+  'HEX': 'hex',
+  'SHIB': 'shiba-inu',
+  'LTC': 'litecoin',
+  'AAVE': 'aave',
+  'MKR': 'maker',
+  'CRV': 'curve-dao-token',
+  'COMP': 'compound-governance-token',
+  'SNX': 'havven',
+  'SUSHI': 'sushi',
+  'YFI': 'yearn-finance',
+  '1INCH': '1inch',
+  'BAL': 'balancer',
+  'PEPE': 'pepe',
+};
+
+// Check if a symbol is crypto
+function isCryptoSymbol(symbol: string): boolean {
+  const cleanSymbol = symbol.replace('-USD', '').replace('-USDT', '').toUpperCase();
+  return !!coinGeckoIds[cleanSymbol] || symbol.includes('-USD') || symbol.includes('-USDT');
+}
+
+// Batch fetch 24-hour price changes for multiple crypto symbols
+async function getCrypto24hPriceChanges(symbols: string[]): Promise<Record<string, number>> {
+  const result: Record<string, number> = {};
+  const now = Date.now();
+  
+  // Filter symbols that need fetching
+  const symbolsToFetch: string[] = [];
+  for (const symbol of symbols) {
+    const cleanSymbol = symbol.replace('-USD', '').replace('-USDT', '').toUpperCase();
+    if (priceChangeCache[cleanSymbol] && (now - priceChangeCache[cleanSymbol].timestamp) < CACHE_DURATION) {
+      result[symbol] = priceChangeCache[cleanSymbol].change24hPercent;
+    } else if (coinGeckoIds[cleanSymbol]) {
+      symbolsToFetch.push(symbol);
+    }
+  }
+  
+  if (symbolsToFetch.length === 0) return result;
+  
+  try {
+    // Build batch request for CoinGecko
+    const coinIds = symbolsToFetch
+      .map(s => coinGeckoIds[s.replace('-USD', '').replace('-USDT', '').toUpperCase()])
+      .filter(Boolean)
+      .join(',');
+    
+    if (!coinIds) return result;
+    
+    const response = await fetch(
+      `https://api.coingecko.com/api/v3/simple/price?ids=${coinIds}&vs_currencies=usd&include_24hr_change=true`
+    );
+    
+    if (!response.ok) {
+      console.error('[Holdings] CoinGecko API error:', response.status);
+      return result;
+    }
+    
+    const data = await response.json();
+    
+    // Map results back to symbols
+    for (const symbol of symbolsToFetch) {
+      const cleanSymbol = symbol.replace('-USD', '').replace('-USDT', '').toUpperCase();
+      const coinId = coinGeckoIds[cleanSymbol];
+      if (coinId && data[coinId]?.usd_24h_change !== undefined) {
+        const change24h = data[coinId].usd_24h_change;
+        priceChangeCache[cleanSymbol] = { change24hPercent: change24h, timestamp: now };
+        result[symbol] = change24h;
+      }
+    }
+  } catch (error) {
+    console.error('[Holdings] Failed to batch fetch crypto 24h changes:', error);
+  }
+  
+  return result;
+}
+
+// Fetch 24-hour price change for a single symbol (crypto or stock)
 async function get24hPriceChange(symbol: string): Promise<number | undefined> {
-  const cacheKey = symbol.toUpperCase();
+  const cleanSymbol = symbol.replace('-USD', '').replace('-USDT', '').toUpperCase();
   const now = Date.now();
   
   // Return cached value if fresh
-  if (priceChangeCache[cacheKey] && (now - priceChangeCache[cacheKey].timestamp) < CACHE_DURATION) {
-    return priceChangeCache[cacheKey].change24hPercent;
+  if (priceChangeCache[cleanSymbol] && (now - priceChangeCache[cleanSymbol].timestamp) < CACHE_DURATION) {
+    return priceChangeCache[cleanSymbol].change24hPercent;
   }
   
-  try {
-    // Map common symbols to CoinGecko IDs
-    const coinGeckoIds: Record<string, string> = {
-      'ETH': 'ethereum',
-      'BTC': 'bitcoin',
-      'USDT': 'tether',
-      'USDC': 'usd-coin',
-      'BNB': 'binancecoin',
-      'SOL': 'solana',
-      'XRP': 'ripple',
-      'DOGE': 'dogecoin',
-      'ADA': 'cardano',
-      'AVAX': 'avalanche-2',
-      'DOT': 'polkadot',
-      'LINK': 'chainlink',
-      'MATIC': 'matic-network',
-      'UNI': 'uniswap',
-      'ATOM': 'cosmos',
-      'XLM': 'stellar',
-    };
-    
-    const coinId = coinGeckoIds[cacheKey];
-    if (!coinId) return undefined;
-    
-    const response = await fetch(
-      `https://api.coingecko.com/api/v3/simple/price?ids=${coinId}&vs_currencies=usd&include_24hr_change=true`
-    );
-    
-    if (!response.ok) return undefined;
-    
-    const data = await response.json();
-    const change24h = data[coinId]?.usd_24h_change;
-    
-    if (typeof change24h === 'number') {
-      priceChangeCache[cacheKey] = { change24hPercent: change24h, timestamp: now };
-      return change24h;
+  // For crypto, use CoinGecko
+  const coinId = coinGeckoIds[cleanSymbol];
+  if (coinId) {
+    try {
+      const response = await fetch(
+        `https://api.coingecko.com/api/v3/simple/price?ids=${coinId}&vs_currencies=usd&include_24hr_change=true`
+      );
+      
+      if (response.ok) {
+        const data = await response.json();
+        const change24h = data[coinId]?.usd_24h_change;
+        
+        if (typeof change24h === 'number') {
+          priceChangeCache[cleanSymbol] = { change24hPercent: change24h, timestamp: now };
+          return change24h;
+        }
+      }
+    } catch (error) {
+      console.error(`[Holdings] Failed to fetch crypto 24h change for ${symbol}:`, error);
     }
-  } catch (error) {
-    console.error(`[Holdings] Failed to fetch 24h change for ${symbol}:`, error);
+  }
+  
+  // For stocks, use Alpha Vantage quote API (has daily change)
+  if (!isCryptoSymbol(symbol) && process.env.ALPHA_VANTAGE_API_KEY) {
+    try {
+      const response = await fetch(
+        `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${cleanSymbol}&apikey=${process.env.ALPHA_VANTAGE_API_KEY}`
+      );
+      
+      if (response.ok) {
+        const data = await response.json();
+        const quote = data['Global Quote'];
+        if (quote && quote['10. change percent']) {
+          // Alpha Vantage returns change percent as string like "1.25%"
+          const changeStr = quote['10. change percent'].replace('%', '');
+          const change24h = parseFloat(changeStr);
+          if (!isNaN(change24h)) {
+            priceChangeCache[cleanSymbol] = { change24hPercent: change24h, timestamp: now };
+            return change24h;
+          }
+        }
+      }
+    } catch (error) {
+      console.error(`[Holdings] Failed to fetch stock 24h change for ${symbol}:`, error);
+    }
   }
   
   return undefined;
@@ -230,8 +330,31 @@ router.get('/portfolio-holdings', requireAuth, async (req: any, res) => {
       // Flatten all positions into a single array and filter out empty positions
       const snaptradeHoldings = positionsArrays.flat().filter(h => h.quantity > 0 && h.symbol !== 'N/A');
       
-      // Combine SnapTrade holdings with crypto holdings
-      const allHoldings = [...snaptradeHoldings, ...cryptoHoldings];
+      // Fetch 24-hour price changes for all holdings in parallel
+      const allSymbols = [...snaptradeHoldings, ...cryptoHoldings].map(h => h.symbol);
+      const cryptoSymbols = allSymbols.filter(s => isCryptoSymbol(s));
+      const stockSymbols = allSymbols.filter(s => !isCryptoSymbol(s));
+      
+      // Batch fetch crypto changes
+      const cryptoChanges = await getCrypto24hPriceChanges(cryptoSymbols);
+      
+      // Fetch stock changes (limited to avoid API rate limits)
+      const stockChanges: Record<string, number> = {};
+      for (const symbol of stockSymbols.slice(0, 5)) { // Limit to 5 stocks per request
+        const change = await get24hPriceChange(symbol);
+        if (change !== undefined) {
+          stockChanges[symbol] = change;
+        }
+      }
+      
+      // Add change24hPercent to SnapTrade holdings
+      const snaptradeHoldingsWithChange = snaptradeHoldings.map(h => ({
+        ...h,
+        change24hPercent: cryptoChanges[h.symbol] ?? stockChanges[h.symbol] ?? undefined,
+      }));
+      
+      // Combine SnapTrade holdings with crypto holdings (which already have change24hPercent)
+      const allHoldings = [...snaptradeHoldingsWithChange, ...cryptoHoldings];
       
       console.log(`DEBUG: Final holdings count - SnapTrade: ${snaptradeHoldings.length}, Crypto: ${cryptoHoldings.length}, Total: ${allHoldings.length}`);
       

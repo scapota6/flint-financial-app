@@ -323,7 +323,7 @@ const RobinhoodHoldings = memo(function RobinhoodHoldings({
           <div className="divide-y divide-gray-800/50">
             {cryptoHoldings.map((holding, index) => (
               <HoldingRow
-                key={`crypto-${holding.accountId}-${holding.symbol}-${index}`}
+                key={`crypto-${holding.brokerageName}-${holding.accountId}-${holding.symbol}-${index}`}
                 holding={holding}
                 onClick={() => onHoldingClick?.(holding.symbol, holding.name)}
               />
@@ -338,7 +338,7 @@ const RobinhoodHoldings = memo(function RobinhoodHoldings({
           <div className="divide-y divide-gray-800/50">
             {stockHoldings.map((holding, index) => (
               <HoldingRow
-                key={`stock-${holding.accountId}-${holding.symbol}-${index}`}
+                key={`stock-${holding.brokerageName}-${holding.accountId}-${holding.symbol}-${index}`}
                 holding={holding}
                 onClick={() => onHoldingClick?.(holding.symbol, holding.name)}
               />
