@@ -181,16 +181,22 @@ router.post('/sync', requireAuth, async (req: any, res) => {
     }
     
     // Spam token filter - common patterns used by airdrop scams
-    const isSpamToken = (symbol: string, name: string, usdValue: number) => {
+    const isSpamToken = (symbol: string, name: string, usdValue: number, quantity: number) => {
       const combined = `${symbol} ${name}`.toLowerCase();
       const spamPatterns = [
-        'visit', 'website', '.org', '.com', '.fund', '.io', 
-        'claim', 'reward', 'airdrop', 'free', 'catcoin', 'floki holder',
-        '$cat', 'https://', 'http://', 'aicc', 'ai chain'
+        // URL patterns
+        'visit', 'website', '.org', '.com', '.fund', '.io', '.net', '.xyz',
+        'https://', 'http://', 'www.',
+        // Scam keywords
+        'claim', 'reward', 'airdrop', 'free', 'bonus', 'ticket', 'holder',
+        // Known spam tokens
+        'catcoin', 'floki', '$cat', 'aicc', 'ai chain', 'gainuni', 'shiba',
+        // Other suspicious patterns
+        'voucher', 'prize', 'win', 'gift', 'earn'
       ];
-      // Also filter tokens with $0 value and very large quantities (likely spam airdrops)
-      const isZeroValueWithLargeQuantity = usdValue === 0 && parseFloat(name) > 1000;
-      return spamPatterns.some(pattern => combined.includes(pattern)) || isZeroValueWithLargeQuantity;
+      // Filter tokens with zero USD value but very large quantities (classic airdrop spam)
+      const isLargeQuantityNoValue = usdValue < 0.01 && quantity > 10000;
+      return spamPatterns.some(pattern => combined.includes(pattern)) || isLargeQuantityNoValue;
     };
     
     // Add token holdings with USD values from Ethplorer
@@ -202,7 +208,7 @@ router.post('/sync', requireAuth, async (req: any, res) => {
           const usdValue = token.usdValue || (tokenBalance * usdPrice);
           
           // Skip spam tokens
-          if (isSpamToken(token.symbol || '', token.name || '', usdValue)) {
+          if (isSpamToken(token.symbol || '', token.name || '', usdValue, tokenBalance)) {
             console.log('[MetaMask] Filtered spam token:', token.symbol);
             continue;
           }
