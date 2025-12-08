@@ -165,7 +165,7 @@ export async function createLoginUrl(params: { userId: string; userSecret: strin
     userSecret: params.userSecret,
     immediateRedirect: true,
     customRedirect: params.redirect,
-    connectionType: "trade", // Enable trading connections
+    connectionType: "trade-if-available", // Show both trading and read-only brokerages (Schwab, Robinhood)
   });
   // Return the redirectURI from the response (matches official CLI)
   return (login.data as any)?.redirectURI || (login.data as any)?.url;
@@ -979,7 +979,7 @@ export async function createReconnectLoginUrl(params: {
       immediateRedirect: true,
       customRedirect: params.redirect,
       reconnect: params.authorizationId, // This is the key parameter for fixing connections
-      connectionType: "trade",
+      connectionType: "trade-if-available",
     });
     
     console.log('Reconnect URL generated for disabled connection:', params.authorizationId.slice(-6));

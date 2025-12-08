@@ -2463,7 +2463,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const { data: portal } = await authApi.loginSnapTradeUser({
           userId: snapUser.userId,
           userSecret: snapUser.userSecret,
-          connectionType: "trade", // Default to trade like CLI
+          connectionType: "trade-if-available", // Show both trading and read-only brokerages (Schwab, Robinhood)
           customRedirect: callbackUrl
         });
         
@@ -2491,7 +2491,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             const { data: portal } = await authApi.loginSnapTradeUser({
               userId: snapUser.userId,
               userSecret: snapUser.userSecret,
-              connectionType: "trade"
+              connectionType: "trade-if-available"
             });
             
             return res.json({ url: (portal as any).redirectURI });

@@ -129,7 +129,7 @@ router.post("/snaptrade/register", requireAuth, async (req: any, res) => {
       userSecret: userSecret,
       immediateRedirect: true,
       customRedirect: redirectUrl,
-      connectionType: "trade",
+      connectionType: "trade-if-available", // Show both trading and read-only brokerages (Schwab, Robinhood)
     });
     
     // Step 5: Return the portal URL
@@ -287,7 +287,7 @@ router.post("/snaptrade/register", requireAuth, async (req: any, res) => {
           userSecret: userSecret,
           immediateRedirect: true,
           customRedirect: redirectUrl,
-          connectionType: "trade",
+          connectionType: "trade-if-available", // Show both trading and read-only brokerages (Schwab, Robinhood)
         });
         
         const portalUrl = (loginData as any).redirectURI;
