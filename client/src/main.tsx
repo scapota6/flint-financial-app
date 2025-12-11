@@ -12,7 +12,7 @@ const posthogOptions = {
   api_host: import.meta.env.VITE_PUBLIC_POSTHOG_HOST || 'https://us.i.posthog.com',
   capture_pageview: true,
   capture_pageleave: true,
-  autocapture: true,
+  autocapture: false, // Disable to prevent conflicts with MetaMask SDK cyclic structures
 };
 
 // Render app with error boundary, PostHog provider, and MetaMask provider
