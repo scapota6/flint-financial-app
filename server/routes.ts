@@ -1828,6 +1828,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json({
         categories,
         totalSpending: Math.round(totalSpending * 100) / 100,
+        // Debug info to help diagnose $0 spending issues
+        _debug: {
+          tellerAccountsFound: bankAccounts.length,
+          hasAccessToken: !!tellerAccessToken,
+          dateRange: { startDate: startDate.toISOString(), endDate: endDate.toISOString() },
+          accountsProcessed: bankAccounts.map(a => ({ id: a.id, name: a.accountName, type: a.accountType })),
+        }
       });
 
     } catch (error: any) {
