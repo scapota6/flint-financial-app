@@ -217,13 +217,15 @@ const RobinhoodHoldings = memo(function RobinhoodHoldings({
   });
 
   const hasSnapTradeAccounts = dashboardData?.accounts?.some((acc: any) => acc.provider === 'snaptrade') || false;
+  const hasMetaMaskAccounts = dashboardData?.accounts?.some((acc: any) => acc.provider === 'metamask') || false;
   const isSnapTradeConnected = hasSnapTradeAccounts && dashboardData?.investmentBalance > 0;
+  const hasAnyInvestmentAccount = isSnapTradeConnected || hasMetaMaskAccounts;
 
   useEffect(() => {
-    if (dashboardData && !isSnapTradeConnected) {
+    if (dashboardData && !hasAnyInvestmentAccount) {
       queryClient.removeQueries({ queryKey: ['/api/portfolio-holdings'] });
     }
-  }, [isSnapTradeConnected, dashboardData, queryClient]);
+  }, [hasAnyInvestmentAccount, dashboardData, queryClient]);
 
   const { data: holdingsData = [], isLoading, error } = useQuery<Holding[]>({
     queryKey: ['/api/portfolio-holdings'],
@@ -238,8 +240,8 @@ const RobinhoodHoldings = memo(function RobinhoodHoldings({
       const data = await resp.json();
       return Array.isArray(data) ? data : (data.holdings || []);
     },
-    enabled: isSnapTradeConnected,
-    refetchInterval: isSnapTradeConnected ? 5000 : false,
+    enabled: hasAnyInvestmentAccount,
+    refetchInterval: hasAnyInvestmentAccount ? 5000 : false,
     staleTime: 2000,
     retry: 2,
     retryDelay: 3000,
