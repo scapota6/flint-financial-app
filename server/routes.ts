@@ -834,10 +834,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       if (accounts.data && Array.isArray(accounts.data)) {
         for (const account of accounts.data) {
-          // First parse the live API balance as fallback
+          // First parse the live API balance as fallback - try multiple field paths
           const liveCash = parseDecimal((account as any).cash?.amount);
           const liveBuyingPower = parseDecimal((account as any).buying_power?.amount);
-          const liveBalance = parseDecimal((account as any).total_value?.amount || (account as any).balance?.total?.amount) ?? 0;
+          let liveBalance = parseDecimal(
+            (account as any).total_value?.amount ?? 
+            (account as any).balance?.total?.amount ??
+            (account as any).balance?.equity ??
+            (account as any).market_value ??
+            (account as any).value
+          ) ?? 0;
+          
+          // Log raw account data for debugging balance issues
+          console.log(`[Dashboard] Raw SnapTrade account ${account.id}:`, {
+            name: account.name,
+            institution: account.institution_name,
+            total_value: (account as any).total_value,
+            balance: (account as any).balance,
+            market_value: (account as any).market_value,
+            parsedLiveBalance: liveBalance
+          });
           
           // Try to get cached balance
           const balanceSnapshot = await getBalanceSnapshot(snapUser.userId, snapUser.userSecret, account.id);

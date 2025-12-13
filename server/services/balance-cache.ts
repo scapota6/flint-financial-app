@@ -114,6 +114,8 @@ export async function getBalanceSnapshot(
 
 /**
  * Fetch balance from SnapTrade API and update database cache
+ * Enhanced with fallback to calculate balance from positions for accounts
+ * that don't return balance data (like some Schwab IRA accounts)
  */
 async function fetchAndCacheBalance(
   userId: string,
@@ -124,11 +126,79 @@ async function fetchAndCacheBalance(
     // Fetch fresh balance data from SnapTrade
     const balanceData = await getAccountBalances(userId, userSecret, accountId);
     
-    // Extract balance fields using parseDecimal
-    const cash = parseDecimal(balanceData?.data?.cash?.amount || balanceData?.data?.total?.cash);
-    const totalEquity = parseDecimal(balanceData?.data?.total?.amount || balanceData?.data?.equity);
-    const buyingPower = parseDecimal(balanceData?.data?.buyingPower?.amount || balanceData?.data?.buying_power);
-    const currency = balanceData?.data?.total?.currency || balanceData?.data?.cash?.currency || 'USD';
+    // Log raw response structure for debugging
+    console.log(`[BalanceCache] Raw balance response for account ${accountId}:`, JSON.stringify(balanceData?.data, null, 2));
+    
+    // Extract balance fields - try multiple field paths for different broker formats
+    // Some brokers return total.amount, others return equity, value, or market_value
+    const cash = parseDecimal(
+      balanceData?.data?.cash?.amount ?? 
+      balanceData?.data?.total?.cash ??
+      balanceData?.data?.cash_balance ??
+      balanceData?.data?.available_cash
+    );
+    
+    let totalEquity = parseDecimal(
+      balanceData?.data?.total?.amount ?? 
+      balanceData?.data?.equity ??
+      balanceData?.data?.value ??
+      balanceData?.data?.market_value ??
+      balanceData?.data?.total_value?.amount ??
+      balanceData?.data?.net_value ??
+      balanceData?.data?.account_value
+    );
+    
+    const buyingPower = parseDecimal(
+      balanceData?.data?.buyingPower?.amount ?? 
+      balanceData?.data?.buying_power ??
+      balanceData?.data?.buying_power?.amount
+    );
+    
+    const currency = 
+      balanceData?.data?.total?.currency ?? 
+      balanceData?.data?.cash?.currency ?? 
+      balanceData?.data?.currency ??
+      'USD';
+
+    // FALLBACK: If totalEquity is null/0, try to calculate from positions
+    if ((totalEquity === null || totalEquity === 0) && userId && userSecret) {
+      console.log(`[BalanceCache] Balance is ${totalEquity}, attempting to calculate from positions for account ${accountId}`);
+      
+      try {
+        const { getPositions } = await import('../lib/snaptrade');
+        const positionsData = await getPositions(userId, userSecret, accountId);
+        
+        if (positionsData && Array.isArray(positionsData) && positionsData.length > 0) {
+          const accountData = positionsData[0];
+          const positions = accountData?.positions || [];
+          
+          // Sum up all position market values
+          let calculatedTotal = 0;
+          for (const position of positions) {
+            const positionValue = parseDecimal(
+              position.market_value ??
+              position.value ??
+              ((position.units || position.quantity || 0) * (position.price || position.last_price || 0))
+            );
+            if (positionValue !== null) {
+              calculatedTotal += positionValue;
+            }
+          }
+          
+          // Add cash to total if available
+          if (cash !== null && cash > 0) {
+            calculatedTotal += cash;
+          }
+          
+          if (calculatedTotal > 0) {
+            console.log(`[BalanceCache] Calculated total from ${positions.length} positions: $${calculatedTotal.toFixed(2)}`);
+            totalEquity = calculatedTotal;
+          }
+        }
+      } catch (posError: any) {
+        console.warn(`[BalanceCache] Failed to calculate balance from positions:`, posError.message);
+      }
+    }
 
     const now = new Date();
 
