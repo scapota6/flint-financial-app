@@ -375,8 +375,18 @@ router.get('/portfolio-holdings', requireAuth, async (req: any, res) => {
       return res.json({ holdings: allHoldings, summary, accounts });
     } catch (e:any) {
       const body = e?.responseBody || {};
+      // If SnapTrade fails with invalid credentials, still return MetaMask holdings
       if (e?.status===401 && String(body?.code)==='1083') {
-        return res.status(409).json({ code:'SNAPTRADE_USER_MISMATCH', message:'Stored userSecret does not match provider.' });
+        console.log('[Holdings API] SnapTrade credentials invalid, returning crypto-only holdings');
+        const summary = {
+          totalValue: cryptoHoldings.reduce((sum, h) => sum + h.currentValue, 0),
+          totalCost: cryptoHoldings.reduce((sum, h) => sum + h.totalCost, 0),
+          totalProfitLoss: cryptoHoldings.reduce((sum, h) => sum + h.profitLoss, 0),
+          totalProfitLossPercent: 0,
+          positionCount: cryptoHoldings.length,
+          accountCount: cryptoHoldings.length > 0 ? 1 : 0,
+        };
+        return res.status(200).json({ holdings: cryptoHoldings, summary, accounts: [], snaptradeError: true });
       }
       throw e;
     }
