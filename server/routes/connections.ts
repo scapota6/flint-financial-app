@@ -199,6 +199,84 @@ router.post("/snaptrade/register", requireAuth, async (req: any, res) => {
     // Also check if the error message contains the detail directly
     const errorMessage = error.message || '';
     
+    // Check for error 1083 (invalid userID or userSecret) - stale credentials
+    const isInvalidCredentials = 
+      errorCode === '1083' || 
+      String(errorCode) === '1083' || 
+      errorDetail.toLowerCase().includes('invalid userid or usersecret') ||
+      errorMessage.toLowerCase().includes('invalid userid or usersecret');
+    
+    if (isInvalidCredentials && userId) {
+      // Auto-recovery: Delete stale credentials and re-register
+      logger.warn("SnapTrade credentials invalid - deleting stale record and re-registering", { userId });
+      
+      try {
+        const { db } = await import('../db');
+        const { snaptradeUsers } = await import('@shared/schema');
+        const { eq } = await import('drizzle-orm');
+        
+        // Delete the stale record
+        await db.delete(snaptradeUsers).where(eq(snaptradeUsers.flintUserId, userId));
+        logger.info("Deleted stale SnapTrade user record", { userId });
+        
+        // Try to delete from SnapTrade API as well (best effort)
+        try {
+          await authApi.deleteSnapTradeUser({ userId });
+          logger.info("Deleted stale user from SnapTrade API", { userId });
+        } catch (deleteErr: any) {
+          logger.warn("Could not delete from SnapTrade API (may not exist)", { userId });
+        }
+        
+        // Re-register with SnapTrade
+        const { data: registerData } = await authApi.registerSnapTradeUser({
+          userId: userId,
+        });
+        
+        const userSecret = registerData.userSecret!;
+        
+        // Save new credentials
+        await db.insert(snaptradeUsers).values({
+          flintUserId: userId,
+          snaptradeUserId: userId,
+          userSecret: userSecret,
+        });
+        
+        logger.info("Re-registered SnapTrade user after stale credential cleanup", { userId });
+        
+        // Generate login URL
+        const customRedirectUri = req.body?.redirectUri;
+        const redirectUrl = customRedirectUri || `${req.protocol}://${req.get('host')}/snaptrade/callback`;
+        
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+        const { data: loginData } = await authApi.loginSnapTradeUser({
+          userId: userId,
+          userSecret: userSecret,
+          immediateRedirect: true,
+          customRedirect: redirectUrl,
+          connectionType: "trade-if-available",
+        });
+        
+        const portalUrl = (loginData as any).redirectURI;
+        
+        logger.info("Stale credential recovery successful", { userId, metadata: { hasPortalUrl: !!portalUrl } });
+        
+        return res.json({ 
+          url: portalUrl,
+          redirectUrl: portalUrl,
+          message: "Redirect user to SnapTrade connection portal",
+          recovered: true
+        });
+        
+      } catch (recoveryError: any) {
+        logger.error("Stale credential recovery failed", { 
+          userId, 
+          error: recoveryError.responseBody || recoveryError.message 
+        });
+        // Fall through to original error handling
+      }
+    }
+    
     // Check for error 1010 in multiple ways
     const isUserAlreadyExists = 
       errorCode === '1010' || 
