@@ -1694,7 +1694,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const tellerAccounts = await storage.getConnectedAccounts(userId);
       const bankAccounts = tellerAccounts.filter(acc => acc.provider === 'teller');
       
+      // Get Teller access token from teller_users table (same source as dashboard)
+      const tellerAccessToken = await getTellerAccessToken(userId);
+      
       console.log(`[Analytics] Found ${bankAccounts.length} Teller accounts for user ${userId}`);
+      console.log(`[Analytics] Teller access token: ${tellerAccessToken ? 'FOUND' : 'NOT FOUND'}`);
+      
+      if (!tellerAccessToken && bankAccounts.length > 0) {
+        console.log(`[Analytics] WARNING: No access token available for ${bankAccounts.length} Teller accounts`);
+      }
       
       const categoryMap: Map<string, { amount: number; transactions: any[] }> = new Map();
       let totalSpending = 0;
@@ -1707,9 +1715,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
         console.log(`[Analytics] Processing account: ${account.accountName} (${account.accountType}), externalId: ${account.externalAccountId}`);
 
+        // Use access token from teller_users table (primary) or fallback to account.accessToken
+        const accessToken = tellerAccessToken || account.accessToken;
+        
+        if (!accessToken) {
+          console.log(`[Analytics] Skipping account ${account.accountName} - no access token available`);
+          continue;
+        }
+
         try {
           // Teller uses Basic auth with access token
-          const authHeader = `Basic ${Buffer.from(account.accessToken + ':').toString('base64')}`;
+          const authHeader = `Basic ${Buffer.from(accessToken + ':').toString('base64')}`;
           
           const tellerResponse = await resilientTellerFetch(
             `${getTellerBaseUrl()}/accounts/${account.externalAccountId}/transactions?count=500`,
