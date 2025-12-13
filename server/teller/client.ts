@@ -5,12 +5,25 @@ import { Agent, Dispatcher } from 'undici';
 
 // ===== ENVIRONMENT CONFIGURATION =====
 
+// Users who should use Teller sandbox environment for testing
+const TELLER_SANDBOX_USERS = ['scapota@flint-investing.com'];
+
+/**
+ * Check if a user should use Teller sandbox mode
+ */
+export function isTellerSandboxUser(email?: string): boolean {
+  return email ? TELLER_SANDBOX_USERS.includes(email.toLowerCase()) : false;
+}
+
 /**
  * Get the Teller API base URL
- * Note: Teller uses the same URL for both sandbox and production.
- * The environment is determined by the access token, not the URL.
+ * Returns sandbox URL for designated test users, production URL otherwise.
  */
-export function getTellerBaseUrl(): string {
+export function getTellerBaseUrl(userEmail?: string): string {
+  if (isTellerSandboxUser(userEmail)) {
+    console.log('[Teller] Using SANDBOX environment for user:', userEmail);
+    return 'https://sandbox.teller.io';
+  }
   return 'https://api.teller.io';
 }
 
@@ -135,7 +148,8 @@ export async function resilientTellerFetch(
   url: string,
   options: RequestInit,
   context: string,
-  config: RetryConfig = DEFAULT_RETRY_CONFIG
+  config: RetryConfig = DEFAULT_RETRY_CONFIG,
+  userEmail?: string
 ): Promise<Response> {
   const requestId = generateRequestId();
   

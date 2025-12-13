@@ -246,6 +246,10 @@ const app = express();
   const { startHoldingsSyncService } = await import('./services/holdings-sync');
   startHoldingsSyncService();
 
+  // Start net worth snapshot cron service
+  const { startSnapshotCronService } = await import('./services/snapshot-cron');
+  startSnapshotCronService();
+
   // Validate SnapTrade credentials on startup
   const { validateSnapTradeCredentials } = await import('./lib/snaptrade');
   validateSnapTradeCredentials().then(isValid => {

@@ -10,8 +10,9 @@ import { logger } from "@shared/logger";
 import { getSnapUser } from "../store/snapUsers";
 import { requireAuth } from "../middleware/jwt-auth";
 import { getTellerAccessToken } from "../store/tellerUsers";
-import { resilientTellerFetch } from "../teller/client";
+import { resilientTellerFetch, getTellerBaseUrl } from "../teller/client";
 import { getBalanceSnapshot } from "../services/balance-cache";
+import { createSnapshot, getSnapshotsForPeriod } from "../services/net-worth-snapshot";
 
 /**
  * Safely parse decimal values from SnapTrade API responses
@@ -165,16 +166,21 @@ router.get("/summary", requireAuth, async (req: any, res) => {
             };
             
             // Fetch account info and balances from Teller
+            const tellerBaseUrl = getTellerBaseUrl(userEmail);
             const [accountResponse, balancesResponse] = await Promise.all([
               resilientTellerFetch(
-                `https://api.teller.io/accounts/${account.externalAccountId}`,
+                `${tellerBaseUrl}/accounts/${account.externalAccountId}`,
                 requestOptions,
-                'Portfolio-FetchAccount'
+                'Portfolio-FetchAccount',
+                undefined,
+                userEmail
               ),
               resilientTellerFetch(
-                `https://api.teller.io/accounts/${account.externalAccountId}/balances`,
+                `${tellerBaseUrl}/accounts/${account.externalAccountId}/balances`,
                 requestOptions,
-                'Portfolio-FetchBalances'
+                'Portfolio-FetchBalances',
+                undefined,
+                userEmail
               )
             ]);
             
@@ -250,6 +256,11 @@ router.get("/summary", requireAuth, async (req: any, res) => {
       netWorth: summary.totals.netWorth,
       accounts: accountCount 
     });
+
+    // Create net worth snapshot asynchronously (non-blocking)
+    createSnapshot(userId, userEmail).catch(err =>
+      logger.warn('[Portfolio] Snapshot failed', { metadata: { error: err.message } })
+    );
     
     res.json(summary);
     
@@ -264,7 +275,7 @@ router.get("/summary", requireAuth, async (req: any, res) => {
 
 /**
  * GET /api/portfolio/history
- * Returns historical portfolio values for charting (query parameter version)
+ * Returns historical portfolio values from snapshots (query parameter version)
  */
 router.get("/history", requireAuth, async (req: any, res) => {
   try {
@@ -274,13 +285,16 @@ router.get("/history", requireAuth, async (req: any, res) => {
       return res.status(401).json({ message: "Unauthorized" });
     }
     
-    const period = (req.query.period || '1D') as '1D' | '1W' | '1M' | '3M' | '1Y';
+    const period = (req.query.period || '1M') as string;
     
-    // Generate real portfolio history using transaction data
-    const { generatePortfolioHistory } = await import('../lib/portfolio-history');
-    const dataPoints = await generatePortfolioHistory(userId, period);
+    // Map period to days
+    const periodDays: Record<string, number> = { '1D': 1, '1W': 7, '1M': 30, '3M': 90, '1Y': 365 };
+    const days = periodDays[period] || 30;
     
-    logger.info("Portfolio history generated", {
+    // Get snapshots from database
+    const dataPoints = await getSnapshotsForPeriod(userId, days);
+    
+    logger.info("Portfolio history from snapshots", {
       userId,
       period,
       dataPointsCount: dataPoints.length
@@ -303,7 +317,7 @@ router.get("/history", requireAuth, async (req: any, res) => {
 
 /**
  * GET /api/portfolio/history/:period
- * Returns historical portfolio values for charting (path parameter version)
+ * Returns historical portfolio values from snapshots (path parameter version)
  */
 router.get("/history/:period", requireAuth, async (req: any, res) => {
   try {
@@ -313,16 +327,16 @@ router.get("/history/:period", requireAuth, async (req: any, res) => {
       return res.status(401).json({ message: "Unauthorized" });
     }
     
-    const { period = '1D' } = req.params;
+    const { period = '1M' } = req.params;
     
-    // Generate real portfolio history using transaction data
-    const { generatePortfolioHistory } = await import('../lib/portfolio-history');
-    const dataPoints = await generatePortfolioHistory(
-      userId,
-      period as '1D' | '1W' | '1M' | '3M' | '1Y'
-    );
+    // Map period to days
+    const periodDays: Record<string, number> = { '1D': 1, '1W': 7, '1M': 30, '3M': 90, '1Y': 365 };
+    const days = periodDays[period] || 30;
     
-    logger.info("Portfolio history generated", {
+    // Get snapshots from database
+    const dataPoints = await getSnapshotsForPeriod(userId, days);
+    
+    logger.info("Portfolio history from snapshots", {
       userId,
       period,
       dataPointsCount: dataPoints.length

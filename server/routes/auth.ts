@@ -366,6 +366,13 @@ router.post('/login', rateLimits.login, async (req, res) => {
       login_method: 'password',
     });
 
+    // Create net worth snapshot asynchronously (non-blocking)
+    import('../services/net-worth-snapshot').then(({ createSnapshot }) => {
+      createSnapshot(user.id, user.email).catch(err =>
+        logger.warn('[Login] Snapshot failed', { metadata: { error: err.message } })
+      );
+    });
+
     // DUAL-MODE AUTHENTICATION: Detect platform and return appropriate credentials
     const isMobile = req.headers['x-mobile-app'] === 'true';
 

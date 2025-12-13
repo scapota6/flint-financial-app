@@ -11,6 +11,7 @@ import {
   boolean,
   serial,
   unique,
+  numeric,
 } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
@@ -673,6 +674,26 @@ export const errorLogs = pgTable("error_logs", {
   index("error_logs_error_type_idx").on(table.errorType),
   index("error_logs_user_timestamp_idx").on(table.userId, table.timestamp),
 ]);
+
+// Net worth snapshots table for portfolio history tracking
+export const netWorthSnapshots = pgTable('net_worth_snapshots', {
+  id: serial('id').primaryKey(),
+  userId: varchar('user_id', { length: 255 }).notNull().references(() => users.id),
+  timestamp: timestamp('timestamp').notNull().defaultNow(),
+  totalNetWorth: numeric('total_net_worth', { precision: 20, scale: 2 }).notNull(),
+  cash: numeric('cash', { precision: 20, scale: 2 }),
+  credit: numeric('credit', { precision: 20, scale: 2 }),
+  brokerage: numeric('brokerage', { precision: 20, scale: 2 }),
+  crypto: numeric('crypto', { precision: 20, scale: 2 }),
+}, (table) => [
+  index("net_worth_snapshots_user_idx").on(table.userId),
+  index("net_worth_snapshots_timestamp_idx").on(table.timestamp),
+  index("net_worth_snapshots_user_timestamp_idx").on(table.userId, table.timestamp),
+]);
+
+export const insertNetWorthSnapshotSchema = createInsertSchema(netWorthSnapshots).omit({ id: true });
+export type InsertNetWorthSnapshot = z.infer<typeof insertNetWorthSnapshotSchema>;
+export type NetWorthSnapshot = typeof netWorthSnapshots.$inferSelect;
 
 // Insert schemas for new tables
 export const insertAccountApplicationSchema = createInsertSchema(accountApplications).omit({
