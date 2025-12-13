@@ -15,6 +15,7 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { useQuery } from '@tanstack/react-query';
 import { cn } from '@/lib/utils';
 import flintLogo from '@assets/flint-logo.png';
+import { isInternalTester } from '@/lib/feature-flags';
 
 interface AuthUser {
   id: string;
@@ -35,13 +36,24 @@ export function FloatingHeader({ variant = 'authenticated', onSignupClick }: Flo
     enabled: variant === 'authenticated',
   });
 
-  const authenticatedLinks = [
-    { label: 'Dashboard', href: '/dashboard', comingSoon: false },
-    { label: 'Portfolio', href: '/portfolio', comingSoon: false },
-    { label: 'Accounts', href: '/accounts', comingSoon: false },
-    { label: 'Transfers', href: '/transfers', comingSoon: true },
-    { label: 'Trading', href: '/trading', comingSoon: true },
-  ];
+  const authenticatedLinks = React.useMemo(() => {
+    const links = [
+      { label: 'Dashboard', href: '/dashboard', comingSoon: false },
+    ];
+    
+    if (isInternalTester(user?.email)) {
+      links.push({ label: 'Analytics', href: '/analytics', comingSoon: false });
+    }
+    
+    links.push(
+      { label: 'Portfolio', href: '/portfolio', comingSoon: false },
+      { label: 'Accounts', href: '/accounts', comingSoon: false },
+      { label: 'Transfers', href: '/transfers', comingSoon: true },
+      { label: 'Trading', href: '/trading', comingSoon: true },
+    );
+    
+    return links;
+  }, [user?.email]);
 
   const landingLinks = [
     { label: 'Features', href: '#features', comingSoon: false },
