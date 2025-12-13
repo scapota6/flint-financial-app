@@ -102,6 +102,54 @@ router.post("/snaptrade/register", requireAuth, async (req: any, res) => {
       userSecret = existingUser.userSecret;
       snaptradeUserId = existingUser.snaptradeUserId;
       logger.info("Using existing SnapTrade user", { userId });
+      
+      // Proactively validate credentials before using them
+      try {
+        const { listBrokerageAuthorizations } = await import('../lib/snaptrade');
+        await listBrokerageAuthorizations(snaptradeUserId, userSecret);
+        logger.info("SnapTrade credentials validated successfully", { userId });
+      } catch (validationError: any) {
+        const isInvalid = 
+          validationError.status === 401 || 
+          validationError.responseBody?.code === '1083' ||
+          validationError.message?.includes('401');
+        
+        if (isInvalid) {
+          logger.warn("Stale SnapTrade credentials detected - cleaning up and re-registering", { userId });
+          
+          // Delete stale record
+          await db.delete(snaptradeUsers).where(eq(snaptradeUsers.flintUserId, userId));
+          
+          // Try to delete from SnapTrade API (best effort)
+          try {
+            await authApi.deleteSnapTradeUser({ userId: snaptradeUserId });
+          } catch (e) {
+            // Ignore - user may not exist in SnapTrade
+          }
+          
+          // Re-register with fresh credentials
+          const { data: registerData } = await authApi.registerSnapTradeUser({
+            userId: userId,
+          });
+          
+          userSecret = registerData.userSecret!;
+          snaptradeUserId = userId;
+          
+          await db.insert(snaptradeUsers).values({
+            flintUserId: userId,
+            snaptradeUserId: snaptradeUserId,
+            userSecret: userSecret,
+          });
+          
+          logger.info("Re-registered SnapTrade user with fresh credentials", { userId });
+        } else {
+          // Other validation errors - log but continue (might be temporary API issue)
+          logger.warn("SnapTrade credential validation failed with non-auth error", { 
+            userId, 
+            error: validationError.message 
+          });
+        }
+      }
     }
     
     // Step 4: Call loginSnapTradeUser with dynamic redirect URL
