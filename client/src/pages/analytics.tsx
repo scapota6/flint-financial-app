@@ -487,6 +487,7 @@ export default function Analytics() {
                   key={account.id}
                   className="flex items-center gap-3 p-3 rounded-lg border border-gray-800 hover:border-gray-700 cursor-pointer transition-colors"
                   data-testid={`filter-account-${account.id}`}
+                  onClick={(e) => e.stopPropagation()}
                 >
                   <Checkbox
                     checked={
@@ -494,6 +495,7 @@ export default function Analytics() {
                       selectedAccountIds.includes(account.id)
                     }
                     onCheckedChange={() => handleAccountToggle(account.id)}
+                    onClick={(e) => e.stopPropagation()}
                   />
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-white truncate">
@@ -511,7 +513,10 @@ export default function Analytics() {
             <Button
               variant="outline"
               size="sm"
-              onClick={handleClearFilters}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleClearFilters();
+              }}
               className="flex-1 border-gray-700 hover:bg-gray-800"
               data-testid="button-clear-filters"
             >
@@ -519,7 +524,10 @@ export default function Analytics() {
             </Button>
             <Button
               size="sm"
-              onClick={() => setIsFilterOpen(false)}
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsFilterOpen(false);
+              }}
               className="flex-1 bg-blue-600 hover:bg-blue-700"
               data-testid="button-apply-filters"
             >
