@@ -1623,11 +1623,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Analytics Spending endpoint - aggregate transactions by category for spending analysis
   app.get('/api/analytics/spending', rateLimits.data, requireAuth, async (req: any, res) => {
+    console.log('[Analytics] === SPENDING ENDPOINT CALLED ===');
     try {
       const userId = req.user.claims.sub;
+      console.log('[Analytics] User ID:', userId);
+      
       const user = await storage.getUser(userId);
+      console.log('[Analytics] User found:', !!user);
       
       if (!user) {
+        console.log('[Analytics] User not found, returning 404');
         return res.status(404).json({ message: 'User not found' });
       }
 
@@ -1695,7 +1700,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const bankAccounts = tellerAccounts.filter(acc => acc.provider === 'teller');
       
       // Get Teller access token from teller_users table (same source as dashboard)
-      const tellerAccessToken = await getTellerAccessToken(userId);
+      let tellerAccessToken: string | null = null;
+      try {
+        tellerAccessToken = await getTellerAccessToken(userId);
+        console.log(`[Analytics] Teller access token fetch successful: ${tellerAccessToken ? 'FOUND' : 'NOT FOUND'}`);
+      } catch (tokenError) {
+        console.error('[Analytics] Error fetching Teller access token:', tokenError);
+        // Continue without token - will use account.accessToken fallback
+      }
       
       console.log(`[Analytics] Found ${bankAccounts.length} Teller accounts for user ${userId}`);
       console.log(`[Analytics] Teller access token: ${tellerAccessToken ? 'FOUND' : 'NOT FOUND'}`);
