@@ -1,4 +1,4 @@
-import { useState, useEffect, memo } from 'react';
+import { useState, useEffect, memo, useMemo } from 'react';
 import { Link, useLocation } from 'wouter';
 import { Menu, X, User, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -11,19 +11,12 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { useQuery } from '@tanstack/react-query';
+import { isInternalTester } from '@/lib/feature-flags';
 
 interface AuthUser {
   id: string;
   email: string;
 }
-
-const navLinks = [
-  { href: '/', label: 'Dashboard', comingSoon: false },
-  { href: '/portfolio', label: 'Portfolio', comingSoon: false },
-  { href: '/accounts', label: 'Accounts', comingSoon: false },
-  { href: '/transfers', label: 'Transfers (Coming Soon)', comingSoon: true },
-  { href: '/trading', label: 'Trading (Coming Soon)', comingSoon: true },
-];
 
 const GlobalNavbar = memo(function GlobalNavbar() {
   const [location] = useLocation();
@@ -32,6 +25,25 @@ const GlobalNavbar = memo(function GlobalNavbar() {
   const { data: user } = useQuery<AuthUser>({
     queryKey: ['/api/auth/user'],
   });
+
+  const navLinks = useMemo(() => {
+    const links = [
+      { href: '/', label: 'Dashboard', comingSoon: false },
+    ];
+    
+    if (isInternalTester(user?.email)) {
+      links.push({ href: '/analytics', label: 'Analytics', comingSoon: false });
+    }
+    
+    links.push(
+      { href: '/portfolio', label: 'Portfolio', comingSoon: false },
+      { href: '/accounts', label: 'Accounts', comingSoon: false },
+      { href: '/transfers', label: 'Transfers (Coming Soon)', comingSoon: true },
+      { href: '/trading', label: 'Trading (Coming Soon)', comingSoon: true },
+    );
+    
+    return links;
+  }, [user?.email]);
 
   // Close mobile menu when location changes
   useEffect(() => {
