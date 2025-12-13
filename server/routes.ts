@@ -1631,6 +1631,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: 'User not found' });
       }
 
+      // Teller category display name mapping for user-friendly labels
+      const CATEGORY_DISPLAY_NAMES: Record<string, string> = {
+        'accommodation': 'Accommodation & Travel',
+        'advertising': 'Advertising',
+        'bar': 'Bars & Nightlife',
+        'charity': 'Charity & Donations',
+        'clothing': 'Clothing & Apparel',
+        'dining': 'Dining & Restaurants',
+        'education': 'Education',
+        'electronics': 'Electronics',
+        'entertainment': 'Entertainment',
+        'fuel': 'Fuel & Gas',
+        'general': 'General',
+        'groceries': 'Groceries',
+        'health': 'Health & Medical',
+        'home': 'Home & Garden',
+        'insurance': 'Insurance',
+        'loan': 'Loan Payments',
+        'office': 'Office Supplies',
+        'phone': 'Phone & Mobile',
+        'service': 'Services',
+        'shopping': 'Shopping',
+        'software': 'Software & Subscriptions',
+        'sport': 'Sports & Fitness',
+        'tax': 'Taxes',
+        'transport': 'Transportation',
+        'transportation': 'Transportation',
+        'utilities': 'Utilities',
+      };
+
       // Parse query parameters
       const month = req.query.month as string; // Format: YYYY-MM
       const months = parseInt(req.query.months as string) || 1;
@@ -1656,18 +1686,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
         ? (Array.isArray(accountIds) ? accountIds : [accountIds])
         : [];
 
-      // Categories to exclude (transfers, payments, etc.)
-      // Normalized to lowercase with no underscores/dashes for matching
-      const excludedPatterns = [
-        'transfer', 'creditcardpayment', 'internaltransfer', 
-        'accounttransfer', 'payment', 'bankfee', 'interest', 
-        'overdraft', 'creditcard', 'cardpayment', 'billpayment',
-        'loanpayment', 'mortgage', 'autopay'
-      ];
+      // Only exclude non-spending categories (transfers, income, investments)
+      // All actual spending categories should be included
+      const excludedPatterns = ['transfer', 'income', 'investment'];
 
-      // Fetch Teller transactions (banking) for spending analysis
+      // Fetch Teller transactions (banking and credit cards) for spending analysis
       const tellerAccounts = await storage.getConnectedAccounts(userId);
       const bankAccounts = tellerAccounts.filter(acc => acc.provider === 'teller');
+      
+      console.log(`[Analytics] Found ${bankAccounts.length} Teller accounts for user ${userId}`);
       
       const categoryMap: Map<string, { amount: number; transactions: any[] }> = new Map();
       let totalSpending = 0;
@@ -1678,20 +1705,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
           continue;
         }
 
+        console.log(`[Analytics] Processing account: ${account.accountName} (${account.accountType}), externalId: ${account.externalAccountId}`);
+
         try {
+          // Teller uses Basic auth with access token
+          const authHeader = `Basic ${Buffer.from(account.accessToken + ':').toString('base64')}`;
+          
           const tellerResponse = await resilientTellerFetch(
             `${getTellerBaseUrl()}/accounts/${account.externalAccountId}/transactions?count=500`,
             {
               method: 'GET',
               headers: {
-                'Authorization': `Bearer ${account.accessToken}`,
+                'Authorization': authHeader,
                 'Content-Type': 'application/json',
               },
-            }
+            },
+            'Analytics-Spending'
           );
 
           if (tellerResponse.ok) {
             const transactions = await tellerResponse.json();
+            console.log(`[Analytics] Fetched ${transactions.length} transactions for account ${account.accountName}`);
             
             for (const txn of transactions) {
               const txnDate = new Date(txn.date);
@@ -1703,16 +1737,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
               const amount = parseFloat(txn.amount);
               if (amount >= 0) continue; // Skip credits/deposits
               
-              // Get category - use Teller's category or default to 'Other'
-              const rawCategory = txn.details?.category || txn.category || 'Other';
-              // Normalize category for display: capitalize first letter
-              const category = rawCategory.charAt(0).toUpperCase() + rawCategory.slice(1).toLowerCase().replace(/[_-]/g, ' ');
+              // Get category from Teller - category is in details.category
+              const rawCategory = txn.details?.category || txn.category || 'general';
+              const normalizedKey = rawCategory.toLowerCase().trim();
               
-              // Normalize for matching: lowercase, remove underscores/dashes/spaces
-              const normalizedCategory = rawCategory.toLowerCase().replace(/[_\-\s]/g, '');
+              // Get user-friendly display name from mapping
+              const displayName = CATEGORY_DISPLAY_NAMES[normalizedKey] || 
+                (rawCategory.charAt(0).toUpperCase() + rawCategory.slice(1).toLowerCase().replace(/[_-]/g, ' '));
               
-              // Skip excluded categories (transfers, payments, etc.)
-              if (excludedPatterns.some(exc => normalizedCategory.includes(exc))) {
+              // Skip excluded categories (transfers, income, investments only)
+              if (excludedPatterns.some(exc => normalizedKey.includes(exc))) {
                 continue;
               }
               
@@ -1727,16 +1761,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
                 amount: spendAmount,
                 accountName: account.accountName || 'Unknown Account',
                 description: txn.description || '',
+                category: displayName,
               };
               
-              // Add to category map
-              if (!categoryMap.has(category)) {
-                categoryMap.set(category, { amount: 0, transactions: [] });
+              // Add to category map using display name
+              if (!categoryMap.has(displayName)) {
+                categoryMap.set(displayName, { amount: 0, transactions: [] });
               }
-              const categoryData = categoryMap.get(category)!;
+              const categoryData = categoryMap.get(displayName)!;
               categoryData.amount += spendAmount;
               categoryData.transactions.push(transaction);
             }
+          } else {
+            console.error(`[Analytics] Failed to fetch transactions for account ${account.id}: ${tellerResponse.status}`);
           }
         } catch (error) {
           console.error(`Error fetching transactions for account ${account.id}:`, error);
@@ -1757,6 +1794,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
           ),
         }))
         .sort((a, b) => b.amount - a.amount);
+
+      console.log(`[Analytics] Returning ${categories.length} categories with total spending: $${totalSpending.toFixed(2)}`);
 
       res.json({
         categories,
