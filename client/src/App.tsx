@@ -44,6 +44,7 @@ const Security = lazy(() => import("@/pages/Security"));
 const Monitoring = lazy(() => import("@/pages/Monitoring"));
 const TellerCallback = lazy(() => import("@/pages/TellerCallback"));
 const AdminDashboard = lazy(() => import("@/pages/admin"));
+const Analytics = lazy(() => import("@/pages/analytics"));
 const TermsOfService = lazy(() => import("@/pages/tos"));
 const PrivacyPolicy = lazy(() => import("@/pages/privacy-policy"));
 
@@ -160,6 +161,7 @@ function Router() {
               <>
                 <Route path="/" component={Dashboard} />
                 <Route path="/dashboard" component={Dashboard} />
+                <Route path="/analytics" component={Analytics} />
                 <Route path="/trading" component={Trading} />
                 <Route path="/transfers" component={Transfers} />
                 <Route path="/watchlist" component={WatchlistPage} />

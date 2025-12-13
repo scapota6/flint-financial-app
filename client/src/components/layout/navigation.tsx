@@ -3,8 +3,9 @@ import { useLocation } from "wouter";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Bell, LogOut, Menu, X } from "lucide-react";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import SearchBar from "@/components/ui/search-bar";
+import { isInternalTester } from "@/lib/feature-flags";
 
 export default function Navigation() {
   const { user } = useAuth();
@@ -15,14 +16,25 @@ export default function Navigation() {
     window.location.href = "/api/logout";
   };
 
-  const navItems = [
-    { path: "/", label: "Dashboard", active: location === "/" },
-    { path: "/trading", label: "Trading", active: location === "/trading" },
-    { path: "/transfers", label: "Transfers", active: location === "/transfers" },
-    { path: "/watchlist", label: "Watchlist", active: location === "/watchlist" },
-    { path: "/news", label: "News", active: location === "/news" },
-    { path: "/activity", label: "Activity", active: location === "/activity" },
-  ];
+  const navItems = useMemo(() => {
+    const baseItems = [
+      { path: "/", label: "Dashboard", active: location === "/" },
+    ];
+    
+    if (isInternalTester(user?.email)) {
+      baseItems.push({ path: "/analytics", label: "Analytics", active: location === "/analytics" });
+    }
+    
+    baseItems.push(
+      { path: "/trading", label: "Trading", active: location === "/trading" },
+      { path: "/transfers", label: "Transfers", active: location === "/transfers" },
+      { path: "/watchlist", label: "Watchlist", active: location === "/watchlist" },
+      { path: "/news", label: "News", active: location === "/news" },
+      { path: "/activity", label: "Activity", active: location === "/activity" },
+    );
+    
+    return baseItems;
+  }, [location, user?.email]);
 
   return (
     <header className="bg-gray-900 border-b border-gray-700 sticky top-0 z-50">
