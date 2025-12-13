@@ -1,17 +1,31 @@
 import { useLocation } from "wouter";
 import { Link } from "wouter";
-import { Home, TrendingUp, ArrowLeftRight, Star, History } from "lucide-react";
+import { Home, TrendingUp, ArrowLeftRight, Star, History, BarChart3 } from "lucide-react";
+import { useMemo } from "react";
+import { useAuth } from "@/hooks/useAuth";
+import { isInternalTester } from "@/lib/feature-flags";
 
 export default function MobileNav() {
   const [location] = useLocation();
+  const { user } = useAuth();
 
-  const navItems = [
-    { path: "/", label: "Dashboard", icon: Home, active: location === "/" },
-    { path: "/trading", label: "Trading", icon: TrendingUp, active: location === "/trading" },
-    { path: "/transfers", label: "Transfers", icon: ArrowLeftRight, active: location === "/transfers" },
-    { path: "/watchlist", label: "Watchlist", icon: Star, active: location === "/watchlist" },
-    { path: "/activity", label: "Activity", icon: History, active: location === "/activity" },
-  ];
+  const navItems = useMemo(() => {
+    const items = [
+      { path: "/", label: "Home", icon: Home, active: location === "/" },
+    ];
+    
+    if (isInternalTester(user?.email)) {
+      items.push({ path: "/analytics", label: "Analytics", icon: BarChart3, active: location === "/analytics" });
+    }
+    
+    items.push(
+      { path: "/trading", label: "Trading", icon: TrendingUp, active: location === "/trading" },
+      { path: "/transfers", label: "Transfers", icon: ArrowLeftRight, active: location === "/transfers" },
+      { path: "/watchlist", label: "Watchlist", icon: Star, active: location === "/watchlist" },
+    );
+    
+    return items;
+  }, [location, user?.email]);
 
   return (
     <div className="md:hidden fixed bottom-0 left-0 right-0 bg-gray-900 border-t border-gray-800 z-50">
