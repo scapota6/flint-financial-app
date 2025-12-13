@@ -1621,7 +1621,159 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Analytics Spending endpoint - aggregate transactions by category for spending analysis
+  app.get('/api/analytics/spending', rateLimits.data, requireAuth, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      
+      if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+      }
 
+      // Parse query parameters
+      const month = req.query.month as string; // Format: YYYY-MM
+      const months = parseInt(req.query.months as string) || 1;
+      const accountIds = req.query['accountIds[]'] as string[] | string | undefined;
+      
+      // Build date range for the query
+      let startDate: Date;
+      let endDate: Date;
+      
+      if (month) {
+        const [year, monthNum] = month.split('-').map(Number);
+        startDate = new Date(year, monthNum - 1, 1);
+        endDate = new Date(year, monthNum - 1 + months, 0); // Last day of the last month
+      } else {
+        // Default to current month
+        const now = new Date();
+        startDate = new Date(now.getFullYear(), now.getMonth() - (months - 1), 1);
+        endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+      }
+
+      // Parse account IDs filter
+      const filterAccountIds: string[] = accountIds 
+        ? (Array.isArray(accountIds) ? accountIds : [accountIds])
+        : [];
+
+      // Categories to exclude (transfers, payments, etc.)
+      // Normalized to lowercase with no underscores/dashes for matching
+      const excludedPatterns = [
+        'transfer', 'creditcardpayment', 'internaltransfer', 
+        'accounttransfer', 'payment', 'bankfee', 'interest', 
+        'overdraft', 'creditcard', 'cardpayment', 'billpayment',
+        'loanpayment', 'mortgage', 'autopay'
+      ];
+
+      // Fetch Teller transactions (banking) for spending analysis
+      const tellerAccounts = await storage.getConnectedAccounts(userId);
+      const bankAccounts = tellerAccounts.filter(acc => acc.provider === 'teller');
+      
+      const categoryMap: Map<string, { amount: number; transactions: any[] }> = new Map();
+      let totalSpending = 0;
+
+      for (const account of bankAccounts) {
+        // Skip if specific account IDs are requested and this account is not in the list
+        if (filterAccountIds.length > 0 && !filterAccountIds.includes(account.id.toString())) {
+          continue;
+        }
+
+        try {
+          const tellerResponse = await resilientTellerFetch(
+            `${getTellerBaseUrl()}/accounts/${account.externalAccountId}/transactions?count=500`,
+            {
+              method: 'GET',
+              headers: {
+                'Authorization': `Bearer ${account.accessToken}`,
+                'Content-Type': 'application/json',
+              },
+            }
+          );
+
+          if (tellerResponse.ok) {
+            const transactions = await tellerResponse.json();
+            
+            for (const txn of transactions) {
+              const txnDate = new Date(txn.date);
+              
+              // Filter by date range
+              if (txnDate < startDate || txnDate > endDate) continue;
+              
+              // Only include spending (negative amounts / debits)
+              const amount = parseFloat(txn.amount);
+              if (amount >= 0) continue; // Skip credits/deposits
+              
+              // Get category - use Teller's category or default to 'Other'
+              const rawCategory = txn.details?.category || txn.category || 'Other';
+              // Normalize category for display: capitalize first letter
+              const category = rawCategory.charAt(0).toUpperCase() + rawCategory.slice(1).toLowerCase().replace(/[_-]/g, ' ');
+              
+              // Normalize for matching: lowercase, remove underscores/dashes/spaces
+              const normalizedCategory = rawCategory.toLowerCase().replace(/[_\-\s]/g, '');
+              
+              // Skip excluded categories (transfers, payments, etc.)
+              if (excludedPatterns.some(exc => normalizedCategory.includes(exc))) {
+                continue;
+              }
+              
+              const spendAmount = Math.abs(amount);
+              totalSpending += spendAmount;
+              
+              // Create transaction record
+              const transaction = {
+                id: txn.id,
+                merchant: txn.details?.counterparty?.name || txn.merchant_name || txn.description,
+                date: txn.date,
+                amount: spendAmount,
+                accountName: account.accountName || 'Unknown Account',
+                description: txn.description || '',
+              };
+              
+              // Add to category map
+              if (!categoryMap.has(category)) {
+                categoryMap.set(category, { amount: 0, transactions: [] });
+              }
+              const categoryData = categoryMap.get(category)!;
+              categoryData.amount += spendAmount;
+              categoryData.transactions.push(transaction);
+            }
+          }
+        } catch (error) {
+          console.error(`Error fetching transactions for account ${account.id}:`, error);
+          logger.error('Analytics spending: failed to fetch account transactions', {
+            error: error instanceof Error ? error : new Error(String(error)),
+            metadata: { accountId: account.id, userId }
+          });
+        }
+      }
+
+      // Convert map to array and sort by amount descending
+      const categories = Array.from(categoryMap.entries())
+        .map(([name, data]) => ({
+          name,
+          amount: Math.round(data.amount * 100) / 100,
+          transactions: data.transactions.sort((a, b) => 
+            new Date(b.date).getTime() - new Date(a.date).getTime()
+          ),
+        }))
+        .sort((a, b) => b.amount - a.amount);
+
+      res.json({
+        categories,
+        totalSpending: Math.round(totalSpending * 100) / 100,
+      });
+
+    } catch (error: any) {
+      console.error('Error fetching analytics spending:', error);
+      logger.error('Analytics spending endpoint error', {
+        error: error instanceof Error ? error : new Error(String(error)),
+      });
+      res.status(500).json({ 
+        message: 'Failed to fetch spending analytics', 
+        error: error.message 
+      });
+    }
+  });
 
   // Trading Aggregation Routes
   app.get('/api/trading/positions', rateLimits.data, requireAuth, async (req: any, res) => {
