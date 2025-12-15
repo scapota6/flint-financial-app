@@ -95,7 +95,7 @@ const app = express();
           'wss://*.infura.io',
           // add your exact Replit base (scheme+host+port) if you ever call absolute URLs
         ],
-        imgSrc: [SELF, 'data:', 'https://cdn.brandfetch.io', 'https://img.logo.dev'],
+        imgSrc: [SELF, 'data:', 'https://cdn.brandfetch.io', 'https://img.logo.dev', 'https://logo.clearbit.com'],
         baseUri: [SELF],
         frameAncestors: [SELF], // adjust if you embed your app elsewhere
         // If you use Stripe web workers or wasm, add workerSrc/childSrc as needed.
