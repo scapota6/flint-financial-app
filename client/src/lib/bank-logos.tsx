@@ -411,7 +411,19 @@ export function getInstitutionLogo(accountName: string) {
     };
   }
   
-  // Crypto Exchanges
+  // Crypto Exchanges & Wallets
+  if (institutionName.includes('metamask')) {
+    return {
+      logo: <img 
+        src={`https://cdn.brandfetch.io/metamask.io?c=${BRANDFETCH_CLIENT_ID}`}
+        alt={displayName}
+        className="h-full w-full object-cover scale-105"
+      />,
+      bgClass: 'bg-orange-500/20',
+      textClass: 'text-orange-500'
+    };
+  }
+  
   if (institutionName.includes('kraken')) {
     return {
       logo: <img 

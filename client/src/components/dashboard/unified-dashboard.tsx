@@ -338,7 +338,10 @@ export default function UnifiedDashboard() {
       {selectedView === 'accounts' && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {connectedAccounts.map((account: any) => {
-            const { logo, bgClass, textClass } = getInstitutionLogo(account.accountName);
+            // For crypto wallets like MetaMask, use provider name for logo lookup
+            const logoLookupName = account.provider === 'metamask' ? 'MetaMask' : 
+              (account.institutionName || account.accountName);
+            const { logo, bgClass, textClass } = getInstitutionLogo(logoLookupName);
             return (
             <Card key={account.id} className="flint-card">
               <CardContent className="p-4">
