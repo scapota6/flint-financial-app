@@ -11,7 +11,7 @@ import { v4 as uuidv4 } from 'uuid';
 import tellerPaymentsRouter from './teller.payments';
 import { getAccountLimit, getConnectionCount } from '../services/connection-limits';
 import { getTellerUser, saveTellerUser, getTellerAccessToken } from '../store/tellerUsers';
-import { resilientTellerFetch, getTellerBaseUrl } from '../teller/client';
+import { resilientTellerFetch, getTellerBaseUrl, isTellerSandboxUser } from '../teller/client';
 
 const router = Router();
 
@@ -46,14 +46,22 @@ router.post("/connect-init", requireAuth, async (req: any, res) => {
     const protocol = req.get('host')?.includes('replit.dev') ? 'https' : req.protocol;
     const redirectUri = `${protocol}://${req.get('host')}/teller/callback`;
     
+    // Get user email to check if they should use sandbox
+    const user = await storage.getUser(userId);
+    const userEmail = user?.email;
+    
+    // Sandbox users get sandbox environment, others use TELLER_ENVIRONMENT or development
+    const environment = isTellerSandboxUser(userEmail) 
+      ? 'sandbox' 
+      : (process.env.TELLER_ENVIRONMENT || 'development');
+    
     logger.info("Teller Connect initialized", { 
-      userId
+      userId,
+      environment,
+      isSandboxUser: isTellerSandboxUser(userEmail)
     });
     
-    // Use environment from TELLER_ENVIRONMENT or default to development
-    const environment = process.env.TELLER_ENVIRONMENT || 'development';
-    
-    console.log('[Teller Connect Init] Returning environment:', environment);
+    console.log('[Teller Connect Init] Returning environment:', environment, 'for user:', userEmail);
     
     res.json({
       applicationId,
