@@ -173,11 +173,12 @@ export default function Connections() {
     setError(null);
     
     try {
-      const response = await fetch('/api/connections/teller/init', {
+      const response = await fetch('/api/teller/connect-init', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-        }
+        },
+        credentials: 'include'
       });
 
       if (!response.ok) {
@@ -185,11 +186,12 @@ export default function Connections() {
         throw new Error(data.message || 'Failed to initialize Teller');
       }
 
-      const { applicationId } = await response.json();
+      const { applicationId, environment } = await response.json();
       
-      // Open Teller Connect popup
+      // Open Teller Connect popup with environment from backend
       const tellerConnect = (window as any).TellerConnect?.setup({
         applicationId: applicationId,
+        environment: environment,
         onSuccess: async (enrollment: any) => {
           // Exchange enrollment for access token
           const exchangeResponse = await fetch('/api/connections/teller/exchange', {

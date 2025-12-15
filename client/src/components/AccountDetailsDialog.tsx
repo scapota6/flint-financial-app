@@ -664,12 +664,13 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
           throw new Error('Failed to initialize Teller reconnection');
         }
         
-        const { applicationId, connectToken } = await response.json();
+        const { applicationId, connectToken, environment } = await response.json();
         
         // Launch Teller Connect in update mode with connectToken
         const tellerConnect = (window as any).TellerConnect?.setup({
           applicationId: applicationId,
           connectToken: connectToken,
+          environment: environment,
           onSuccess: async (enrollment: any) => {
             await refetch();
             setIsReconnecting(false);

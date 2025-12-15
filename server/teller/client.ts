@@ -11,7 +11,7 @@ const TELLER_SANDBOX_USERS = ['scapota@flint-investing.com'];
 /**
  * Check if a user should use Teller sandbox mode
  */
-export function isTellerSandboxUser(email?: string): boolean {
+export function isTellerSandboxUser(email?: string | null): boolean {
   return email ? TELLER_SANDBOX_USERS.includes(email.toLowerCase()) : false;
 }
 

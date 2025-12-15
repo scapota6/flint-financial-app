@@ -1771,10 +1771,21 @@ router.post("/init-update", requireAuth, async (req: any, res) => {
     // For now, we'll use the access token directly as the connectToken
     const connectToken = accessToken;
     
+    // Get user email to check if they should use sandbox
+    const user = await storage.getUser(userId);
+    const userEmail = user?.email;
+    
+    // Sandbox users get sandbox environment, others use TELLER_ENVIRONMENT or development
+    const environment = isTellerSandboxUser(userEmail) 
+      ? 'sandbox' 
+      : (process.env.TELLER_ENVIRONMENT || 'development');
+    
+    console.log('[Teller Update] Returning environment:', environment, 'for user:', userEmail);
+    
     res.json({
       applicationId: process.env.TELLER_APPLICATION_ID,
       connectToken: connectToken,
-      environment: process.env.TELLER_ENVIRONMENT || 'sandbox'
+      environment
     });
     
   } catch (error: any) {
