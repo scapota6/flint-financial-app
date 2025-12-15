@@ -104,36 +104,36 @@ function Router() {
                 <Route path="/reset-password" component={ResetPassword} />
                 <Route path="/tos" component={TermsOfService} />
                 <Route path="/privacy-policy" component={PrivacyPolicy} />
-                {/* Redirect any protected routes to login */}
+                {/* Redirect any protected routes to landing page */}
                 <Route path="/dashboard">
-                  {() => { window.location.href = '/api/login'; return null; }}
+                  {() => { window.location.href = '/'; return null; }}
                 </Route>
                 <Route path="/accounts">
-                  {() => { window.location.href = '/api/login'; return null; }}
+                  {() => { window.location.href = '/'; return null; }}
                 </Route>
                 <Route path="/trading">
-                  {() => { window.location.href = '/api/login'; return null; }}
+                  {() => { window.location.href = '/'; return null; }}
                 </Route>
                 <Route path="/portfolio">
-                  {() => { window.location.href = '/api/login'; return null; }}
+                  {() => { window.location.href = '/'; return null; }}
                 </Route>
                 <Route path="/transfers">
-                  {() => { window.location.href = '/api/login'; return null; }}
+                  {() => { window.location.href = '/'; return null; }}
                 </Route>
                 <Route path="/watchlist">
-                  {() => { window.location.href = '/api/login'; return null; }}
+                  {() => { window.location.href = '/'; return null; }}
                 </Route>
                 <Route path="/activity">
-                  {() => { window.location.href = '/api/login'; return null; }}
+                  {() => { window.location.href = '/'; return null; }}
                 </Route>
                 <Route path="/settings">
-                  {() => { window.location.href = '/api/login'; return null; }}
+                  {() => { window.location.href = '/'; return null; }}
                 </Route>
                 <Route path="/profile">
-                  {() => { window.location.href = '/api/login'; return null; }}
+                  {() => { window.location.href = '/'; return null; }}
                 </Route>
                 <Route path="/subscribe">
-                  {() => { window.location.href = '/api/login'; return null; }}
+                  {() => { window.location.href = '/'; return null; }}
                 </Route>
                 <Route path="/news">
                   {() => { window.location.href = '/'; return null; }}
