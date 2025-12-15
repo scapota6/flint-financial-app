@@ -7,27 +7,19 @@ export function getInstitutionName(accountName: string): string {
   return parts[0].trim();
 }
 
-function createLogoImg(domain: string, displayName: string) {
-  return (
-    <img 
-      src={`https://logo.clearbit.com/${domain}`}
-      alt={displayName}
-      className="h-full w-full object-cover scale-105"
-      onError={(e) => {
-        const target = e.target as HTMLImageElement;
-        target.style.display = 'none';
-      }}
-    />
-  );
-}
-
 export function getInstitutionLogo(accountName: string) {
   const institutionName = getInstitutionName(accountName).toLowerCase();
   const displayName = getInstitutionName(accountName);
 
+  const BRANDFETCH_CLIENT_ID = import.meta.env.VITE_BRANDFETCH_CLIENT_ID || '';
+  
   if (institutionName.includes('robinhood')) {
     return {
-      logo: createLogoImg('robinhood.com', displayName),
+      logo: <img 
+        src={`https://cdn.brandfetch.io/robinhood.com?c=${BRANDFETCH_CLIENT_ID}`}
+        alt={displayName}
+        className="h-full w-full object-cover scale-105"
+      />,
       bgClass: 'bg-green-500/20',
       textClass: 'text-green-500'
     };
@@ -35,7 +27,11 @@ export function getInstitutionLogo(accountName: string) {
   
   if (institutionName.includes('chase') || institutionName.includes('jpmorgan')) {
     return {
-      logo: createLogoImg('chase.com', displayName),
+      logo: <img 
+        src={`https://cdn.brandfetch.io/chase.com?c=${BRANDFETCH_CLIENT_ID}`}
+        alt={displayName}
+        className="h-full w-full object-cover scale-105"
+      />,
       bgClass: 'bg-blue-600/20',
       textClass: 'text-blue-600'
     };
@@ -43,7 +39,11 @@ export function getInstitutionLogo(accountName: string) {
   
   if (institutionName.includes('bank of america')) {
     return {
-      logo: createLogoImg('bankofamerica.com', displayName),
+      logo: <img 
+        src={`https://cdn.brandfetch.io/bankofamerica.com?c=${BRANDFETCH_CLIENT_ID}`}
+        alt={displayName}
+        className="h-full w-full object-cover scale-105"
+      />,
       bgClass: 'bg-red-600/20',
       textClass: 'text-red-600'
     };
@@ -51,7 +51,11 @@ export function getInstitutionLogo(accountName: string) {
   
   if (institutionName.includes('citi')) {
     return {
-      logo: createLogoImg('citi.com', displayName),
+      logo: <img 
+        src={`https://cdn.brandfetch.io/citi.com?c=${BRANDFETCH_CLIENT_ID}`}
+        alt={displayName}
+        className="h-full w-full object-cover scale-105"
+      />,
       bgClass: 'bg-blue-500/20',
       textClass: 'text-blue-500'
     };
@@ -59,7 +63,11 @@ export function getInstitutionLogo(accountName: string) {
   
   if (institutionName.includes('morgan stanley')) {
     return {
-      logo: createLogoImg('morganstanley.com', displayName),
+      logo: <img 
+        src={`https://cdn.brandfetch.io/morganstanley.com?c=${BRANDFETCH_CLIENT_ID}`}
+        alt={displayName}
+        className="h-full w-full object-cover scale-105"
+      />,
       bgClass: 'bg-cyan-600/20',
       textClass: 'text-cyan-600'
     };
@@ -67,7 +75,11 @@ export function getInstitutionLogo(accountName: string) {
   
   if (institutionName.includes('capital') || institutionName.includes('capitalone')) {
     return {
-      logo: createLogoImg('capitalone.com', displayName),
+      logo: <img 
+        src={`https://cdn.brandfetch.io/capitalone.com?c=${BRANDFETCH_CLIENT_ID}`}
+        alt={displayName}
+        className="h-full w-full object-cover scale-105"
+      />,
       bgClass: 'bg-blue-600/20',
       textClass: 'text-blue-600'
     };
@@ -75,7 +87,11 @@ export function getInstitutionLogo(accountName: string) {
   
   if (institutionName.includes('pnc')) {
     return {
-      logo: createLogoImg('pnc.com', displayName),
+      logo: <img 
+        src={`https://cdn.brandfetch.io/pnc.com?c=${BRANDFETCH_CLIENT_ID}`}
+        alt={displayName}
+        className="h-full w-full object-cover scale-105"
+      />,
       bgClass: 'bg-orange-600/20',
       textClass: 'text-orange-600'
     };
@@ -83,7 +99,11 @@ export function getInstitutionLogo(accountName: string) {
   
   if (institutionName.includes('wells fargo')) {
     return {
-      logo: createLogoImg('wellsfargo.com', displayName),
+      logo: <img 
+        src={`https://cdn.brandfetch.io/wellsfargo.com?c=${BRANDFETCH_CLIENT_ID}`}
+        alt={displayName}
+        className="h-full w-full object-cover scale-105"
+      />,
       bgClass: 'bg-amber-600/20',
       textClass: 'text-amber-600'
     };
@@ -91,7 +111,11 @@ export function getInstitutionLogo(accountName: string) {
   
   if (institutionName.includes('american express') || institutionName.includes('amex')) {
     return {
-      logo: createLogoImg('americanexpress.com', displayName),
+      logo: <img 
+        src={`https://cdn.brandfetch.io/americanexpress.com?c=${BRANDFETCH_CLIENT_ID}`}
+        alt={displayName}
+        className="h-full w-full object-cover scale-105"
+      />,
       bgClass: 'bg-cyan-600/20',
       textClass: 'text-cyan-600'
     };
@@ -99,7 +123,11 @@ export function getInstitutionLogo(accountName: string) {
   
   if (institutionName.includes('td bank') || institutionName.includes('td')) {
     return {
-      logo: createLogoImg('td.com', displayName),
+      logo: <img 
+        src={`https://cdn.brandfetch.io/td.com?c=${BRANDFETCH_CLIENT_ID}`}
+        alt={displayName}
+        className="h-full w-full object-cover scale-105"
+      />,
       bgClass: 'bg-emerald-600/20',
       textClass: 'text-emerald-600'
     };
@@ -107,7 +135,11 @@ export function getInstitutionLogo(accountName: string) {
   
   if (institutionName.includes('us bank')) {
     return {
-      logo: createLogoImg('usbank.com', displayName),
+      logo: <img 
+        src={`https://cdn.brandfetch.io/usbank.com?c=${BRANDFETCH_CLIENT_ID}`}
+        alt={displayName}
+        className="h-full w-full object-cover scale-105"
+      />,
       bgClass: 'bg-slate-600/20',
       textClass: 'text-slate-600'
     };
@@ -115,7 +147,11 @@ export function getInstitutionLogo(accountName: string) {
   
   if (institutionName.includes('usaa')) {
     return {
-      logo: createLogoImg('usaa.com', displayName),
+      logo: <img 
+        src={`https://cdn.brandfetch.io/usaa.com?c=${BRANDFETCH_CLIENT_ID}`}
+        alt={displayName}
+        className="h-full w-full object-cover scale-105"
+      />,
       bgClass: 'bg-blue-900/20',
       textClass: 'text-blue-900'
     };
@@ -123,7 +159,11 @@ export function getInstitutionLogo(accountName: string) {
   
   if (institutionName.includes('fidelity')) {
     return {
-      logo: createLogoImg('fidelity.com', displayName),
+      logo: <img 
+        src={`https://cdn.brandfetch.io/fidelity.com?c=${BRANDFETCH_CLIENT_ID}`}
+        alt={displayName}
+        className="h-full w-full object-cover scale-105"
+      />,
       bgClass: 'bg-emerald-600/20',
       textClass: 'text-emerald-600'
     };
@@ -131,7 +171,11 @@ export function getInstitutionLogo(accountName: string) {
   
   if (institutionName.includes('schwab') || institutionName.includes('charles schwab')) {
     return {
-      logo: createLogoImg('schwab.com', displayName),
+      logo: <img 
+        src={`https://cdn.brandfetch.io/schwab.com?c=${BRANDFETCH_CLIENT_ID}`}
+        alt={displayName}
+        className="h-full w-full object-cover scale-105"
+      />,
       bgClass: 'bg-blue-700/20',
       textClass: 'text-blue-700'
     };
@@ -139,7 +183,11 @@ export function getInstitutionLogo(accountName: string) {
   
   if (institutionName.includes('etrade') || institutionName.includes('e*trade') || institutionName.includes('e-trade')) {
     return {
-      logo: createLogoImg('etrade.com', displayName),
+      logo: <img 
+        src={`https://cdn.brandfetch.io/etrade.com?c=${BRANDFETCH_CLIENT_ID}`}
+        alt={displayName}
+        className="h-full w-full object-cover scale-105"
+      />,
       bgClass: 'bg-blue-700/20',
       textClass: 'text-blue-700'
     };
@@ -147,7 +195,11 @@ export function getInstitutionLogo(accountName: string) {
   
   if (institutionName.includes('td ameritrade') || institutionName.includes('thinkorswim')) {
     return {
-      logo: createLogoImg('tdameritrade.com', displayName),
+      logo: <img 
+        src={`https://cdn.brandfetch.io/tdameritrade.com?c=${BRANDFETCH_CLIENT_ID}`}
+        alt={displayName}
+        className="h-full w-full object-cover scale-105"
+      />,
       bgClass: 'bg-green-700/20',
       textClass: 'text-green-700'
     };
@@ -155,7 +207,11 @@ export function getInstitutionLogo(accountName: string) {
   
   if (institutionName.includes('interactive brokers') || institutionName.includes('ibkr')) {
     return {
-      logo: createLogoImg('interactivebrokers.com', displayName),
+      logo: <img 
+        src={`https://cdn.brandfetch.io/interactivebrokers.com?c=${BRANDFETCH_CLIENT_ID}`}
+        alt={displayName}
+        className="h-full w-full object-cover scale-105"
+      />,
       bgClass: 'bg-red-700/20',
       textClass: 'text-red-700'
     };
@@ -163,7 +219,11 @@ export function getInstitutionLogo(accountName: string) {
   
   if (institutionName.includes('webull')) {
     return {
-      logo: createLogoImg('webull.com', displayName),
+      logo: <img 
+        src={`https://cdn.brandfetch.io/webull.com?c=${BRANDFETCH_CLIENT_ID}`}
+        alt={displayName}
+        className="h-full w-full object-cover scale-105"
+      />,
       bgClass: 'bg-yellow-600/20',
       textClass: 'text-yellow-600'
     };
@@ -171,7 +231,11 @@ export function getInstitutionLogo(accountName: string) {
   
   if (institutionName.includes('vanguard')) {
     return {
-      logo: createLogoImg('vanguard.com', displayName),
+      logo: <img 
+        src={`https://cdn.brandfetch.io/vanguard.com?c=${BRANDFETCH_CLIENT_ID}`}
+        alt={displayName}
+        className="h-full w-full object-cover scale-105"
+      />,
       bgClass: 'bg-red-800/20',
       textClass: 'text-red-800'
     };
@@ -179,7 +243,11 @@ export function getInstitutionLogo(accountName: string) {
   
   if (institutionName.includes('merrill') || institutionName.includes('merrill lynch')) {
     return {
-      logo: createLogoImg('ml.com', displayName),
+      logo: <img 
+        src={`https://cdn.brandfetch.io/ml.com?c=${BRANDFETCH_CLIENT_ID}`}
+        alt={displayName}
+        className="h-full w-full object-cover scale-105"
+      />,
       bgClass: 'bg-blue-800/20',
       textClass: 'text-blue-800'
     };
@@ -187,7 +255,11 @@ export function getInstitutionLogo(accountName: string) {
   
   if (institutionName.includes('coinbase')) {
     return {
-      logo: createLogoImg('coinbase.com', displayName),
+      logo: <img 
+        src={`https://cdn.brandfetch.io/coinbase.com?c=${BRANDFETCH_CLIENT_ID}`}
+        alt={displayName}
+        className="h-full w-full object-cover scale-105"
+      />,
       bgClass: 'bg-blue-600/20',
       textClass: 'text-blue-600'
     };
@@ -195,7 +267,11 @@ export function getInstitutionLogo(accountName: string) {
   
   if (institutionName.includes('alpaca')) {
     return {
-      logo: createLogoImg('alpaca.markets', displayName),
+      logo: <img 
+        src={`https://cdn.brandfetch.io/alpaca.markets?c=${BRANDFETCH_CLIENT_ID}`}
+        alt={displayName}
+        className="h-full w-full object-cover scale-105"
+      />,
       bgClass: 'bg-yellow-500/20',
       textClass: 'text-yellow-500'
     };
@@ -203,7 +279,11 @@ export function getInstitutionLogo(accountName: string) {
   
   if (institutionName.includes('tradestation')) {
     return {
-      logo: createLogoImg('tradestation.com', displayName),
+      logo: <img 
+        src={`https://cdn.brandfetch.io/tradestation.com?c=${BRANDFETCH_CLIENT_ID}`}
+        alt={displayName}
+        className="h-full w-full object-cover scale-105"
+      />,
       bgClass: 'bg-blue-500/20',
       textClass: 'text-blue-500'
     };
@@ -211,7 +291,11 @@ export function getInstitutionLogo(accountName: string) {
   
   if (institutionName.includes('tastytrade') || institutionName.includes('tastyworks')) {
     return {
-      logo: createLogoImg('tastytrade.com', displayName),
+      logo: <img 
+        src={`https://cdn.brandfetch.io/tastytrade.com?c=${BRANDFETCH_CLIENT_ID}`}
+        alt={displayName}
+        className="h-full w-full object-cover scale-105"
+      />,
       bgClass: 'bg-red-500/20',
       textClass: 'text-red-500'
     };
@@ -219,7 +303,11 @@ export function getInstitutionLogo(accountName: string) {
   
   if (institutionName.includes('public.com') || institutionName.includes('public')) {
     return {
-      logo: createLogoImg('public.com', displayName),
+      logo: <img 
+        src={`https://cdn.brandfetch.io/public.com?c=${BRANDFETCH_CLIENT_ID}`}
+        alt={displayName}
+        className="h-full w-full object-cover scale-105"
+      />,
       bgClass: 'bg-green-400/20',
       textClass: 'text-green-400'
     };
@@ -227,7 +315,11 @@ export function getInstitutionLogo(accountName: string) {
   
   if (institutionName.includes('ally invest') || institutionName.includes('ally')) {
     return {
-      logo: createLogoImg('ally.com', displayName),
+      logo: <img 
+        src={`https://cdn.brandfetch.io/ally.com?c=${BRANDFETCH_CLIENT_ID}`}
+        alt={displayName}
+        className="h-full w-full object-cover scale-105"
+      />,
       bgClass: 'bg-blue-500/20',
       textClass: 'text-blue-500'
     };
@@ -235,7 +327,11 @@ export function getInstitutionLogo(accountName: string) {
   
   if (institutionName.includes('moomoo')) {
     return {
-      logo: createLogoImg('moomoo.com', displayName),
+      logo: <img 
+        src={`https://cdn.brandfetch.io/moomoo.com?c=${BRANDFETCH_CLIENT_ID}`}
+        alt={displayName}
+        className="h-full w-full object-cover scale-105"
+      />,
       bgClass: 'bg-yellow-400/20',
       textClass: 'text-yellow-400'
     };
@@ -243,7 +339,11 @@ export function getInstitutionLogo(accountName: string) {
   
   if (institutionName.includes('sofi')) {
     return {
-      logo: createLogoImg('sofi.com', displayName),
+      logo: <img 
+        src={`https://cdn.brandfetch.io/sofi.com?c=${BRANDFETCH_CLIENT_ID}`}
+        alt={displayName}
+        className="h-full w-full object-cover scale-105"
+      />,
       bgClass: 'bg-teal-500/20',
       textClass: 'text-teal-500'
     };
@@ -251,7 +351,11 @@ export function getInstitutionLogo(accountName: string) {
   
   if (institutionName.includes('acorns')) {
     return {
-      logo: createLogoImg('acorns.com', displayName),
+      logo: <img 
+        src={`https://cdn.brandfetch.io/acorns.com?c=${BRANDFETCH_CLIENT_ID}`}
+        alt={displayName}
+        className="h-full w-full object-cover scale-105"
+      />,
       bgClass: 'bg-emerald-400/20',
       textClass: 'text-emerald-400'
     };
@@ -259,7 +363,11 @@ export function getInstitutionLogo(accountName: string) {
   
   if (institutionName.includes('stash')) {
     return {
-      logo: createLogoImg('stash.com', displayName),
+      logo: <img 
+        src={`https://cdn.brandfetch.io/stash.com?c=${BRANDFETCH_CLIENT_ID}`}
+        alt={displayName}
+        className="h-full w-full object-cover scale-105"
+      />,
       bgClass: 'bg-cyan-500/20',
       textClass: 'text-cyan-500'
     };
@@ -267,7 +375,11 @@ export function getInstitutionLogo(accountName: string) {
   
   if (institutionName.includes('betterment')) {
     return {
-      logo: createLogoImg('betterment.com', displayName),
+      logo: <img 
+        src={`https://cdn.brandfetch.io/betterment.com?c=${BRANDFETCH_CLIENT_ID}`}
+        alt={displayName}
+        className="h-full w-full object-cover scale-105"
+      />,
       bgClass: 'bg-blue-400/20',
       textClass: 'text-blue-400'
     };
@@ -275,7 +387,11 @@ export function getInstitutionLogo(accountName: string) {
   
   if (institutionName.includes('wealthfront')) {
     return {
-      logo: createLogoImg('wealthfront.com', displayName),
+      logo: <img 
+        src={`https://cdn.brandfetch.io/wealthfront.com?c=${BRANDFETCH_CLIENT_ID}`}
+        alt={displayName}
+        className="h-full w-full object-cover scale-105"
+      />,
       bgClass: 'bg-cyan-500/20',
       textClass: 'text-cyan-500'
     };
@@ -283,7 +399,11 @@ export function getInstitutionLogo(accountName: string) {
   
   if (institutionName.includes('m1 finance') || institutionName.includes('m1')) {
     return {
-      logo: createLogoImg('m1finance.com', displayName),
+      logo: <img 
+        src={`https://cdn.brandfetch.io/m1finance.com?c=${BRANDFETCH_CLIENT_ID}`}
+        alt={displayName}
+        className="h-full w-full object-cover scale-105"
+      />,
       bgClass: 'bg-red-400/20',
       textClass: 'text-red-400'
     };
@@ -291,7 +411,11 @@ export function getInstitutionLogo(accountName: string) {
   
   if (institutionName.includes('metamask')) {
     return {
-      logo: createLogoImg('metamask.io', displayName),
+      logo: <img 
+        src={`https://cdn.brandfetch.io/metamask.io?c=${BRANDFETCH_CLIENT_ID}`}
+        alt={displayName}
+        className="h-full w-full object-cover scale-105"
+      />,
       bgClass: 'bg-orange-500/20',
       textClass: 'text-orange-500'
     };
@@ -299,7 +423,11 @@ export function getInstitutionLogo(accountName: string) {
   
   if (institutionName.includes('kraken')) {
     return {
-      logo: createLogoImg('kraken.com', displayName),
+      logo: <img 
+        src={`https://cdn.brandfetch.io/kraken.com?c=${BRANDFETCH_CLIENT_ID}`}
+        alt={displayName}
+        className="h-full w-full object-cover scale-105"
+      />,
       bgClass: 'bg-blue-600/20',
       textClass: 'text-blue-600'
     };
@@ -307,7 +435,11 @@ export function getInstitutionLogo(accountName: string) {
   
   if (institutionName.includes('gemini')) {
     return {
-      logo: createLogoImg('gemini.com', displayName),
+      logo: <img 
+        src={`https://cdn.brandfetch.io/gemini.com?c=${BRANDFETCH_CLIENT_ID}`}
+        alt={displayName}
+        className="h-full w-full object-cover scale-105"
+      />,
       bgClass: 'bg-cyan-600/20',
       textClass: 'text-cyan-600'
     };
@@ -315,7 +447,11 @@ export function getInstitutionLogo(accountName: string) {
   
   if (institutionName.includes('binance')) {
     return {
-      logo: createLogoImg('binance.com', displayName),
+      logo: <img 
+        src={`https://cdn.brandfetch.io/binance.com?c=${BRANDFETCH_CLIENT_ID}`}
+        alt={displayName}
+        className="h-full w-full object-cover scale-105"
+      />,
       bgClass: 'bg-yellow-500/20',
       textClass: 'text-yellow-500'
     };
@@ -330,7 +466,19 @@ export function getInstitutionLogo(accountName: string) {
     const potentialDomain = `${cleanName}.com`;
     
     return {
-      logo: createLogoImg(potentialDomain, displayName),
+      logo: <img 
+        src={`https://cdn.brandfetch.io/${potentialDomain}?c=${BRANDFETCH_CLIENT_ID}`}
+        alt={displayName}
+        className="h-full w-full object-cover scale-105"
+        onError={(e) => {
+          const target = e.target as HTMLImageElement;
+          target.style.display = 'none';
+          const parent = target.parentElement;
+          if (parent) {
+            parent.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-building-2 h-10 w-10 p-1"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/></svg>';
+          }
+        }}
+      />,
       bgClass: 'bg-gray-500/20',
       textClass: 'text-gray-500'
     };
