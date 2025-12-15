@@ -320,7 +320,6 @@ const RobinhoodHoldings = memo(function RobinhoodHoldings({
         <div className="mb-6">
           <SectionHeader 
             title="Crypto" 
-            subtitle="Offered by Robinhood Crypto"
           />
           <div className="divide-y divide-gray-800/50">
             {cryptoHoldings.map((holding, index) => (
