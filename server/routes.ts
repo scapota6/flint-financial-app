@@ -565,60 +565,56 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Helper function: Fetch all Teller accounts in parallel
+  // Now uses per-account tokens stored in connected_accounts.accessToken
   async function fetchTellerAccounts(
     userId: string,
     userEmail: string,
     tellerAccounts: any[],
-    tellerAccessToken: string | null
+    fallbackAccessToken: string | null // Fallback for legacy accounts without per-account tokens
   ) {
     const enrichedAccounts: any[] = [];
     let totalBalance = 0;
     let bankBalance = 0;
 
     console.log('[Dashboard] Teller accounts found:', tellerAccounts.length);
-    console.log('[Dashboard] Teller access token:', tellerAccessToken ? 'FOUND' : 'NOT FOUND');
+    console.log('[Dashboard] Fallback access token:', fallbackAccessToken ? 'FOUND' : 'NOT FOUND');
 
-    if (!tellerAccessToken || tellerAccounts.length === 0) {
-      // No access token or no accounts - return accounts with needsReconnection flag
-      for (const account of tellerAccounts) {
-        const storedBalance = parseFloat(account.balance) || 0;
-        
-        if (account.accountType === 'card') {
-          enrichedAccounts.push({
-            id: account.id,
-            provider: 'teller',
-            accountName: account.accountName || 'Credit Card',
-            balance: storedBalance,
-            type: 'credit' as const,
-            institution: account.institutionName || 'Credit Card',
-            lastUpdated: account.lastSynced || new Date().toISOString(),
-            needsReconnection: true
-          });
-        } else {
-          enrichedAccounts.push({
-            id: account.id,
-            provider: 'teller',
-            accountName: account.accountName || 'Bank Account',
-            balance: storedBalance,
-            type: 'bank' as const,
-            institution: account.institutionName || 'Bank',
-            lastUpdated: account.lastSynced || new Date().toISOString(),
-            needsReconnection: true
-          });
-        }
-      }
-      
+    if (tellerAccounts.length === 0) {
       return { enrichedAccounts, totalBalance, bankBalance };
     }
 
     // Import helpers for mTLS authentication
     const { resilientTellerFetch } = await import('./teller/client');
-    const authHeader = `Basic ${Buffer.from(tellerAccessToken + ":").toString("base64")}`;
 
     // Fetch all accounts in parallel using Promise.all
     const accountResults = await Promise.all(
       tellerAccounts.map(async (account) => {
-        console.log('[Dashboard] Processing Teller account:', account.id, account.accountName);
+        // Use per-account token if available, fallback to global token for legacy accounts
+        const accountToken = account.accessToken || fallbackAccessToken;
+        
+        if (!accountToken) {
+          // No token available - mark for reconnection
+          console.log('[Dashboard] No token for Teller account:', account.id, '- marking for reconnection');
+          const storedBalance = parseFloat(account.balance) || 0;
+          
+          return {
+            enrichedAccount: {
+              id: account.id,
+              provider: 'teller',
+              accountName: account.accountName || (account.accountType === 'card' ? 'Credit Card' : 'Bank Account'),
+              balance: storedBalance,
+              type: account.accountType === 'card' ? 'credit' as const : 'bank' as const,
+              institution: account.institutionName || (account.accountType === 'card' ? 'Credit Card' : 'Bank'),
+              lastUpdated: account.lastSynced || new Date().toISOString(),
+              needsReconnection: true
+            },
+            displayBalance: 0,
+            accountType: account.accountType === 'card' ? 'credit' : 'bank'
+          };
+        }
+        
+        const authHeader = `Basic ${Buffer.from(accountToken + ":").toString("base64")}`;
+        console.log('[Dashboard] Processing Teller account:', account.id, account.accountName, 'with per-account token');
         
         try {
           // Fetch both account info and balances from Teller with mTLS

@@ -244,7 +244,8 @@ router.post("/save-account", requireAuth, async (req: any, res) => {
         status: 'connected',
         accountType,
         balance: formattedBalance,
-        // NOTE: Access token is NOT stored here - it's in teller_users table to avoid duplication
+        // Store access token per account to support multiple institutions
+        accessToken: accessToken,
       });
     }
     
@@ -426,6 +427,8 @@ router.post("/callback", requireAuth, async (req: any, res) => {
         status: 'connected',
         accountType,
         balance: formattedBalance,
+        // Store access token per account to support multiple institutions
+        accessToken: accessToken,
       });
     }
     
