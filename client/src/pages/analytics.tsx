@@ -27,7 +27,6 @@ import {
 import { useAuth } from "@/hooks/useAuth";
 import { isInternalTester } from "@/lib/feature-flags";
 import { apiGet } from "@/lib/queryClient";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -209,132 +208,53 @@ export default function Analytics() {
             </p>
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-4 mb-6">
-            <Card className="flex-1 bg-gray-900/50 backdrop-blur-lg border border-gray-800">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-gray-400 flex items-center gap-2">
-                  <Calendar className="w-4 h-4" />
-                  Month
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center justify-between">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={handlePrevMonth}
-                    className="hover:bg-gray-800"
-                    data-testid="button-prev-month"
-                  >
-                    <ChevronLeft className="w-5 h-5" />
-                  </Button>
-                  <span className="text-lg font-medium" data-testid="text-selected-month">
-                    {format(selectedMonth, "MMMM yyyy")}
-                  </span>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={handleNextMonth}
-                    disabled={subMonths(selectedMonth, -1) > new Date()}
-                    className="hover:bg-gray-800 disabled:opacity-50"
-                    data-testid="button-next-month"
-                  >
-                    <ChevronRight className="w-5 h-5" />
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-gray-900/50 backdrop-blur-lg border border-gray-800">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-gray-400 flex items-center gap-2">
-                  <TrendingUp className="w-4 h-4" />
-                  View
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex gap-2">
-                  <Button
-                    variant={viewMode === "1" ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => setViewMode("1")}
-                    className={
-                      viewMode === "1"
-                        ? "bg-blue-600 hover:bg-blue-700"
-                        : "border-gray-700 hover:bg-gray-800"
-                    }
-                    data-testid="button-view-1-month"
-                  >
-                    This Month
-                  </Button>
-                  <Button
-                    variant={viewMode === "3" ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => setViewMode("3")}
-                    className={
-                      viewMode === "3"
-                        ? "bg-blue-600 hover:bg-blue-700"
-                        : "border-gray-700 hover:bg-gray-800"
-                    }
-                    data-testid="button-view-3-months"
-                  >
-                    Last 3 Months
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-gray-900/50 backdrop-blur-lg border border-gray-800">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-gray-400 flex items-center gap-2">
-                  <Filter className="w-4 h-4" />
-                  Accounts
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setIsFilterOpen(true)}
-                  className="border-gray-700 hover:bg-gray-800 relative"
-                  data-testid="button-account-filter"
-                >
-                  {selectedAccountIds.length > 0 ? (
-                    <>
-                      {selectedAccountIds.length} selected
-                      <span className="ml-2 w-2 h-2 rounded-full bg-blue-500" />
-                    </>
-                  ) : (
-                    "All Accounts"
-                  )}
-                </Button>
-              </CardContent>
-            </Card>
+          {/* Compact Filter Bar */}
+          <div className="flex items-center justify-between gap-3 mb-6">
+            <div className="flex items-center gap-2 text-sm text-gray-400">
+              <span className="font-medium text-white" data-testid="text-selected-month">
+                {format(selectedMonth, "MMM yyyy")}
+              </span>
+              <span>•</span>
+              <span>{viewMode === "1" ? "This Month" : "3 Months"}</span>
+              {selectedAccountIds.length > 0 && (
+                <>
+                  <span>•</span>
+                  <span>{selectedAccountIds.length} accounts</span>
+                </>
+              )}
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setIsFilterOpen(true)}
+              className="border-gray-700 hover:bg-gray-800 flex items-center gap-2"
+              data-testid="button-open-filters"
+            >
+              <Filter className="w-4 h-4" />
+              <span className="hidden sm:inline">Filters</span>
+              {(selectedAccountIds.length > 0 || viewMode !== "1") && (
+                <span className="w-2 h-2 rounded-full bg-blue-500" />
+              )}
+            </Button>
           </div>
 
           {isSpendingLoading || isDashboardLoading ? (
-            <Card className="bg-gray-900/50 backdrop-blur-lg border border-gray-800">
-              <CardHeader>
-                <Skeleton className="h-6 w-48" />
-              </CardHeader>
-              <CardContent>
-                <div className="h-80 flex items-center justify-center">
-                  <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
-                </div>
-              </CardContent>
-            </Card>
+            <div className="bg-black rounded-xl p-6">
+              <Skeleton className="h-6 w-48 mb-4" />
+              <div className="h-80 flex items-center justify-center">
+                <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
+              </div>
+            </div>
           ) : isError ? (
-            <Card className="bg-gray-900/50 backdrop-blur-lg border border-gray-800">
-              <CardContent className="py-12">
-                <div className="text-center">
-                  <AlertCircle className="w-12 h-12 mx-auto mb-4 text-red-500" />
-                  <h3 className="text-lg font-medium mb-2">Failed to load data</h3>
-                  <p className="text-gray-400 text-sm">
-                    {error instanceof Error ? error.message : "Please try again later"}
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
+            <div className="bg-black rounded-xl p-6">
+              <div className="text-center py-12">
+                <AlertCircle className="w-12 h-12 mx-auto mb-4 text-red-500" />
+                <h3 className="text-lg font-medium mb-2">Failed to load data</h3>
+                <p className="text-gray-400 text-sm">
+                  {error instanceof Error ? error.message : "Please try again later"}
+                </p>
+              </div>
+            </div>
           ) : (
             <>
               <motion.div
@@ -342,21 +262,18 @@ export default function Analytics() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3, delay: 0.1 }}
               >
-                <Card className="bg-gray-900/50 backdrop-blur-lg border border-gray-800 mb-6">
-                  <CardHeader>
-                    <div className="flex items-center justify-between">
-                      <CardTitle className="text-xl font-semibold">
-                        Spending by Category
-                      </CardTitle>
-                      <div className="text-right">
-                        <p className="text-sm text-gray-400">Total Spending</p>
-                        <p className="text-2xl font-bold text-white" data-testid="text-total-spending">
-                          {formatCurrency(spendingData?.totalSpending || 0)}
-                        </p>
-                      </div>
+                <div className="bg-black rounded-xl p-4 sm:p-6 mb-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <h2 className="text-xl font-semibold text-white">
+                      Spending by Category
+                    </h2>
+                    <div className="text-right">
+                      <p className="text-sm text-gray-400">Total</p>
+                      <p className="text-xl sm:text-2xl font-bold text-white" data-testid="text-total-spending">
+                        {formatCurrency(spendingData?.totalSpending || 0)}
+                      </p>
                     </div>
-                  </CardHeader>
-                  <CardContent>
+                  </div>
                     {chartData.length === 0 ? (
                       <div className="h-80 flex items-center justify-center">
                         <div className="text-center">
@@ -428,39 +345,37 @@ export default function Analytics() {
                         </ResponsiveContainer>
                       </div>
                     )}
-                  </CardContent>
-                </Card>
+                </div>
               </motion.div>
 
+              {/* Category cards */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3, delay: 0.2 }}
-                className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4"
+                className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4"
               >
                 {chartData.map((category, index) => (
-                  <Card
+                  <div
                     key={category.name}
-                    className="bg-gray-900/50 backdrop-blur-lg border border-gray-800 cursor-pointer transition-all hover:border-gray-700 hover:scale-[1.02]"
+                    className="bg-black rounded-xl p-3 sm:p-4 cursor-pointer transition-all hover:bg-gray-900"
                     onClick={() => handleBarClick(category)}
                     data-testid={`card-category-${category.name.toLowerCase().replace(/\s+/g, "-")}`}
                   >
-                    <CardContent className="p-4">
-                      <div
-                        className="w-3 h-3 rounded-full mb-2"
-                        style={{
-                          backgroundColor: CATEGORY_COLORS[index % CATEGORY_COLORS.length],
-                        }}
-                      />
-                      <p className="text-sm text-gray-400 truncate">{category.name}</p>
-                      <p className="text-lg font-semibold mt-1">
-                        {formatCurrency(category.amount)}
-                      </p>
-                      <p className="text-xs text-gray-500 mt-1">
-                        {category.transactions?.length || 0} transactions
-                      </p>
-                    </CardContent>
-                  </Card>
+                    <div
+                      className="w-3 h-3 rounded-full mb-2"
+                      style={{
+                        backgroundColor: CATEGORY_COLORS[index % CATEGORY_COLORS.length],
+                      }}
+                    />
+                    <p className="text-xs sm:text-sm text-gray-400 truncate">{category.name}</p>
+                    <p className="text-base sm:text-lg font-semibold mt-1">
+                      {formatCurrency(category.amount)}
+                    </p>
+                    <p className="text-xs text-gray-500 mt-1">
+                      {category.transactions?.length || 0} txns
+                    </p>
+                  </div>
                 ))}
               </motion.div>
             </>
@@ -469,46 +384,125 @@ export default function Analytics() {
       </main>
 
       <Dialog open={isFilterOpen} onOpenChange={setIsFilterOpen}>
-        <DialogContent className="bg-gray-900/95 backdrop-blur-lg border border-gray-800 max-w-md">
+        <DialogContent className="bg-gray-900/95 backdrop-blur-lg border border-gray-800 max-w-md w-[95vw] sm:w-full">
           <DialogHeader>
-            <DialogTitle className="text-white">Filter by Account</DialogTitle>
+            <DialogTitle className="text-white">Filters</DialogTitle>
             <DialogDescription className="text-gray-400">
-              Select accounts to include in the analysis
+              Customize your analytics view
             </DialogDescription>
           </DialogHeader>
-          <div className="space-y-3 max-h-64 overflow-y-auto py-4">
-            {accounts.length === 0 ? (
-              <p className="text-gray-400 text-sm text-center py-4">
-                No accounts connected
+          
+          <div className="space-y-5 py-2">
+            {/* Month Selector */}
+            <div>
+              <p className="text-sm font-medium text-gray-400 mb-2 flex items-center gap-2">
+                <Calendar className="w-4 h-4" />
+                Month
               </p>
-            ) : (
-              accounts.map((account) => (
-                <label
-                  key={account.id}
-                  className="flex items-center gap-3 p-3 rounded-lg border border-gray-800 hover:border-gray-700 cursor-pointer transition-colors"
-                  data-testid={`filter-account-${account.id}`}
-                  onClick={(e) => e.stopPropagation()}
+              <div className="flex items-center justify-between bg-gray-800/50 rounded-lg p-2">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={handlePrevMonth}
+                  className="hover:bg-gray-700 h-8 w-8"
+                  data-testid="button-prev-month"
                 >
-                  <Checkbox
-                    checked={
-                      selectedAccountIds.length === 0 ||
-                      selectedAccountIds.includes(account.id)
-                    }
-                    onCheckedChange={() => handleAccountToggle(account.id)}
-                    onClick={(e) => e.stopPropagation()}
-                  />
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-white truncate">
-                      {account.name}
-                    </p>
-                    <p className="text-xs text-gray-400 truncate">
-                      {account.institution || account.type}
-                    </p>
-                  </div>
-                </label>
-              ))
-            )}
+                  <ChevronLeft className="w-4 h-4" />
+                </Button>
+                <span className="text-sm font-medium text-white" data-testid="text-filter-month">
+                  {format(selectedMonth, "MMMM yyyy")}
+                </span>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={handleNextMonth}
+                  disabled={subMonths(selectedMonth, -1) > new Date()}
+                  className="hover:bg-gray-700 disabled:opacity-50 h-8 w-8"
+                  data-testid="button-next-month"
+                >
+                  <ChevronRight className="w-4 h-4" />
+                </Button>
+              </div>
+            </div>
+
+            {/* View Mode */}
+            <div>
+              <p className="text-sm font-medium text-gray-400 mb-2 flex items-center gap-2">
+                <TrendingUp className="w-4 h-4" />
+                Time Range
+              </p>
+              <div className="flex gap-2">
+                <Button
+                  variant={viewMode === "1" ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setViewMode("1")}
+                  className={`flex-1 ${
+                    viewMode === "1"
+                      ? "bg-blue-600 hover:bg-blue-700"
+                      : "border-gray-700 hover:bg-gray-800"
+                  }`}
+                  data-testid="button-view-1-month"
+                >
+                  This Month
+                </Button>
+                <Button
+                  variant={viewMode === "3" ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setViewMode("3")}
+                  className={`flex-1 ${
+                    viewMode === "3"
+                      ? "bg-blue-600 hover:bg-blue-700"
+                      : "border-gray-700 hover:bg-gray-800"
+                  }`}
+                  data-testid="button-view-3-months"
+                >
+                  Last 3 Months
+                </Button>
+              </div>
+            </div>
+
+            {/* Account Filter */}
+            <div>
+              <p className="text-sm font-medium text-gray-400 mb-2 flex items-center gap-2">
+                <Filter className="w-4 h-4" />
+                Accounts
+              </p>
+              <div className="space-y-2 max-h-48 overflow-y-auto">
+                {accounts.length === 0 ? (
+                  <p className="text-gray-400 text-sm text-center py-4">
+                    No accounts connected
+                  </p>
+                ) : (
+                  accounts.map((account) => (
+                    <label
+                      key={account.id}
+                      className="flex items-center gap-3 p-2 rounded-lg border border-gray-800 hover:border-gray-700 cursor-pointer transition-colors"
+                      data-testid={`filter-account-${account.id}`}
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <Checkbox
+                        checked={
+                          selectedAccountIds.length === 0 ||
+                          selectedAccountIds.includes(account.id)
+                        }
+                        onCheckedChange={() => handleAccountToggle(account.id)}
+                        onClick={(e) => e.stopPropagation()}
+                      />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-white truncate">
+                          {account.name}
+                        </p>
+                        <p className="text-xs text-gray-400 truncate">
+                          {account.institution || account.type}
+                        </p>
+                      </div>
+                    </label>
+                  ))
+                )}
+              </div>
+            </div>
           </div>
+
           <div className="flex gap-3 pt-2">
             <Button
               variant="outline"
@@ -516,11 +510,13 @@ export default function Analytics() {
               onClick={(e) => {
                 e.stopPropagation();
                 handleClearFilters();
+                setViewMode("1");
+                setSelectedMonth(startOfMonth(new Date()));
               }}
               className="flex-1 border-gray-700 hover:bg-gray-800"
               data-testid="button-clear-filters"
             >
-              Clear All
+              Reset All
             </Button>
             <Button
               size="sm"
