@@ -146,6 +146,18 @@ const HoldingRow = memo(function HoldingRow({
     }
   };
 
+  const formatAvgCost = (price: number | undefined | null): string | null => {
+    if (!Number.isFinite(price) || price === null || price === undefined || price <= 0) {
+      return null;
+    }
+    if (price >= 1) {
+      return `$${price.toFixed(2)}`;
+    }
+    return `$${price.toFixed(6)}`;
+  };
+
+  const avgCostDisplay = formatAvgCost(holding.averageCost);
+
   return (
     <div 
       className="flex items-center justify-between py-4 px-2 hover:bg-white/5 transition-colors cursor-pointer rounded-lg"
@@ -159,6 +171,11 @@ const HoldingRow = memo(function HoldingRow({
         <div className="text-xs sm:text-sm text-gray-400 truncate">
           {formatQuantity(holding.quantity)}
         </div>
+        {avgCostDisplay && (
+          <div className="text-xs text-gray-500">
+            Avg: {avgCostDisplay}
+          </div>
+        )}
       </div>
       
       <div className="flex-shrink-0 mx-2 sm:mx-4">
