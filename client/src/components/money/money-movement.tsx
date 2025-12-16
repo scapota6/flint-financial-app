@@ -70,98 +70,94 @@ export default function MoneyMovement() {
     dataTestPrefix: string
   ) => (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-      {/* Money In Card */}
-      <Card className="flint-card">
-        <CardContent className="p-6">
-          <div className="flex items-center gap-2 mb-2">
-            <h4 className="text-sm text-gray-400">Money in</h4>
-          </div>
-          <div className="text-2xl font-bold text-green-400 mb-6" data-testid={`${dataTestPrefix}-money-in`}>
-            {formatCurrency(section.moneyIn || 0)}
-          </div>
+      {/* Money In */}
+      <div className="bg-black rounded-xl p-6">
+        <div className="flex items-center gap-2 mb-2">
+          <h4 className="text-sm text-gray-400">Money in</h4>
+        </div>
+        <div className="text-2xl font-bold text-green-400 mb-6" data-testid={`${dataTestPrefix}-money-in`}>
+          {formatCurrency(section.moneyIn || 0)}
+        </div>
 
-          <div className="mb-6">
-            <p className="text-sm text-gray-400 mb-3">Top sources</p>
-            <div className="space-y-3 max-h-[280px] overflow-y-auto pr-2" style={{ 
-              scrollbarWidth: 'thin',
-              scrollbarColor: '#374151 transparent'
-            }}>
-              {section.topSources && section.topSources.length > 0 ? (
-                section.topSources.map((source, index) => {
-                  const { logo, bgClass } = getMerchantLogo(source.name, source.provider);
-                  return (
-                    <div key={index} className="flex items-center justify-between" data-testid={`${dataTestPrefix}-source-${index}`}>
-                      <div className="flex items-center gap-3">
-                        <div className={`w-10 h-10 rounded-full ${bgClass} flex items-center justify-center flex-shrink-0 overflow-hidden`}>
-                          {logo}
-                        </div>
-                        <span className="text-white">{source.name}</span>
+        <div className="mb-6">
+          <p className="text-sm text-gray-400 mb-3">Top sources</p>
+          <div className="space-y-3 max-h-[280px] overflow-y-auto pr-2" style={{ 
+            scrollbarWidth: 'thin',
+            scrollbarColor: '#374151 transparent'
+          }}>
+            {section.topSources && section.topSources.length > 0 ? (
+              section.topSources.map((source, index) => {
+                const { logo, bgClass } = getMerchantLogo(source.name, source.provider);
+                return (
+                  <div key={index} className="flex items-center justify-between" data-testid={`${dataTestPrefix}-source-${index}`}>
+                    <div className="flex items-center gap-3">
+                      <div className={`w-10 h-10 rounded-full ${bgClass} flex items-center justify-center flex-shrink-0 overflow-hidden`}>
+                        {logo}
                       </div>
-                      <span className="text-white font-medium">{formatCurrency(source.amount)}</span>
+                      <span className="text-white">{source.name}</span>
                     </div>
-                  );
-                })
-              ) : (
-                <p className="text-gray-500 text-sm">No sources for this month</p>
-              )}
-            </div>
+                    <span className="text-white font-medium">{formatCurrency(source.amount)}</span>
+                  </div>
+                );
+              })
+            ) : (
+              <p className="text-gray-500 text-sm">No sources for this month</p>
+            )}
           </div>
+        </div>
 
-          <div className="pt-4 border-t border-gray-800">
-            <p className="text-sm text-gray-400 mb-1">Last 3 months average</p>
-            <p className="text-lg font-semibold text-white" data-testid={`${dataTestPrefix}-avg-money-in`}>
-              {formatShortCurrency(section.threeMonthAverage?.moneyIn || 0)}
-            </p>
-          </div>
-        </CardContent>
-      </Card>
+        <div className="pt-4 border-t border-gray-800">
+          <p className="text-sm text-gray-400 mb-1">Last 3 months average</p>
+          <p className="text-lg font-semibold text-white" data-testid={`${dataTestPrefix}-avg-money-in`}>
+            {formatShortCurrency(section.threeMonthAverage?.moneyIn || 0)}
+          </p>
+        </div>
+      </div>
 
-      {/* Money Out Card */}
-      <Card className="flint-card">
-        <CardContent className="p-6">
-          <div className="flex items-center gap-2 mb-2">
-            <h4 className="text-sm text-gray-400">Money out</h4>
-            <Info className="h-4 w-4 text-gray-500" />
-          </div>
-          <div className="text-2xl font-bold text-red-400 mb-6" data-testid={`${dataTestPrefix}-money-out`}>
-            −{formatCurrency(section.moneyOut || 0)}
-          </div>
+      {/* Money Out */}
+      <div className="bg-black rounded-xl p-6">
+        <div className="flex items-center gap-2 mb-2">
+          <h4 className="text-sm text-gray-400">Money out</h4>
+          <Info className="h-4 w-4 text-gray-500" />
+        </div>
+        <div className="text-2xl font-bold text-red-400 mb-6" data-testid={`${dataTestPrefix}-money-out`}>
+          −{formatCurrency(section.moneyOut || 0)}
+        </div>
 
-          <div className="mb-6">
-            <p className="text-sm text-gray-400 mb-3">Top spend</p>
-            <div className="space-y-3 max-h-[280px] overflow-y-auto pr-2" style={{ 
-              scrollbarWidth: 'thin',
-              scrollbarColor: '#374151 transparent'
-            }}>
-              {section.topSpend && section.topSpend.length > 0 ? (
-                section.topSpend.map((spend, index) => {
-                  const { logo, bgClass } = getMerchantLogo(spend.name, spend.provider);
-                  return (
-                    <div key={index} className="flex items-center justify-between" data-testid={`${dataTestPrefix}-spend-${index}`}>
-                      <div className="flex items-center gap-3">
-                        <div className={`w-10 h-10 rounded-full ${bgClass} flex items-center justify-center flex-shrink-0 overflow-hidden`}>
-                          {logo}
-                        </div>
-                        <span className="text-white">{spend.name}</span>
+        <div className="mb-6">
+          <p className="text-sm text-gray-400 mb-3">Top spend</p>
+          <div className="space-y-3 max-h-[280px] overflow-y-auto pr-2" style={{ 
+            scrollbarWidth: 'thin',
+            scrollbarColor: '#374151 transparent'
+          }}>
+            {section.topSpend && section.topSpend.length > 0 ? (
+              section.topSpend.map((spend, index) => {
+                const { logo, bgClass } = getMerchantLogo(spend.name, spend.provider);
+                return (
+                  <div key={index} className="flex items-center justify-between" data-testid={`${dataTestPrefix}-spend-${index}`}>
+                    <div className="flex items-center gap-3">
+                      <div className={`w-10 h-10 rounded-full ${bgClass} flex items-center justify-center flex-shrink-0 overflow-hidden`}>
+                        {logo}
                       </div>
-                      <span className="text-white font-medium">−{formatCurrency(spend.amount)}</span>
+                      <span className="text-white">{spend.name}</span>
                     </div>
-                  );
-                })
-              ) : (
-                <p className="text-gray-500 text-sm">No spending for this month</p>
-              )}
-            </div>
+                    <span className="text-white font-medium">−{formatCurrency(spend.amount)}</span>
+                  </div>
+                );
+              })
+            ) : (
+              <p className="text-gray-500 text-sm">No spending for this month</p>
+            )}
           </div>
+        </div>
 
-          <div className="pt-4 border-t border-gray-800">
-            <p className="text-sm text-gray-400 mb-1">Last 3 months average</p>
-            <p className="text-lg font-semibold text-white" data-testid={`${dataTestPrefix}-avg-money-out`}>
-              −{formatShortCurrency(section.threeMonthAverage?.moneyOut || 0)}
-            </p>
-          </div>
-        </CardContent>
-      </Card>
+        <div className="pt-4 border-t border-gray-800">
+          <p className="text-sm text-gray-400 mb-1">Last 3 months average</p>
+          <p className="text-lg font-semibold text-white" data-testid={`${dataTestPrefix}-avg-money-out`}>
+            −{formatShortCurrency(section.threeMonthAverage?.moneyOut || 0)}
+          </p>
+        </div>
+      </div>
     </div>
   );
 
@@ -173,32 +169,28 @@ export default function MoneyMovement() {
           <div className="h-10 bg-gray-800 rounded w-48 animate-pulse"></div>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Card className="flint-card">
-            <CardContent className="p-6">
-              <div className="animate-pulse">
-                <div className="h-6 bg-gray-700 rounded w-24 mb-4"></div>
-                <div className="h-10 bg-gray-700 rounded w-40 mb-6"></div>
-                <div className="space-y-3">
-                  {[1, 2, 3].map(i => (
-                    <div key={i} className="h-12 bg-gray-700 rounded"></div>
-                  ))}
-                </div>
+          <div className="bg-black rounded-xl p-6">
+            <div className="animate-pulse">
+              <div className="h-6 bg-gray-700 rounded w-24 mb-4"></div>
+              <div className="h-10 bg-gray-700 rounded w-40 mb-6"></div>
+              <div className="space-y-3">
+                {[1, 2, 3].map(i => (
+                  <div key={i} className="h-12 bg-gray-700 rounded"></div>
+                ))}
               </div>
-            </CardContent>
-          </Card>
-          <Card className="flint-card">
-            <CardContent className="p-6">
-              <div className="animate-pulse">
-                <div className="h-6 bg-gray-700 rounded w-24 mb-4"></div>
-                <div className="h-10 bg-gray-700 rounded w-40 mb-6"></div>
-                <div className="space-y-3">
-                  {[1, 2, 3].map(i => (
-                    <div key={i} className="h-12 bg-gray-700 rounded"></div>
-                  ))}
-                </div>
+            </div>
+          </div>
+          <div className="bg-black rounded-xl p-6">
+            <div className="animate-pulse">
+              <div className="h-6 bg-gray-700 rounded w-24 mb-4"></div>
+              <div className="h-10 bg-gray-700 rounded w-40 mb-6"></div>
+              <div className="space-y-3">
+                {[1, 2, 3].map(i => (
+                  <div key={i} className="h-12 bg-gray-700 rounded"></div>
+                ))}
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </div>
       </div>
     );
