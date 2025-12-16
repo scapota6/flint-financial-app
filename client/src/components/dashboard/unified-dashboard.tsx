@@ -339,17 +339,17 @@ export default function UnifiedDashboard() {
                 className="bg-black rounded-xl p-4 flex items-center justify-between cursor-pointer hover:bg-gray-900/50 transition-colors"
                 onClick={() => setSelectedAccountId(account.id)}
               >
-                <div className="flex items-center gap-3 min-w-0 flex-1">
+                <div className="flex items-center gap-3 flex-1">
                   <div className={`w-11 h-11 p-2 rounded-lg ${bgClass} ${textClass} flex items-center justify-center overflow-hidden flex-shrink-0`}>
                     {logo}
                   </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="text-white font-medium text-base truncate">
+                  <div className="flex-1">
+                    <div className="text-white font-medium text-base leading-tight">
                       {account.accountName === 'Default' && account.institutionName === 'Coinbase' 
                         ? 'Coinbase' 
                         : account.accountName}
                     </div>
-                    <div className="text-gray-500 text-sm truncate">
+                    <div className="text-gray-500 text-sm">
                       {account.type === 'credit' ? 
                         account.availableCredit ? `Avail: ${formatCurrency(account.availableCredit)}` : 'Credit' :
                         account.percentOfTotal ? `${account.percentOfTotal}%` : ''
@@ -357,8 +357,8 @@ export default function UnifiedDashboard() {
                     </div>
                   </div>
                 </div>
-                <div className="flex items-center gap-3 flex-shrink-0 ml-2">
-                  <div className={`text-lg font-bold ${
+                <div className="flex items-center gap-2 flex-shrink-0">
+                  <div className={`text-lg font-bold text-right ${
                     account.type === 'credit' ? 'text-red-500' : 'text-green-500'
                   }`}>
                     {formatCurrency(account.balance)}
