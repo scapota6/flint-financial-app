@@ -223,7 +223,7 @@ export function FloatingHeader({ variant = 'authenticated', onSignupClick }: Flo
             <SheetContent
               className="bg-[#1a1a1a]/95 supports-[backdrop-filter]:bg-[#1a1a1a]/80 gap-0 backdrop-blur-lg border-gray-800"
               showClose={false}
-              side="left"
+              side="right"
             >
               <div className="grid gap-y-2 overflow-y-auto px-4 pt-12 pb-5">
                 {links.map((link) => {
