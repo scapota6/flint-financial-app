@@ -92,7 +92,7 @@ export default function MoneyMovement() {
                   return (
                     <div key={index} className="flex items-center justify-between" data-testid={`${dataTestPrefix}-source-${index}`}>
                       <div className="flex items-center gap-3">
-                        <div className={`w-10 h-10 rounded-full ${bgClass} flex items-center justify-center flex-shrink-0`}>
+                        <div className={`w-10 h-10 rounded-full ${bgClass} flex items-center justify-center flex-shrink-0 overflow-hidden`}>
                           {logo}
                         </div>
                         <span className="text-white">{source.name}</span>
@@ -139,7 +139,7 @@ export default function MoneyMovement() {
                   return (
                     <div key={index} className="flex items-center justify-between" data-testid={`${dataTestPrefix}-spend-${index}`}>
                       <div className="flex items-center gap-3">
-                        <div className={`w-10 h-10 rounded-full ${bgClass} flex items-center justify-center flex-shrink-0`}>
+                        <div className={`w-10 h-10 rounded-full ${bgClass} flex items-center justify-center flex-shrink-0 overflow-hidden`}>
                           {logo}
                         </div>
                         <span className="text-white">{spend.name}</span>

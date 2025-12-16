@@ -451,7 +451,7 @@ function MerchantLogoImage({ domain, merchantName, colors, brandfetchClientId }:
     <img 
       src={`https://cdn.brandfetch.io/${domain}?c=${brandfetchClientId}`}
       alt={merchantName}
-      className="h-10 w-10 object-contain p-1"
+      className="h-full w-full object-cover"
       onError={() => setHasError(true)}
     />
   );
