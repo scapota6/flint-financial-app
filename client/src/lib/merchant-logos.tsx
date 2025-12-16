@@ -406,7 +406,7 @@ export function getMerchantLogo(merchantName: string, accountProvider?: string) 
     }
   }
 
-  // If we have a domain mapping and Brandfetch client ID, use Brandfetch
+  // If we have a domain mapping and Brandfetch client ID, use Brandfetch with fallbacks
   if (domain && BRANDFETCH_CLIENT_ID) {
     return {
       logo: (
@@ -421,7 +421,20 @@ export function getMerchantLogo(merchantName: string, accountProvider?: string) 
     };
   }
 
-  // Default fallback icon
+  // No domain mapping - try auto-discovery with Clearbit
+  if (cleanedMerchant.length > 2 && !isGenericBanking) {
+    return {
+      logo: (
+        <AutoDiscoverLogo 
+          merchantName={cleanedMerchant}
+          colors={colors}
+        />
+      ),
+      ...colors
+    };
+  }
+
+  // Default fallback icon for generic/short names
   return {
     logo: <Package className={`h-10 w-10 ${colors.textClass}`} />,
     ...colors
@@ -457,11 +470,29 @@ function getBankDomain(provider: string): string | undefined {
   return undefined;
 }
 
-// Separate component to handle image loading with state
-function MerchantLogoImage({ domain, merchantName, colors, brandfetchClientId }: { domain: string; merchantName: string; colors: { textClass: string }; brandfetchClientId: string }) {
-  const [hasError, setHasError] = React.useState(false);
+// Guess domain from merchant name (e.g., "Dollar Tree" → "dollartree.com")
+function guessDomainFromName(merchantName: string): string {
+  const cleaned = merchantName.toLowerCase()
+    .replace(/[^a-z0-9\s]/g, '') // Remove special chars
+    .replace(/\s+/g, '') // Remove spaces
+    .trim();
+  return `${cleaned}.com`;
+}
 
-  if (hasError) {
+// Separate component to handle image loading with multi-tier fallback
+function MerchantLogoImage({ domain, merchantName, colors, brandfetchClientId }: { domain: string; merchantName: string; colors: { textClass: string }; brandfetchClientId: string }) {
+  const [fallbackLevel, setFallbackLevel] = React.useState(0);
+  
+  // Fallback chain: Brandfetch → Clearbit (same domain) → Clearbit (guessed domain) → icon
+  const guessedDomain = guessDomainFromName(merchantName);
+  
+  const imageSources = [
+    `https://cdn.brandfetch.io/${domain}?c=${brandfetchClientId}`,
+    `https://logo.clearbit.com/${domain}`,
+    guessedDomain !== domain ? `https://logo.clearbit.com/${guessedDomain}` : null,
+  ].filter(Boolean) as string[];
+  
+  if (fallbackLevel >= imageSources.length) {
     return (
       <svg className={`h-10 w-10 ${colors.textClass}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
@@ -471,10 +502,39 @@ function MerchantLogoImage({ domain, merchantName, colors, brandfetchClientId }:
 
   return (
     <img 
-      src={`https://cdn.brandfetch.io/${domain}?c=${brandfetchClientId}`}
+      src={imageSources[fallbackLevel]}
       alt={merchantName}
       className="h-full w-full object-cover"
-      onError={() => setHasError(true)}
+      onError={() => setFallbackLevel(prev => prev + 1)}
+    />
+  );
+}
+
+// Component for merchants without explicit domain mapping - uses auto-discovery
+function AutoDiscoverLogo({ merchantName, colors }: { merchantName: string; colors: { textClass: string } }) {
+  const [fallbackLevel, setFallbackLevel] = React.useState(0);
+  
+  const guessedDomain = guessDomainFromName(merchantName);
+  
+  // Try Clearbit with guessed domain, then fallback to icon
+  const imageSources = [
+    `https://logo.clearbit.com/${guessedDomain}`,
+  ];
+  
+  if (fallbackLevel >= imageSources.length) {
+    return (
+      <svg className={`h-10 w-10 ${colors.textClass}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+      </svg>
+    );
+  }
+
+  return (
+    <img 
+      src={imageSources[fallbackLevel]}
+      alt={merchantName}
+      className="h-full w-full object-cover"
+      onError={() => setFallbackLevel(prev => prev + 1)}
     />
   );
 }
