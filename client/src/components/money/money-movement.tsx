@@ -96,7 +96,7 @@ export default function MoneyMovement() {
                       </div>
                       <span className="text-white">{source.name}</span>
                     </div>
-                    <span className="text-white font-medium">{formatCurrency(source.amount)}</span>
+                    <span className="text-white font-medium whitespace-nowrap">{formatCurrency(source.amount)}</span>
                   </div>
                 );
               })
@@ -141,7 +141,7 @@ export default function MoneyMovement() {
                       </div>
                       <span className="text-white">{spend.name}</span>
                     </div>
-                    <span className="text-white font-medium">−{formatCurrency(spend.amount)}</span>
+                    <span className="text-white font-medium whitespace-nowrap">−{formatCurrency(spend.amount)}</span>
                   </div>
                 );
               })
