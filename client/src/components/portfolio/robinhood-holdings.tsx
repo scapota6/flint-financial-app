@@ -201,6 +201,60 @@ const SectionHeader = memo(function SectionHeader({
   );
 });
 
+const PortfolioSummary = memo(function PortfolioSummary({ 
+  holdings 
+}: { 
+  holdings: Holding[] 
+}) {
+  const totalValue = holdings.reduce((sum, h) => sum + h.currentValue, 0);
+  
+  // Only include holdings with valid cost basis in P&L calculation
+  const holdingsWithCostBasis = holdings.filter(h => h.totalCost > 0);
+  const hasValidPnLData = holdingsWithCostBasis.length > 0;
+  
+  const totalPnL = holdingsWithCostBasis.reduce((sum, h) => sum + h.profitLoss, 0);
+  const totalCost = holdingsWithCostBasis.reduce((sum, h) => sum + h.totalCost, 0);
+  const totalPnLPercent = totalCost > 0 ? (totalPnL / totalCost) * 100 : 0;
+  const isPositive = totalPnL >= 0;
+
+  const formatCurrency = (amount: number) => {
+    return amount.toLocaleString('en-US', { 
+      minimumFractionDigits: 2, 
+      maximumFractionDigits: 2 
+    });
+  };
+
+  return (
+    <div className="mb-6 pb-4 border-b border-gray-800" data-testid="portfolio-summary">
+      <div className="flex items-baseline justify-between">
+        <div>
+          <p className="text-gray-400 text-sm mb-1">Portfolio Value</p>
+          <p className="text-3xl sm:text-4xl font-bold text-white">
+            ${formatCurrency(totalValue)}
+          </p>
+        </div>
+        {hasValidPnLData ? (
+          <div className="text-right">
+            <p className="text-gray-400 text-sm mb-1">Total Return</p>
+            <div className={`text-xl sm:text-2xl font-semibold ${isPositive ? 'text-green-500' : 'text-red-500'}`}>
+              {isPositive ? '+' : ''}${formatCurrency(totalPnL)}
+            </div>
+            <div className={`text-sm ${isPositive ? 'text-green-400' : 'text-red-400'}`}>
+              {isPositive ? '+' : ''}{totalPnLPercent.toFixed(2)}%
+            </div>
+          </div>
+        ) : (
+          <div className="text-right">
+            <p className="text-gray-400 text-sm mb-1">Total Return</p>
+            <div className="text-gray-500 text-lg">—</div>
+            <div className="text-xs text-gray-500">Cost basis unavailable</div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+});
+
 const RobinhoodHoldings = memo(function RobinhoodHoldings({ 
   onHoldingClick 
 }: RobinhoodHoldingsProps) {
@@ -316,6 +370,9 @@ const RobinhoodHoldings = memo(function RobinhoodHoldings({
 
   return (
     <div className="bg-black rounded-xl p-4 sm:p-6" data-testid="robinhood-holdings">
+      {/* Portfolio Summary with Total P&L */}
+      <PortfolioSummary holdings={holdings} />
+      
       {cryptoHoldings.length > 0 && (
         <div className="mb-6">
           <SectionHeader 
