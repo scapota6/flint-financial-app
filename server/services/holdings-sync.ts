@@ -16,6 +16,11 @@ import { db } from '../db';
 import { snaptradePositions, snaptradeAccounts, connectedAccounts } from '@shared/schema';
 import { eq, and } from 'drizzle-orm';
 
+// Track consecutive 401 failures per user to avoid clearing credentials on transient errors
+// Only clear credentials after STRIKE_THRESHOLD consecutive failures
+const STRIKE_THRESHOLD = 3;
+const userFailureStrikes: Map<string, { count: number; lastFailure: Date }> = new Map();
+
 interface SyncResult {
   accountId: string;
   success: boolean;
@@ -213,6 +218,15 @@ async function syncAllHoldings(): Promise<void> {
             errorCount++;
           }
         }
+        
+        // Successful sync - reset strike counter for this user
+        // This ensures only truly consecutive failures trigger cleanup
+        if (userFailureStrikes.has(snapUser.userId)) {
+          userFailureStrikes.delete(snapUser.userId);
+          logger.debug('[Holdings Sync] Cleared strike counter after successful sync', {
+            metadata: { flintUserId: snapUser.userId }
+          });
+        }
       } catch (error: any) {
         const errorMessage = error?.message || String(error);
         // SnapTrade SDK errors have responseBody directly on the error object
@@ -220,57 +234,89 @@ async function syncAllHoldings(): Promise<void> {
         const httpStatus = error?.status || error?.response?.status;
         
         // Check for invalid SnapTrade credentials (401 with code 1083)
-        // This means the user was deleted from SnapTrade's side
+        // Use strike counting to avoid clearing credentials on transient errors
         if ((httpStatus === 401 || errorMessage.includes('401')) && 
             (errorCode === '1083' || errorCode === 1083 || 
              errorMessage.includes('Invalid userID or userSecret'))) {
-          logger.warn('[Holdings Sync] Invalid SnapTrade credentials detected - cleaning up stale user', {
+          
+          // Track strikes for this user
+          const userId = snapUser.userId;
+          const existing = userFailureStrikes.get(userId);
+          const now = new Date();
+          
+          // Reset strikes if last failure was more than 1 hour ago (likely a new issue)
+          const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
+          const strikeCount = (existing && existing.lastFailure > oneHourAgo) 
+            ? existing.count + 1 
+            : 1;
+          
+          userFailureStrikes.set(userId, { count: strikeCount, lastFailure: now });
+          
+          logger.warn('[Holdings Sync] SnapTrade 401 error detected', {
             metadata: { 
               flintUserId: snapUser.userId,
               snaptradeUserId: snapUser.snaptradeUserId,
-              reason: 'SnapTrade returned 401 - user no longer exists'
+              strikeCount,
+              strikeThreshold: STRIKE_THRESHOLD,
+              action: strikeCount >= STRIKE_THRESHOLD ? 'clearing_credentials' : 'waiting_for_more_failures'
             }
           });
           
-          // Clean up the invalid SnapTrade user from our database
-          try {
-            const { snaptradeUsers, snaptradeConnections, connectedAccounts } = await import('@shared/schema');
-            const { eq, and } = await import('drizzle-orm');
-            
-            // Delete SnapTrade user credentials (this will allow re-registration)
-            await db.delete(snaptradeUsers).where(eq(snaptradeUsers.flintUserId, snapUser.userId));
-            
-            // Delete any associated connections
-            await db.delete(snaptradeConnections).where(eq(snaptradeConnections.flintUserId, snapUser.userId));
-            
-            // Delete connected_accounts entries for snaptrade provider
-            await db.delete(connectedAccounts).where(
-              and(
-                eq(connectedAccounts.userId, snapUser.userId),
-                eq(connectedAccounts.provider, 'snaptrade')
-              )
-            );
-            
-            logger.info('[Holdings Sync] Cleaned up stale SnapTrade user - user will need to reconnect', {
-              metadata: { 
-                flintUserId: snapUser.userId,
-                snaptradeUserId: snapUser.snaptradeUserId 
-              }
-            });
-            
-            // Log metric for tracking
-            logger.logMetric('snaptrade_stale_user_cleaned', {
-              flint_user_id: snapUser.userId,
-              snaptrade_user_id: snapUser.snaptradeUserId,
-              cleanup_reason: 'invalid_credentials_401'
-            });
-          } catch (cleanupError: any) {
-            logger.error('[Holdings Sync] Failed to cleanup stale SnapTrade user', {
-              metadata: { 
-                flintUserId: snapUser.userId,
-                error: cleanupError?.message 
-              }
-            });
+          // Only clear credentials after STRIKE_THRESHOLD consecutive failures
+          if (strikeCount >= STRIKE_THRESHOLD) {
+            try {
+              const { snaptradeUsers, snaptradeConnections, connectedAccounts } = await import('@shared/schema');
+              const { eq, and } = await import('drizzle-orm');
+              
+              // 1. Delete SnapTrade credentials so user can re-register
+              await db.delete(snaptradeUsers).where(eq(snaptradeUsers.flintUserId, snapUser.userId));
+              
+              // 2. Mark connections as disabled (preserve for display/history)
+              await db.update(snaptradeConnections)
+                .set({ 
+                  disabled: true,
+                  updatedAt: new Date()
+                })
+                .where(eq(snaptradeConnections.flintUserId, snapUser.userId));
+              
+              // 3. Update connectedAccounts to show needs_reconnect status
+              await db.update(connectedAccounts)
+                .set({ 
+                  status: 'needs_reconnect',
+                  updatedAt: new Date()
+                })
+                .where(
+                  and(
+                    eq(connectedAccounts.userId, snapUser.userId),
+                    eq(connectedAccounts.provider, 'snaptrade')
+                  )
+                );
+              
+              // Clear the strike counter after cleanup
+              userFailureStrikes.delete(userId);
+              
+              logger.info('[Holdings Sync] Cleared stale SnapTrade credentials after multiple failures', {
+                metadata: { 
+                  flintUserId: snapUser.userId,
+                  snaptradeUserId: snapUser.snaptradeUserId,
+                  totalStrikes: strikeCount
+                }
+              });
+              
+              logger.logMetric('snaptrade_credentials_cleared', {
+                flint_user_id: snapUser.userId,
+                snaptrade_user_id: snapUser.snaptradeUserId,
+                reason: 'invalid_credentials_401',
+                total_strikes: strikeCount
+              });
+            } catch (cleanupError: any) {
+              logger.error('[Holdings Sync] Failed to clear stale credentials', {
+                metadata: { 
+                  flintUserId: snapUser.userId,
+                  error: cleanupError?.message 
+                }
+              });
+            }
           }
           
           errorCount++;
