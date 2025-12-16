@@ -180,7 +180,7 @@ const getActivityIcon = (type: string) => {
 // Helper components and utilities
 function Info({ label, value, className = '' }: any) {
   return (
-    <div className={`rounded-xl border border-gray-200 dark:border-gray-700 bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-850 p-4 shadow-sm hover:shadow-md transition-all duration-200 ${className}`}>
+    <div className={`rounded-lg bg-white/5 dark:bg-black/60 p-4 ${className}`}>
       <div className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">{label}</div>
       <div className="font-semibold text-gray-900 dark:text-white mt-1">{value ?? '—'}</div>
     </div>
@@ -189,7 +189,7 @@ function Info({ label, value, className = '' }: any) {
 
 function Card({ title, children }: any) {
   return (
-    <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-850 p-4 shadow-sm hover:shadow-md transition-all duration-200">
+    <div className="rounded-lg bg-white/5 dark:bg-black/60 p-4">
       <div className="mb-3 font-semibold text-gray-900 dark:text-white">{title}</div>
       {children}
     </div>
@@ -1241,16 +1241,16 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
                 {/* 1. Balances (FIRST for bank accounts) */}
                 <section>
                   <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center">
-                    <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center text-white font-bold text-sm mr-3">💰</div>
+                    <div className="w-8 h-8 rounded-lg bg-green-600 flex items-center justify-center text-white font-bold text-sm mr-3">💰</div>
                     Balances
                   </h3>
                   
                   {/* Emphasized Current & Available balances for bank accounts */}
-                  <div className="mb-6 p-6 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-lg border border-green-200 dark:border-green-800">
+                  <div className="mb-6 p-6 rounded-lg bg-white/5 dark:bg-black/60">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="text-center">
                         <div className="text-xs font-medium text-green-600 dark:text-green-400 uppercase tracking-wide mb-2">Current Balance</div>
-                        <div className="text-4xl font-bold text-green-700 dark:text-green-300">
+                        <div className="text-4xl font-bold text-green-700 dark:text-green-400">
                           {data.balances?.current ? fmtMoney(data.balances?.current) : 
                            data.balances?.ledger ? fmtMoney(data.balances?.ledger) : (
                             <span className="text-gray-500 dark:text-gray-400" title="Not provided by bank">N/A</span>
@@ -1259,7 +1259,7 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
                       </div>
                       <div className="text-center">
                         <div className="text-xs font-medium text-green-600 dark:text-green-400 uppercase tracking-wide mb-2">Available Balance</div>
-                        <div className="text-4xl font-bold text-green-700 dark:text-green-300">
+                        <div className="text-4xl font-bold text-green-700 dark:text-green-400">
                           {data.balances?.available ? fmtMoney(data.balances?.available) : (
                             <span className="text-gray-500 dark:text-gray-400" title="Not provided by bank">N/A</span>
                           )}
@@ -1269,12 +1269,12 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
                     
                     {/* Additional balance details */}
                     {(data.balances?.ledger && data.balances?.ledger !== data.balances?.available) && (
-                      <div className="mt-4 pt-4 border-t border-green-200 dark:border-green-700">
+                      <div className="mt-4 pt-4 border-t border-gray-300 dark:border-gray-700">
                         <div className="text-center">
                           <div className="text-xs font-medium text-green-600 dark:text-green-400 uppercase tracking-wide mb-1">Ledger Balance</div>
-                          <div className="text-lg font-semibold text-green-700 dark:text-green-300 flex items-center justify-center gap-1">
+                          <div className="text-lg font-semibold text-green-700 dark:text-green-400 flex items-center justify-center gap-1">
                             {fmtMoney(data.balances?.ledger)}
-                            <span className="text-xs text-green-600 dark:text-green-400 cursor-help" title="Ledger includes pending transactions; available is what you can use right now">ℹ️</span>
+                            <span className="text-xs text-gray-500 dark:text-gray-400 cursor-help" title="Ledger includes pending transactions; available is what you can use right now">ℹ️</span>
                           </div>
                         </div>
                       </div>
@@ -1285,7 +1285,7 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
                 {/* 2. Account Identifiers */}
                 <section>
                   <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center">
-                    <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center text-white font-bold text-sm mr-3">🔒</div>
+                    <div className="w-8 h-8 rounded-lg bg-amber-600 flex items-center justify-center text-white font-bold text-sm mr-3">🔒</div>
                     Account Identifiers
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -1297,7 +1297,7 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
                 {/* 3. Account Information */}
                 <section>
                   <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center">
-                    <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-blue-500 flex items-center justify-center text-white font-bold text-sm mr-3">ℹ️</div>
+                    <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white font-bold text-sm mr-3">ℹ️</div>
                     Account Information
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -1312,7 +1312,7 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
                 {/* 1. Wallet Information */}
                 <section>
                   <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center">
-                    <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-orange-500 to-amber-500 flex items-center justify-center text-white font-bold text-sm mr-3">🦊</div>
+                    <div className="w-8 h-8 rounded-lg bg-orange-600 flex items-center justify-center text-white font-bold text-sm mr-3">🦊</div>
                     Wallet Information
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
@@ -1325,13 +1325,13 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
                 {/* 2. Portfolio Value */}
                 <section>
                   <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center">
-                    <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center text-white font-bold text-sm mr-3">💰</div>
+                    <div className="w-8 h-8 rounded-lg bg-green-600 flex items-center justify-center text-white font-bold text-sm mr-3">💰</div>
                     Portfolio Value
                   </h3>
-                  <div className="mb-6 p-6 bg-gradient-to-r from-orange-50 to-amber-50 dark:from-orange-900/20 dark:to-amber-900/20 rounded-lg border border-orange-200 dark:border-orange-800">
+                  <div className="mb-6 p-6 rounded-lg bg-white/5 dark:bg-black/60">
                     <div className="text-center">
                       <div className="text-xs font-medium text-orange-600 dark:text-orange-400 uppercase tracking-wide mb-2">Total Value</div>
-                      <div className="text-4xl font-bold text-orange-700 dark:text-orange-300">
+                      <div className="text-4xl font-bold text-orange-700 dark:text-orange-400">
                         {fmtMoney(data.balancesAndHoldings?.totalValue || data.account?.balance || 0)}
                       </div>
                     </div>
@@ -1342,12 +1342,12 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
                 {data.positions && data.positions.length > 0 && (
                   <section>
                     <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center">
-                      <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white font-bold text-sm mr-3">🪙</div>
+                      <div className="w-8 h-8 rounded-lg bg-purple-600 flex items-center justify-center text-white font-bold text-sm mr-3">🪙</div>
                       Token Holdings ({data.positions.length})
                     </h3>
                     <div className="space-y-3">
                       {data.positions.map((pos: any, idx: number) => (
-                        <div key={idx} className="p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 flex justify-between items-center">
+                        <div key={idx} className="p-4 rounded-lg bg-white/5 dark:bg-black/60 flex justify-between items-center">
                           <div>
                             <div className="font-bold text-gray-900 dark:text-white">{pos.symbol}</div>
                             <div className="text-sm text-gray-500 dark:text-gray-400">{pos.name}</div>
@@ -1366,16 +1366,16 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
                 {/* 4. Send ETH */}
                 <section>
                   <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center">
-                    <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center text-white font-bold text-sm mr-3">
+                    <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white font-bold text-sm mr-3">
                       <Send className="h-4 w-4" />
                     </div>
                     Send ETH
                   </h3>
-                  <div className="p-6 bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20 rounded-xl border border-blue-200 dark:border-blue-800">
+                  <div className="p-6 rounded-lg bg-white/5 dark:bg-black/60">
                     {metamaskConnected && metamaskAccount ? (
                       <div className="space-y-4">
                         <div>
-                          <Label htmlFor="eth-recipient" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                          <Label htmlFor="eth-recipient" className="text-sm font-medium text-gray-300">
                             Recipient Address
                           </Label>
                           <Input
@@ -1389,7 +1389,7 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
                           />
                         </div>
                         <div>
-                          <Label htmlFor="eth-amount" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                          <Label htmlFor="eth-amount" className="text-sm font-medium text-gray-300">
                             Amount (ETH)
                           </Label>
                           <Input
