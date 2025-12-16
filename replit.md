@@ -21,6 +21,13 @@ The platform features an Apple 2025 "Liquid Glass" aesthetic, utilizing dark neu
 - Tab navigation with shortened text on mobile: `<span className="hidden sm:inline">Full</span><span className="sm:hidden">Short</span>`
 - Touch-friendly interactive elements with adequate spacing for 44px+ touch targets
 
+**CRITICAL: Mobile Touch Interaction Pattern for Modals**:
+- **Never use custom CSS classes on DialogOverlay/SheetOverlay** that might interfere with pointer events
+- The `modal-shell` class in `flint-glass.css` breaks mobile touch interactions - do NOT apply it to overlay components
+- Always use standard Radix/shadcn overlay styling: `bg-black/80` for backdrop with standard animation classes
+- Dialog, Sheet, and AlertDialog overlays must allow pointer events to pass through properly for iOS/mobile Safari touch synthesis
+- If mobile users cannot tap buttons or close modals, check for custom CSS classes on the overlay component first
+
 ### Technical Implementations
 -   **Frontend**: Built with React, TypeScript, Wouter for routing, and React Query for server state management. Features include comprehensive banking/brokerage integration, buy/sell workflows, multi-tab stock detail modals with TradingView charts, unified real-time market data, Accounts Directory, Portfolio Dashboard, Watchlist & Alerts, and Money Movement Tracking. A comprehensive logo system uses Brandfetch. Live data polling is aggressive for near real-time updates (e.g., Portfolio at 2-5s, Connections at 2s, Dashboard at 3s).
 -   **Backend**: Node.js with Express.js.
