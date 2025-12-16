@@ -13,7 +13,6 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Loader2, RefreshCw, TrendingUp, TrendingDown, Activity, CreditCard, Building2, DollarSign, Search, AlertCircle, CheckCircle, ArrowUpCircle, ArrowDownCircle } from 'lucide-react';
 import { format } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
@@ -438,26 +437,26 @@ export function AccountDetailsModal({ isOpen, onClose, accountId, accountName }:
                 <Loader2 className="h-8 w-8 animate-spin" />
               </div>
             ) : balances ? (
-              <div className="grid grid-cols-2 gap-4">
-                <div className="p-4 border rounded-lg">
+              <div className="grid grid-cols-2 gap-3">
+                <div className="p-4 rounded-lg bg-black/60">
                   <div className="text-sm text-muted-foreground">Cash Available</div>
                   <div className="text-2xl font-bold" data-testid="text-cash-balance">
                     {balances.cash ? formatCurrency(balances.cash.amount, balances.cash.currency) : 'N/A'}
                   </div>
                 </div>
-                <div className="p-4 border rounded-lg">
+                <div className="p-4 rounded-lg bg-black/60">
                   <div className="text-sm text-muted-foreground">Total Equity</div>
                   <div className="text-2xl font-bold" data-testid="text-total-balance">
                     {balances.total ? formatCurrency(balances.total.amount, balances.total.currency) : 'N/A'}
                   </div>
                 </div>
-                <div className="p-4 border rounded-lg">
+                <div className="p-4 rounded-lg bg-black/60">
                   <div className="text-sm text-muted-foreground">Buying Power</div>
                   <div className="text-xl font-semibold" data-testid="text-buying-power">
                     {balances.buyingPower ? formatCurrency(balances.buyingPower.amount, balances.buyingPower.currency) : 'N/A'}
                   </div>
                 </div>
-                <div className="p-4 border rounded-lg">
+                <div className="p-4 rounded-lg bg-black/60">
                   <div className="text-sm text-muted-foreground">Maintenance Excess</div>
                   <div className="text-xl font-semibold" data-testid="text-maintenance-excess">
                     {balances.maintenanceExcess ? formatCurrency(balances.maintenanceExcess.amount, balances.maintenanceExcess.currency) : 'N/A'}
@@ -489,7 +488,7 @@ export function AccountDetailsModal({ isOpen, onClose, accountId, accountName }:
                   {equityPositions.length > 0 ? (
                     <div className="space-y-2">
                       {equityPositions.map((position: any, index: number) => (
-                        <div key={`${position.symbol}-${index}`} className="p-4 border rounded-lg" data-testid={`position-${position.symbol}`}>
+                        <div key={`${position.symbol}-${index}`} className="p-4 rounded-lg bg-black/60" data-testid={`position-${position.symbol}`}>
                           <div className="flex justify-between items-start">
                             <div>
                               <div className="font-semibold">{position.symbol}</div>
@@ -524,7 +523,7 @@ export function AccountDetailsModal({ isOpen, onClose, accountId, accountName }:
                   {optionPositions.length > 0 ? (
                     <div className="space-y-2">
                       {optionPositions.map((position: any, index: number) => (
-                        <div key={`${position.symbol}-${index}`} className="p-4 border rounded-lg" data-testid={`option-${position.symbol}`}>
+                        <div key={`${position.symbol}-${index}`} className="p-4 rounded-lg bg-black/60" data-testid={`option-${position.symbol}`}>
                           <div className="flex justify-between items-start">
                             <div>
                               <div className="font-semibold font-mono">{position.symbol}</div>
@@ -567,7 +566,7 @@ export function AccountDetailsModal({ isOpen, onClose, accountId, accountName }:
             ) : orders.length > 0 ? (
               <div className="space-y-2">
                 {orders.map((order: any) => (
-                  <div key={order.id} className="p-4 border rounded-lg" data-testid={`order-${order.id}`}>
+                  <div key={order.id} className="p-4 rounded-lg bg-black/60" data-testid={`order-${order.id}`}>
                     <div className="flex justify-between items-start">
                       <div>
                         <div className="flex items-center gap-2">
@@ -618,7 +617,7 @@ export function AccountDetailsModal({ isOpen, onClose, accountId, accountName }:
             ) : activities.length > 0 ? (
               <div className="space-y-2">
                 {activities.map((activity: any) => (
-                  <div key={activity.id} className="p-4 border rounded-lg" data-testid={`activity-${activity.id}`}>
+                  <div key={activity.id} className="p-4 rounded-lg bg-black/60" data-testid={`activity-${activity.id}`}>
                     <div className="flex items-start gap-3">
                       {getActivityIcon(activity.type)}
                       <div className="flex-1">
@@ -652,14 +651,11 @@ export function AccountDetailsModal({ isOpen, onClose, accountId, accountName }:
 
           <TabsContent value="trade" className="space-y-6">
             {/* Symbol Search Section */}
-            <Card className="bg-slate-800/50 border-slate-700 backdrop-blur-sm">
-              <CardHeader>
-                <CardTitle className="text-white flex items-center gap-2">
-                  <Search className="h-5 w-5 text-blue-400" />
-                  Symbol Search
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
+            <div className="p-4 rounded-lg bg-black/60 space-y-4">
+              <div className="flex items-center gap-2 font-semibold text-white">
+                <Search className="h-5 w-5 text-blue-400" />
+                Symbol Search
+              </div>
                 <div className="flex gap-2 relative">
                   <Input
                     placeholder="Search stocks, ETFs..."
@@ -748,15 +744,11 @@ export function AccountDetailsModal({ isOpen, onClose, accountId, accountName }:
                     </div>
                   </div>
                 )}
-              </CardContent>
-            </Card>
+            </div>
 
             {/* Order Entry Form */}
-            <Card className="bg-slate-800/50 border-slate-700 backdrop-blur-sm">
-              <CardHeader>
-                <CardTitle className="text-white">Order Entry</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-6">
+            <div className="p-4 rounded-lg bg-black/60 space-y-6">
+              <div className="font-semibold text-white">Order Entry</div>
                 {/* Buy/Sell Toggle */}
                 <div className="space-y-2">
                   <Label className="text-slate-300">Side</Label>
@@ -895,8 +887,7 @@ export function AccountDetailsModal({ isOpen, onClose, accountId, accountName }:
                     'Preview Order'
                   )}
                 </Button>
-              </CardContent>
-            </Card>
+            </div>
           </TabsContent>
         </Tabs>
 
