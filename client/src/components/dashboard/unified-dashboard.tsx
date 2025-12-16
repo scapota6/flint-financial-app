@@ -211,96 +211,88 @@ export default function UnifiedDashboard() {
       {/* Overview - Pie Chart */}
       {selectedView === 'overview' && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <Card className="flint-card">
-            <CardHeader>
-              <CardTitle>Asset Allocation</CardTitle>
-            </CardHeader>
-            <CardContent>
-              {typeBreakdown.length > 0 ? (
-                <div className="chart-container chart-glow relative overflow-hidden">
-                  {/* Animated background effects */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 via-green-500/5 to-cyan-500/10 rounded-lg blur-2xl animate-pulse"></div>
-                  <div className="floating-element absolute top-0 left-0 w-24 h-24 bg-blue-500/20 rounded-full blur-3xl"></div>
-                  <div className="floating-element absolute bottom-0 right-0 w-20 h-20 bg-green-500/20 rounded-full blur-2xl" style={{animationDelay: '2s'}}></div>
-                  <div className="floating-element absolute top-1/2 right-1/4 w-16 h-16 bg-cyan-500/15 rounded-full blur-2xl" style={{animationDelay: '1s'}}></div>
-                  <ResponsiveContainer width="100%" height={300}>
-                    <PieChart>
-                      <defs>
-                        {/* 3D Effect Gradients */}
-                        <radialGradient id="bankingGradient3D" cx="30%" cy="30%">
-                          <stop offset="0%" stopColor="#34d399" stopOpacity={1}/>
-                          <stop offset="50%" stopColor="#10b981" stopOpacity={1}/>
-                          <stop offset="100%" stopColor="#047857" stopOpacity={0.9}/>
-                        </radialGradient>
-                        <radialGradient id="investmentGradient3D" cx="30%" cy="30%">
-                          <stop offset="0%" stopColor="#60a5fa" stopOpacity={1}/>
-                          <stop offset="50%" stopColor="#0A84FF" stopOpacity={1}/>
-                          <stop offset="100%" stopColor="#1d4ed8" stopOpacity={0.9}/>
-                        </radialGradient>
-                        <radialGradient id="cryptoGradient3D" cx="30%" cy="30%">
-                          <stop offset="0%" stopColor="#fbbf24" stopOpacity={1}/>
-                          <stop offset="50%" stopColor="#f59e0b" stopOpacity={1}/>
-                          <stop offset="100%" stopColor="#d97706" stopOpacity={0.9}/>
-                        </radialGradient>
-                        <radialGradient id="debtGradient3D" cx="30%" cy="30%">
-                          <stop offset="0%" stopColor="#f87171" stopOpacity={1}/>
-                          <stop offset="50%" stopColor="#ef4444" stopOpacity={1}/>
-                          <stop offset="100%" stopColor="#dc2626" stopOpacity={0.9}/>
-                        </radialGradient>
-                      </defs>
-                      <Pie
-                        data={typeBreakdown}
-                        cx="50%"
-                        cy="47%"
-                        innerRadius={65}
-                        outerRadius={120}
-                        paddingAngle={6}
-                        dataKey="value"
-                        animationBegin={0}
-                        animationDuration={1200}
-                        animationEasing="ease-out"
-                        startAngle={90}
-                        endAngle={450}
-                      >
-                        {typeBreakdown.map((entry, index) => (
-                          <Cell 
-                            key={`cell-${index}`} 
-                            fill={
-                              entry.name === 'Banking' ? 'url(#bankingGradient3D)' :
-                              entry.name === 'Debt' ? 'url(#debtGradient3D)' :
-                              entry.name === 'Investments' ? 'url(#investmentGradient3D)' :
-                              'url(#cryptoGradient3D)'
-                            }
-                            stroke="rgba(255,255,255,0.2)"
-                            strokeWidth={3}
-                            style={{
-                              filter: 'drop-shadow(0 8px 16px rgba(0,0,0,0.3)) drop-shadow(0 0 20px rgba(10, 132, 255, 0.3))',
-                              cursor: 'pointer'
-                            }}
-                          />
-                        ))}
-                      </Pie>
-                      <Tooltip formatter={(value) => formatCurrency(value as number)} />
-                      <Legend />
-                    </PieChart>
-                  </ResponsiveContainer>
+          <div className="bg-black rounded-xl p-4">
+            <h3 className="text-lg font-semibold text-white mb-4">Asset Allocation</h3>
+            {typeBreakdown.length > 0 ? (
+              <div className="chart-container chart-glow relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 via-green-500/5 to-cyan-500/10 rounded-lg blur-2xl animate-pulse"></div>
+                <div className="floating-element absolute top-0 left-0 w-24 h-24 bg-blue-500/20 rounded-full blur-3xl"></div>
+                <div className="floating-element absolute bottom-0 right-0 w-20 h-20 bg-green-500/20 rounded-full blur-2xl" style={{animationDelay: '2s'}}></div>
+                <div className="floating-element absolute top-1/2 right-1/4 w-16 h-16 bg-cyan-500/15 rounded-full blur-2xl" style={{animationDelay: '1s'}}></div>
+                <ResponsiveContainer width="100%" height={300}>
+                  <PieChart>
+                    <defs>
+                      <radialGradient id="bankingGradient3D" cx="30%" cy="30%">
+                        <stop offset="0%" stopColor="#34d399" stopOpacity={1}/>
+                        <stop offset="50%" stopColor="#10b981" stopOpacity={1}/>
+                        <stop offset="100%" stopColor="#047857" stopOpacity={0.9}/>
+                      </radialGradient>
+                      <radialGradient id="investmentGradient3D" cx="30%" cy="30%">
+                        <stop offset="0%" stopColor="#60a5fa" stopOpacity={1}/>
+                        <stop offset="50%" stopColor="#0A84FF" stopOpacity={1}/>
+                        <stop offset="100%" stopColor="#1d4ed8" stopOpacity={0.9}/>
+                      </radialGradient>
+                      <radialGradient id="cryptoGradient3D" cx="30%" cy="30%">
+                        <stop offset="0%" stopColor="#fbbf24" stopOpacity={1}/>
+                        <stop offset="50%" stopColor="#f59e0b" stopOpacity={1}/>
+                        <stop offset="100%" stopColor="#d97706" stopOpacity={0.9}/>
+                      </radialGradient>
+                      <radialGradient id="debtGradient3D" cx="30%" cy="30%">
+                        <stop offset="0%" stopColor="#f87171" stopOpacity={1}/>
+                        <stop offset="50%" stopColor="#ef4444" stopOpacity={1}/>
+                        <stop offset="100%" stopColor="#dc2626" stopOpacity={0.9}/>
+                      </radialGradient>
+                    </defs>
+                    <Pie
+                      data={typeBreakdown}
+                      cx="50%"
+                      cy="47%"
+                      innerRadius={65}
+                      outerRadius={120}
+                      paddingAngle={6}
+                      dataKey="value"
+                      animationBegin={0}
+                      animationDuration={1200}
+                      animationEasing="ease-out"
+                      startAngle={90}
+                      endAngle={450}
+                    >
+                      {typeBreakdown.map((entry, index) => (
+                        <Cell 
+                          key={`cell-${index}`} 
+                          fill={
+                            entry.name === 'Banking' ? 'url(#bankingGradient3D)' :
+                            entry.name === 'Debt' ? 'url(#debtGradient3D)' :
+                            entry.name === 'Investments' ? 'url(#investmentGradient3D)' :
+                            'url(#cryptoGradient3D)'
+                          }
+                          stroke="rgba(255,255,255,0.2)"
+                          strokeWidth={3}
+                          style={{
+                            filter: 'drop-shadow(0 8px 16px rgba(0,0,0,0.3)) drop-shadow(0 0 20px rgba(10, 132, 255, 0.3))',
+                            cursor: 'pointer'
+                          }}
+                        />
+                      ))}
+                    </Pie>
+                    <Tooltip formatter={(value) => formatCurrency(value as number)} />
+                    <Legend />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+            ) : (
+              <div className="h-[300px] flex items-center justify-center">
+                <div className="text-center">
+                  <p className="text-gray-400 mb-2">No account data available</p>
+                  <p className="text-sm text-gray-500">Connect accounts to see your allocation</p>
                 </div>
-              ) : (
-                <div className="h-[300px] flex items-center justify-center">
-                  <div className="text-center">
-                    <p className="text-gray-400 mb-2">No account data available</p>
-                    <p className="text-sm text-gray-500">Connect accounts to see your allocation</p>
-                  </div>
-                </div>
-              )}
-            </CardContent>
-          </Card>
+              </div>
+            )}
+          </div>
 
-          <Card className="flint-card">
-            <CardHeader>
-              <CardTitle>Account Types</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
+          <div className="bg-black rounded-xl p-4">
+            <h3 className="text-lg font-semibold text-white mb-4">Account Types</h3>
+            <div className="space-y-4">
               {typeBreakdown.length > 0 ? (
                 typeBreakdown.map((type, index) => (
                   <div key={index} className="flex items-center justify-between">
@@ -329,8 +321,8 @@ export default function UnifiedDashboard() {
                   </div>
                 </div>
               )}
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </div>
       )}
 
