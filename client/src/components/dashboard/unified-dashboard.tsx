@@ -328,63 +328,51 @@ export default function UnifiedDashboard() {
 
       {/* Accounts View */}
       {selectedView === 'accounts' && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="space-y-2">
           {connectedAccounts.map((account: any) => {
-            // For crypto wallets like MetaMask, use provider name for logo lookup
             const logoLookupName = account.provider === 'metamask' ? 'MetaMask' : 
               (account.institutionName || account.accountName);
             const { logo, bgClass, textClass } = getInstitutionLogo(logoLookupName);
             return (
-            <Card key={account.id} className="flint-card">
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center space-x-2">
-                    <div className={`w-12 h-12 p-2 rounded-lg ${bgClass} ${textClass} flex items-center justify-center overflow-hidden`}>
-                      {logo}
+              <div 
+                key={account.id} 
+                className="bg-black rounded-xl p-3 flex items-center justify-between cursor-pointer hover:bg-gray-900/50 transition-colors"
+                onClick={() => setSelectedAccountId(account.id)}
+              >
+                <div className="flex items-center gap-3 min-w-0 flex-1">
+                  <div className={`w-10 h-10 p-1.5 rounded-lg ${bgClass} ${textClass} flex items-center justify-center overflow-hidden flex-shrink-0`}>
+                    {logo}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="text-white font-medium text-sm truncate">
+                      {account.accountName === 'Default' && account.institutionName === 'Coinbase' 
+                        ? 'Coinbase' 
+                        : account.accountName}
                     </div>
-                    <div>
-                      <div className="text-white font-medium">
-                        {account.accountName === 'Default' && account.institutionName === 'Coinbase' 
-                          ? 'Coinbase' 
-                          : account.accountName}
-                      </div>
+                    <div className="text-gray-500 text-xs truncate">
+                      {account.type === 'credit' ? 
+                        account.availableCredit ? `Avail: ${formatCurrency(account.availableCredit)}` : 'Credit' :
+                        account.percentOfTotal ? `${account.percentOfTotal}%` : ''
+                      }
                     </div>
                   </div>
                 </div>
-                <div className="text-right">
-                  <div className={`text-lg font-bold ${
+                <div className="text-right flex-shrink-0 ml-2">
+                  <div className={`text-base font-bold ${
                     account.type === 'credit' ? 'text-red-500' : 'text-green-500'
                   }`}>
                     {formatCurrency(account.balance)}
                   </div>
-                  <div className="text-gray-400 text-sm">
-                    {account.type === 'credit' ? 
-                      account.availableCredit ? `Credit available — ${formatCurrency(account.availableCredit)}` : 'Credit card' :
-                      account.percentOfTotal ? `${account.percentOfTotal}% of total` : '—'
-                    }
-                  </div>
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    className="text-blue-400 hover:text-blue-300 mt-2"
-                    onClick={() => setSelectedAccountId(account.id)}
-                  >
-                    <Eye className="h-3 w-3 mr-1" />
-                    Details
-                  </Button>
                 </div>
-              </CardContent>
-            </Card>
-          );
+              </div>
+            );
           })}
           
           {connectedAccounts.length === 0 && (
-            <Card className="flint-card col-span-full">
-              <CardContent className="p-6 text-center">
-                <div className="text-gray-400 mb-2">No accounts connected</div>
-                <div className="text-gray-500 text-sm">Connect your bank and brokerage accounts to see your portfolio</div>
-              </CardContent>
-            </Card>
+            <div className="bg-black rounded-xl p-6 text-center">
+              <div className="text-gray-400 mb-2">No accounts connected</div>
+              <div className="text-gray-500 text-sm">Connect your bank and brokerage accounts to see your portfolio</div>
+            </div>
           )}
         </div>
       )}
