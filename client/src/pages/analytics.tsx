@@ -28,7 +28,6 @@ import { useAuth } from "@/hooks/useAuth";
 import { isInternalTester } from "@/lib/feature-flags";
 import { apiGet } from "@/lib/queryClient";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import {
   Dialog,
   DialogContent,
@@ -471,38 +470,40 @@ export default function Analytics() {
                 <Filter className="w-4 h-4" />
                 Accounts
               </p>
-              <div 
-                className="space-y-2 max-h-48 overflow-y-auto overscroll-contain touch-pan-y"
-                onPointerDown={(e) => e.stopPropagation()}
-              >
+              <div className="space-y-2 max-h-48 overflow-y-auto overscroll-contain">
                 {accounts.length === 0 ? (
                   <p className="text-gray-400 text-sm text-center py-4">
                     No accounts connected
                   </p>
                 ) : (
-                  accounts.map((account) => (
-                    <label
-                      key={account.id}
-                      className="flex items-center gap-3 p-2 rounded-lg border border-gray-800 hover:border-gray-700 cursor-pointer transition-colors"
-                      data-testid={`filter-account-${account.id}`}
-                    >
-                      <Checkbox
-                        checked={
-                          selectedAccountIds.length === 0 ||
-                          selectedAccountIds.includes(account.id)
-                        }
-                        onCheckedChange={() => handleAccountToggle(account.id)}
-                      />
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-white truncate">
-                          {account.name}
-                        </p>
-                        <p className="text-xs text-gray-400 truncate">
-                          {account.institution || account.type}
-                        </p>
-                      </div>
-                    </label>
-                  ))
+                  accounts.map((account) => {
+                    const isSelected = selectedAccountIds.length === 0 || selectedAccountIds.includes(account.id);
+                    return (
+                      <button
+                        type="button"
+                        key={account.id}
+                        className="flex items-center gap-3 p-3 rounded-lg border border-gray-800 hover:border-gray-700 cursor-pointer transition-colors w-full text-left"
+                        data-testid={`filter-account-${account.id}`}
+                        onClick={() => handleAccountToggle(account.id)}
+                      >
+                        <div className={`w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0 ${isSelected ? 'bg-blue-600 border-blue-600' : 'border-gray-600'}`}>
+                          {isSelected && (
+                            <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                            </svg>
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-white truncate">
+                            {account.name}
+                          </p>
+                          <p className="text-xs text-gray-400 truncate">
+                            {account.institution || account.type}
+                          </p>
+                        </div>
+                      </button>
+                    );
+                  })
                 )}
               </div>
             </div>
