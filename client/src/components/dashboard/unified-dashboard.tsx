@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Legend } from 'recharts';
 import { apiRequest } from '@/lib/queryClient';
 import { useAccounts, usePortfolioTotals } from '@/hooks/useAccounts';
-import { Building2, TrendingUp, DollarSign, Wallet, Eye, PlusCircle, AlertCircle } from 'lucide-react';
+import { Building2, TrendingUp, DollarSign, Wallet, Eye, PlusCircle, AlertCircle, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { RainbowButton } from '@/components/ui/rainbow-button';
 import { useState } from 'react';
@@ -336,20 +336,20 @@ export default function UnifiedDashboard() {
             return (
               <div 
                 key={account.id} 
-                className="bg-black rounded-xl p-3 flex items-center justify-between cursor-pointer hover:bg-gray-900/50 transition-colors"
+                className="bg-black rounded-xl p-4 flex items-center justify-between cursor-pointer hover:bg-gray-900/50 transition-colors"
                 onClick={() => setSelectedAccountId(account.id)}
               >
                 <div className="flex items-center gap-3 min-w-0 flex-1">
-                  <div className={`w-10 h-10 p-1.5 rounded-lg ${bgClass} ${textClass} flex items-center justify-center overflow-hidden flex-shrink-0`}>
+                  <div className={`w-11 h-11 p-2 rounded-lg ${bgClass} ${textClass} flex items-center justify-center overflow-hidden flex-shrink-0`}>
                     {logo}
                   </div>
                   <div className="min-w-0 flex-1">
-                    <div className="text-white font-medium text-sm truncate">
+                    <div className="text-white font-medium text-base truncate">
                       {account.accountName === 'Default' && account.institutionName === 'Coinbase' 
                         ? 'Coinbase' 
                         : account.accountName}
                     </div>
-                    <div className="text-gray-500 text-xs truncate">
+                    <div className="text-gray-500 text-sm truncate">
                       {account.type === 'credit' ? 
                         account.availableCredit ? `Avail: ${formatCurrency(account.availableCredit)}` : 'Credit' :
                         account.percentOfTotal ? `${account.percentOfTotal}%` : ''
@@ -357,12 +357,13 @@ export default function UnifiedDashboard() {
                     </div>
                   </div>
                 </div>
-                <div className="text-right flex-shrink-0 ml-2">
-                  <div className={`text-base font-bold ${
+                <div className="flex items-center gap-3 flex-shrink-0 ml-2">
+                  <div className={`text-lg font-bold ${
                     account.type === 'credit' ? 'text-red-500' : 'text-green-500'
                   }`}>
                     {formatCurrency(account.balance)}
                   </div>
+                  <ChevronRight className="w-5 h-5 text-gray-500" />
                 </div>
               </div>
             );
