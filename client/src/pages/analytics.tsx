@@ -384,7 +384,11 @@ export default function Analytics() {
       </main>
 
       <Dialog open={isFilterOpen} onOpenChange={setIsFilterOpen}>
-        <DialogContent className="bg-gray-900/95 backdrop-blur-lg border border-gray-800 max-w-md w-[95vw] sm:w-full">
+        <DialogContent 
+          className="bg-gray-900/95 backdrop-blur-lg border border-gray-800 max-w-md w-[95vw] sm:w-full"
+          onPointerDownOutside={(e) => e.preventDefault()}
+          onInteractOutside={(e) => e.preventDefault()}
+        >
           <DialogHeader>
             <DialogTitle className="text-white">Filters</DialogTitle>
             <DialogDescription className="text-gray-400">
@@ -467,7 +471,10 @@ export default function Analytics() {
                 <Filter className="w-4 h-4" />
                 Accounts
               </p>
-              <div className="space-y-2 max-h-48 overflow-y-auto">
+              <div 
+                className="space-y-2 max-h-48 overflow-y-auto overscroll-contain touch-pan-y"
+                onPointerDown={(e) => e.stopPropagation()}
+              >
                 {accounts.length === 0 ? (
                   <p className="text-gray-400 text-sm text-center py-4">
                     No accounts connected
@@ -478,7 +485,6 @@ export default function Analytics() {
                       key={account.id}
                       className="flex items-center gap-3 p-2 rounded-lg border border-gray-800 hover:border-gray-700 cursor-pointer transition-colors"
                       data-testid={`filter-account-${account.id}`}
-                      onClick={(e) => e.stopPropagation()}
                     >
                       <Checkbox
                         checked={
@@ -486,7 +492,6 @@ export default function Analytics() {
                           selectedAccountIds.includes(account.id)
                         }
                         onCheckedChange={() => handleAccountToggle(account.id)}
-                        onClick={(e) => e.stopPropagation()}
                       />
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium text-white truncate">
@@ -507,8 +512,7 @@ export default function Analytics() {
             <Button
               variant="outline"
               size="sm"
-              onClick={(e) => {
-                e.stopPropagation();
+              onClick={() => {
                 handleClearFilters();
                 setViewMode("1");
                 setSelectedMonth(startOfMonth(new Date()));
@@ -520,10 +524,7 @@ export default function Analytics() {
             </Button>
             <Button
               size="sm"
-              onClick={(e) => {
-                e.stopPropagation();
-                setIsFilterOpen(false);
-              }}
+              onClick={() => setIsFilterOpen(false)}
               className="flex-1 bg-blue-600 hover:bg-blue-700"
               data-testid="button-apply-filters"
             >
