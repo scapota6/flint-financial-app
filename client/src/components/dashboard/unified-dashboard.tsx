@@ -174,19 +174,15 @@ export default function UnifiedDashboard() {
   return (
     <div className="space-y-6">
       {/* Header with Total Net Worth */}
-      <Card className="flint-card">
-        <CardHeader>
-          <CardTitle className="text-center">
-            <div className="text-lg text-gray-400 mb-2">Total Net Worth</div>
-            <div className="text-4xl font-bold text-white">
-              {formatCurrency(totals.totalBalance)}
-            </div>
-            <div className="text-sm text-gray-400 mt-2">
-              {`Across ${totals.accountCount} connected account${totals.accountCount !== 1 ? 's' : ''}`}
-            </div>
-          </CardTitle>
-        </CardHeader>
-      </Card>
+      <div className="text-center py-4">
+        <div className="text-sm text-gray-400">Total Net Worth</div>
+        <div className="text-3xl sm:text-4xl font-bold text-white">
+          {formatCurrency(totals.totalBalance)}
+        </div>
+        <div className="text-xs text-gray-500">
+          {`${totals.accountCount} account${totals.accountCount !== 1 ? 's' : ''}`}
+        </div>
+      </div>
 
       {/* View Toggle */}
       <div className="flex space-x-2 justify-center">
