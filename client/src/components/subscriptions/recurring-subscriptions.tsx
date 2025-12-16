@@ -1,5 +1,4 @@
 import { useQuery } from '@tanstack/react-query';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { apiRequest } from '@/lib/queryClient';
@@ -146,70 +145,56 @@ export default function RecurringSubscriptions() {
 
   if (isLoading) {
     return (
-      <Card className="flint-card">
-        <CardHeader>
-          <CardTitle>Recurring Subscriptions</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-3">
-            {[1, 2, 3, 4, 5].map(i => (
-              <div key={i} className="animate-pulse">
-                <div className="flex items-center justify-between p-3 bg-gray-800 rounded-lg">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 bg-gray-700 rounded-full"></div>
-                    <div>
-                      <div className="h-4 bg-gray-700 rounded w-24 mb-1"></div>
-                      <div className="h-3 bg-gray-700 rounded w-16"></div>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <div className="h-4 bg-gray-700 rounded w-16 mb-1"></div>
-                    <div className="h-3 bg-gray-700 rounded w-12"></div>
-                  </div>
+      <div className="bg-black rounded-xl p-4 sm:p-6" data-testid="subscriptions-loading">
+        <div className="space-y-4">
+          {[1, 2, 3, 4, 5].map(i => (
+            <div key={i} className="animate-pulse flex items-center justify-between py-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-gray-800 rounded-lg"></div>
+                <div>
+                  <div className="h-4 bg-gray-800 rounded w-24 mb-2"></div>
+                  <div className="h-3 bg-gray-800 rounded w-32"></div>
                 </div>
               </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+              <div className="text-right">
+                <div className="h-4 bg-gray-800 rounded w-16 mb-2"></div>
+                <div className="h-3 bg-gray-800 rounded w-12"></div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
     );
   }
 
   if (error) {
     return (
-      <Card className="flint-card">
-        <CardHeader>
-          <CardTitle>Recurring Subscriptions</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="text-center py-8 text-gray-400">
-            <AlertTriangle className="h-12 w-12 mx-auto mb-4 opacity-50" />
-            <p className="text-lg mb-2">Unable to load subscriptions</p>
-            <p className="text-sm">Connect your bank accounts to track recurring payments</p>
-          </div>
-        </CardContent>
-      </Card>
+      <div className="bg-black rounded-xl p-6 min-h-[200px] flex items-center justify-center" data-testid="subscriptions-error">
+        <div className="text-center text-gray-400">
+          <AlertTriangle className="h-12 w-12 mx-auto mb-4 opacity-50" />
+          <p className="text-lg mb-2">Unable to load subscriptions</p>
+          <p className="text-sm">Connect your bank accounts to track recurring payments</p>
+        </div>
+      </div>
     );
   }
 
   return (
-    <Card className="flint-card">
-      <CardHeader>
-        <CardTitle className="flex items-center justify-between">
-          <span>Recurring Subscriptions</span>
-          <div className="flex items-center gap-2">
-            <Badge variant="secondary" className="bg-blue-600/20 text-blue-400" data-testid="badge-active-count">
-              {subscriptions.length} Active
+    <div className="bg-black rounded-xl p-4 sm:p-6" data-testid="recurring-subscriptions">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-xl sm:text-2xl font-bold text-white">Recurring Subscriptions</h2>
+        <div className="flex items-center gap-2">
+          <Badge variant="secondary" className="bg-blue-600/20 text-blue-400" data-testid="badge-active-count">
+            {subscriptions.length} Active
+          </Badge>
+          {monthlyRounded > 0 && !isFreeTier && (
+            <Badge variant="secondary" className="bg-green-600/20 text-green-400" data-testid="badge-monthly-spend">
+              {formatCurrency(monthlyRounded)}/mo
             </Badge>
-            {monthlyRounded > 0 && !isFreeTier && (
-              <Badge variant="secondary" className="bg-green-600/20 text-green-400" data-testid="badge-monthly-spend">
-                {formatCurrency(monthlyRounded)}/mo
-              </Badge>
-            )}
-          </div>
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="px-2 sm:px-6">
+          )}
+        </div>
+      </div>
         <div className="relative">
           {/* Subscription List - Blurred for Free tier */}
           <div className={`divide-y divide-gray-800/50 ${isFreeTier ? 'blur-md pointer-events-none select-none' : ''}`}>
@@ -299,11 +284,10 @@ export default function RecurringSubscriptions() {
           )}
         </div>
 
-        {/* Data source info */}
-        <div className="text-xs text-gray-500 text-center pt-4 mt-4 border-t border-gray-800">
-          Analyzed from your bank & credit card transactions
-        </div>
-      </CardContent>
-    </Card>
+      {/* Data source info */}
+      <div className="text-xs text-gray-500 text-center pt-4 mt-4 border-t border-gray-800">
+        Analyzed from your bank & credit card transactions
+      </div>
+    </div>
   );
 }
