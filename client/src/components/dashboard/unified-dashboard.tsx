@@ -336,7 +336,7 @@ export default function UnifiedDashboard() {
                 onClick={() => setSelectedAccountId(account.id)}
               >
                 <div className="flex items-center gap-3 flex-1">
-                  <div className={`w-11 h-11 p-2 rounded-lg ${bgClass} ${textClass} flex items-center justify-center overflow-hidden flex-shrink-0`}>
+                  <div className={`w-11 h-11 rounded-lg ${bgClass} ${textClass} flex items-center justify-center overflow-hidden flex-shrink-0`}>
                     {logo}
                   </div>
                   <div className="flex-1">
