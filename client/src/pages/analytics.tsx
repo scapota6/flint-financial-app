@@ -37,6 +37,7 @@ import {
 import { useAuth } from "@/hooks/useAuth";
 import { isInternalTester } from "@/lib/feature-flags";
 import { apiGet, apiRequest, queryClient } from "@/lib/queryClient";
+import { getInstitutionLogo } from "@/lib/bank-logos";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -630,30 +631,31 @@ export default function Analytics() {
                     ? Math.ceil(remaining / goal.monthlyContribution)
                     : null;
 
-                  const GoalIcon = goal.goalType === 'debt_payoff' ? CreditCard 
-                    : goal.goalType === 'emergency_fund' ? Shield 
-                    : PiggyBank;
-
-                  const goalColor = goal.goalType === 'debt_payoff' ? 'text-red-400' 
-                    : goal.goalType === 'emergency_fund' ? 'text-cyan-400' 
-                    : 'text-green-400';
-
                   const progressColor = goal.goalType === 'debt_payoff' ? 'bg-red-500' 
                     : goal.goalType === 'emergency_fund' ? 'bg-cyan-500' 
                     : 'bg-green-500';
+
+                  // Get institution logo for linked accounts, fallback to generic icons
+                  const institutionLogoData = goal.linkedAccount?.accountName 
+                    ? getInstitutionLogo(goal.linkedAccount.accountName)
+                    : null;
 
                   return (
                     <motion.div
                       key={goal.id}
                       initial={{ opacity: 0, x: -10 }}
                       animate={{ opacity: 1, x: 0 }}
-                      className="bg-gray-900/50 rounded-xl p-4 border border-gray-800 hover:border-gray-700 transition-colors"
+                      className="bg-black rounded-xl p-4"
                       data-testid={`goal-card-${goal.id}`}
                     >
                       <div className="flex items-start justify-between mb-3">
                         <div className="flex items-center gap-3">
-                          <div className={`p-2 rounded-lg bg-gray-800 ${goalColor}`}>
-                            <GoalIcon className="w-5 h-5" />
+                          <div className={`w-10 h-10 rounded-lg overflow-hidden flex items-center justify-center ${institutionLogoData?.bgClass || 'bg-gray-800'}`}>
+                            {institutionLogoData?.logo || (
+                              goal.goalType === 'debt_payoff' ? <CreditCard className="w-5 h-5 text-red-400" /> 
+                              : goal.goalType === 'emergency_fund' ? <Shield className="w-5 h-5 text-cyan-400" />
+                              : <PiggyBank className="w-5 h-5 text-green-400" />
+                            )}
                           </div>
                           <div>
                             <h3 className="font-medium">{goal.name}</h3>
