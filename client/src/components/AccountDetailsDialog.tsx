@@ -1490,17 +1490,28 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
                   <div className="p-4 rounded-lg bg-white/5 dark:bg-black/60">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
-                        <Badge 
-                          variant={chainId === '0x1' ? 'default' : 'secondary'}
-                          className={chainId === '0x1' ? 'bg-green-600 text-white' : 'bg-yellow-600 text-white'}
-                        >
-                          {getChainName(chainId)}
-                        </Badge>
-                        {chainId && chainId !== '0x1' && (
-                          <span className="text-xs text-yellow-500">Not on Mainnet</span>
+                        {metamaskConnected && chainId ? (
+                          <>
+                            <Badge 
+                              variant={chainId === '0x1' ? 'default' : 'secondary'}
+                              className={chainId === '0x1' ? 'bg-green-600 text-white' : 'bg-yellow-600 text-white'}
+                            >
+                              {getChainName(chainId)}
+                            </Badge>
+                            {chainId !== '0x1' && (
+                              <span className="text-xs text-yellow-500">Not on Mainnet</span>
+                            )}
+                          </>
+                        ) : (
+                          <>
+                            <Badge className="bg-green-600 text-white">
+                              Ethereum Mainnet
+                            </Badge>
+                            <span className="text-xs text-gray-400">(Holdings synced from Mainnet)</span>
+                          </>
                         )}
                       </div>
-                      {chainId && chainId !== '0x1' && (
+                      {metamaskConnected && chainId && chainId !== '0x1' && (
                         <Button
                           size="sm"
                           variant="outline"
@@ -1669,13 +1680,27 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
                         </p>
                       </div>
                     ) : (
-                      <div className="text-center py-4">
-                        <p className="text-gray-600 dark:text-gray-400 mb-2">
-                          Connect your MetaMask wallet to send tokens
+                      <div className="text-center py-6">
+                        <div className="w-12 h-12 mx-auto mb-4 rounded-full bg-orange-600/20 flex items-center justify-center">
+                          <span className="text-2xl">🦊</span>
+                        </div>
+                        <p className="text-gray-300 mb-4">
+                          Connect your wallet to send tokens
                         </p>
-                        <p className="text-xs text-gray-500 dark:text-gray-500">
-                          Use the Connect MetaMask button on your dashboard
-                        </p>
+                        <Button
+                          onClick={async () => {
+                            try {
+                              await sdk?.connect();
+                            } catch (err) {
+                              console.error('Failed to connect:', err);
+                            }
+                          }}
+                          className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white"
+                          data-testid="button-connect-metamask-dialog"
+                        >
+                          <span className="mr-2">🦊</span>
+                          Connect MetaMask
+                        </Button>
                       </div>
                     )}
                   </div>
