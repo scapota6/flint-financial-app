@@ -1829,8 +1829,8 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
               </section>
             )}
 
-            {/* BROKERAGE-ONLY SECTIONS - Only show for SnapTrade accounts, NOT Teller accounts */}
-            {data.provider !== 'teller' && (
+            {/* BROKERAGE-ONLY SECTIONS - Only show for SnapTrade accounts, NOT Teller or MetaMask accounts */}
+            {data.provider !== 'teller' && data.provider !== 'metamask' && (
               <>
                 {/* 3. Positions and Orders - BROKERAGE ONLY */}
                 <section>
