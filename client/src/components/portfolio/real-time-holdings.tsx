@@ -91,7 +91,20 @@ const RealTimeHoldings = memo(function RealTimeHoldings({
     retryDelay: 3000, // Wait 3 seconds between retries
   });
 
-  const holdings = Array.isArray(holdingsData) ? holdingsData : [];
+  // Filter out MetaMask holdings when SDK is not connected
+  const allHoldings = Array.isArray(holdingsData) ? holdingsData : [];
+  const holdings = allHoldings.filter(holding => {
+    // If MetaMask is connected, show all holdings
+    if (metamaskConnected) return true;
+    // When MetaMask is disconnected, hide crypto holdings from MetaMask accounts
+    const isCrypto = holding.type?.toLowerCase().includes('crypto') || 
+                     holding.symbol?.includes('-USD') || 
+                     holding.symbol?.includes('-USDT') ||
+                     ['BTC', 'ETH', 'USDT', 'BNB', 'SOL', 'XRP', 'DOGE', 'MATIC', 'XLM'].includes(
+                       (holding.symbol || '').replace('-USD', '').replace('-USDT', '').toUpperCase()
+                     );
+    return !isCrypto;
+  });
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {

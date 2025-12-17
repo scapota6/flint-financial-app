@@ -73,6 +73,20 @@ export default function UnifiedDashboard() {
     });
   }, [allAccounts, metamaskConnected]);
   
+  // Adjust totals to exclude crypto when MetaMask is disconnected
+  const adjustedTotals = useMemo(() => {
+    if (metamaskConnected) {
+      return totals;
+    }
+    // When MetaMask is disconnected, zero out crypto and adjust total
+    return {
+      ...totals,
+      cryptoValue: 0,
+      totalBalance: totals.totalBalance - totals.cryptoValue,
+      accountCount: connectedAccounts.length
+    };
+  }, [totals, metamaskConnected, connectedAccounts.length]);
+  
   const hasDisconnectedAccounts = accountsData?.disconnected && accountsData.disconnected.length > 0;
   const isEmptyState = connectedAccounts.length === 0 && !isLoading;
 
@@ -160,12 +174,12 @@ export default function UnifiedDashboard() {
     );
   }
 
-  // Prepare data for charts - only use connected accounts
+  // Prepare data for charts - only use connected accounts with adjusted totals
   const typeBreakdown = [
-    { name: 'Banking', value: totals.bankBalance, color: COLORS.bank },
-    { name: 'Debt', value: totals.debtBalance, color: COLORS.debt },
-    { name: 'Investments', value: totals.investmentValue, color: COLORS.investment },
-    { name: 'Crypto', value: totals.cryptoValue, color: COLORS.crypto },
+    { name: 'Banking', value: adjustedTotals.bankBalance, color: COLORS.bank },
+    { name: 'Debt', value: adjustedTotals.debtBalance, color: COLORS.debt },
+    { name: 'Investments', value: adjustedTotals.investmentValue, color: COLORS.investment },
+    { name: 'Crypto', value: adjustedTotals.cryptoValue, color: COLORS.crypto },
   ].filter(item => item.value > 0);
 
 
@@ -192,10 +206,10 @@ export default function UnifiedDashboard() {
       <div className="text-center py-4">
         <div className="text-sm text-gray-400">Total Net Worth</div>
         <div className="text-3xl sm:text-4xl font-bold text-white">
-          {formatCurrency(totals.totalBalance)}
+          {formatCurrency(adjustedTotals.totalBalance)}
         </div>
         <div className="text-xs text-gray-500">
-          {`${totals.accountCount} account${totals.accountCount !== 1 ? 's' : ''}`}
+          {`${adjustedTotals.accountCount} account${adjustedTotals.accountCount !== 1 ? 's' : ''}`}
         </div>
       </div>
 
@@ -319,7 +333,7 @@ export default function UnifiedDashboard() {
                         {formatCurrency(type.value)}
                       </div>
                       <div className="text-gray-400 text-sm">
-                        {totals.totalBalance > 0 ? ((type.value / totals.totalBalance) * 100).toFixed(1) : 0}%
+                        {adjustedTotals.totalBalance > 0 ? ((type.value / adjustedTotals.totalBalance) * 100).toFixed(1) : 0}%
                       </div>
                     </div>
                   </div>
