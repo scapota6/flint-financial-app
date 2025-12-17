@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
@@ -27,9 +27,26 @@ import {
   AlertCircle,
   RefreshCw,
   Send,
-  Loader2
+  Loader2,
+  ArrowRightLeft,
+  CheckCircle2,
+  XCircle
 } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { 
+  setupEventListeners,
+  getChainName,
+  getBlockExplorerTxUrl,
+  switchChain,
+  sendETH,
+  sendERC20,
+  pollTransactionStatus,
+  getErrorMessage,
+  isUserRejection,
+  type TransactionState,
+  type MetaMaskProvider,
+} from "@/lib/metamask";
 import OrderPreviewDialog from './OrderPreviewDialog';
 import OrderStatusDialog from './OrderStatusDialog';
 
@@ -249,13 +266,25 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
   const { user: currentUser, isLoading: authLoading, isAuthenticated } = useAuth();
   
   // MetaMask SDK for ETH transfers
-  const { sdk, connected: metamaskConnected, account: metamaskAccount } = useSDK();
+  const { sdk, connected: metamaskConnected, account: metamaskAccount, chainId } = useSDK();
   const [ethTransferAddress, setEthTransferAddress] = useState('');
   const [ethTransferAmount, setEthTransferAmount] = useState('');
   const [isTransferring, setIsTransferring] = useState(false);
+  const [selectedToken, setSelectedToken] = useState<string>('ETH');
+  const [pendingTxs, setPendingTxs] = useState<TransactionState[]>([]);
+  const [isSwitchingChain, setIsSwitchingChain] = useState(false);
+  const pollCleanupRefs = useRef<Map<string, () => void>>(new Map());
   
-  // ETH transfer handler using MetaMask SDK
-  const handleEthTransfer = useCallback(async () => {
+  // Cleanup polling on unmount
+  useEffect(() => {
+    return () => {
+      pollCleanupRefs.current.forEach((cleanup) => cleanup());
+      pollCleanupRefs.current.clear();
+    };
+  }, []);
+  
+  // Token transfer handler using new MetaMask helpers
+  const handleTokenTransfer = useCallback(async (tokenData?: { symbol: string; contractAddress?: string; decimals?: number }) => {
     if (!metamaskAccount || !ethTransferAddress || !ethTransferAmount) {
       toast({
         title: "Missing Information",
@@ -265,22 +294,11 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
       return;
     }
     
-    // Validate Ethereum address
-    if (!/^0x[a-fA-F0-9]{40}$/.test(ethTransferAddress)) {
+    const provider = sdk?.getProvider() as MetaMaskProvider | undefined;
+    if (!provider) {
       toast({
-        title: "Invalid Address",
-        description: "Please enter a valid Ethereum address",
-        variant: "destructive",
-      });
-      return;
-    }
-    
-    // Validate amount
-    const amount = parseFloat(ethTransferAmount);
-    if (isNaN(amount) || amount <= 0) {
-      toast({
-        title: "Invalid Amount",
-        description: "Please enter a valid amount greater than 0",
+        title: "Wallet Error",
+        description: "MetaMask provider not available",
         variant: "destructive",
       });
       return;
@@ -289,47 +307,114 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
     setIsTransferring(true);
     
     try {
-      // Convert ETH amount to Wei (1 ETH = 10^18 Wei) using string parsing for precision
-      // Split the amount into integer and decimal parts to avoid floating point errors
-      const [intPart, decPart = ''] = ethTransferAmount.split('.');
-      const paddedDecimal = decPart.padEnd(18, '0').slice(0, 18);
-      const weiString = intPart + paddedDecimal;
-      const weiAmount = BigInt(weiString);
-      const hexValue = '0x' + weiAmount.toString(16);
+      let result;
       
-      // Request ETH transfer via MetaMask
-      const provider = sdk?.getProvider();
-      if (!provider) throw new Error('MetaMask provider not available');
+      if (selectedToken === 'ETH' || !tokenData?.contractAddress) {
+        result = await sendETH(provider, metamaskAccount, ethTransferAddress, ethTransferAmount);
+      } else {
+        result = await sendERC20(
+          provider,
+          metamaskAccount,
+          ethTransferAddress,
+          tokenData.contractAddress,
+          ethTransferAmount,
+          tokenData.decimals || 18
+        );
+      }
       
-      const txHash = await provider.request({
-        method: 'eth_sendTransaction',
-        params: [{
-          from: metamaskAccount,
-          to: ethTransferAddress,
-          value: hexValue,
-        }],
-      });
+      if (result.userRejected) {
+        toast({
+          title: "Transaction Cancelled",
+          description: "You declined the transaction in MetaMask",
+        });
+        return;
+      }
       
+      if (!result.success) {
+        toast({
+          title: "Transfer Failed",
+          description: result.error || "Transaction failed",
+          variant: "destructive",
+        });
+        return;
+      }
+      
+      const txHash = result.txHash!;
       toast({
         title: "Transfer Initiated",
-        description: `Transaction sent! Hash: ${(txHash as string).slice(0, 10)}...`,
+        description: `Transaction sent! Hash: ${txHash.slice(0, 10)}...`,
       });
       
-      // Clear form
+      setPendingTxs(prev => [...prev, { txHash, status: 'pending' }]);
+      
+      const cleanup = pollTransactionStatus(
+        provider,
+        txHash,
+        (state) => {
+          setPendingTxs(prev => 
+            prev.map(tx => tx.txHash === txHash ? state : tx)
+          );
+          
+          if (state.status === 'confirmed') {
+            toast({
+              title: "Transaction Confirmed",
+              description: `Your ${selectedToken} transfer has been confirmed!`,
+            });
+            pollCleanupRefs.current.delete(txHash);
+          } else if (state.status === 'failed') {
+            toast({
+              title: "Transaction Failed",
+              description: "The transaction failed on-chain",
+              variant: "destructive",
+            });
+            pollCleanupRefs.current.delete(txHash);
+          }
+        }
+      );
+      
+      pollCleanupRefs.current.set(txHash, cleanup);
+      
       setEthTransferAddress('');
       setEthTransferAmount('');
       
     } catch (err: any) {
-      console.error('ETH transfer failed:', err);
-      toast({
-        title: "Transfer Failed",
-        description: err?.message || "Failed to send transaction",
-        variant: "destructive",
-      });
+      console.error('Token transfer failed:', err);
+      if (!isUserRejection(err)) {
+        toast({
+          title: "Transfer Failed",
+          description: getErrorMessage(err),
+          variant: "destructive",
+        });
+      }
     } finally {
       setIsTransferring(false);
     }
-  }, [metamaskAccount, ethTransferAddress, ethTransferAmount, sdk, toast]);
+  }, [metamaskAccount, ethTransferAddress, ethTransferAmount, selectedToken, sdk, toast]);
+  
+  // Chain switching handler
+  const handleSwitchToMainnet = useCallback(async () => {
+    const provider = sdk?.getProvider() as MetaMaskProvider | undefined;
+    if (!provider) return;
+    
+    setIsSwitchingChain(true);
+    try {
+      const result = await switchChain(provider, '0x1');
+      if (result.success) {
+        toast({
+          title: "Network Switched",
+          description: "You are now on Ethereum Mainnet",
+        });
+      } else if (!result.userRejected) {
+        toast({
+          title: "Switch Failed",
+          description: result.error || "Could not switch network",
+          variant: "destructive",
+        });
+      }
+    } finally {
+      setIsSwitchingChain(false);
+    }
+  }, [sdk, toast]);
 
   // Payment mutation
   const paymentMutation = useMutation({
@@ -1363,17 +1448,136 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
                   </section>
                 )}
 
-                {/* 4. Send ETH */}
+                {/* 4. Network Info */}
+                <section>
+                  <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center">
+                    <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white font-bold text-sm mr-3">
+                      <ArrowRightLeft className="h-4 w-4" />
+                    </div>
+                    Network Info
+                  </h3>
+                  <div className="p-4 rounded-lg bg-white/5 dark:bg-black/60">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <Badge 
+                          variant={chainId === '0x1' ? 'default' : 'secondary'}
+                          className={chainId === '0x1' ? 'bg-green-600 text-white' : 'bg-yellow-600 text-white'}
+                        >
+                          {getChainName(chainId)}
+                        </Badge>
+                        {chainId && chainId !== '0x1' && (
+                          <span className="text-xs text-yellow-500">Not on Mainnet</span>
+                        )}
+                      </div>
+                      {chainId && chainId !== '0x1' && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={handleSwitchToMainnet}
+                          disabled={isSwitchingChain}
+                          className="text-xs"
+                          data-testid="button-switch-mainnet"
+                        >
+                          {isSwitchingChain ? (
+                            <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+                          ) : (
+                            <ArrowRightLeft className="h-3 w-3 mr-1" />
+                          )}
+                          Switch to Mainnet
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                </section>
+
+                {/* 5. Recent Transactions */}
+                {pendingTxs.length > 0 && (
+                  <section>
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center">
+                      <div className="w-8 h-8 rounded-lg bg-cyan-600 flex items-center justify-center text-white font-bold text-sm mr-3">
+                        <Clock className="h-4 w-4" />
+                      </div>
+                      Recent Transactions ({pendingTxs.length})
+                    </h3>
+                    <div className="space-y-2">
+                      {pendingTxs.slice(-5).reverse().map((tx) => (
+                        <div 
+                          key={tx.txHash} 
+                          className="p-3 rounded-lg bg-white/5 dark:bg-black/60 flex items-center justify-between"
+                        >
+                          <div className="flex items-center gap-3">
+                            {tx.status === 'pending' && (
+                              <Badge className="bg-yellow-500 text-white">
+                                <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+                                Pending
+                              </Badge>
+                            )}
+                            {tx.status === 'confirmed' && (
+                              <Badge className="bg-green-500 text-white">
+                                <CheckCircle2 className="h-3 w-3 mr-1" />
+                                Confirmed
+                              </Badge>
+                            )}
+                            {tx.status === 'failed' && (
+                              <Badge className="bg-red-500 text-white">
+                                <XCircle className="h-3 w-3 mr-1" />
+                                Failed
+                              </Badge>
+                            )}
+                            <span className="font-mono text-xs text-gray-400">
+                              {tx.txHash.slice(0, 10)}...{tx.txHash.slice(-6)}
+                            </span>
+                          </div>
+                          {chainId && (
+                            <a
+                              href={getBlockExplorerTxUrl(chainId, tx.txHash) || '#'}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-xs text-blue-400 hover:text-blue-300"
+                            >
+                              View →
+                            </a>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </section>
+                )}
+
+                {/* 6. Send Tokens */}
                 <section>
                   <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center">
                     <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white font-bold text-sm mr-3">
                       <Send className="h-4 w-4" />
                     </div>
-                    Send ETH
+                    Send Tokens
                   </h3>
                   <div className="p-6 rounded-lg bg-white/5 dark:bg-black/60">
                     {metamaskConnected && metamaskAccount ? (
                       <div className="space-y-4">
+                        {/* Token Selector */}
+                        <div>
+                          <Label className="text-sm font-medium text-gray-300">
+                            Select Token
+                          </Label>
+                          <Select 
+                            value={selectedToken} 
+                            onValueChange={setSelectedToken}
+                          >
+                            <SelectTrigger className="mt-1" data-testid="select-token">
+                              <SelectValue placeholder="Select token" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="ETH">ETH (Ethereum)</SelectItem>
+                              {data.positions?.map((pos: any, idx: number) => (
+                                <SelectItem key={idx} value={pos.symbol || `token-${idx}`}>
+                                  {pos.symbol} {pos.name ? `(${pos.name})` : ''}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        
                         <div>
                           <Label htmlFor="eth-recipient" className="text-sm font-medium text-gray-300">
                             Recipient Address
@@ -1390,7 +1594,7 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
                         </div>
                         <div>
                           <Label htmlFor="eth-amount" className="text-sm font-medium text-gray-300">
-                            Amount (ETH)
+                            Amount ({selectedToken})
                           </Label>
                           <Input
                             id="eth-amount"
@@ -1405,10 +1609,17 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
                           />
                         </div>
                         <Button
-                          onClick={handleEthTransfer}
+                          onClick={() => {
+                            const tokenPos = data.positions?.find((p: any) => p.symbol === selectedToken);
+                            handleTokenTransfer(tokenPos ? {
+                              symbol: tokenPos.symbol,
+                              contractAddress: tokenPos.contractAddress,
+                              decimals: tokenPos.decimals
+                            } : undefined);
+                          }}
                           disabled={isTransferring || !ethTransferAddress || !ethTransferAmount}
                           className="w-full bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white"
-                          data-testid="button-send-eth"
+                          data-testid="button-send-token"
                         >
                           {isTransferring ? (
                             <>
@@ -1418,7 +1629,7 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
                           ) : (
                             <>
                               <Send className="h-4 w-4 mr-2" />
-                              Send ETH
+                              Send {selectedToken}
                             </>
                           )}
                         </Button>
@@ -1429,7 +1640,7 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
                     ) : (
                       <div className="text-center py-4">
                         <p className="text-gray-600 dark:text-gray-400 mb-2">
-                          Connect your MetaMask wallet to send ETH
+                          Connect your MetaMask wallet to send tokens
                         </p>
                         <p className="text-xs text-gray-500 dark:text-gray-500">
                           Use the Connect MetaMask button on your dashboard
