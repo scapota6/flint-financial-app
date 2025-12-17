@@ -14,6 +14,8 @@ import { format, subMonths, startOfMonth } from "date-fns";
 import {
   ChevronLeft,
   ChevronRight,
+  ChevronDown,
+  ChevronUp,
   TrendingUp,
   Calendar,
   Filter,
@@ -22,6 +24,8 @@ import {
   AlertCircle,
   ShoppingBag,
   Lock,
+  Eye,
+  EyeOff,
 } from "lucide-react";
 
 import { useAuth } from "@/hooks/useAuth";
@@ -98,6 +102,8 @@ export default function Analytics() {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
   const [isDrilldownOpen, setIsDrilldownOpen] = useState(false);
+  const [categoriesExpanded, setCategoriesExpanded] = useState(false);
+  const [spendingChartVisible, setSpendingChartVisible] = useState(true);
 
   const hasAccess = isInternalTester(user?.email);
 
@@ -263,9 +269,19 @@ export default function Analytics() {
               >
                 <div className="bg-black rounded-xl p-4 sm:p-6 mb-6">
                   <div className="flex items-center justify-between mb-4">
-                    <h2 className="text-xl font-semibold text-white">
-                      Spending by Category
-                    </h2>
+                    <div className="flex items-center gap-3">
+                      <h2 className="text-xl font-semibold text-white">
+                        Spending by Category
+                      </h2>
+                      <button
+                        onClick={() => setSpendingChartVisible(!spendingChartVisible)}
+                        className="p-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-gray-800 transition-colors"
+                        title={spendingChartVisible ? "Hide chart" : "Show chart"}
+                        data-testid="button-toggle-spending-chart"
+                      >
+                        {spendingChartVisible ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+                      </button>
+                    </div>
                     <div className="text-right">
                       <p className="text-sm text-gray-400">Total</p>
                       <p className="text-xl sm:text-2xl font-bold text-white" data-testid="text-total-spending">
@@ -273,6 +289,8 @@ export default function Analytics() {
                       </p>
                     </div>
                   </div>
+                  {spendingChartVisible && (
+                    <>
                     {chartData.length === 0 ? (
                       <div className="h-80 flex items-center justify-center">
                         <div className="text-center">
@@ -345,38 +363,60 @@ export default function Analytics() {
                         </ResponsiveContainer>
                       </div>
                     )}
+                    </>
+                  )}
                 </div>
               </motion.div>
 
-              {/* Category cards */}
+              {/* Category cards - show top 2 by default, expand for more */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3, delay: 0.2 }}
-                className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4"
               >
-                {chartData.map((category, index) => (
-                  <div
-                    key={category.name}
-                    className="bg-black rounded-xl p-3 sm:p-4 cursor-pointer transition-all hover:bg-gray-900"
-                    onClick={() => handleBarClick(category)}
-                    data-testid={`card-category-${category.name.toLowerCase().replace(/\s+/g, "-")}`}
-                  >
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4">
+                  {(categoriesExpanded ? chartData : chartData.slice(0, 2)).map((category, index) => (
                     <div
-                      className="w-3 h-3 rounded-full mb-2"
-                      style={{
-                        backgroundColor: CATEGORY_COLORS[index % CATEGORY_COLORS.length],
-                      }}
-                    />
-                    <p className="text-xs sm:text-sm text-gray-400 truncate">{category.name}</p>
-                    <p className="text-base sm:text-lg font-semibold mt-1">
-                      {formatCurrency(category.amount)}
-                    </p>
-                    <p className="text-xs text-gray-500 mt-1">
-                      {category.transactions?.length || 0} txns
-                    </p>
-                  </div>
-                ))}
+                      key={category.name}
+                      className="bg-black rounded-xl p-3 sm:p-4 cursor-pointer transition-all hover:bg-gray-900"
+                      onClick={() => handleBarClick(category)}
+                      data-testid={`card-category-${category.name.toLowerCase().replace(/\s+/g, "-")}`}
+                    >
+                      <div
+                        className="w-3 h-3 rounded-full mb-2"
+                        style={{
+                          backgroundColor: CATEGORY_COLORS[index % CATEGORY_COLORS.length],
+                        }}
+                      />
+                      <p className="text-xs sm:text-sm text-gray-400 truncate">{category.name}</p>
+                      <p className="text-base sm:text-lg font-semibold mt-1">
+                        {formatCurrency(category.amount)}
+                      </p>
+                      <p className="text-xs text-gray-500 mt-1">
+                        {category.transactions?.length || 0} txns
+                      </p>
+                    </div>
+                  ))}
+                </div>
+                {chartData.length > 2 && (
+                  <button
+                    onClick={() => setCategoriesExpanded(!categoriesExpanded)}
+                    className="mt-3 w-full flex items-center justify-center gap-2 py-2 text-sm text-gray-400 hover:text-white transition-colors"
+                    data-testid="button-toggle-categories"
+                  >
+                    {categoriesExpanded ? (
+                      <>
+                        <ChevronUp className="w-4 h-4" />
+                        Show Less
+                      </>
+                    ) : (
+                      <>
+                        <ChevronDown className="w-4 h-4" />
+                        Show {chartData.length - 2} More Categories
+                      </>
+                    )}
+                  </button>
+                )}
               </motion.div>
             </>
           )}
