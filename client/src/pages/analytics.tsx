@@ -601,13 +601,22 @@ export default function Analytics() {
                   let remaining = 0;
                   let amountSaved = 0;
                   let currentBalance = 0;
+                  let debtAdded = 0; // For debt payoff: tracks if they added more debt
+                  const startingBalance = goal.startingAmount || goal.targetAmount; // Fallback to targetAmount for old goals
 
                   if (goal.goalType === 'debt_payoff' && goal.linkedAccount) {
-                    // Debt payoff: progress = how much paid off vs original balance
+                    // Debt payoff: track paid off vs new debt added since goal creation
                     currentBalance = Math.abs(goal.linkedAccount.balance || 0);
-                    amountSaved = Math.max(0, goal.targetAmount - currentBalance);
-                    progress = goal.targetAmount > 0 
-                      ? Math.min(100, (amountSaved / goal.targetAmount) * 100) 
+                    
+                    // Calculate amount paid off (positive if balance decreased)
+                    amountSaved = Math.max(0, startingBalance - currentBalance);
+                    
+                    // Calculate new debt added (positive if balance increased)
+                    debtAdded = Math.max(0, currentBalance - startingBalance);
+                    
+                    // Progress based on original starting balance
+                    progress = startingBalance > 0 
+                      ? Math.min(100, Math.max(0, (amountSaved / startingBalance) * 100))
                       : 0;
                     remaining = currentBalance;
                   } else if ((goal.goalType === 'savings' || goal.goalType === 'emergency_fund') && goal.linkedAccount) {
@@ -685,7 +694,7 @@ export default function Analytics() {
                         <div className="flex justify-between text-sm mb-1">
                           {goal.goalType === 'debt_payoff' ? (
                             <span className="text-gray-400">
-                              {formatCurrency(amountSaved)} paid of {formatCurrency(goal.targetAmount)}
+                              {formatCurrency(amountSaved)} paid of {formatCurrency(startingBalance)}
                             </span>
                           ) : (goal.goalType === 'savings' || goal.goalType === 'emergency_fund') && goal.linkedAccount ? (
                             <span className="text-gray-400">
@@ -706,11 +715,23 @@ export default function Analytics() {
                         </div>
                       </div>
 
-                      <div className="flex items-center justify-between text-xs text-gray-500">
+                      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-gray-500">
                         {goal.goalType === 'debt_payoff' ? (
-                          <span>
-                            {remaining > 0 ? `${formatCurrency(remaining)} remaining balance` : 'Paid off!'}
-                          </span>
+                          <>
+                            <span>
+                              {remaining > 0 ? `${formatCurrency(remaining)} remaining` : 'Paid off!'}
+                            </span>
+                            {debtAdded > 0 && (
+                              <span className="text-yellow-500">
+                                +{formatCurrency(debtAdded)} added
+                              </span>
+                            )}
+                            {goal.createdAt && (
+                              <span className="text-gray-600">
+                                since {format(new Date(goal.createdAt), 'MMM d')}
+                              </span>
+                            )}
+                          </>
                         ) : (goal.goalType === 'savings' || goal.goalType === 'emergency_fund') && goal.linkedAccount ? (
                           <span>
                             {remaining > 0 ? `${formatCurrency(remaining)} to go` : 'Goal reached!'}
@@ -723,7 +744,7 @@ export default function Analytics() {
                         {monthsToGoal !== null && remaining > 0 && (
                           <span className="flex items-center gap-1">
                             <Calendar className="w-3 h-3" />
-                            ~{monthsToGoal} month{monthsToGoal !== 1 ? 's' : ''} at {formatCurrency(goal.monthlyContribution!)}/mo
+                            ~{monthsToGoal}mo
                           </span>
                         )}
                         {goal.deadline && (

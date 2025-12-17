@@ -30,11 +30,16 @@ router.get('/', requireAuth, async (req: any, res) => {
             eq(connectedAccounts.userId, userId)
           ))
           .limit(1);
+        // For debt payoff goals, ensure balance is absolute (credit cards may be stored as negative)
+        const accountBalance = Number(account.balance);
+        const normalizedBalance = goal.goalType === 'debt_payoff' 
+          ? Math.abs(accountBalance) 
+          : accountBalance;
         linkedAccount = account ? {
           id: account.id,
           accountName: account.accountName,
           institutionName: account.institutionName,
-          balance: Number(account.balance),
+          balance: normalizedBalance,
         } : null;
       }
       return {
@@ -43,6 +48,7 @@ router.get('/', requireAuth, async (req: any, res) => {
         currentAmount: Number(goal.currentAmount || 0),
         startingAmount: goal.startingAmount ? Number(goal.startingAmount) : null,
         monthlyContribution: goal.monthlyContribution ? Number(goal.monthlyContribution) : null,
+        createdAt: goal.createdAt?.toISOString() || null,
         linkedAccount,
       };
     }));
@@ -93,9 +99,11 @@ router.post('/', requireAuth, async (req: any, res) => {
       }
     }
 
-    // For savings and emergency fund goals with linked accounts, capture the starting balance
+    // For all goals with linked accounts, capture the starting balance
+    // - Debt payoff: starting balance = initial debt amount to track payoff progress
+    // - Savings/Emergency fund: starting balance = initial account balance to track growth
     let startingAmount: string | null = null;
-    if ((goalData.goalType === 'savings' || goalData.goalType === 'emergency_fund') && goalData.linkedAccountId) {
+    if (goalData.linkedAccountId) {
       const [linkedAccount] = await db.select()
         .from(connectedAccounts)
         .where(and(
@@ -105,7 +113,7 @@ router.post('/', requireAuth, async (req: any, res) => {
         .limit(1);
       
       if (linkedAccount) {
-        startingAmount = String(linkedAccount.balance);
+        startingAmount = String(Math.abs(Number(linkedAccount.balance)));
       }
     }
 
