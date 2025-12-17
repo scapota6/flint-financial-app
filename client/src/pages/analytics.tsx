@@ -204,8 +204,8 @@ export default function Analytics() {
         body: JSON.stringify({
           name: goalData.name,
           goalType: goalData.goalType,
-          targetAmount: parseFloat(goalData.targetAmount) || 0,
-          monthlyContribution: goalData.monthlyContribution ? parseFloat(goalData.monthlyContribution) : null,
+          targetAmount: goalData.targetAmount, // Keep as string for Drizzle numeric type
+          monthlyContribution: goalData.monthlyContribution || null,
           linkedAccountId: goalData.linkedAccountId ? parseInt(goalData.linkedAccountId) : null,
         }),
       });
@@ -903,7 +903,7 @@ export default function Analytics() {
                         </div>
                         <div className="flex-1 min-w-0">
                           <p className="text-sm font-medium text-white truncate">
-                            {account.name}
+                            {account.accountName}
                           </p>
                           <p className="text-xs text-gray-400 truncate">
                             {account.institution || account.type}
