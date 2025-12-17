@@ -22,11 +22,20 @@ router.get('/', requireAuth, async (req: any, res) => {
     const goalsWithAccounts = await Promise.all(goals.map(async (goal) => {
       let linkedAccount = null;
       if (goal.linkedAccountId) {
+        // Only include linked account if it belongs to the user (security check)
         const [account] = await db.select()
           .from(connectedAccounts)
-          .where(eq(connectedAccounts.id, goal.linkedAccountId))
+          .where(and(
+            eq(connectedAccounts.id, goal.linkedAccountId),
+            eq(connectedAccounts.userId, userId)
+          ))
           .limit(1);
-        linkedAccount = account || null;
+        linkedAccount = account ? {
+          id: account.id,
+          accountName: account.accountName,
+          institutionName: account.institutionName,
+          balance: Number(account.balance),
+        } : null;
       }
       return {
         ...goal,
@@ -67,6 +76,21 @@ router.post('/', requireAuth, async (req: any, res) => {
     }
 
     const goalData = parseResult.data;
+
+    // Verify linked account belongs to the user if provided
+    if (goalData.linkedAccountId) {
+      const [linkedAccount] = await db.select()
+        .from(connectedAccounts)
+        .where(and(
+          eq(connectedAccounts.id, goalData.linkedAccountId),
+          eq(connectedAccounts.userId, userId)
+        ))
+        .limit(1);
+      
+      if (!linkedAccount) {
+        return res.status(400).json({ message: 'Invalid linked account' });
+      }
+    }
 
     const [newGoal] = await db.insert(financialGoals).values({
       userId: goalData.userId,
@@ -142,6 +166,21 @@ router.patch('/:id', requireAuth, async (req: any, res) => {
 
     const updates: any = { updatedAt: new Date() };
     const data = parseResult.data;
+
+    // Verify linked account ownership if updating linkedAccountId
+    if (data.linkedAccountId !== undefined && data.linkedAccountId !== null) {
+      const [linkedAccount] = await db.select()
+        .from(connectedAccounts)
+        .where(and(
+          eq(connectedAccounts.id, data.linkedAccountId),
+          eq(connectedAccounts.userId, userId)
+        ))
+        .limit(1);
+      
+      if (!linkedAccount) {
+        return res.status(400).json({ message: 'Invalid linked account' });
+      }
+    }
 
     if (data.name !== undefined) updates.name = data.name;
     if (data.targetAmount !== undefined) updates.targetAmount = String(data.targetAmount);
@@ -232,13 +271,17 @@ router.post('/:id/sync', requireAuth, async (req: any, res) => {
       return res.json({ message: 'No linked account to sync', goal });
     }
 
+    // Verify account belongs to user for security
     const [account] = await db.select()
       .from(connectedAccounts)
-      .where(eq(connectedAccounts.id, goal.linkedAccountId))
+      .where(and(
+        eq(connectedAccounts.id, goal.linkedAccountId),
+        eq(connectedAccounts.userId, userId)
+      ))
       .limit(1);
 
     if (!account) {
-      return res.json({ message: 'Linked account not found', goal });
+      return res.json({ message: 'Linked account not found or access denied', goal });
     }
 
     let newCurrentAmount: number;

@@ -49,6 +49,13 @@ The platform features an Apple 2025 "Liquid Glass" aesthetic, utilizing dark neu
 -   **Wallet Service**: Internal fund management with pre-authorization and hold/release functionality.
 -   **Trading Aggregation Engine**: Intelligent routing, real-time position consolidation, pre-trade validation, and trade APIs.
 -   **Compliance**: Legal disclaimers system with user acknowledgment.
+-   **Financial Goals System**: User-defined goals for debt payoff, savings, and emergency fund tracking. Features include:
+    - Goal types: `debt_payoff`, `savings`, `emergency_fund` with distinct icons and colors
+    - Progress tracking with visual progress bars and percentage completion
+    - Monthly contribution estimates with projected timeline to goal completion
+    - Optional linked account syncing for automatic progress updates
+    - Goals API: `GET/POST /api/goals`, `PATCH/DELETE /api/goals/:id`, `POST /api/goals/:id/sync`
+    - Analytics tab integration showing all goals with create/delete functionality
 
 ### System Design Choices
 -   **Modular Architecture**: Dedicated service layers for encryption, wallet management, trading aggregation, and email delivery.

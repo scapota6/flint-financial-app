@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   BarChart,
@@ -10,7 +10,7 @@ import {
   ResponsiveContainer,
   Cell,
 } from "recharts";
-import { format, subMonths, startOfMonth } from "date-fns";
+import { format, subMonths, startOfMonth, differenceInMonths } from "date-fns";
 import {
   ChevronLeft,
   ChevronRight,
@@ -26,11 +26,17 @@ import {
   Lock,
   Eye,
   EyeOff,
+  Target,
+  Plus,
+  Trash2,
+  CreditCard,
+  PiggyBank,
+  Shield,
 } from "lucide-react";
 
 import { useAuth } from "@/hooks/useAuth";
 import { isInternalTester } from "@/lib/feature-flags";
-import { apiGet } from "@/lib/queryClient";
+import { apiGet, apiRequest, queryClient } from "@/lib/queryClient";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -40,6 +46,16 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Progress } from "@/components/ui/progress";
 
 interface Transaction {
   id: string;
@@ -67,7 +83,34 @@ interface DashboardData {
     name: string;
     institution?: string;
     type?: string;
+    balance?: number;
+    accountType?: string;
   }>;
+}
+
+interface FinancialGoal {
+  id: number;
+  userId: string;
+  goalType: 'debt_payoff' | 'savings' | 'emergency_fund';
+  name: string;
+  targetAmount: number;
+  currentAmount: number;
+  linkedAccountId: number | null;
+  deadline: string | null;
+  monthlyContribution: number | null;
+  status: 'active' | 'completed' | 'paused';
+  createdAt: string;
+  updatedAt: string;
+  linkedAccount?: {
+    id: number;
+    accountName: string;
+    institutionName: string;
+    balance: number;
+  } | null;
+}
+
+interface GoalsResponse {
+  goals: FinancialGoal[];
 }
 
 const CATEGORY_COLORS = [
@@ -104,6 +147,14 @@ export default function Analytics() {
   const [isDrilldownOpen, setIsDrilldownOpen] = useState(false);
   const [categoriesExpanded, setCategoriesExpanded] = useState(false);
   const [spendingChartVisible, setSpendingChartVisible] = useState(true);
+  const [isGoalModalOpen, setIsGoalModalOpen] = useState(false);
+  const [newGoal, setNewGoal] = useState({
+    name: '',
+    goalType: 'savings' as 'debt_payoff' | 'savings' | 'emergency_fund',
+    targetAmount: '',
+    monthlyContribution: '',
+    linkedAccountId: '',
+  });
 
   const hasAccess = isInternalTester(user?.email);
 
@@ -138,6 +189,50 @@ export default function Analytics() {
     staleTime: 2 * 60 * 1000,
     retry: 1,
   });
+
+  const { data: goalsData, isLoading: isGoalsLoading } = useQuery({
+    queryKey: ["/api/goals"],
+    queryFn: () => apiGet<GoalsResponse>("/api/goals"),
+    enabled: hasAccess,
+    staleTime: 30 * 1000,
+  });
+
+  const createGoalMutation = useMutation({
+    mutationFn: async (goalData: typeof newGoal) => {
+      return apiRequest('/api/goals', {
+        method: 'POST',
+        body: JSON.stringify({
+          name: goalData.name,
+          goalType: goalData.goalType,
+          targetAmount: parseFloat(goalData.targetAmount) || 0,
+          monthlyContribution: goalData.monthlyContribution ? parseFloat(goalData.monthlyContribution) : null,
+          linkedAccountId: goalData.linkedAccountId ? parseInt(goalData.linkedAccountId) : null,
+        }),
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/goals"] });
+      setIsGoalModalOpen(false);
+      setNewGoal({
+        name: '',
+        goalType: 'savings',
+        targetAmount: '',
+        monthlyContribution: '',
+        linkedAccountId: '',
+      });
+    },
+  });
+
+  const deleteGoalMutation = useMutation({
+    mutationFn: async (goalId: number) => {
+      return apiRequest(`/api/goals/${goalId}`, { method: 'DELETE' });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/goals"] });
+    },
+  });
+
+  const goals = goalsData?.goals || [];
 
   const handlePrevMonth = () => {
     setSelectedMonth((prev) => subMonths(prev, 1));
@@ -422,8 +517,278 @@ export default function Analytics() {
               )}
             </>
           )}
+
+          {/* Financial Goals Section */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: 0.3 }}
+            className="mt-8"
+          >
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-semibold flex items-center gap-2">
+                <Target className="w-5 h-5 text-blue-400" />
+                Financial Goals
+              </h2>
+              <Button
+                size="sm"
+                onClick={() => setIsGoalModalOpen(true)}
+                className="bg-blue-600 hover:bg-blue-700"
+                data-testid="button-add-goal"
+              >
+                <Plus className="w-4 h-4 mr-1" />
+                Add Goal
+              </Button>
+            </div>
+
+            {isGoalsLoading ? (
+              <div className="space-y-4">
+                <Skeleton className="h-24 bg-gray-800" />
+                <Skeleton className="h-24 bg-gray-800" />
+              </div>
+            ) : goals.length === 0 ? (
+              <div className="bg-gray-900/50 rounded-xl p-8 text-center border border-gray-800">
+                <Target className="w-12 h-12 mx-auto mb-4 text-gray-600" />
+                <h3 className="text-lg font-medium mb-2">No goals yet</h3>
+                <p className="text-gray-400 text-sm mb-4">
+                  Set financial goals to track your progress toward debt payoff, savings, or emergency fund
+                </p>
+                <Button
+                  onClick={() => setIsGoalModalOpen(true)}
+                  className="bg-blue-600 hover:bg-blue-700"
+                  data-testid="button-create-first-goal"
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  Create Your First Goal
+                </Button>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {goals.map((goal) => {
+                  const progress = goal.targetAmount > 0 
+                    ? Math.min(100, (goal.currentAmount / goal.targetAmount) * 100) 
+                    : 0;
+                  const remaining = Math.max(0, goal.targetAmount - goal.currentAmount);
+                  const monthsToGoal = goal.monthlyContribution && goal.monthlyContribution > 0
+                    ? Math.ceil(remaining / goal.monthlyContribution)
+                    : null;
+
+                  const GoalIcon = goal.goalType === 'debt_payoff' ? CreditCard 
+                    : goal.goalType === 'emergency_fund' ? Shield 
+                    : PiggyBank;
+
+                  const goalColor = goal.goalType === 'debt_payoff' ? 'text-red-400' 
+                    : goal.goalType === 'emergency_fund' ? 'text-cyan-400' 
+                    : 'text-green-400';
+
+                  const progressColor = goal.goalType === 'debt_payoff' ? 'bg-red-500' 
+                    : goal.goalType === 'emergency_fund' ? 'bg-cyan-500' 
+                    : 'bg-green-500';
+
+                  return (
+                    <motion.div
+                      key={goal.id}
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      className="bg-gray-900/50 rounded-xl p-4 border border-gray-800 hover:border-gray-700 transition-colors"
+                      data-testid={`goal-card-${goal.id}`}
+                    >
+                      <div className="flex items-start justify-between mb-3">
+                        <div className="flex items-center gap-3">
+                          <div className={`p-2 rounded-lg bg-gray-800 ${goalColor}`}>
+                            <GoalIcon className="w-5 h-5" />
+                          </div>
+                          <div>
+                            <h3 className="font-medium">{goal.name}</h3>
+                            <p className="text-xs text-gray-400 capitalize">
+                              {goal.goalType.replace('_', ' ')}
+                              {goal.linkedAccount && ` • ${goal.linkedAccount.accountName}`}
+                            </p>
+                          </div>
+                        </div>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 text-gray-500 hover:text-red-400 hover:bg-red-500/10"
+                          onClick={() => deleteGoalMutation.mutate(goal.id)}
+                          disabled={deleteGoalMutation.isPending}
+                          data-testid={`button-delete-goal-${goal.id}`}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
+
+                      <div className="mb-2">
+                        <div className="flex justify-between text-sm mb-1">
+                          <span className="text-gray-400">
+                            {formatCurrency(goal.currentAmount)} of {formatCurrency(goal.targetAmount)}
+                          </span>
+                          <span className="font-medium">{progress.toFixed(0)}%</span>
+                        </div>
+                        <div className="h-2 bg-gray-800 rounded-full overflow-hidden">
+                          <div
+                            className={`h-full ${progressColor} transition-all duration-500`}
+                            style={{ width: `${progress}%` }}
+                          />
+                        </div>
+                      </div>
+
+                      <div className="flex items-center justify-between text-xs text-gray-500">
+                        <span>
+                          {remaining > 0 ? `${formatCurrency(remaining)} to go` : 'Goal reached!'}
+                        </span>
+                        {monthsToGoal !== null && remaining > 0 && (
+                          <span className="flex items-center gap-1">
+                            <Calendar className="w-3 h-3" />
+                            ~{monthsToGoal} month{monthsToGoal !== 1 ? 's' : ''} at {formatCurrency(goal.monthlyContribution!)}/mo
+                          </span>
+                        )}
+                        {goal.deadline && (
+                          <span>
+                            Due: {format(new Date(goal.deadline), 'MMM d, yyyy')}
+                          </span>
+                        )}
+                      </div>
+                    </motion.div>
+                  );
+                })}
+              </div>
+            )}
+          </motion.div>
         </motion.div>
       </main>
+
+      {/* Create Goal Modal */}
+      <Dialog open={isGoalModalOpen} onOpenChange={setIsGoalModalOpen}>
+        <DialogContent className="bg-gray-900/95 backdrop-blur-lg border border-gray-800 max-w-md w-[95vw] sm:w-full">
+          <DialogHeader>
+            <DialogTitle className="text-white flex items-center gap-2">
+              <Target className="w-5 h-5 text-blue-400" />
+              Create Financial Goal
+            </DialogTitle>
+            <DialogDescription className="text-gray-400">
+              Track your progress toward a financial objective
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4 py-2">
+            <div>
+              <Label className="text-gray-300">Goal Name</Label>
+              <Input
+                value={newGoal.name}
+                onChange={(e) => setNewGoal({ ...newGoal, name: e.target.value })}
+                placeholder="e.g., Pay off credit card"
+                className="mt-1 bg-gray-800 border-gray-700"
+                data-testid="input-goal-name"
+              />
+            </div>
+
+            <div>
+              <Label className="text-gray-300">Goal Type</Label>
+              <Select
+                value={newGoal.goalType}
+                onValueChange={(v) => setNewGoal({ ...newGoal, goalType: v as typeof newGoal.goalType })}
+              >
+                <SelectTrigger className="mt-1 bg-gray-800 border-gray-700" data-testid="select-goal-type">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="savings">
+                    <span className="flex items-center gap-2">
+                      <PiggyBank className="w-4 h-4 text-green-400" />
+                      Savings Goal
+                    </span>
+                  </SelectItem>
+                  <SelectItem value="debt_payoff">
+                    <span className="flex items-center gap-2">
+                      <CreditCard className="w-4 h-4 text-red-400" />
+                      Debt Payoff
+                    </span>
+                  </SelectItem>
+                  <SelectItem value="emergency_fund">
+                    <span className="flex items-center gap-2">
+                      <Shield className="w-4 h-4 text-cyan-400" />
+                      Emergency Fund
+                    </span>
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <Label className="text-gray-300">Target Amount</Label>
+              <Input
+                type="number"
+                value={newGoal.targetAmount}
+                onChange={(e) => setNewGoal({ ...newGoal, targetAmount: e.target.value })}
+                placeholder="10000"
+                className="mt-1 bg-gray-800 border-gray-700"
+                data-testid="input-target-amount"
+              />
+            </div>
+
+            <div>
+              <Label className="text-gray-300">Monthly Contribution (optional)</Label>
+              <Input
+                type="number"
+                value={newGoal.monthlyContribution}
+                onChange={(e) => setNewGoal({ ...newGoal, monthlyContribution: e.target.value })}
+                placeholder="500"
+                className="mt-1 bg-gray-800 border-gray-700"
+                data-testid="input-monthly-contribution"
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                Used to estimate when you'll reach your goal
+              </p>
+            </div>
+
+            {accounts.length > 0 && (
+              <div>
+                <Label className="text-gray-300">Link to Account (optional)</Label>
+                <Select
+                  value={newGoal.linkedAccountId}
+                  onValueChange={(v) => setNewGoal({ ...newGoal, linkedAccountId: v })}
+                >
+                  <SelectTrigger className="mt-1 bg-gray-800 border-gray-700" data-testid="select-linked-account">
+                    <SelectValue placeholder="Select account to track" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="">None</SelectItem>
+                    {accounts.map((account) => (
+                      <SelectItem key={account.id} value={account.id}>
+                        {account.name} {account.institution && `- ${account.institution}`}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+          </div>
+
+          <div className="flex gap-3 pt-2">
+            <Button
+              variant="outline"
+              onClick={() => setIsGoalModalOpen(false)}
+              className="flex-1 border-gray-700 hover:bg-gray-800"
+              data-testid="button-cancel-goal"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={() => createGoalMutation.mutate(newGoal)}
+              disabled={!newGoal.name || !newGoal.targetAmount || createGoalMutation.isPending}
+              className="flex-1 bg-blue-600 hover:bg-blue-700"
+              data-testid="button-save-goal"
+            >
+              {createGoalMutation.isPending ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                'Create Goal'
+              )}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       <Dialog open={isFilterOpen} onOpenChange={setIsFilterOpen}>
         <DialogContent 
