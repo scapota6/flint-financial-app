@@ -80,7 +80,7 @@ interface SpendingData {
 interface DashboardData {
   accounts?: Array<{
     id: string;
-    name: string;
+    accountName: string;
     institution?: string;
     type?: string;
     balance?: number;
@@ -756,7 +756,7 @@ export default function Analytics() {
                     <SelectItem value="none">None</SelectItem>
                     {accounts.map((account) => (
                       <SelectItem key={account.id} value={String(account.id)}>
-                        {account.name} {account.institution && `- ${account.institution}`}
+                        {account.accountName}
                       </SelectItem>
                     ))}
                   </SelectContent>
