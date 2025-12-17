@@ -360,7 +360,7 @@ const app = express();
   app.use("/api/accounts", accountsRouter);
   
   // Mount Orders API router
-  app.use("/api", ordersRouter);
+  app.use("/api/orders", ordersRouter);
   
   // Mount Order Preview API router (SnapTrade two-step process)
   app.use("/api/order-preview", orderPreviewRouter);

@@ -1,0 +1,56 @@
+queryClient.ts:178  GET https://28036d48-949d-4fd5-9e63-54ed8b7fd662-00-1i1qwnyczdy9x.kirk.replit.dev/api/goals 400 (Bad Request)
+apiGet @ queryClient.ts:178
+queryFn @ analytics.tsx:195
+fetchFn @ @tanstack_react-query.js?v=7872eb68:1097
+run @ @tanstack_react-query.js?v=7872eb68:795
+start @ @tanstack_react-query.js?v=7872eb68:838
+fetch @ @tanstack_react-query.js?v=7872eb68:1144
+executeFetch_fn @ @tanstack_react-query.js?v=7872eb68:1639
+onSubscribe @ @tanstack_react-query.js?v=7872eb68:1335
+subscribe @ @tanstack_react-query.js?v=7872eb68:24
+(anonymous) @ @tanstack_react-query.js?v=7872eb68:3298
+subscribeToStore @ chunk-6G2PLVCX.js?v=7872eb68:11984
+commitHookEffectListMount @ chunk-6G2PLVCX.js?v=7872eb68:16915
+commitPassiveMountOnFiber @ chunk-6G2PLVCX.js?v=7872eb68:18156
+commitPassiveMountEffects_complete @ chunk-6G2PLVCX.js?v=7872eb68:18129
+commitPassiveMountEffects_begin @ chunk-6G2PLVCX.js?v=7872eb68:18119
+commitPassiveMountEffects @ chunk-6G2PLVCX.js?v=7872eb68:18109
+flushPassiveEffectsImpl @ chunk-6G2PLVCX.js?v=7872eb68:19490
+flushPassiveEffects @ chunk-6G2PLVCX.js?v=7872eb68:19447
+performSyncWorkOnRoot @ chunk-6G2PLVCX.js?v=7872eb68:18868
+flushSyncCallbacks @ chunk-6G2PLVCX.js?v=7872eb68:9119
+commitRootImpl @ chunk-6G2PLVCX.js?v=7872eb68:19432
+commitRoot @ chunk-6G2PLVCX.js?v=7872eb68:19277
+finishConcurrentRender @ chunk-6G2PLVCX.js?v=7872eb68:18805
+performConcurrentWorkOnRoot @ chunk-6G2PLVCX.js?v=7872eb68:18718
+workLoop @ chunk-6G2PLVCX.js?v=7872eb68:197
+flushWork @ chunk-6G2PLVCX.js?v=7872eb68:176
+performWorkUntilDeadline @ chunk-6G2PLVCX.js?v=7872eb68:384Understand this error
+queryClient.ts:78  POST https://28036d48-949d-4fd5-9e63-54ed8b7fd662-00-1i1qwnyczdy9x.kirk.replit.dev/api/goals 400 (Bad Request)
+apiRequest @ queryClient.ts:78
+await in apiRequest
+mutationFn @ analytics.tsx:202
+fn @ @tanstack_react-query.js?v=7872eb68:1998
+run @ @tanstack_react-query.js?v=7872eb68:795
+start @ @tanstack_react-query.js?v=7872eb68:838
+execute @ @tanstack_react-query.js?v=7872eb68:2039
+await in execute
+mutate @ @tanstack_react-query.js?v=7872eb68:2378
+(anonymous) @ @tanstack_react-query.js?v=7872eb68:3566
+onClick @ analytics.tsx:778
+callCallback2 @ chunk-6G2PLVCX.js?v=7872eb68:3674
+invokeGuardedCallbackDev @ chunk-6G2PLVCX.js?v=7872eb68:3699
+invokeGuardedCallback @ chunk-6G2PLVCX.js?v=7872eb68:3733
+invokeGuardedCallbackAndCatchFirstError @ chunk-6G2PLVCX.js?v=7872eb68:3736
+executeDispatch @ chunk-6G2PLVCX.js?v=7872eb68:7014
+processDispatchQueueItemsInOrder @ chunk-6G2PLVCX.js?v=7872eb68:7034
+processDispatchQueue @ chunk-6G2PLVCX.js?v=7872eb68:7043
+dispatchEventsForPlugins @ chunk-6G2PLVCX.js?v=7872eb68:7051
+(anonymous) @ chunk-6G2PLVCX.js?v=7872eb68:7174
+batchedUpdates$1 @ chunk-6G2PLVCX.js?v=7872eb68:18913
+batchedUpdates @ chunk-6G2PLVCX.js?v=7872eb68:3579
+dispatchEventForPluginEventSystem @ chunk-6G2PLVCX.js?v=7872eb68:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-6G2PLVCX.js?v=7872eb68:5478
+dispatchEvent @ chunk-6G2PLVCX.js?v=7872eb68:5472
+dispatchDiscreteEvent @ chunk-6G2PLVCX.js?v=7872eb68:5449Understand this error
+queryClient.ts:178  GET https://28036d48-949d-4fd5-9e63-54ed8b7fd662-00-1i1qwnyczdy9x.kirk.replit.dev/api/goals 400 (Bad Request)
