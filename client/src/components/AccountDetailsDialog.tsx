@@ -283,6 +283,33 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
     };
   }, []);
   
+  // MetaMask event listeners for account/chain changes
+  useEffect(() => {
+    if (!sdk || !open) return;
+    
+    const provider = sdk.getProvider() as MetaMaskProvider | undefined;
+    if (!provider) return;
+    
+    const cleanup = setupEventListeners(provider, {
+      onAccountsChanged: (accounts) => {
+        if (accounts.length === 0) {
+          toast({
+            title: "Wallet Disconnected",
+            description: "MetaMask wallet was disconnected",
+          });
+        }
+      },
+      onChainChanged: (newChainId) => {
+        toast({
+          title: "Network Changed",
+          description: `Switched to ${getChainName(newChainId)}`,
+        });
+      },
+    });
+    
+    return cleanup;
+  }, [sdk, open, toast]);
+  
   // Token transfer handler using new MetaMask helpers
   const handleTokenTransfer = useCallback(async (tokenData?: { symbol: string; contractAddress?: string; decimals?: number }) => {
     if (!metamaskAccount || !ethTransferAddress || !ethTransferAmount) {
@@ -360,6 +387,8 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
               title: "Transaction Confirmed",
               description: `Your ${selectedToken} transfer has been confirmed!`,
             });
+            const txCleanup = pollCleanupRefs.current.get(txHash);
+            if (txCleanup) txCleanup();
             pollCleanupRefs.current.delete(txHash);
           } else if (state.status === 'failed') {
             toast({
@@ -367,6 +396,8 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
               description: "The transaction failed on-chain",
               variant: "destructive",
             });
+            const txCleanup = pollCleanupRefs.current.get(txHash);
+            if (txCleanup) txCleanup();
             pollCleanupRefs.current.delete(txHash);
           }
         }
