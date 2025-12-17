@@ -72,6 +72,13 @@ The platform features an Apple 2025 "Liquid Glass" aesthetic, utilizing dark neu
 -   **Teller.io**: Bank account connections, ACH transfers, Zelle-based credit card payments, with mTLS implementation.
 -   **SnapTrade**: Brokerage account connections, real-time quotes, trading functionalities, and webhook-driven data synchronization.
 -   **MetaMask SDK**: Crypto wallet connection for internal testers (scapota@flint-investing.com, seba.rod136@gmail.com). Uses existing `connected_accounts` table with `accountType='crypto'` and `provider='metamask'`. Holdings stored in `holdings` table with real USD values from Ethplorer API. Endpoints: POST/DELETE `/api/connections/metamask`, POST `/api/connections/metamask/sync`. Frontend auto-registers wallet on connect, fetches all token balances and USD prices from Ethplorer, and syncs holdings to Portfolio Holdings section.
+    - **Enhanced Integration (Dec 2025)**: Modular helper architecture in `client/src/lib/metamask/`:
+      - `errors.ts`: User-friendly error messages from MetaMask error codes (4001=rejected, -32602=invalid params, etc.)
+      - `events.ts`: Event listener setup/cleanup for accountsChanged, chainChanged, connect, disconnect
+      - `chains.ts`: Chain switching with wallet_switchEthereumChain and wallet_addEthereumChain
+      - `transactions.ts`: ETH/ERC-20 transfers with ABI encoding, transaction lifecycle polling
+      - `signing.ts`: personal_sign and eth_signTypedData_v4 (EIP-712) for wallet authentication
+    - **Wallet Card Features**: Event-driven UI updates, network switch button, token selector for ERC-20 transfers, transaction status badges (pending/confirmed/failed), proper cleanup on unmount
 -   **Ethplorer API**: Free-tier token discovery for MetaMask wallets. Provides complete token list, balances, USD prices, and ETH price. Rate limit: 2 req/sec. Used to populate crypto holdings with accurate USD valuations.
 -   **Stripe**: Subscription management and payment processing.
 -   **Finnhub**: General financial data.
