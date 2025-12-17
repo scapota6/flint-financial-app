@@ -57,6 +57,8 @@ The platform features an Apple 2025 "Liquid Glass" aesthetic, utilizing dark neu
     - Goals API: `GET/POST /api/goals`, `PATCH/DELETE /api/goals/:id`, `POST /api/goals/:id/sync`
     - Analytics tab integration showing all goals with create/delete functionality
     - **Smart Debt Payoff Tracking (Dec 2025)**: Debt payoff goals require selecting a linked credit card. The goal's target amount is auto-populated from the card's current balance, and progress is calculated in real-time as `(initialBalance - currentBalance) / initialBalance`. The UI shows "X paid of Y" and "remaining balance" instead of generic progress text. Credit card balances are synced from Teller, so progress updates automatically as payments are made.
+    - **Smart Savings Goal Tracking (Dec 2025)**: Savings goals require selecting a linked bank account (checking/savings). The account's current balance is stored as `startingAmount` when the goal is created. Users set an end goal amount, and progress is calculated as `(currentBalance - startingAmount) / (targetAmount - startingAmount)`. If starting at $5,000 with a goal of $10,000, progress starts at 0% and increases as the balance grows. The UI shows "X saved of Y" and "Current: X • Goal: Y".
+    - **Optimistic Goal Deletion**: Goal cards are removed from the UI immediately when deleted (optimistic update). A loading spinner shows on the delete button, and if the API fails, the goal is restored to the list.
 
 ### System Design Choices
 -   **Modular Architecture**: Dedicated service layers for encryption, wallet management, trading aggregation, and email delivery.

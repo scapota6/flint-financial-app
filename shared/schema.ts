@@ -703,6 +703,7 @@ export const financialGoals = pgTable('financial_goals', {
   name: varchar('name', { length: 255 }).notNull(), // User-defined goal name
   targetAmount: numeric('target_amount', { precision: 15, scale: 2 }).notNull(), // Goal target amount
   currentAmount: numeric('current_amount', { precision: 15, scale: 2 }).default('0'), // Current progress (can be auto-synced)
+  startingAmount: numeric('starting_amount', { precision: 15, scale: 2 }), // Starting balance for savings goals (baseline)
   linkedAccountId: integer('linked_account_id').references(() => connectedAccounts.id), // Optional linked account
   deadline: timestamp('deadline'), // Optional target date
   monthlyContribution: numeric('monthly_contribution', { precision: 15, scale: 2 }), // For timeline projections

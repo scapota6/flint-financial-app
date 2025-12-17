@@ -41,6 +41,7 @@ router.get('/', requireAuth, async (req: any, res) => {
         ...goal,
         targetAmount: Number(goal.targetAmount),
         currentAmount: Number(goal.currentAmount || 0),
+        startingAmount: goal.startingAmount ? Number(goal.startingAmount) : null,
         monthlyContribution: goal.monthlyContribution ? Number(goal.monthlyContribution) : null,
         linkedAccount,
       };
@@ -92,19 +93,36 @@ router.post('/', requireAuth, async (req: any, res) => {
       }
     }
 
+    // For savings goals with linked accounts, capture the starting balance
+    let startingAmount: string | null = null;
+    if (goalData.goalType === 'savings' && goalData.linkedAccountId) {
+      const [linkedAccount] = await db.select()
+        .from(connectedAccounts)
+        .where(and(
+          eq(connectedAccounts.id, goalData.linkedAccountId),
+          eq(connectedAccounts.userId, userId)
+        ))
+        .limit(1);
+      
+      if (linkedAccount) {
+        startingAmount = String(linkedAccount.balance);
+      }
+    }
+
     const [newGoal] = await db.insert(financialGoals).values({
       userId: goalData.userId,
       goalType: goalData.goalType,
       name: goalData.name,
       targetAmount: String(goalData.targetAmount),
       currentAmount: goalData.currentAmount ? String(goalData.currentAmount) : '0',
+      startingAmount: startingAmount,
       linkedAccountId: goalData.linkedAccountId || null,
       deadline: goalData.deadline || null,
       monthlyContribution: goalData.monthlyContribution ? String(goalData.monthlyContribution) : null,
       status: goalData.status || 'active',
     }).returning();
 
-    console.log('[Goals] Created new goal:', { goalId: newGoal.id, userId });
+    console.log('[Goals] Created new goal:', { goalId: newGoal.id, userId, startingAmount });
 
     return res.status(201).json({
       message: 'Goal created successfully',
@@ -112,6 +130,7 @@ router.post('/', requireAuth, async (req: any, res) => {
         ...newGoal,
         targetAmount: Number(newGoal.targetAmount),
         currentAmount: Number(newGoal.currentAmount || 0),
+        startingAmount: newGoal.startingAmount ? Number(newGoal.startingAmount) : null,
         monthlyContribution: newGoal.monthlyContribution ? Number(newGoal.monthlyContribution) : null,
       },
     });

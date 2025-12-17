@@ -95,6 +95,7 @@ interface FinancialGoal {
   name: string;
   targetAmount: number;
   currentAmount: number;
+  startingAmount: number | null; // Starting balance when savings goal was created
   linkedAccountId: number | null;
   deadline: string | null;
   monthlyContribution: number | null;
@@ -154,7 +155,9 @@ export default function Analytics() {
     targetAmount: '',
     monthlyContribution: '',
     linkedAccountId: '',
+    startingAmount: '', // For savings goals - the starting balance when goal was created
   });
+  const [deletingGoalId, setDeletingGoalId] = useState<number | null>(null);
 
   const hasAccess = isInternalTester(user?.email);
 
@@ -219,15 +222,42 @@ export default function Analytics() {
         targetAmount: '',
         monthlyContribution: '',
         linkedAccountId: '',
+        startingAmount: '',
       });
     },
   });
 
   const deleteGoalMutation = useMutation({
     mutationFn: async (goalId: number) => {
+      setDeletingGoalId(goalId);
       return apiRequest(`/api/goals/${goalId}`, { method: 'DELETE' });
     },
-    onSuccess: () => {
+    onMutate: async (goalId: number) => {
+      // Cancel outgoing refetches
+      await queryClient.cancelQueries({ queryKey: ["/api/goals"] });
+      
+      // Snapshot previous value
+      const previousGoals = queryClient.getQueryData<GoalsResponse>(["/api/goals"]);
+      
+      // Optimistically remove the goal
+      queryClient.setQueryData<GoalsResponse>(["/api/goals"], (old) => {
+        if (!old) return { goals: [] };
+        return {
+          ...old,
+          goals: old.goals.filter((g) => g.id !== goalId),
+        };
+      });
+      
+      return { previousGoals };
+    },
+    onError: (_err, _goalId, context) => {
+      // Rollback on error
+      if (context?.previousGoals) {
+        queryClient.setQueryData(["/api/goals"], context.previousGoals);
+      }
+    },
+    onSettled: () => {
+      setDeletingGoalId(null);
       queryClient.invalidateQueries({ queryKey: ["/api/goals"] });
     },
   });
@@ -565,25 +595,38 @@ export default function Analytics() {
             ) : (
               <div className="space-y-4">
                 {goals.map((goal) => {
-                  // For debt payoff goals, calculate progress from linked account balance
+                  // Calculate progress based on goal type
                   let progress = 0;
                   let remaining = 0;
-                  let amountPaidOff = 0;
+                  let amountSaved = 0;
                   let currentBalance = 0;
 
                   if (goal.goalType === 'debt_payoff' && goal.linkedAccount) {
+                    // Debt payoff: progress = how much paid off vs original balance
                     currentBalance = Math.abs(goal.linkedAccount.balance || 0);
-                    amountPaidOff = Math.max(0, goal.targetAmount - currentBalance);
+                    amountSaved = Math.max(0, goal.targetAmount - currentBalance);
                     progress = goal.targetAmount > 0 
-                      ? Math.min(100, (amountPaidOff / goal.targetAmount) * 100) 
+                      ? Math.min(100, (amountSaved / goal.targetAmount) * 100) 
                       : 0;
                     remaining = currentBalance;
+                  } else if (goal.goalType === 'savings' && goal.linkedAccount && goal.startingAmount !== null) {
+                    // Savings with linked account: progress = (current - starting) / (target - starting)
+                    currentBalance = goal.linkedAccount.balance || 0;
+                    const startingAmount = goal.startingAmount;
+                    const targetAmount = goal.targetAmount;
+                    const totalToSave = targetAmount - startingAmount;
+                    amountSaved = Math.max(0, currentBalance - startingAmount);
+                    progress = totalToSave > 0 
+                      ? Math.min(100, Math.max(0, (amountSaved / totalToSave) * 100))
+                      : 0;
+                    remaining = Math.max(0, targetAmount - currentBalance);
                   } else {
+                    // Emergency fund or goals without linked accounts
                     progress = goal.targetAmount > 0 
                       ? Math.min(100, (goal.currentAmount / goal.targetAmount) * 100) 
                       : 0;
                     remaining = Math.max(0, goal.targetAmount - goal.currentAmount);
-                    amountPaidOff = goal.currentAmount;
+                    amountSaved = goal.currentAmount;
                   }
 
                   const monthsToGoal = goal.monthlyContribution && goal.monthlyContribution > 0
@@ -628,10 +671,14 @@ export default function Analytics() {
                           size="icon"
                           className="h-8 w-8 text-gray-500 hover:text-red-400 hover:bg-red-500/10"
                           onClick={() => deleteGoalMutation.mutate(goal.id)}
-                          disabled={deleteGoalMutation.isPending}
+                          disabled={deletingGoalId === goal.id}
                           data-testid={`button-delete-goal-${goal.id}`}
                         >
-                          <Trash2 className="w-4 h-4" />
+                          {deletingGoalId === goal.id ? (
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                          ) : (
+                            <Trash2 className="w-4 h-4" />
+                          )}
                         </Button>
                       </div>
 
@@ -639,7 +686,11 @@ export default function Analytics() {
                         <div className="flex justify-between text-sm mb-1">
                           {goal.goalType === 'debt_payoff' ? (
                             <span className="text-gray-400">
-                              {formatCurrency(amountPaidOff)} paid of {formatCurrency(goal.targetAmount)}
+                              {formatCurrency(amountSaved)} paid of {formatCurrency(goal.targetAmount)}
+                            </span>
+                          ) : goal.goalType === 'savings' && goal.linkedAccount && goal.startingAmount !== null ? (
+                            <span className="text-gray-400">
+                              {formatCurrency(amountSaved)} saved of {formatCurrency(goal.targetAmount - goal.startingAmount)}
                             </span>
                           ) : (
                             <span className="text-gray-400">
@@ -660,6 +711,10 @@ export default function Analytics() {
                         {goal.goalType === 'debt_payoff' ? (
                           <span>
                             {remaining > 0 ? `${formatCurrency(remaining)} remaining balance` : 'Paid off!'}
+                          </span>
+                        ) : goal.goalType === 'savings' && goal.linkedAccount && goal.startingAmount !== null ? (
+                          <span>
+                            {remaining > 0 ? `Current: ${formatCurrency(currentBalance)} • Goal: ${formatCurrency(goal.targetAmount)}` : 'Goal reached!'}
                           </span>
                         ) : (
                           <span>
@@ -712,7 +767,8 @@ export default function Analytics() {
                     goalType,
                     linkedAccountId: '',
                     targetAmount: '',
-                    name: goalType === 'debt_payoff' ? '' : newGoal.name
+                    startingAmount: '',
+                    name: (goalType === 'debt_payoff' || goalType === 'savings') ? '' : newGoal.name
                   });
                 }}
               >
@@ -810,6 +866,107 @@ export default function Analytics() {
                   );
                 })()}
               </>
+            ) : newGoal.goalType === 'savings' ? (
+              <>
+                {(() => {
+                  const bankAccounts = accounts.filter((a) => a.type === 'depository' || a.accountType === 'bank');
+                  const selectedAccount = bankAccounts.find((a) => String(a.id) === newGoal.linkedAccountId);
+                  const currentBalance = selectedAccount?.balance || 0;
+                  
+                  return bankAccounts.length === 0 ? (
+                    <div className="p-4 bg-yellow-900/20 border border-yellow-700/30 rounded-lg">
+                      <p className="text-sm text-yellow-400">
+                        No bank accounts connected. Connect a savings or checking account to track your savings goal.
+                      </p>
+                    </div>
+                  ) : (
+                    <>
+                      <div>
+                        <Label className="text-gray-300">Select Account to Track</Label>
+                        <Select
+                          value={newGoal.linkedAccountId || "none"}
+                          onValueChange={(v) => {
+                            const accountId = v === "none" ? '' : v;
+                            const account = bankAccounts.find((a) => String(a.id) === accountId);
+                            setNewGoal({ 
+                              ...newGoal, 
+                              linkedAccountId: accountId,
+                              startingAmount: account?.balance ? String(account.balance) : '',
+                              name: account ? `Savings - ${account.accountName}` : ''
+                            });
+                          }}
+                        >
+                          <SelectTrigger className="mt-1 bg-gray-800 border-gray-700" data-testid="select-savings-account">
+                            <SelectValue placeholder="Choose an account" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="none">Select an account...</SelectItem>
+                            {bankAccounts.map((account) => (
+                              <SelectItem key={account.id} value={String(account.id)}>
+                                <span className="flex items-center justify-between gap-4">
+                                  <span>{account.accountName}</span>
+                                  <span className="text-green-400 font-medium">
+                                    {formatCurrency(account.balance || 0)}
+                                  </span>
+                                </span>
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {selectedAccount && (
+                        <>
+                          <div className="p-4 bg-gray-800/50 rounded-lg border border-gray-700">
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <p className="text-sm text-gray-400">Current Balance (Starting Point)</p>
+                                <p className="text-2xl font-bold text-green-400">
+                                  {formatCurrency(currentBalance)}
+                                </p>
+                              </div>
+                              <PiggyBank className="w-8 h-8 text-gray-600" />
+                            </div>
+                            <p className="text-xs text-gray-500 mt-2">
+                              Progress will track from this balance toward your goal
+                            </p>
+                          </div>
+
+                          <div>
+                            <Label className="text-gray-300">End Goal Amount</Label>
+                            <Input
+                              type="number"
+                              value={newGoal.targetAmount}
+                              onChange={(e) => setNewGoal({ ...newGoal, targetAmount: e.target.value })}
+                              placeholder={String(Math.round(currentBalance * 2))}
+                              className="mt-1 bg-gray-800 border-gray-700"
+                              data-testid="input-target-amount"
+                            />
+                            <p className="text-xs text-gray-500 mt-1">
+                              Set the balance you want to reach (must be higher than current balance)
+                            </p>
+                          </div>
+
+                          <div>
+                            <Label className="text-gray-300">Monthly Contribution (optional)</Label>
+                            <Input
+                              type="number"
+                              value={newGoal.monthlyContribution}
+                              onChange={(e) => setNewGoal({ ...newGoal, monthlyContribution: e.target.value })}
+                              placeholder="500"
+                              className="mt-1 bg-gray-800 border-gray-700"
+                              data-testid="input-monthly-contribution"
+                            />
+                            <p className="text-xs text-gray-500 mt-1">
+                              Used to estimate when you'll reach your goal
+                            </p>
+                          </div>
+                        </>
+                      )}
+                    </>
+                  );
+                })()}
+              </>
             ) : (
               <>
                 <div>
@@ -849,28 +1006,6 @@ export default function Analytics() {
                     Used to estimate when you'll reach your goal
                   </p>
                 </div>
-
-                {accounts.length > 0 && (
-                  <div>
-                    <Label className="text-gray-300">Link to Account (optional)</Label>
-                    <Select
-                      value={newGoal.linkedAccountId || "none"}
-                      onValueChange={(v) => setNewGoal({ ...newGoal, linkedAccountId: v === "none" ? '' : v })}
-                    >
-                      <SelectTrigger className="mt-1 bg-gray-800 border-gray-700" data-testid="select-linked-account">
-                        <SelectValue placeholder="Select account to track" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="none">None</SelectItem>
-                        {accounts.map((account) => (
-                          <SelectItem key={account.id} value={String(account.id)}>
-                            {account.accountName}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                )}
               </>
             )}
           </div>
@@ -890,6 +1025,7 @@ export default function Analytics() {
                 !newGoal.name || 
                 !newGoal.targetAmount || 
                 (newGoal.goalType === 'debt_payoff' && !newGoal.linkedAccountId) ||
+                (newGoal.goalType === 'savings' && !newGoal.linkedAccountId) ||
                 createGoalMutation.isPending
               }
               className="flex-1 bg-blue-600 hover:bg-blue-700"
