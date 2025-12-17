@@ -23,12 +23,13 @@ export interface TransactionState {
   blockNumber?: number;
 }
 
-const ERC20_TRANSFER_ABI = "0xa9059cbb";
+const ERC20_TRANSFER_SELECTOR = "a9059cbb";
 
 export function encodeERC20Transfer(to: string, amount: bigint): string {
-  const paddedTo = to.slice(2).toLowerCase().padStart(64, "0");
+  const cleanAddress = to.startsWith("0x") ? to.slice(2) : to;
+  const paddedTo = cleanAddress.toLowerCase().padStart(64, "0");
   const paddedAmount = amount.toString(16).padStart(64, "0");
-  return ERC20_TRANSFER_ABI + paddedTo + paddedAmount;
+  return "0x" + ERC20_TRANSFER_SELECTOR + paddedTo + paddedAmount;
 }
 
 export function parseAmount(amount: string, decimals: number = 18): bigint {
