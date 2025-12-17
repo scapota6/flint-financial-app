@@ -450,6 +450,10 @@ const app = express();
   const leadsRouter = (await import("./routes/leads")).default;
   app.use("/api/leads", leadsRouter);
 
+  // Mount Goals API router
+  const goalsRouter = (await import("./routes/goals")).default;
+  app.use("/api/goals", goalsRouter);
+
   // ========================================
   // IMPORTANT: All API routes must be mounted BEFORE static files
   // ========================================
