@@ -56,6 +56,7 @@ The platform features an Apple 2025 "Liquid Glass" aesthetic, utilizing dark neu
     - Optional linked account syncing for automatic progress updates
     - Goals API: `GET/POST /api/goals`, `PATCH/DELETE /api/goals/:id`, `POST /api/goals/:id/sync`
     - Analytics tab integration showing all goals with create/delete functionality
+    - **Smart Debt Payoff Tracking (Dec 2025)**: Debt payoff goals require selecting a linked credit card. The goal's target amount is auto-populated from the card's current balance, and progress is calculated in real-time as `(initialBalance - currentBalance) / initialBalance`. The UI shows "X paid of Y" and "remaining balance" instead of generic progress text. Credit card balances are synced from Teller, so progress updates automatically as payments are made.
 
 ### System Design Choices
 -   **Modular Architecture**: Dedicated service layers for encryption, wallet management, trading aggregation, and email delivery.
