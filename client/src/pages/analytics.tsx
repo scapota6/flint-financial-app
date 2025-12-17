@@ -578,7 +578,7 @@ export default function Analytics() {
                 <Skeleton className="h-24 bg-gray-800" />
               </div>
             ) : goals.length === 0 ? (
-              <div className="bg-gray-900/50 rounded-xl p-8 text-center border border-gray-800">
+              <div className="bg-black rounded-xl p-8 text-center">
                 <Target className="w-12 h-12 mx-auto mb-4 text-gray-600" />
                 <h3 className="text-lg font-medium mb-2">No goals yet</h3>
                 <p className="text-gray-400 text-sm mb-4">
@@ -846,7 +846,7 @@ export default function Analytics() {
                       </div>
 
                       {selectedCard && (
-                        <div className="p-4 bg-gray-800/50 rounded-lg border border-gray-700">
+                        <div className="p-4 bg-black rounded-lg">
                           <div className="flex items-center justify-between">
                             <div>
                               <p className="text-sm text-gray-400">Current Balance to Pay Off</p>
@@ -919,7 +919,7 @@ export default function Analytics() {
 
                       {selectedAccount && (
                         <>
-                          <div className="p-4 bg-gray-800/50 rounded-lg border border-gray-700">
+                          <div className="p-4 bg-black rounded-lg">
                             <div className="flex items-center justify-between">
                               <div>
                                 <p className="text-sm text-gray-400">Current Balance (Starting Point)</p>
@@ -1144,7 +1144,7 @@ export default function Analytics() {
                       <button
                         type="button"
                         key={account.id}
-                        className="flex items-center gap-3 p-3 rounded-lg border border-gray-800 hover:border-gray-700 cursor-pointer transition-colors w-full text-left"
+                        className="flex items-center gap-3 p-3 rounded-lg bg-black cursor-pointer transition-colors w-full text-left hover:bg-gray-900"
                         data-testid={`filter-account-${account.id}`}
                         onClick={() => handleAccountToggle(account.id)}
                       >
@@ -1221,7 +1221,7 @@ export default function Analytics() {
                     initial={{ opacity: 0, x: -10 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: index * 0.03 }}
-                    className="p-3 rounded-lg bg-gray-800/50 border border-gray-800 hover:border-gray-700 transition-colors"
+                    className="p-3 rounded-lg bg-black"
                     data-testid={`transaction-${transaction.id}`}
                   >
                     <div className="flex items-start justify-between gap-4">
