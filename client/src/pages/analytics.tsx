@@ -565,10 +565,27 @@ export default function Analytics() {
             ) : (
               <div className="space-y-4">
                 {goals.map((goal) => {
-                  const progress = goal.targetAmount > 0 
-                    ? Math.min(100, (goal.currentAmount / goal.targetAmount) * 100) 
-                    : 0;
-                  const remaining = Math.max(0, goal.targetAmount - goal.currentAmount);
+                  // For debt payoff goals, calculate progress from linked account balance
+                  let progress = 0;
+                  let remaining = 0;
+                  let amountPaidOff = 0;
+                  let currentBalance = 0;
+
+                  if (goal.goalType === 'debt_payoff' && goal.linkedAccount) {
+                    currentBalance = Math.abs(goal.linkedAccount.balance || 0);
+                    amountPaidOff = Math.max(0, goal.targetAmount - currentBalance);
+                    progress = goal.targetAmount > 0 
+                      ? Math.min(100, (amountPaidOff / goal.targetAmount) * 100) 
+                      : 0;
+                    remaining = currentBalance;
+                  } else {
+                    progress = goal.targetAmount > 0 
+                      ? Math.min(100, (goal.currentAmount / goal.targetAmount) * 100) 
+                      : 0;
+                    remaining = Math.max(0, goal.targetAmount - goal.currentAmount);
+                    amountPaidOff = goal.currentAmount;
+                  }
+
                   const monthsToGoal = goal.monthlyContribution && goal.monthlyContribution > 0
                     ? Math.ceil(remaining / goal.monthlyContribution)
                     : null;
@@ -620,9 +637,15 @@ export default function Analytics() {
 
                       <div className="mb-2">
                         <div className="flex justify-between text-sm mb-1">
-                          <span className="text-gray-400">
-                            {formatCurrency(goal.currentAmount)} of {formatCurrency(goal.targetAmount)}
-                          </span>
+                          {goal.goalType === 'debt_payoff' ? (
+                            <span className="text-gray-400">
+                              {formatCurrency(amountPaidOff)} paid of {formatCurrency(goal.targetAmount)}
+                            </span>
+                          ) : (
+                            <span className="text-gray-400">
+                              {formatCurrency(goal.currentAmount)} of {formatCurrency(goal.targetAmount)}
+                            </span>
+                          )}
                           <span className="font-medium">{progress.toFixed(0)}%</span>
                         </div>
                         <div className="h-2 bg-gray-800 rounded-full overflow-hidden">
@@ -634,9 +657,15 @@ export default function Analytics() {
                       </div>
 
                       <div className="flex items-center justify-between text-xs text-gray-500">
-                        <span>
-                          {remaining > 0 ? `${formatCurrency(remaining)} to go` : 'Goal reached!'}
-                        </span>
+                        {goal.goalType === 'debt_payoff' ? (
+                          <span>
+                            {remaining > 0 ? `${formatCurrency(remaining)} remaining balance` : 'Paid off!'}
+                          </span>
+                        ) : (
+                          <span>
+                            {remaining > 0 ? `${formatCurrency(remaining)} to go` : 'Goal reached!'}
+                          </span>
+                        )}
                         {monthsToGoal !== null && remaining > 0 && (
                           <span className="flex items-center gap-1">
                             <Calendar className="w-3 h-3" />
@@ -673,21 +702,19 @@ export default function Analytics() {
 
           <div className="space-y-4 py-2">
             <div>
-              <Label className="text-gray-300">Goal Name</Label>
-              <Input
-                value={newGoal.name}
-                onChange={(e) => setNewGoal({ ...newGoal, name: e.target.value })}
-                placeholder="e.g., Pay off credit card"
-                className="mt-1 bg-gray-800 border-gray-700"
-                data-testid="input-goal-name"
-              />
-            </div>
-
-            <div>
               <Label className="text-gray-300">Goal Type</Label>
               <Select
                 value={newGoal.goalType}
-                onValueChange={(v) => setNewGoal({ ...newGoal, goalType: v as typeof newGoal.goalType })}
+                onValueChange={(v) => {
+                  const goalType = v as typeof newGoal.goalType;
+                  setNewGoal({ 
+                    ...newGoal, 
+                    goalType,
+                    linkedAccountId: '',
+                    targetAmount: '',
+                    name: goalType === 'debt_payoff' ? '' : newGoal.name
+                  });
+                }}
               >
                 <SelectTrigger className="mt-1 bg-gray-800 border-gray-700" data-testid="select-goal-type">
                   <SelectValue />
@@ -715,53 +742,136 @@ export default function Analytics() {
               </Select>
             </div>
 
-            <div>
-              <Label className="text-gray-300">Target Amount</Label>
-              <Input
-                type="number"
-                value={newGoal.targetAmount}
-                onChange={(e) => setNewGoal({ ...newGoal, targetAmount: e.target.value })}
-                placeholder="10000"
-                className="mt-1 bg-gray-800 border-gray-700"
-                data-testid="input-target-amount"
-              />
-            </div>
+            {newGoal.goalType === 'debt_payoff' ? (
+              <>
+                {(() => {
+                  const creditCards = accounts.filter((a) => a.type === 'credit' || a.accountType === 'credit');
+                  const selectedCard = creditCards.find((a) => String(a.id) === newGoal.linkedAccountId);
+                  
+                  return creditCards.length === 0 ? (
+                    <div className="p-4 bg-yellow-900/20 border border-yellow-700/30 rounded-lg">
+                      <p className="text-sm text-yellow-400">
+                        No credit cards connected. Connect a credit card account to track debt payoff.
+                      </p>
+                    </div>
+                  ) : (
+                    <>
+                      <div>
+                        <Label className="text-gray-300">Select Credit Card</Label>
+                        <Select
+                          value={newGoal.linkedAccountId || "none"}
+                          onValueChange={(v) => {
+                            const cardId = v === "none" ? '' : v;
+                            const card = creditCards.find((a) => String(a.id) === cardId);
+                            setNewGoal({ 
+                              ...newGoal, 
+                              linkedAccountId: cardId,
+                              targetAmount: card?.balance ? String(Math.abs(card.balance)) : '',
+                              name: card ? `Pay off ${card.accountName}` : ''
+                            });
+                          }}
+                        >
+                          <SelectTrigger className="mt-1 bg-gray-800 border-gray-700" data-testid="select-credit-card">
+                            <SelectValue placeholder="Choose a credit card" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="none">Select a card...</SelectItem>
+                            {creditCards.map((card) => (
+                              <SelectItem key={card.id} value={String(card.id)}>
+                                <span className="flex items-center justify-between gap-4">
+                                  <span>{card.accountName}</span>
+                                  <span className="text-red-400 font-medium">
+                                    {formatCurrency(Math.abs(card.balance || 0))}
+                                  </span>
+                                </span>
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
 
-            <div>
-              <Label className="text-gray-300">Monthly Contribution (optional)</Label>
-              <Input
-                type="number"
-                value={newGoal.monthlyContribution}
-                onChange={(e) => setNewGoal({ ...newGoal, monthlyContribution: e.target.value })}
-                placeholder="500"
-                className="mt-1 bg-gray-800 border-gray-700"
-                data-testid="input-monthly-contribution"
-              />
-              <p className="text-xs text-gray-500 mt-1">
-                Used to estimate when you'll reach your goal
-              </p>
-            </div>
+                      {selectedCard && (
+                        <div className="p-4 bg-gray-800/50 rounded-lg border border-gray-700">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <p className="text-sm text-gray-400">Current Balance to Pay Off</p>
+                              <p className="text-2xl font-bold text-red-400">
+                                {formatCurrency(Math.abs(selectedCard.balance || 0))}
+                              </p>
+                            </div>
+                            <CreditCard className="w-8 h-8 text-gray-600" />
+                          </div>
+                          <p className="text-xs text-gray-500 mt-2">
+                            Progress will update automatically as your balance decreases
+                          </p>
+                        </div>
+                      )}
+                    </>
+                  );
+                })()}
+              </>
+            ) : (
+              <>
+                <div>
+                  <Label className="text-gray-300">Goal Name</Label>
+                  <Input
+                    value={newGoal.name}
+                    onChange={(e) => setNewGoal({ ...newGoal, name: e.target.value })}
+                    placeholder="e.g., Emergency savings fund"
+                    className="mt-1 bg-gray-800 border-gray-700"
+                    data-testid="input-goal-name"
+                  />
+                </div>
 
-            {accounts.length > 0 && (
-              <div>
-                <Label className="text-gray-300">Link to Account (optional)</Label>
-                <Select
-                  value={newGoal.linkedAccountId || "none"}
-                  onValueChange={(v) => setNewGoal({ ...newGoal, linkedAccountId: v === "none" ? '' : v })}
-                >
-                  <SelectTrigger className="mt-1 bg-gray-800 border-gray-700" data-testid="select-linked-account">
-                    <SelectValue placeholder="Select account to track" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="none">None</SelectItem>
-                    {accounts.map((account) => (
-                      <SelectItem key={account.id} value={String(account.id)}>
-                        {account.accountName}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+                <div>
+                  <Label className="text-gray-300">Target Amount</Label>
+                  <Input
+                    type="number"
+                    value={newGoal.targetAmount}
+                    onChange={(e) => setNewGoal({ ...newGoal, targetAmount: e.target.value })}
+                    placeholder="10000"
+                    className="mt-1 bg-gray-800 border-gray-700"
+                    data-testid="input-target-amount"
+                  />
+                </div>
+
+                <div>
+                  <Label className="text-gray-300">Monthly Contribution (optional)</Label>
+                  <Input
+                    type="number"
+                    value={newGoal.monthlyContribution}
+                    onChange={(e) => setNewGoal({ ...newGoal, monthlyContribution: e.target.value })}
+                    placeholder="500"
+                    className="mt-1 bg-gray-800 border-gray-700"
+                    data-testid="input-monthly-contribution"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    Used to estimate when you'll reach your goal
+                  </p>
+                </div>
+
+                {accounts.length > 0 && (
+                  <div>
+                    <Label className="text-gray-300">Link to Account (optional)</Label>
+                    <Select
+                      value={newGoal.linkedAccountId || "none"}
+                      onValueChange={(v) => setNewGoal({ ...newGoal, linkedAccountId: v === "none" ? '' : v })}
+                    >
+                      <SelectTrigger className="mt-1 bg-gray-800 border-gray-700" data-testid="select-linked-account">
+                        <SelectValue placeholder="Select account to track" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="none">None</SelectItem>
+                        {accounts.map((account) => (
+                          <SelectItem key={account.id} value={String(account.id)}>
+                            {account.accountName}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
+              </>
             )}
           </div>
 
@@ -776,7 +886,12 @@ export default function Analytics() {
             </Button>
             <Button
               onClick={() => createGoalMutation.mutate(newGoal)}
-              disabled={!newGoal.name || !newGoal.targetAmount || createGoalMutation.isPending}
+              disabled={
+                !newGoal.name || 
+                !newGoal.targetAmount || 
+                (newGoal.goalType === 'debt_payoff' && !newGoal.linkedAccountId) ||
+                createGoalMutation.isPending
+              }
               className="flex-1 bg-blue-600 hover:bg-blue-700"
               data-testid="button-save-goal"
             >
