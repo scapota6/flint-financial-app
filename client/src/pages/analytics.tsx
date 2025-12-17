@@ -149,6 +149,7 @@ export default function Analytics() {
   const [isDrilldownOpen, setIsDrilldownOpen] = useState(false);
   const [categoriesExpanded, setCategoriesExpanded] = useState(false);
   const [spendingChartVisible, setSpendingChartVisible] = useState(true);
+  const [goalsVisible, setGoalsVisible] = useState(true);
   const [isGoalModalOpen, setIsGoalModalOpen] = useState(false);
   const [newGoal, setNewGoal] = useState({
     name: '',
@@ -557,10 +558,20 @@ export default function Analytics() {
             className="mt-8"
           >
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-semibold flex items-center gap-2">
-                <Target className="w-5 h-5 text-blue-400" />
-                Financial Goals
-              </h2>
+              <div className="flex items-center gap-2">
+                <h2 className="text-xl font-semibold flex items-center gap-2">
+                  <Target className="w-5 h-5 text-blue-400" />
+                  Financial Goals
+                </h2>
+                <button
+                  onClick={() => setGoalsVisible(!goalsVisible)}
+                  className="p-1.5 rounded-lg hover:bg-gray-800 transition-colors text-gray-400 hover:text-white"
+                  title={goalsVisible ? "Hide goals" : "Show goals"}
+                  data-testid="button-toggle-goals-visibility"
+                >
+                  {goalsVisible ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+                </button>
+              </div>
               <Button
                 size="sm"
                 onClick={() => setIsGoalModalOpen(true)}
@@ -572,7 +583,7 @@ export default function Analytics() {
               </Button>
             </div>
 
-            {isGoalsLoading ? (
+            {goalsVisible && (isGoalsLoading ? (
               <div className="space-y-4">
                 <Skeleton className="h-24 bg-gray-800" />
                 <Skeleton className="h-24 bg-gray-800" />
@@ -757,7 +768,7 @@ export default function Analytics() {
                   );
                 })}
               </div>
-            )}
+            ))}
           </motion.div>
         </motion.div>
       </main>
