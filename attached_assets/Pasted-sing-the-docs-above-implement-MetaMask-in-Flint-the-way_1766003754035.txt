@@ -1,0 +1,101 @@
+sing the docs above, implement MetaMask in Flint the way MetaMask expects dapps to integrate:
+
+Provider and connection model
+
+Use the MetaMask SDK / provider as the single interface for all wallet actions (connect, read, send transactions, sign).
+
+Implement a permissioned “Connect with MetaMask” flow:
+
+Request accounts using the recommended connect method from the docs.
+
+Handle both approval and rejection from the user.
+
+Store and expose the active address and chainId in app state.
+
+Event-driven updates
+
+Subscribe to the standard provider events described in the Wallet / provider API docs (accountsChanged, chainChanged, etc.).
+
+When these fire, immediately update Flint’s state (active account, selected network) so the UI stays in sync with MetaMask.
+
+Network-awareness and chain switching
+
+Before any transaction or contract write:
+
+Check the current chainId from the provider.
+
+If it does not match the chain required for the action, request a network switch using the methods recommended in the docs (for example, add/switch chain flows).
+
+Handle user rejection gracefully and do not send the transaction if the chain is wrong.
+
+Send ETH and ERC‑20 tokens
+
+Implement a generic “Send” flow that:
+
+Constructs a transaction object with from, to, value, optional data, and chain/network information as per MetaMask’s JSON‑RPC requirements.
+
+For ERC‑20 tokens, encodes a transfer call (using contract ABI) and sets it in the data field.
+
+Send the transaction via the provider using eth_sendTransaction (or the recommended wrapper), letting MetaMask show the confirmation UI.
+
+Track the transaction lifecycle:
+
+Get the tx hash from the provider.
+
+Poll or subscribe for status (pending, confirmed, failed) using the documented JSON‑RPC methods.
+
+Update Flint’s UI accordingly.
+
+Generic contract interaction layer
+
+Implement a reusable helper that, given { chainId, contractAddress, abi, functionName, args, value? }, will:
+
+For read-only calls: use eth_call via the provider.
+
+For state‑changing calls: construct the transaction (including ABI‑encoded data) and send it via the provider, returning the transaction hash and then tracking status.
+
+This helper should be fully based on how MetaMask’s provider API expects contract calls and transactions to be structured.
+
+Message and typed‑data signing
+
+Implement helpers for:
+
+Signing arbitrary messages (for login / off‑chain agreements) following the message signing methods in the Wallet API docs.
+
+Signing EIP‑712 typed data as described in the MetaMask docs.
+
+Implement a “Sign in with wallet” flow:
+
+Backend issues a nonce.
+
+Frontend builds a clear message containing that nonce.
+
+Ask MetaMask to sign it via the provider.
+
+Send the signature back to the backend for verification and issuance of a Flint auth token.
+
+Error handling according to MetaMask’s API
+
+Use the error codes and patterns documented in the Wallet / provider API docs.
+
+Map common cases to user-friendly messages:
+
+User rejected request (connection, tx, or signature).
+
+Wrong network / unsupported chain.
+
+Insufficient funds or gas.
+
+Malformed parameters / contract call failures.
+
+Ensure the UI never stays stuck in a loading state; always show a clear result or retry option.
+
+Code organization
+
+Isolate MetaMask-specific logic in a small set of modules (for example, metamaskClient, walletProvider, useMetaMaskWallet) that:
+
+Initialize the SDK/provider.
+
+Expose connect/disconnect, address, chainId, and JSON‑RPC helpers.
+
+Expose typed helpers for sending transactions, contract calls, and signing.
