@@ -1477,55 +1477,33 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
                 {data.transactions && data.transactions.length > 0 && (
                   <section>
                     <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center">
-                      <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center text-white font-bold text-sm mr-3">🏪</div>
+                      <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white font-bold text-sm mr-3">🏪</div>
                       Recent Transactions
                     </h3>
-                    <div className="overflow-x-auto overflow-y-auto max-h-[400px] rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm">
-                      <table className="w-full text-sm">
-                        <thead className="bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-blue-900/30 dark:to-cyan-900/30">
-                          <tr>
-                            <th className="text-left p-3 font-semibold text-gray-900 dark:text-white">Date</th>
-                            <th className="text-left p-3 font-semibold text-gray-900 dark:text-white">Description</th>
-                            <th className="text-right p-3 font-semibold text-gray-900 dark:text-white">Amount</th>
-                            <th className="text-center p-3 font-semibold text-gray-900 dark:text-white">Status</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {data.transactions.slice(0, 10).map((txn: any, index: number) => (
-                            <tr key={txn.id || index} className="border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-900/50 transition-colors duration-150">
-                              <td className="p-3 text-gray-900 dark:text-white font-medium">
-                                {txn.date ? new Date(txn.date).toLocaleDateString() : 'N/A'}
-                              </td>
-                              <td className="p-3 text-gray-900 dark:text-white">
-                                <div className="font-medium">{txn.description || txn.merchant || 'Unknown'}</div>
-                                {txn.category && (
-                                  <span className="inline-block mt-1 px-2 py-0.5 bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 text-xs font-medium rounded-full">
-                                    {txn.category}
-                                  </span>
-                                )}
-                              </td>
-                              <td className="p-3 text-right">
-                                <span className={`font-bold ${
-                                  (txn.amount || 0) < 0 
-                                    ? 'text-red-600 dark:text-red-400' 
-                                    : 'text-green-600 dark:text-green-400'
-                                }`}>
-                                  {fmtMoney(Math.abs(txn.amount || 0))}
-                                </span>
-                              </td>
-                              <td className="p-3 text-center">
-                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                  txn.status === 'posted' 
-                                    ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400'
-                                    : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400'
-                                }`}>
-                                  {txn.status || 'pending'}
-                                </span>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
+                    <div className="rounded-lg bg-white/5 dark:bg-black/60 p-4">
+                      <div className="max-h-[300px] overflow-y-auto space-y-2 pr-2">
+                        {data.transactions.slice(0, 10).map((txn: any, index: number) => (
+                          <div key={txn.id || index} className="flex items-center justify-between py-3 border-b border-gray-200/10 dark:border-gray-700/50 last:border-0">
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-3">
+                                <div className="text-sm text-gray-500 dark:text-gray-400 whitespace-nowrap">
+                                  {txn.date ? new Date(txn.date).toLocaleDateString() : 'N/A'}
+                                </div>
+                                <div className="font-medium text-gray-900 dark:text-white truncate">
+                                  {txn.description || txn.merchant || 'Unknown'}
+                                </div>
+                              </div>
+                            </div>
+                            <div className={`font-bold ml-4 whitespace-nowrap ${
+                              (txn.amount || 0) < 0 
+                                ? 'text-red-600 dark:text-red-400' 
+                                : 'text-green-600 dark:text-green-400'
+                            }`}>
+                              {fmtMoney(Math.abs(txn.amount || 0))}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   </section>
                 )}
