@@ -93,9 +93,9 @@ router.post('/', requireAuth, async (req: any, res) => {
       }
     }
 
-    // For savings goals with linked accounts, capture the starting balance
+    // For savings and emergency fund goals with linked accounts, capture the starting balance
     let startingAmount: string | null = null;
-    if (goalData.goalType === 'savings' && goalData.linkedAccountId) {
+    if ((goalData.goalType === 'savings' || goalData.goalType === 'emergency_fund') && goalData.linkedAccountId) {
       const [linkedAccount] = await db.select()
         .from(connectedAccounts)
         .where(and(

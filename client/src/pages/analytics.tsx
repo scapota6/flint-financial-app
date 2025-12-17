@@ -609,8 +609,8 @@ export default function Analytics() {
                       ? Math.min(100, (amountSaved / goal.targetAmount) * 100) 
                       : 0;
                     remaining = currentBalance;
-                  } else if (goal.goalType === 'savings' && goal.linkedAccount && goal.startingAmount !== null) {
-                    // Savings with linked account: progress = (current - starting) / (target - starting)
+                  } else if ((goal.goalType === 'savings' || goal.goalType === 'emergency_fund') && goal.linkedAccount && goal.startingAmount !== null) {
+                    // Savings/Emergency fund with linked account: progress = (current - starting) / (target - starting)
                     currentBalance = goal.linkedAccount.balance || 0;
                     const startingAmount = goal.startingAmount;
                     const targetAmount = goal.targetAmount;
@@ -621,7 +621,7 @@ export default function Analytics() {
                       : 0;
                     remaining = Math.max(0, targetAmount - currentBalance);
                   } else {
-                    // Emergency fund or goals without linked accounts
+                    // Goals without linked accounts
                     progress = goal.targetAmount > 0 
                       ? Math.min(100, (goal.currentAmount / goal.targetAmount) * 100) 
                       : 0;
@@ -688,7 +688,7 @@ export default function Analytics() {
                             <span className="text-gray-400">
                               {formatCurrency(amountSaved)} paid of {formatCurrency(goal.targetAmount)}
                             </span>
-                          ) : goal.goalType === 'savings' && goal.linkedAccount && goal.startingAmount !== null ? (
+                          ) : (goal.goalType === 'savings' || goal.goalType === 'emergency_fund') && goal.linkedAccount && goal.startingAmount !== null ? (
                             <span className="text-gray-400">
                               {formatCurrency(amountSaved)} saved of {formatCurrency(goal.targetAmount - goal.startingAmount)}
                             </span>
@@ -712,7 +712,7 @@ export default function Analytics() {
                           <span>
                             {remaining > 0 ? `${formatCurrency(remaining)} remaining balance` : 'Paid off!'}
                           </span>
-                        ) : goal.goalType === 'savings' && goal.linkedAccount && goal.startingAmount !== null ? (
+                        ) : (goal.goalType === 'savings' || goal.goalType === 'emergency_fund') && goal.linkedAccount && goal.startingAmount !== null ? (
                           <span>
                             {remaining > 0 ? `Current: ${formatCurrency(currentBalance)} • Goal: ${formatCurrency(goal.targetAmount)}` : 'Goal reached!'}
                           </span>
@@ -866,23 +866,26 @@ export default function Analytics() {
                   );
                 })()}
               </>
-            ) : newGoal.goalType === 'savings' ? (
+            ) : (newGoal.goalType === 'savings' || newGoal.goalType === 'emergency_fund') ? (
               <>
                 {(() => {
-                  const bankAccounts = accounts.filter((a) => a.type === 'depository' || a.accountType === 'bank');
+                  const bankAccounts = accounts.filter((a) => a.type === 'bank' || a.accountType === 'bank');
                   const selectedAccount = bankAccounts.find((a) => String(a.id) === newGoal.linkedAccountId);
                   const currentBalance = selectedAccount?.balance || 0;
+                  const isEmergencyFund = newGoal.goalType === 'emergency_fund';
+                  const goalLabel = isEmergencyFund ? 'Emergency Fund' : 'Savings';
+                  const GoalIcon = isEmergencyFund ? Shield : PiggyBank;
                   
                   return bankAccounts.length === 0 ? (
                     <div className="p-4 bg-yellow-900/20 border border-yellow-700/30 rounded-lg">
                       <p className="text-sm text-yellow-400">
-                        No bank accounts connected. Connect a savings or checking account to track your savings goal.
+                        No bank accounts connected. Connect a savings or checking account to track your {goalLabel.toLowerCase()}.
                       </p>
                     </div>
                   ) : (
                     <>
                       <div>
-                        <Label className="text-gray-300">Select Account to Track</Label>
+                        <Label className="text-gray-300">Select {isEmergencyFund ? 'Emergency Fund' : ''} Account</Label>
                         <Select
                           value={newGoal.linkedAccountId || "none"}
                           onValueChange={(v) => {
@@ -892,7 +895,7 @@ export default function Analytics() {
                               ...newGoal, 
                               linkedAccountId: accountId,
                               startingAmount: account?.balance ? String(account.balance) : '',
-                              name: account ? `Savings - ${account.accountName}` : ''
+                              name: account ? `${goalLabel} - ${account.accountName}` : ''
                             });
                           }}
                         >
@@ -905,7 +908,7 @@ export default function Analytics() {
                               <SelectItem key={account.id} value={String(account.id)}>
                                 <span className="flex items-center justify-between gap-4">
                                   <span>{account.accountName}</span>
-                                  <span className="text-green-400 font-medium">
+                                  <span className={`${isEmergencyFund ? 'text-cyan-400' : 'text-green-400'} font-medium`}>
                                     {formatCurrency(account.balance || 0)}
                                   </span>
                                 </span>
@@ -921,11 +924,11 @@ export default function Analytics() {
                             <div className="flex items-center justify-between">
                               <div>
                                 <p className="text-sm text-gray-400">Current Balance (Starting Point)</p>
-                                <p className="text-2xl font-bold text-green-400">
+                                <p className={`text-2xl font-bold ${isEmergencyFund ? 'text-cyan-400' : 'text-green-400'}`}>
                                   {formatCurrency(currentBalance)}
                                 </p>
                               </div>
-                              <PiggyBank className="w-8 h-8 text-gray-600" />
+                              <GoalIcon className="w-8 h-8 text-gray-600" />
                             </div>
                             <p className="text-xs text-gray-500 mt-2">
                               Progress will track from this balance toward your goal
@@ -1026,6 +1029,7 @@ export default function Analytics() {
                 !newGoal.targetAmount || 
                 (newGoal.goalType === 'debt_payoff' && !newGoal.linkedAccountId) ||
                 (newGoal.goalType === 'savings' && !newGoal.linkedAccountId) ||
+                (newGoal.goalType === 'emergency_fund' && !newGoal.linkedAccountId) ||
                 createGoalMutation.isPending
               }
               className="flex-1 bg-blue-600 hover:bg-blue-700"
