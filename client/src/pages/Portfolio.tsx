@@ -142,16 +142,6 @@ export default function Portfolio() {
   });
 
 
-  // Prepare donut chart data
-  const chartData = summary?.breakdown?.map((item: any) => ({
-    name: item.bucket,
-    value: Math.abs(item.value),
-    percentage: (Math.abs(item.value) / summary.totals.netWorth) * 100,
-    fill: item.bucket === 'Stocks' ? CHART_COLORS.stocks :
-          item.bucket === 'Crypto' ? CHART_COLORS.crypto :
-          item.bucket === 'Cash' ? CHART_COLORS.cash :
-          CHART_COLORS.debt
-  })) || [];
 
   // Show progressive loading - only show full page loading on initial load
   const isPageLoading = isLoading && !accountsData;
@@ -227,11 +217,70 @@ export default function Portfolio() {
     );
   }
 
-  // Use totals from portfolio summary for consistency
-  const netWorth = summary?.totals?.netWorth || totals.totalBalance;
+  // Use dashboard-derived totals (from usePortfolioTotals) as primary source
+  // Portfolio summary API can be unreliable, so prioritize the reliable dashboard data
+  const netWorth = totals.totalBalance || summary?.totals?.netWorth || 0;
+  const bankBalance = totals.bankBalance || 0;
+  const investmentValue = totals.investmentValue || summary?.totals?.investable || 0;
+  const cryptoValue = totals.cryptoValue || 0;
+  const debtBalance = totals.debtBalance || Math.abs(summary?.totals?.debt || 0);
+  
+  // Performance data from summary (when available)
   const dayValue = summary?.performance?.dayValue || 0;
   const dayPct = summary?.performance?.dayPct || 0;
   const isPositive = dayValue >= 0;
+
+  // Prepare donut chart data - use dashboard-derived totals for reliability
+  // For pie chart percentages, use sum of all category magnitudes (not net worth)
+  const totalMagnitude = bankBalance + investmentValue + cryptoValue + debtBalance || 1;
+  
+  const chartDataFromDashboard: Array<{name: string; value: number; percentage: number; fill: string}> = [];
+  
+  if (investmentValue > 0) {
+    chartDataFromDashboard.push({
+      name: 'Stocks',
+      value: investmentValue,
+      percentage: (investmentValue / totalMagnitude) * 100,
+      fill: CHART_COLORS.stocks
+    });
+  }
+  if (cryptoValue > 0) {
+    chartDataFromDashboard.push({
+      name: 'Crypto',
+      value: cryptoValue,
+      percentage: (cryptoValue / totalMagnitude) * 100,
+      fill: CHART_COLORS.crypto
+    });
+  }
+  if (bankBalance > 0) {
+    chartDataFromDashboard.push({
+      name: 'Cash',
+      value: bankBalance,
+      percentage: (bankBalance / totalMagnitude) * 100,
+      fill: CHART_COLORS.cash
+    });
+  }
+  if (debtBalance > 0) {
+    chartDataFromDashboard.push({
+      name: 'Debt',
+      value: debtBalance,
+      percentage: (debtBalance / totalMagnitude) * 100,
+      fill: CHART_COLORS.debt
+    });
+  }
+  
+  // Use dashboard data as primary, fallback to summary API if dashboard empty
+  const chartData = chartDataFromDashboard.length > 0 
+    ? chartDataFromDashboard 
+    : (summary?.breakdown?.map((item: any) => ({
+        name: item.bucket,
+        value: Math.abs(item.value),
+        percentage: (Math.abs(item.value) / (summary.totals.netWorth || 1)) * 100,
+        fill: item.bucket === 'Stocks' ? CHART_COLORS.stocks :
+              item.bucket === 'Crypto' ? CHART_COLORS.crypto :
+              item.bucket === 'Cash' ? CHART_COLORS.cash :
+              CHART_COLORS.debt
+      })) || []);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900/20 to-slate-900">
@@ -290,7 +339,7 @@ export default function Portfolio() {
           </CardHeader>
           <CardContent>
             <div className="apple-h2 text-white">
-              {formatCurrency(summary?.totals?.investable || 0)}
+              {formatCurrency(investmentValue + cryptoValue)}
             </div>
             <p className="apple-caption text-slate-400 mt-2">
               Stocks & Crypto
@@ -303,16 +352,16 @@ export default function Portfolio() {
             <CardTitle className="apple-caption text-slate-400">
               <div className="flex items-center gap-2">
                 <DollarSign className="h-4 w-4" />
-                Cash & Equivalents
+                Cash & Bank
               </div>
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="apple-h2 text-white">
-              {formatCurrency(summary?.totals?.cash || 0)}
+              {formatCurrency(bankBalance)}
             </div>
             <p className="apple-caption text-slate-400 mt-2">
-              Available for investment
+              Checking & Savings
             </p>
           </CardContent>
         </Card>
@@ -328,7 +377,7 @@ export default function Portfolio() {
           </CardHeader>
           <CardContent>
             <div className="apple-h2 text-red-400">
-              {formatCurrency(Math.abs(summary?.totals?.debt || 0))}
+              {formatCurrency(debtBalance)}
             </div>
             <p className="apple-caption text-slate-400 mt-2">
               Credit cards & loans
@@ -468,7 +517,7 @@ export default function Portfolio() {
             </div>
           </CardHeader>
           <CardContent>
-            {history?.dataPoints ? (
+            {history?.dataPoints && history.dataPoints.length >= 2 ? (
               <div className="chart-container chart-glow relative overflow-hidden">
                 {/* Dynamic background effects */}
                 <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 via-transparent to-cyan-500/5 rounded-lg"></div>
@@ -550,13 +599,23 @@ export default function Portfolio() {
                   </AreaChart>
                 </ResponsiveContainer>
               </div>
-            ) : (
+            ) : historyLoading ? (
               <div className="h-[350px] flex items-center justify-center">
                 <div className="text-center">
                   <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-r from-blue-500/20 to-cyan-500/20 flex items-center justify-center">
                     <div className="w-2 h-8 bg-gradient-to-t from-blue-500 to-cyan-500 rounded-full animate-pulse"></div>
                   </div>
                   <p className="text-slate-400">Loading performance data...</p>
+                </div>
+              </div>
+            ) : (
+              <div className="h-[350px] flex items-center justify-center">
+                <div className="text-center">
+                  <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-slate-700/50 flex items-center justify-center">
+                    <TrendingUp className="w-8 h-8 text-slate-500" />
+                  </div>
+                  <p className="text-slate-400">Not enough data for chart</p>
+                  <p className="text-slate-500 text-sm mt-1">Performance history will appear as your portfolio updates</p>
                 </div>
               </div>
             )}
