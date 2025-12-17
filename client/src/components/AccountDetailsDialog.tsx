@@ -1610,14 +1610,41 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
                               <SelectValue placeholder="Select token" />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="ETH">ETH (Ethereum)</SelectItem>
-                              {data.positions?.map((pos: any, idx: number) => (
+                              {/* ETH option with balance */}
+                              {(() => {
+                                const ethPos = data.positions?.find((p: any) => p.symbol?.toUpperCase() === 'ETH');
+                                const ethBalance = ethPos?.quantity || 0;
+                                return (
+                                  <SelectItem value="ETH">
+                                    <span className="flex justify-between items-center w-full">
+                                      <span>ETH (Ethereum)</span>
+                                      <span className="text-gray-400 text-xs ml-2">{ethBalance.toFixed(6)}</span>
+                                    </span>
+                                  </SelectItem>
+                                );
+                              })()}
+                              {data.positions?.filter((pos: any) => pos.symbol?.toUpperCase() !== 'ETH').map((pos: any, idx: number) => (
                                 <SelectItem key={idx} value={pos.symbol || `token-${idx}`}>
-                                  {pos.symbol} {pos.name ? `(${pos.name})` : ''}
+                                  <span className="flex justify-between items-center w-full">
+                                    <span>{pos.symbol} {pos.name ? `(${pos.name})` : ''}</span>
+                                    <span className="text-gray-400 text-xs ml-2">{(pos.quantity || 0).toFixed(6)}</span>
+                                  </span>
                                 </SelectItem>
                               ))}
                             </SelectContent>
                           </Select>
+                          {/* Show available balance for selected token */}
+                          {(() => {
+                            const selectedPos = selectedToken === 'ETH' 
+                              ? data.positions?.find((p: any) => p.symbol?.toUpperCase() === 'ETH')
+                              : data.positions?.find((p: any) => p.symbol === selectedToken);
+                            const balance = selectedPos?.quantity || 0;
+                            return (
+                              <div className="mt-1 text-xs text-gray-400">
+                                Available: <span className="text-gray-300 font-medium">{balance.toFixed(6)} {selectedToken}</span>
+                              </div>
+                            );
+                          })()}
                         </div>
                         
                         <div>
@@ -1645,7 +1672,21 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
                             min="0"
                             placeholder="0.01"
                             value={ethTransferAmount}
-                            onChange={(e) => setEthTransferAmount(e.target.value)}
+                            onChange={(e) => {
+                              const val = e.target.value;
+                              // Prevent negative values - allow empty string for clearing
+                              if (val === '' || parseFloat(val) >= 0) {
+                                setEthTransferAmount(val);
+                              } else if (parseFloat(val) < 0) {
+                                setEthTransferAmount('0');
+                              }
+                            }}
+                            onKeyDown={(e) => {
+                              // Prevent minus key
+                              if (e.key === '-' || e.key === 'e') {
+                                e.preventDefault();
+                              }
+                            }}
                             className="mt-1"
                             data-testid="input-eth-amount"
                           />
