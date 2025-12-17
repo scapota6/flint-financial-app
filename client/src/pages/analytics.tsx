@@ -746,16 +746,16 @@ export default function Analytics() {
               <div>
                 <Label className="text-gray-300">Link to Account (optional)</Label>
                 <Select
-                  value={newGoal.linkedAccountId}
-                  onValueChange={(v) => setNewGoal({ ...newGoal, linkedAccountId: v })}
+                  value={newGoal.linkedAccountId || "none"}
+                  onValueChange={(v) => setNewGoal({ ...newGoal, linkedAccountId: v === "none" ? '' : v })}
                 >
                   <SelectTrigger className="mt-1 bg-gray-800 border-gray-700" data-testid="select-linked-account">
                     <SelectValue placeholder="Select account to track" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">None</SelectItem>
+                    <SelectItem value="none">None</SelectItem>
                     {accounts.map((account) => (
-                      <SelectItem key={account.id} value={account.id}>
+                      <SelectItem key={account.id} value={String(account.id)}>
                         {account.name} {account.institution && `- ${account.institution}`}
                       </SelectItem>
                     ))}
