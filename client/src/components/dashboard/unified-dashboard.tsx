@@ -6,8 +6,9 @@ import { useAccounts, usePortfolioTotals } from '@/hooks/useAccounts';
 import { Building2, TrendingUp, DollarSign, Wallet, Eye, PlusCircle, AlertCircle, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { RainbowButton } from '@/components/ui/rainbow-button';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useAuth } from '@/hooks/useAuth';
+import { useSDK } from '@metamask/sdk-react';
 import AccountDetailsDialog from '../AccountDetailsDialog';
 import { getInstitutionLogo } from '@/lib/bank-logos';
 
@@ -51,13 +52,27 @@ export default function UnifiedDashboard() {
   const [selectedView, setSelectedView] = useState<'overview' | 'accounts'>('overview');
   const [selectedAccountId, setSelectedAccountId] = useState<string | null>(null);
   const { user } = useAuth();
+  
+  // MetaMask SDK connection state
+  const { connected: metamaskConnected } = useSDK();
 
   // Use new unified accounts hook as single source of truth
   const { data: accountsData, isLoading, error } = useAccounts();
   const totals = usePortfolioTotals();
   
   // Only connected accounts are returned from the hook
-  const connectedAccounts = accountsData?.accounts || [];
+  // Filter out MetaMask accounts when SDK is not connected
+  const allAccounts = accountsData?.accounts || [];
+  const connectedAccounts = useMemo(() => {
+    return allAccounts.filter((account: any) => {
+      // Hide MetaMask accounts when SDK is not connected
+      if (account.provider === 'metamask' && !metamaskConnected) {
+        return false;
+      }
+      return true;
+    });
+  }, [allAccounts, metamaskConnected]);
+  
   const hasDisconnectedAccounts = accountsData?.disconnected && accountsData.disconnected.length > 0;
   const isEmptyState = connectedAccounts.length === 0 && !isLoading;
 

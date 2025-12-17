@@ -7,6 +7,7 @@ import { TrendingUp, TrendingDown, DollarSign, Activity } from 'lucide-react';
 import { useState, useEffect, memo } from 'react';
 import { getCryptoLogo } from '@/lib/crypto-logos';
 import { getStockLogo, isStockSymbol } from '@/lib/stock-logos';
+import { useSDK } from '@metamask/sdk-react';
 
 interface Holding {
   accountId: string;
@@ -39,6 +40,9 @@ const RealTimeHoldings = memo(function RealTimeHoldings({
   const [sortBy, setSortBy] = useState<'value' | 'gainloss' | 'symbol'>('value');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const queryClient = useQueryClient();
+  
+  // MetaMask SDK connection state - only show MetaMask data when actively connected
+  const { connected: metamaskConnected } = useSDK();
 
   // Check SnapTrade connection status - use same queryKey as dashboard page
   const { data: dashboardData } = useQuery({
@@ -52,8 +56,9 @@ const RealTimeHoldings = memo(function RealTimeHoldings({
   });
 
   // Check if user has any investment/crypto accounts
+  // MetaMask accounts only count when SDK is actively connected
   const hasSnapTradeAccounts = dashboardData?.accounts?.some((acc: any) => acc.provider === 'snaptrade') || false;
-  const hasMetaMaskAccounts = dashboardData?.accounts?.some((acc: any) => acc.provider === 'metamask') || false;
+  const hasMetaMaskAccounts = metamaskConnected && dashboardData?.accounts?.some((acc: any) => acc.provider === 'metamask');
   const isSnapTradeConnected = hasSnapTradeAccounts && dashboardData?.investmentBalance > 0;
   const hasAnyInvestmentAccounts = isSnapTradeConnected || hasMetaMaskAccounts;
 
