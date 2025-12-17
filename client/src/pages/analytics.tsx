@@ -609,17 +609,14 @@ export default function Analytics() {
                       ? Math.min(100, (amountSaved / goal.targetAmount) * 100) 
                       : 0;
                     remaining = currentBalance;
-                  } else if ((goal.goalType === 'savings' || goal.goalType === 'emergency_fund') && goal.linkedAccount && goal.startingAmount !== null) {
-                    // Savings/Emergency fund with linked account: progress = (current - starting) / (target - starting)
+                  } else if ((goal.goalType === 'savings' || goal.goalType === 'emergency_fund') && goal.linkedAccount) {
+                    // Savings/Emergency fund with linked account: progress = current / target
                     currentBalance = goal.linkedAccount.balance || 0;
-                    const startingAmount = goal.startingAmount;
-                    const targetAmount = goal.targetAmount;
-                    const totalToSave = targetAmount - startingAmount;
-                    amountSaved = Math.max(0, currentBalance - startingAmount);
-                    progress = totalToSave > 0 
-                      ? Math.min(100, Math.max(0, (amountSaved / totalToSave) * 100))
+                    progress = goal.targetAmount > 0 
+                      ? Math.min(100, Math.max(0, (currentBalance / goal.targetAmount) * 100))
                       : 0;
-                    remaining = Math.max(0, targetAmount - currentBalance);
+                    remaining = Math.max(0, goal.targetAmount - currentBalance);
+                    amountSaved = currentBalance; // For display purposes
                   } else {
                     // Goals without linked accounts
                     progress = goal.targetAmount > 0 
@@ -688,9 +685,9 @@ export default function Analytics() {
                             <span className="text-gray-400">
                               {formatCurrency(amountSaved)} paid of {formatCurrency(goal.targetAmount)}
                             </span>
-                          ) : (goal.goalType === 'savings' || goal.goalType === 'emergency_fund') && goal.linkedAccount && goal.startingAmount !== null ? (
+                          ) : (goal.goalType === 'savings' || goal.goalType === 'emergency_fund') && goal.linkedAccount ? (
                             <span className="text-gray-400">
-                              {formatCurrency(amountSaved)} saved of {formatCurrency(goal.targetAmount - goal.startingAmount)}
+                              {formatCurrency(currentBalance)} of {formatCurrency(goal.targetAmount)}
                             </span>
                           ) : (
                             <span className="text-gray-400">
@@ -712,9 +709,9 @@ export default function Analytics() {
                           <span>
                             {remaining > 0 ? `${formatCurrency(remaining)} remaining balance` : 'Paid off!'}
                           </span>
-                        ) : (goal.goalType === 'savings' || goal.goalType === 'emergency_fund') && goal.linkedAccount && goal.startingAmount !== null ? (
+                        ) : (goal.goalType === 'savings' || goal.goalType === 'emergency_fund') && goal.linkedAccount ? (
                           <span>
-                            {remaining > 0 ? `Current: ${formatCurrency(currentBalance)} • Goal: ${formatCurrency(goal.targetAmount)}` : 'Goal reached!'}
+                            {remaining > 0 ? `${formatCurrency(remaining)} to go` : 'Goal reached!'}
                           </span>
                         ) : (
                           <span>
