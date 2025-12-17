@@ -695,6 +695,37 @@ export const insertNetWorthSnapshotSchema = createInsertSchema(netWorthSnapshots
 export type InsertNetWorthSnapshot = z.infer<typeof insertNetWorthSnapshotSchema>;
 export type NetWorthSnapshot = typeof netWorthSnapshots.$inferSelect;
 
+// Financial goals table for tracking debt payoff, savings, and emergency fund goals
+export const financialGoals = pgTable('financial_goals', {
+  id: serial('id').primaryKey(),
+  userId: varchar('user_id', { length: 255 }).notNull().references(() => users.id),
+  goalType: varchar('goal_type', { length: 50 }).notNull(), // 'debt_payoff' | 'savings' | 'emergency_fund'
+  name: varchar('name', { length: 255 }).notNull(), // User-defined goal name
+  targetAmount: numeric('target_amount', { precision: 15, scale: 2 }).notNull(), // Goal target amount
+  currentAmount: numeric('current_amount', { precision: 15, scale: 2 }).default('0'), // Current progress (can be auto-synced)
+  linkedAccountId: integer('linked_account_id').references(() => connectedAccounts.id), // Optional linked account
+  deadline: timestamp('deadline'), // Optional target date
+  monthlyContribution: numeric('monthly_contribution', { precision: 15, scale: 2 }), // For timeline projections
+  status: varchar('status', { length: 20 }).default('active'), // 'active' | 'completed' | 'paused'
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+}, (table) => [
+  index("financial_goals_user_idx").on(table.userId),
+  index("financial_goals_status_idx").on(table.status),
+]);
+
+export const insertFinancialGoalSchema = createInsertSchema(financialGoals).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+}).extend({
+  goalType: z.enum(['debt_payoff', 'savings', 'emergency_fund']),
+  status: z.enum(['active', 'completed', 'paused']).default('active'),
+});
+
+export type FinancialGoal = typeof financialGoals.$inferSelect;
+export type InsertFinancialGoal = z.infer<typeof insertFinancialGoalSchema>;
+
 // Insert schemas for new tables
 export const insertAccountApplicationSchema = createInsertSchema(accountApplications).omit({
   id: true,
