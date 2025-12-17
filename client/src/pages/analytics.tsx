@@ -369,55 +369,57 @@ export default function Analytics() {
               </motion.div>
 
               {/* Category cards - show top 2 by default, expand for more */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3, delay: 0.2 }}
-              >
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4">
-                  {(categoriesExpanded ? chartData : chartData.slice(0, 2)).map((category, index) => (
-                    <div
-                      key={category.name}
-                      className="bg-black rounded-xl p-3 sm:p-4 cursor-pointer transition-all hover:bg-gray-900"
-                      onClick={() => handleBarClick(category)}
-                      data-testid={`card-category-${category.name.toLowerCase().replace(/\s+/g, "-")}`}
-                    >
+              {spendingChartVisible && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3, delay: 0.2 }}
+                >
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4">
+                    {(categoriesExpanded ? chartData : chartData.slice(0, 2)).map((category, index) => (
                       <div
-                        className="w-3 h-3 rounded-full mb-2"
-                        style={{
-                          backgroundColor: CATEGORY_COLORS[index % CATEGORY_COLORS.length],
-                        }}
-                      />
-                      <p className="text-xs sm:text-sm text-gray-400 truncate">{category.name}</p>
-                      <p className="text-base sm:text-lg font-semibold mt-1">
-                        {formatCurrency(category.amount)}
-                      </p>
-                      <p className="text-xs text-gray-500 mt-1">
-                        {category.transactions?.length || 0} txns
-                      </p>
-                    </div>
-                  ))}
-                </div>
-                {chartData.length > 2 && (
-                  <button
-                    onClick={() => setCategoriesExpanded(!categoriesExpanded)}
-                    className="mt-3 w-full flex items-center justify-center gap-2 py-2 text-sm text-gray-400 hover:text-white transition-colors"
-                    data-testid="button-toggle-categories"
-                  >
-                    {categoriesExpanded ? (
-                      <>
-                        <ChevronUp className="w-4 h-4" />
-                        Show Less
-                      </>
-                    ) : (
-                      <>
-                        <ChevronDown className="w-4 h-4" />
-                        Show {chartData.length - 2} More Categories
-                      </>
-                    )}
-                  </button>
-                )}
-              </motion.div>
+                        key={category.name}
+                        className="bg-black rounded-xl p-3 sm:p-4 cursor-pointer transition-all hover:bg-gray-900"
+                        onClick={() => handleBarClick(category)}
+                        data-testid={`card-category-${category.name.toLowerCase().replace(/\s+/g, "-")}`}
+                      >
+                        <div
+                          className="w-3 h-3 rounded-full mb-2"
+                          style={{
+                            backgroundColor: CATEGORY_COLORS[index % CATEGORY_COLORS.length],
+                          }}
+                        />
+                        <p className="text-xs sm:text-sm text-gray-400 truncate">{category.name}</p>
+                        <p className="text-base sm:text-lg font-semibold mt-1">
+                          {formatCurrency(category.amount)}
+                        </p>
+                        <p className="text-xs text-gray-500 mt-1">
+                          {category.transactions?.length || 0} txns
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                  {chartData.length > 2 && (
+                    <button
+                      onClick={() => setCategoriesExpanded(!categoriesExpanded)}
+                      className="mt-3 w-full flex items-center justify-center gap-2 py-2 text-sm text-gray-400 hover:text-white transition-colors"
+                      data-testid="button-toggle-categories"
+                    >
+                      {categoriesExpanded ? (
+                        <>
+                          <ChevronUp className="w-4 h-4" />
+                          Show Less
+                        </>
+                      ) : (
+                        <>
+                          <ChevronDown className="w-4 h-4" />
+                          Show {chartData.length - 2} More Categories
+                        </>
+                      )}
+                    </button>
+                  )}
+                </motion.div>
+              )}
             </>
           )}
         </motion.div>
