@@ -5,6 +5,7 @@
 
 import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
+import { RainbowButton } from "@/components/ui/rainbow-button";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { GlowingEffect } from "@/components/ui/glowing-effect";
 import { 
@@ -14,7 +15,8 @@ import {
   Check,
   ArrowRight,
   Bell,
-  DollarSign
+  DollarSign,
+  Send
 } from "lucide-react";
 import { Link } from "wouter";
 import flintLogo from "@assets/flint-logo.png";
@@ -90,33 +92,47 @@ export default function LandingBanking() {
             </div>
             
             <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
-              The Apple Wallet for All Your <span className="text-blue-400">Bank Accounts</span>
+              All Your <span className="text-blue-400">Bank Accounts</span> in One Place
             </h1>
             
             <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
-              Connect all your banks and cards in one place. See your total money. Track your spending. It's that simple.
+              Connect all your banks and cards. See your total money. Track your spending. It's that simple.
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-3 justify-center mb-8">
+            <div className="flex flex-col sm:flex-row gap-3 justify-center mb-6">
               <Link href="/login">
-                <Button size="lg" className="bg-blue-600 hover:bg-blue-700" data-testid="button-get-started-hero">
+                <RainbowButton className="h-14 px-8 rounded-xl text-lg" data-testid="button-get-started-hero">
                   Get Started Free <ArrowRight className="ml-2 h-5 w-5" />
-                </Button>
-              </Link>
-              <Link href="/login">
-                <Button size="lg" variant="outline" className="border-white/20" data-testid="button-login-hero">
-                  Log In
-                </Button>
+                </RainbowButton>
               </Link>
             </div>
 
-            <p className="text-sm text-gray-400">Free to start. No credit card needed.</p>
+            <p className="text-sm text-gray-400">Free forever. No credit card needed.</p>
           </div>
         </section>
 
-        <section className="py-12 border-y border-white/10 bg-white/5">
+        <section className="py-16 px-4 bg-white/5 border-y border-white/10">
+          <div className="max-w-4xl mx-auto">
+            <div className="grid md:grid-cols-3 gap-8 text-center">
+              <div>
+                <p className="text-3xl font-bold text-blue-400 mb-2">10,000+</p>
+                <p className="text-gray-400">Banks Supported</p>
+              </div>
+              <div>
+                <p className="text-3xl font-bold text-green-400 mb-2">Real-Time</p>
+                <p className="text-gray-400">Balance Updates</p>
+              </div>
+              <div>
+                <p className="text-3xl font-bold text-blue-400 mb-2">Transfer</p>
+                <p className="text-gray-400">Between Accounts</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="py-12 border-b border-white/10">
           <div className="max-w-6xl mx-auto px-4">
-            <p className="text-center text-gray-400 mb-8">Connect 10,000+ banks and credit unions</p>
+            <p className="text-center text-gray-400 mb-8">Connect your favorite banks</p>
             <div className="relative overflow-hidden">
               <div className="flex gap-8 animate-[scroll_45s_linear_infinite]">
                 {[...BANKING_INSTITUTIONS, ...BANKING_INSTITUTIONS].map((inst, idx) => (
@@ -140,21 +156,21 @@ export default function LandingBanking() {
           </div>
         </section>
 
-        <section className="py-20 px-4">
+        <section id="features" className="py-20 px-4">
           <div className="max-w-6xl mx-auto">
             <h2 className="text-3xl md:text-4xl font-bold text-center mb-4">Why People Love Flint</h2>
-            <p className="text-gray-400 text-center mb-12 max-w-2xl mx-auto">
-              Stop logging into 10 different apps. See all your money in one place.
+            <p className="text-gray-400 text-center mb-12 max-w-xl mx-auto">
+              Stop logging into multiple bank apps. See everything in one place.
             </p>
             
-            <div className="grid md:grid-cols-3 gap-8">
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
               <div className="relative rounded-xl border border-white/10 p-2">
                 <GlowingEffect spread={40} glow={true} disabled={isMobile} proximity={64} inactiveZone={0.01} borderWidth={1} />
                 <div className="bg-white/5 rounded-lg p-6 h-full">
-                  <DollarSign className="h-8 w-8 text-green-400 mb-4" />
-                  <h3 className="text-xl font-semibold mb-2">Know Your Net Worth</h3>
-                  <p className="text-gray-400">
-                    See all your money in one number. Banks, savings, credit cards - everything added up.
+                  <DollarSign className="h-8 w-8 text-blue-400 mb-4" />
+                  <h3 className="text-lg font-semibold mb-2">Total Net Worth</h3>
+                  <p className="text-gray-400 text-sm">
+                    See your complete financial picture across all accounts.
                   </p>
                 </div>
               </div>
@@ -162,10 +178,21 @@ export default function LandingBanking() {
               <div className="relative rounded-xl border border-white/10 p-2">
                 <GlowingEffect spread={40} glow={true} disabled={isMobile} proximity={64} inactiveZone={0.01} borderWidth={1} />
                 <div className="bg-white/5 rounded-lg p-6 h-full">
-                  <CreditCard className="h-8 w-8 text-red-400 mb-4" />
-                  <h3 className="text-xl font-semibold mb-2">Pay Off Debt Faster</h3>
-                  <p className="text-gray-400">
-                    Track credit card balances. See how much you owe. Make a plan to pay it off.
+                  <CreditCard className="h-8 w-8 text-green-400 mb-4" />
+                  <h3 className="text-lg font-semibold mb-2">Track Credit Cards</h3>
+                  <p className="text-gray-400 text-sm">
+                    Monitor balances and pay down debt faster.
+                  </p>
+                </div>
+              </div>
+              
+              <div className="relative rounded-xl border border-blue-400/30 p-2">
+                <GlowingEffect spread={40} glow={true} disabled={isMobile} proximity={64} inactiveZone={0.01} borderWidth={1} />
+                <div className="bg-gradient-to-b from-blue-500/10 to-transparent rounded-lg p-6 h-full">
+                  <Send className="h-8 w-8 text-blue-400 mb-4" />
+                  <h3 className="text-lg font-semibold mb-2">Transfer Money</h3>
+                  <p className="text-gray-400 text-sm">
+                    Move money between accounts without leaving Flint.
                   </p>
                 </div>
               </div>
@@ -173,10 +200,10 @@ export default function LandingBanking() {
               <div className="relative rounded-xl border border-white/10 p-2">
                 <GlowingEffect spread={40} glow={true} disabled={isMobile} proximity={64} inactiveZone={0.01} borderWidth={1} />
                 <div className="bg-white/5 rounded-lg p-6 h-full">
-                  <Bell className="h-8 w-8 text-yellow-400 mb-4" />
-                  <h3 className="text-xl font-semibold mb-2">Find Hidden Fees</h3>
-                  <p className="text-gray-400">
-                    We spot charges you might miss. Subscriptions, fees, surprise charges - all found.
+                  <Shield className="h-8 w-8 text-green-400 mb-4" />
+                  <h3 className="text-lg font-semibold mb-2">Bank-Level Security</h3>
+                  <p className="text-gray-400 text-sm">
+                    Read-only by default. We can't move money without your permission.
                   </p>
                 </div>
               </div>
@@ -188,39 +215,57 @@ export default function LandingBanking() {
           <div className="max-w-4xl mx-auto">
             <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">How It Works</h2>
             
-            <div className="space-y-8">
-              <div className="flex items-start gap-4">
-                <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center flex-shrink-0 text-lg font-bold">1</div>
+            <div className="space-y-10">
+              <div className="flex items-start gap-6">
+                <div className="w-16 h-16 rounded-2xl bg-blue-600 flex items-center justify-center flex-shrink-0">
+                  <span className="text-3xl font-black">1</span>
+                </div>
                 <div>
-                  <h3 className="text-xl font-semibold mb-1">Connect Your Banks</h3>
-                  <p className="text-gray-400">Link Chase, Bank of America, Amex or any other bank in seconds. We support 10,000+ banks.</p>
+                  <h3 className="text-xl font-bold mb-2">Connect Your Accounts</h3>
+                  <p className="text-gray-400">Link Chase, Bank of America, Capital One, and 10,000+ more banks in seconds.</p>
                 </div>
               </div>
               
-              <div className="flex items-start gap-4">
-                <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center flex-shrink-0 text-lg font-bold">2</div>
+              <div className="flex items-start gap-6">
+                <div className="w-16 h-16 rounded-2xl bg-blue-600 flex items-center justify-center flex-shrink-0">
+                  <span className="text-3xl font-black">2</span>
+                </div>
                 <div>
-                  <h3 className="text-xl font-semibold mb-1">See Your Total Money</h3>
-                  <p className="text-gray-400">Watch your total balance update in real-time. Checking, savings, credit cards - all included.</p>
+                  <h3 className="text-xl font-bold mb-2">See Your Total Balance</h3>
+                  <p className="text-gray-400">View all your accounts, track spending, and see your total money in real time.</p>
                 </div>
               </div>
               
-              <div className="flex items-start gap-4">
-                <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center flex-shrink-0 text-lg font-bold">3</div>
+              <div className="flex items-start gap-6">
+                <div className="w-16 h-16 rounded-2xl bg-blue-600 flex items-center justify-center flex-shrink-0">
+                  <span className="text-3xl font-black">3</span>
+                </div>
                 <div>
-                  <h3 className="text-xl font-semibold mb-1">Track & Save</h3>
-                  <p className="text-gray-400">Set spending alerts, track categories, and find ways to save more money every month.</p>
+                  <h3 className="text-xl font-bold mb-2">Take Control</h3>
+                  <p className="text-gray-400">Set spending alerts, pay off debt, and transfer money without switching apps.</p>
                 </div>
               </div>
             </div>
           </div>
         </section>
 
-        <section id="pricing" className="py-20 px-4">
+        <section className="py-16 px-4">
+          <div className="max-w-2xl mx-auto text-center">
+            <h2 className="text-2xl md:text-3xl font-bold mb-4">Ready to see all your money?</h2>
+            <p className="text-gray-400 mb-8">Join thousands of people managing their finances with Flint.</p>
+            <Link href="/login">
+              <RainbowButton className="h-14 px-12 rounded-xl text-lg" data-testid="button-cta-mid">
+                Get Started Free
+              </RainbowButton>
+            </Link>
+          </div>
+        </section>
+
+        <section id="pricing" className="py-20 px-4 bg-white/5 border-y border-white/10">
           <div className="max-w-5xl mx-auto">
             <div className="text-center mb-12">
               <h2 className="text-3xl md:text-4xl font-bold mb-4">Pick Your Plan</h2>
-              <p className="text-gray-400 mb-6">Start free. Upgrade for advanced features.</p>
+              <p className="text-gray-400 mb-6">Start free. Upgrade for transfers and advanced features.</p>
               
               <div className="inline-flex bg-white/10 rounded-lg p-1">
                 <button
@@ -255,13 +300,13 @@ export default function LandingBanking() {
                   <ul className="space-y-3 mb-8 flex-1">
                     <li className="flex items-center gap-2 text-sm"><Check className="h-4 w-4 text-green-400" /> 4 accounts</li>
                     <li className="flex items-center gap-2 text-sm"><Check className="h-4 w-4 text-green-400" /> See all your money</li>
-                    <li className="flex items-center gap-2 text-sm"><Check className="h-4 w-4 text-green-400" /> Live updates</li>
+                    <li className="flex items-center gap-2 text-sm"><Check className="h-4 w-4 text-green-400" /> Real-time updates</li>
                     <li className="flex items-center gap-2 text-sm"><Check className="h-4 w-4 text-green-400" /> Mobile app</li>
                   </ul>
                   <Link href="/login">
-                    <Button variant="outline" className="w-full" data-testid="button-free-plan">
+                    <RainbowButton className="w-full" data-testid="button-free-plan">
                       Start Free
-                    </Button>
+                    </RainbowButton>
                   </Link>
                 </div>
               </div>
@@ -288,9 +333,9 @@ export default function LandingBanking() {
                     <li className="flex items-center gap-2 text-sm"><Check className="h-4 w-4 text-blue-400" /> Bill reminders</li>
                     <li className="flex items-center gap-2 text-sm"><Check className="h-4 w-4 text-blue-400" /> Email support</li>
                   </ul>
-                  <Button className="w-full bg-blue-600 hover:bg-blue-700" onClick={() => openCheckout('basic')} data-testid="button-standard-plan">
+                  <RainbowButton className="w-full" onClick={() => openCheckout('basic')} data-testid="button-standard-plan">
                     Get Standard
-                  </Button>
+                  </RainbowButton>
                 </div>
               </div>
               
@@ -312,11 +357,11 @@ export default function LandingBanking() {
                     <li className="flex items-center gap-2 text-sm font-semibold"><Check className="h-4 w-4 text-blue-400" /> Trading</li>
                     <li className="flex items-center gap-2 text-sm font-semibold"><Check className="h-4 w-4 text-blue-400" /> Transfers</li>
                     <li className="flex items-center gap-2 text-sm"><Check className="h-4 w-4 text-blue-400" /> Budgeting tools</li>
-                    <li className="flex items-center gap-2 text-sm"><Check className="h-4 w-4 text-blue-400" /> Fast support</li>
+                    <li className="flex items-center gap-2 text-sm"><Check className="h-4 w-4 text-blue-400" /> Priority support</li>
                   </ul>
-                  <Button variant="outline" className="w-full" onClick={() => openCheckout('pro')} data-testid="button-pro-plan">
+                  <RainbowButton className="w-full" onClick={() => openCheckout('pro')} data-testid="button-pro-plan">
                     Get Pro
-                  </Button>
+                  </RainbowButton>
                 </div>
               </div>
             </div>
@@ -330,34 +375,34 @@ export default function LandingBanking() {
           </div>
         </section>
 
-        <section className="py-20 px-4 bg-white/5 border-t border-white/10">
+        <section id="faq" className="py-20 px-4">
           <div className="max-w-3xl mx-auto">
-            <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">Common Questions</h2>
+            <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">Questions?</h2>
             
             <Accordion type="single" collapsible className="space-y-4">
-              <AccordionItem value="1" className="border border-white/10 rounded-lg px-4">
-                <AccordionTrigger className="text-left">Is my money safe?</AccordionTrigger>
+              <AccordionItem value="1" className="bg-white/5 border border-white/10 rounded-lg px-6">
+                <AccordionTrigger className="text-left hover:no-underline">Is my money safe?</AccordionTrigger>
                 <AccordionContent className="text-gray-400">
                   Yes! Flint uses bank-level encryption and read-only access. We can see your balances but we can never move your money without your permission.
                 </AccordionContent>
               </AccordionItem>
               
-              <AccordionItem value="2" className="border border-white/10 rounded-lg px-4">
-                <AccordionTrigger className="text-left">Which banks do you support?</AccordionTrigger>
+              <AccordionItem value="2" className="bg-white/5 border border-white/10 rounded-lg px-6">
+                <AccordionTrigger className="text-left hover:no-underline">Which banks do you support?</AccordionTrigger>
                 <AccordionContent className="text-gray-400">
                   We support Chase, Bank of America, Wells Fargo, Citi, Capital One, American Express, and 10,000+ more banks and credit unions.
                 </AccordionContent>
               </AccordionItem>
               
-              <AccordionItem value="3" className="border border-white/10 rounded-lg px-4">
-                <AccordionTrigger className="text-left">Can I transfer money?</AccordionTrigger>
+              <AccordionItem value="3" className="bg-white/5 border border-white/10 rounded-lg px-6">
+                <AccordionTrigger className="text-left hover:no-underline">Can I transfer money?</AccordionTrigger>
                 <AccordionContent className="text-gray-400">
                   Yes! Pro users can transfer money between their connected bank accounts directly through Flint.
                 </AccordionContent>
               </AccordionItem>
               
-              <AccordionItem value="4" className="border border-white/10 rounded-lg px-4">
-                <AccordionTrigger className="text-left">Is there a free plan?</AccordionTrigger>
+              <AccordionItem value="4" className="bg-white/5 border border-white/10 rounded-lg px-6">
+                <AccordionTrigger className="text-left hover:no-underline">Is there a free plan?</AccordionTrigger>
                 <AccordionContent className="text-gray-400">
                   Yes! Start free with up to 4 accounts. Upgrade anytime for unlimited accounts and more features.
                 </AccordionContent>
@@ -366,27 +411,35 @@ export default function LandingBanking() {
           </div>
         </section>
 
-        <section className="py-20 px-4">
-          <div className="max-w-3xl mx-auto text-center">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Ready to See All Your Money?</h2>
-            <p className="text-gray-400 mb-8">Join thousands of people who use Flint every day.</p>
+        <section className="py-20 px-4 bg-white/5 border-t border-white/10">
+          <div className="max-w-2xl mx-auto text-center">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">Start managing your money today</h2>
+            <p className="text-gray-400 mb-8">Free forever. No credit card needed.</p>
             <Link href="/login">
-              <Button size="lg" className="bg-blue-600 hover:bg-blue-700" data-testid="button-cta-bottom">
-                Get Started Free <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
+              <RainbowButton className="h-14 px-12 rounded-xl text-lg" data-testid="button-cta-bottom">
+                Get Started Free
+              </RainbowButton>
             </Link>
           </div>
         </section>
 
-        <footer className="py-8 px-4 border-t border-white/10">
-          <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-2">
-              <img src={flintLogo} alt="Flint" className="h-6 w-6" />
-              <span className="text-gray-400">© 2025 Flint</span>
+        <footer className="border-t border-white/10 bg-white/5 py-12">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6">
+            <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+              <div className="flex items-center gap-3">
+                <img src={flintLogo} alt="Flint" className="h-8 w-auto" />
+                <span className="text-xl font-semibold">Flint</span>
+              </div>
+
+              <div className="flex gap-6 text-sm text-gray-400">
+                <Link href="/terms" className="hover:text-white transition-colors">Terms</Link>
+                <Link href="/privacy" className="hover:text-white transition-colors">Privacy</Link>
+                <Link href="/support" className="hover:text-white transition-colors">Support</Link>
+              </div>
             </div>
-            <div className="flex gap-6 text-gray-400">
-              <Link href="/tos"><span className="hover:text-white cursor-pointer">Terms</span></Link>
-              <Link href="/privacy-policy"><span className="hover:text-white cursor-pointer">Privacy</span></Link>
+
+            <div className="mt-8 text-center text-sm text-gray-400">
+              <p>Flint is not a broker or bank. Investing and transfers depend on the platforms you connect.</p>
             </div>
           </div>
         </footer>

@@ -334,17 +334,24 @@ export default function LandingBusiness() {
           </div>
         </section>
 
-        {/* Footer */}
-        <footer className="py-8 px-4 border-t border-white/10">
-          <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-2">
-              <img src={flintLogo} alt="Flint" className="h-6 w-6" />
-              <span className="text-gray-400">© 2025 Flint</span>
+        <footer className="border-t border-white/10 bg-white/5 py-12">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6">
+            <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+              <div className="flex items-center gap-3">
+                <img src={flintLogo} alt="Flint" className="h-8 w-auto" />
+                <span className="text-xl font-semibold">Flint</span>
+              </div>
+
+              <div className="flex gap-6 text-sm text-gray-400">
+                <Link href="/new" className="hover:text-white transition-colors">Personal</Link>
+                <Link href="/terms" className="hover:text-white transition-colors">Terms</Link>
+                <Link href="/privacy" className="hover:text-white transition-colors">Privacy</Link>
+                <Link href="/support" className="hover:text-white transition-colors">Support</Link>
+              </div>
             </div>
-            <div className="flex gap-6 text-gray-400">
-              <Link href="/"><span className="hover:text-white cursor-pointer">Personal</span></Link>
-              <Link href="/tos"><span className="hover:text-white cursor-pointer">Terms</span></Link>
-              <Link href="/privacy-policy"><span className="hover:text-white cursor-pointer">Privacy</span></Link>
+
+            <div className="mt-8 text-center text-sm text-gray-400">
+              <p>Flint is not a broker or bank. Investing and transfers depend on the platforms you connect.</p>
             </div>
           </div>
         </footer>
