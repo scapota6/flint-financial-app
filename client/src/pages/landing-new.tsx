@@ -1888,6 +1888,44 @@ export default function LandingNew() {
           </div>
         </footer>
       </main>
+      
+      {/* JSON-LD Structured Data */}
+      <script type="application/ld+json" dangerouslySetInnerHTML={{
+        __html: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "SoftwareApplication",
+          "name": "Flint",
+          "applicationCategory": "FinanceApplication",
+          "operatingSystem": "Web",
+          "description": "Free financial dashboard that connects all your bank accounts, investments, and credit cards in one place",
+          "url": "https://flint-investing.com",
+          "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+          },
+          "aggregateRating": {
+            "@type": "AggregateRating",
+            "ratingValue": "4.8",
+            "ratingCount": "500"
+          }
+        })
+      }} />
+      
+      <script type="application/ld+json" dangerouslySetInnerHTML={{
+        __html: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Organization",
+          "name": "Flint Tech Inc",
+          "url": "https://flint-investing.com",
+          "logo": "https://flint-investing.com/favicon.png",
+          "contactPoint": {
+            "@type": "ContactPoint",
+            "email": "support@flint-investing.com",
+            "contactType": "customer service"
+          }
+        })
+      }} />
       {/* Scroll Popup */}
       {showScrollPopup && !scrollPopupSubmitted && (
         <div className="fixed bottom-4 right-4 max-w-[90vw] sm:max-w-sm bg-black border border-white/20 rounded-lg p-4 md:p-6 shadow-2xl z-50 animate-[fadeInUp_0.3s_ease-out]">
