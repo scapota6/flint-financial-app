@@ -44,7 +44,6 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { canAccessFeature } from "@/lib/feature-flags";
-import { useQuery } from "@tanstack/react-query";
 import { Crown } from "lucide-react";
 import { Link } from "wouter";
 import { apiRequest, queryClient } from "@/lib/queryClient";
@@ -119,11 +118,8 @@ export function MetaMaskWalletView({ compact = false }: MetaMaskWalletViewProps)
   const isConnected = connected && account;
 
   // Check subscription tier for Pro features (sending tokens)
-  const { data: userData } = useQuery<{ subscriptionTier?: string }>({
-    queryKey: ['/api/auth/user'],
-    enabled: !!user,
-  });
-  const userTier = userData?.subscriptionTier || 'free';
+  // Use the user object from useAuth() which already includes subscriptionTier
+  const userTier = (user as any)?.subscriptionTier || 'free';
   const isProTier = userTier === 'pro' || userTier === 'premium';
   
   useEffect(() => {
