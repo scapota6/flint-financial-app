@@ -44,6 +44,9 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { canAccessFeature } from "@/lib/feature-flags";
+import { useQuery } from "@tanstack/react-query";
+import { Crown } from "lucide-react";
+import { Link } from "wouter";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { 
   setupEventListeners,
@@ -114,6 +117,14 @@ export function MetaMaskWalletView({ compact = false }: MetaMaskWalletViewProps)
 
   const hasAccess = canAccessFeature('metamask', user?.email);
   const isConnected = connected && account;
+
+  // Check subscription tier for Pro features (sending tokens)
+  const { data: userData } = useQuery<{ subscriptionTier?: string }>({
+    queryKey: ['/api/auth/user'],
+    enabled: !!user,
+  });
+  const userTier = userData?.subscriptionTier || 'free';
+  const isProTier = userTier === 'pro' || userTier === 'premium';
   
   useEffect(() => {
     return () => {
@@ -754,103 +765,123 @@ export function MetaMaskWalletView({ compact = false }: MetaMaskWalletViewProps)
 
         <Separator className="bg-gray-700" />
 
-        {showSendForm ? (
-          <div className="space-y-3">
-            <div>
-              <Label htmlFor="tokenSelect" className="text-gray-300">Token</Label>
-              <Select value={selectedToken} onValueChange={setSelectedToken}>
-                <SelectTrigger className="bg-gray-800 border-gray-600 text-white" data-testid="select-token">
-                  <SelectValue placeholder="Select token" />
-                </SelectTrigger>
-                <SelectContent className="bg-gray-800 border-gray-600">
-                  <SelectItem value="ETH" className="text-white hover:bg-gray-700">
-                    ETH (Balance: {balance || '0'})
-                  </SelectItem>
-                  {tokenBalances.map((token) => (
-                    <SelectItem 
-                      key={token.symbol} 
-                      value={token.symbol}
-                      className="text-white hover:bg-gray-700"
-                    >
-                      {token.symbol} (Balance: {token.balance})
+        {isProTier ? (
+          showSendForm ? (
+            <div className="space-y-3">
+              <div>
+                <Label htmlFor="tokenSelect" className="text-gray-300">Token</Label>
+                <Select value={selectedToken} onValueChange={setSelectedToken}>
+                  <SelectTrigger className="bg-gray-800 border-gray-600 text-white" data-testid="select-token">
+                    <SelectValue placeholder="Select token" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-gray-800 border-gray-600">
+                    <SelectItem value="ETH" className="text-white hover:bg-gray-700">
+                      ETH (Balance: {balance || '0'})
                     </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                    {tokenBalances.map((token) => (
+                      <SelectItem 
+                        key={token.symbol} 
+                        value={token.symbol}
+                        className="text-white hover:bg-gray-700"
+                      >
+                        {token.symbol} (Balance: {token.balance})
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label htmlFor="sendTo" className="text-gray-300">Recipient Address</Label>
+                <Input
+                  id="sendTo"
+                  placeholder="0x..."
+                  value={sendTo}
+                  onChange={(e) => setSendTo(e.target.value)}
+                  className="bg-gray-800 border-gray-600 text-white font-mono"
+                  data-testid="input-send-to"
+                />
+              </div>
+              <div>
+                <Label htmlFor="sendAmount" className="text-gray-300">
+                  Amount ({selectedToken})
+                  <span className="text-gray-500 ml-2 font-normal">
+                    Available: {getSelectedTokenBalance()}
+                  </span>
+                </Label>
+                <Input
+                  id="sendAmount"
+                  type="number"
+                  step="0.0001"
+                  placeholder="0.0"
+                  value={sendAmount}
+                  onChange={(e) => setSendAmount(e.target.value)}
+                  className="bg-gray-800 border-gray-600 text-white"
+                  data-testid="input-send-amount"
+                />
+              </div>
+              <div className="flex gap-2">
+                <Button
+                  onClick={sendTransaction}
+                  disabled={isSending || !sendTo || !sendAmount}
+                  className="flex-1 bg-[#F6851B] hover:bg-[#E2761B]"
+                  data-testid="button-confirm-send"
+                >
+                  {isSending ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      Sending...
+                    </>
+                  ) : (
+                    <>
+                      <ArrowUpRight className="h-4 w-4 mr-2" />
+                      Send {selectedToken}
+                    </>
+                  )}
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setShowSendForm(false);
+                    setSelectedToken('ETH');
+                    setSendTo('');
+                    setSendAmount('');
+                  }}
+                  className="border-gray-600"
+                  data-testid="button-cancel-send"
+                >
+                  Cancel
+                </Button>
+              </div>
             </div>
-            <div>
-              <Label htmlFor="sendTo" className="text-gray-300">Recipient Address</Label>
-              <Input
-                id="sendTo"
-                placeholder="0x..."
-                value={sendTo}
-                onChange={(e) => setSendTo(e.target.value)}
-                className="bg-gray-800 border-gray-600 text-white font-mono"
-                data-testid="input-send-to"
-              />
-            </div>
-            <div>
-              <Label htmlFor="sendAmount" className="text-gray-300">
-                Amount ({selectedToken})
-                <span className="text-gray-500 ml-2 font-normal">
-                  Available: {getSelectedTokenBalance()}
-                </span>
-              </Label>
-              <Input
-                id="sendAmount"
-                type="number"
-                step="0.0001"
-                placeholder="0.0"
-                value={sendAmount}
-                onChange={(e) => setSendAmount(e.target.value)}
-                className="bg-gray-800 border-gray-600 text-white"
-                data-testid="input-send-amount"
-              />
-            </div>
-            <div className="flex gap-2">
-              <Button
-                onClick={sendTransaction}
-                disabled={isSending || !sendTo || !sendAmount}
-                className="flex-1 bg-[#F6851B] hover:bg-[#E2761B]"
-                data-testid="button-confirm-send"
-              >
-                {isSending ? (
-                  <>
-                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    Sending...
-                  </>
-                ) : (
-                  <>
-                    <ArrowUpRight className="h-4 w-4 mr-2" />
-                    Send {selectedToken}
-                  </>
-                )}
-              </Button>
-              <Button
-                variant="outline"
-                onClick={() => {
-                  setShowSendForm(false);
-                  setSelectedToken('ETH');
-                  setSendTo('');
-                  setSendAmount('');
-                }}
-                className="border-gray-600"
-                data-testid="button-cancel-send"
-              >
-                Cancel
-              </Button>
-            </div>
-          </div>
+          ) : (
+            <Button
+              onClick={() => setShowSendForm(true)}
+              variant="outline"
+              className="w-full border-gray-600 hover:bg-gray-800"
+              data-testid="button-show-send-form"
+            >
+              <Send className="h-4 w-4 mr-2" />
+              Send Tokens
+            </Button>
+          )
         ) : (
-          <Button
-            onClick={() => setShowSendForm(true)}
-            variant="outline"
-            className="w-full border-gray-600 hover:bg-gray-800"
-            data-testid="button-show-send-form"
-          >
-            <Send className="h-4 w-4 mr-2" />
-            Send Tokens
-          </Button>
+          <div className="p-4 bg-gradient-to-r from-purple-900/30 to-blue-900/30 border border-purple-500/30 rounded-lg" data-testid="pro-upgrade-send">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="p-2 bg-purple-600/20 rounded-full">
+                <Crown className="h-5 w-5 text-purple-400" />
+              </div>
+              <div>
+                <h4 className="font-medium text-white">Upgrade to Pro</h4>
+                <p className="text-sm text-gray-400">Send tokens with Flint Pro</p>
+              </div>
+            </div>
+            <Link href="/subscribe">
+              <Button className="w-full mt-2 bg-purple-600 hover:bg-purple-700" data-testid="button-upgrade-pro-send">
+                <Crown className="h-4 w-4 mr-2" />
+                Upgrade to Send Tokens
+              </Button>
+            </Link>
+          </div>
         )}
 
         <Button
