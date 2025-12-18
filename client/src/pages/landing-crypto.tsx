@@ -165,7 +165,7 @@ export default function LandingCrypto() {
     <>
       <Helmet>
         <title>Crypto Portfolio Tracker - Track and Trade All Your Crypto in One Place | Flint</title>
-        <meta name="description" content="Track all your crypto exchanges and wallets in one dashboard. Connect Coinbase, Binance, Kraken, MetaMask and more. Send Ethereum and place trades without leaving Flint. Free to start." />
+        <meta name="description" content="Track all your crypto exchanges and wallets in one dashboard. Connect Coinbase, Binance, Kraken, MetaMask and more. Send crypto and place trades without leaving Flint. Free to start." />
         <meta property="og:title" content="Crypto Portfolio Tracker - Track and Trade Crypto in One Place | Flint" />
         <meta property="og:description" content="The multi-exchange crypto tracker that lets you take action. Connect all your wallets, see real-time values, send crypto and place trades from one dashboard." />
         <meta property="og:type" content="website" />
@@ -188,7 +188,7 @@ export default function LandingCrypto() {
             </h1>
             
             <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
-              Track all your crypto and take action from one dashboard. Send Ethereum, place trades, and manage your entire portfolio.
+              Track all your crypto and take action from one dashboard. Send crypto, place trades, and manage your entire portfolio.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-3 justify-center mb-6">
@@ -282,7 +282,7 @@ export default function LandingCrypto() {
                   <Send className="h-8 w-8 text-blue-400 mb-4" />
                   <h3 className="text-lg font-semibold mb-2">Trade & Send</h3>
                   <p className="text-gray-400 text-sm">
-                    Send Ethereum and place trades without leaving Flint.
+                    Send crypto and place trades without leaving Flint.
                   </p>
                 </div>
               </div>
@@ -326,7 +326,7 @@ export default function LandingCrypto() {
                 <span className="text-4xl font-black text-blue-500 flex-shrink-0">3</span>
                 <div>
                   <h3 className="text-xl font-bold mb-2">Take Action Without Leaving Flint</h3>
-                  <p className="text-gray-400">Send Ethereum or place trades on your connected accounts. No app switching required.</p>
+                  <p className="text-gray-400">Send crypto or place trades on your connected accounts. No app switching required.</p>
                 </div>
               </div>
             </div>
@@ -470,7 +470,7 @@ export default function LandingCrypto() {
               <AccordionItem value="2" className="bg-white/5 border border-white/10 rounded-lg px-6">
                 <AccordionTrigger className="text-left hover:no-underline">Is there a crypto portfolio tracker that lets me trade?</AccordionTrigger>
                 <AccordionContent className="text-gray-400">
-                  Yes - that's what makes Flint different. Most portfolio trackers are read-only, but Flint lets you place trades on your connected exchange accounts and send Ethereum directly from your connected wallet.
+                  Yes - that's what makes Flint different. Most portfolio trackers are read-only, but Flint lets you place trades on your connected exchange accounts and send crypto directly from your connected wallet.
                 </AccordionContent>
               </AccordionItem>
               
