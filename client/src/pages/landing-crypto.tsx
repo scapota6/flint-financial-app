@@ -400,7 +400,7 @@ export default function LandingCrypto() {
               <AccordionItem value="4" className="bg-white/5 border border-white/10 rounded-lg px-6">
                 <AccordionTrigger className="text-left hover:no-underline">Is it safe to connect my wallets?</AccordionTrigger>
                 <AccordionContent className="text-gray-400">
-                  Absolutely. Flint uses secure API connections - we never have access to your passwords or private keys. Your keys stay with you. We are not a bank or custodian and never take custody of your funds.
+                  Absolutely. Flint uses secure connections - we never have access to your passwords or private keys. Your keys stay with you. We are not a bank or custodian and never take custody of your funds.
                 </AccordionContent>
               </AccordionItem>
               
