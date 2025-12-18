@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
+import { RainbowButton } from '@/components/ui/rainbow-button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import {
   DropdownMenu,
@@ -135,9 +136,9 @@ export function LandingHeader({ currentPage = 'main' }: LandingHeaderProps) {
               </Button>
             </Link>
             <Link href="/login">
-              <Button size="sm" className="bg-blue-600 hover:bg-blue-700" data-testid="button-get-started-header">
+              <RainbowButton className="h-9 px-4 text-sm" data-testid="button-get-started-header">
                 Get Started
-              </Button>
+              </RainbowButton>
             </Link>
           </div>
 
@@ -218,9 +219,9 @@ export function LandingHeader({ currentPage = 'main' }: LandingHeaderProps) {
                     </Button>
                   </Link>
                   <Link href="/login">
-                    <Button className="w-full bg-blue-600 hover:bg-blue-700" onClick={() => setMobileOpen(false)}>
+                    <RainbowButton className="w-full" onClick={() => setMobileOpen(false)}>
                       Get Started
-                    </Button>
+                    </RainbowButton>
                   </Link>
                 </div>
               </div>
