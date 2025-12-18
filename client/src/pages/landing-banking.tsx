@@ -203,7 +203,7 @@ export default function LandingBanking() {
                   <Shield className="h-8 w-8 text-green-400 mb-4" />
                   <h3 className="text-lg font-semibold mb-2">Bank-Level Security</h3>
                   <p className="text-gray-400 text-sm">
-                    Read-only by default. We can't move money without your permission.
+                    We never store your passwords. We're not a custodian and never move your funds.
                   </p>
                 </div>
               </div>
