@@ -19,6 +19,7 @@ import {
   Lock
 } from "lucide-react";
 import { Link } from "wouter";
+import flintLogo from "@assets/flint-logo.png";
 import { LandingHeader } from "@/components/layout/landing-header";
 import { Helmet } from 'react-helmet';
 
