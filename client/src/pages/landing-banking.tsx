@@ -9,6 +9,7 @@ import { RainbowButton } from "@/components/ui/rainbow-button";
 import { Input } from "@/components/ui/input";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { GlowingEffect } from "@/components/ui/glowing-effect";
+import { AuroraBackground } from "@/components/ui/aurora-background";
 import { 
   Shield, 
   CreditCard, 
@@ -176,8 +177,9 @@ export default function LandingBanking() {
         <link rel="canonical" href="https://flint-investing.com/banking" />
       </Helmet>
 
-      <div className="min-h-screen bg-black text-white overflow-x-hidden">
-        <LandingHeader currentPage="banking" />
+      <AuroraBackground className="min-h-screen text-white relative overflow-x-hidden">
+        <div className="fixed inset-0 bg-gradient-to-br from-blue-900/20 via-black to-black pointer-events-none" />
+        <LandingHeader currentPage="banking" onGetStarted={scrollToSignup} />
 
         <section className="pt-28 pb-20 px-4">
           <div className="max-w-4xl mx-auto text-center">
@@ -613,7 +615,7 @@ export default function LandingBanking() {
             </div>
           </div>
         </footer>
-      </div>
+      </AuroraBackground>
 
       <EmbeddedCheckoutModal
         open={checkoutOpen}

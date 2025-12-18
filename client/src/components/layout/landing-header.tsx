@@ -28,9 +28,10 @@ const NAV_LINKS = [
 
 interface LandingHeaderProps {
   currentPage?: 'crypto' | 'investing' | 'banking' | 'business' | 'main';
+  onGetStarted?: () => void;
 }
 
-export function LandingHeader({ currentPage = 'main' }: LandingHeaderProps) {
+export function LandingHeader({ currentPage = 'main', onGetStarted }: LandingHeaderProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [location] = useLocation();
 
@@ -135,11 +136,17 @@ export function LandingHeader({ currentPage = 'main' }: LandingHeaderProps) {
                 Log In
               </Button>
             </Link>
-            <Link href="/login">
-              <RainbowButton className="h-9 px-4 text-sm" data-testid="button-get-started-header">
+            {onGetStarted ? (
+              <RainbowButton className="h-9 px-4 text-sm" onClick={onGetStarted} data-testid="button-get-started-header">
                 Get Started
               </RainbowButton>
-            </Link>
+            ) : (
+              <Link href="/login">
+                <RainbowButton className="h-9 px-4 text-sm" data-testid="button-get-started-header">
+                  Get Started
+                </RainbowButton>
+              </Link>
+            )}
           </div>
 
           <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
@@ -218,11 +225,17 @@ export function LandingHeader({ currentPage = 'main' }: LandingHeaderProps) {
                       Log In
                     </Button>
                   </Link>
-                  <Link href="/login">
-                    <RainbowButton className="w-full" onClick={() => setMobileOpen(false)}>
+                  {onGetStarted ? (
+                    <RainbowButton className="w-full" onClick={() => { onGetStarted(); setMobileOpen(false); }}>
                       Get Started
                     </RainbowButton>
-                  </Link>
+                  ) : (
+                    <Link href="/login">
+                      <RainbowButton className="w-full" onClick={() => setMobileOpen(false)}>
+                        Get Started
+                      </RainbowButton>
+                    </Link>
+                  )}
                 </div>
               </div>
             </SheetContent>
