@@ -651,7 +651,7 @@ export default function LandingNew() {
         <meta property="og:title" content="Flint - Free Financial Dashboard" />
         <meta property="og:description" content="See all your money in one place. Connect banks, investments, and crypto. Track spending and reach your goals." />
         <meta property="og:type" content="website" />
-        <link rel="canonical" href="https://flint-investing.com/new" />
+        <link rel="canonical" href="https://flint-investing.com/" />
       </Helmet>
 
       {/* Floating Header */}
