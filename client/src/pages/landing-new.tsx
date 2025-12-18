@@ -9,7 +9,6 @@ import { Button } from "@/components/ui/button";
 import { RainbowButton } from "@/components/ui/rainbow-button";
 import { FloatingHeader } from "@/components/ui/floating-header";
 import { AnimatedHero } from "@/components/ui/animated-hero";
-import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
@@ -732,29 +731,29 @@ export default function LandingNew() {
             <div className="grid md:grid-cols-3 gap-6 mb-8">
               <div className="relative h-full rounded-xl border border-white/10 p-2">
                 <GlowingEffect spread={40} glow={true} disabled={isMobile} proximity={64} inactiveZone={0.01} borderWidth={1} />
-                <Card className="bg-white/10 border-blue-400/30 rounded-lg p-6 h-full">
+                <div className="bg-white/10 border-blue-400/30 rounded-lg p-6 h-full">
                   <span className="text-5xl block mb-2">🎟️</span>
                   <h3 className="apple-h3">5 Winners</h3>
                   <p className="apple-body text-gray-300">Get 1 year of Flint Pro</p>
-                </Card>
+                </div>
               </div>
 
               <div className="relative h-full rounded-xl border border-yellow-400/30 p-2">
                 <GlowingEffect spread={40} glow={true} disabled={isMobile} proximity={64} inactiveZone={0.01} borderWidth={1} variant="default" />
-                <Card className="bg-gradient-to-br from-yellow-600/20 to-orange-600/20 border-yellow-400/40 rounded-lg p-6 transform scale-105 h-full">
+                <div className="bg-gradient-to-br from-yellow-600/20 to-orange-600/20 border-yellow-400/40 rounded-lg p-6 transform scale-105 h-full">
                   <span className="text-5xl block mb-2">🏆</span>
                   <h3 className="apple-h3">1 Grand Prize</h3>
                   <p className="apple-body text-yellow-200 font-semibold">Flint Pro for Life</p>
-                </Card>
+                </div>
               </div>
 
               <div className="relative h-full rounded-xl border border-white/10 p-2">
                 <GlowingEffect spread={40} glow={true} disabled={isMobile} proximity={64} inactiveZone={0.01} borderWidth={1} />
-                <Card className="bg-white/10 border-blue-400/30 rounded-lg p-6 h-full">
+                <div className="bg-white/10 border-blue-400/30 rounded-lg p-6 h-full">
                   <span className="text-5xl block mb-2">📈</span>
                   <h3 className="apple-h3">Boost Odds</h3>
                   <p className="apple-body text-gray-300">Refer friends or upgrade</p>
-                </Card>
+                </div>
               </div>
             </div>
 
@@ -899,7 +898,7 @@ export default function LandingNew() {
               {/* Testimonial 1 */}
               <div className="relative h-full rounded-xl border border-white/10 p-2">
                 <GlowingEffect spread={40} glow={true} disabled={isMobile} proximity={64} inactiveZone={0.01} borderWidth={1} />
-                <Card className="bg-white/5 border-white/10 p-6 h-full">
+                <div className="bg-white/5 border-white/10 p-6 h-full">
                   <div className="space-y-4">
                     <div className="flex gap-1">
                       {[...Array(5)].map((_, i) => (
@@ -919,13 +918,13 @@ export default function LandingNew() {
                       </div>
                     </div>
                   </div>
-                </Card>
+                </div>
               </div>
 
               {/* Testimonial 2 */}
               <div className="relative h-full rounded-xl border border-white/10 p-2">
                 <GlowingEffect spread={40} glow={true} disabled={isMobile} proximity={64} inactiveZone={0.01} borderWidth={1} />
-                <Card className="bg-white/5 border-white/10 p-6 h-full">
+                <div className="bg-white/5 border-white/10 p-6 h-full">
                   <div className="space-y-4">
                     <div className="flex gap-1">
                       {[...Array(5)].map((_, i) => (
@@ -945,13 +944,13 @@ export default function LandingNew() {
                       </div>
                     </div>
                   </div>
-                </Card>
+                </div>
               </div>
 
               {/* Testimonial 3 */}
               <div className="relative h-full rounded-xl border border-white/10 p-2">
                 <GlowingEffect spread={40} glow={true} disabled={isMobile} proximity={64} inactiveZone={0.01} borderWidth={1} />
-                <Card className="bg-white/5 border-white/10 p-6 h-full">
+                <div className="bg-white/5 border-white/10 p-6 h-full">
                   <div className="space-y-4">
                     <div className="flex gap-1">
                       {[...Array(5)].map((_, i) => (
@@ -971,7 +970,7 @@ export default function LandingNew() {
                       </div>
                     </div>
                   </div>
-                </Card>
+                </div>
               </div>
             </div>
           </div>
@@ -988,35 +987,35 @@ export default function LandingNew() {
             <div className="grid md:grid-cols-3 gap-8">
               <div className="relative h-full rounded-xl border border-white/10 p-2">
                 <GlowingEffect spread={40} glow={true} disabled={isMobile} proximity={64} inactiveZone={0.01} borderWidth={1} />
-                <Card className="bg-white/5 border-white/10 rounded-lg p-8 hover:bg-white/10 transition-colors h-full">
+                <div className="bg-white/5 border-white/10 rounded-lg p-8 hover:bg-white/10 transition-colors h-full">
                   <Wallet className="h-7 w-7 text-blue-400 mb-4" />
                   <h3 className="apple-h3">All Your Money</h3>
                   <p className="apple-body text-gray-300">
                     See your bank, cards, stocks, and crypto together
                   </p>
-                </Card>
+                </div>
               </div>
 
               <div className="relative h-full rounded-xl border border-white/10 p-2">
                 <GlowingEffect spread={40} glow={true} disabled={isMobile} proximity={64} inactiveZone={0.01} borderWidth={1} />
-                <Card className="bg-white/5 border-white/10 rounded-lg p-8 hover:bg-white/10 transition-colors h-full">
+                <div className="bg-white/5 border-white/10 rounded-lg p-8 hover:bg-white/10 transition-colors h-full">
                   <span className="text-3xl mb-4 block">🔁</span>
                   <h3 className="apple-h3">Trade & Transfer</h3>
                   <p className="apple-body text-gray-300">
                     Move money and buy stocks directly from Flint
                   </p>
-                </Card>
+                </div>
               </div>
 
               <div className="relative h-full rounded-xl border border-white/10 p-2">
                 <GlowingEffect spread={40} glow={true} disabled={isMobile} proximity={64} inactiveZone={0.01} borderWidth={1} />
-                <Card className="bg-white/5 border-white/10 rounded-lg p-8 hover:bg-white/10 transition-colors h-full">
+                <div className="bg-white/5 border-white/10 rounded-lg p-8 hover:bg-white/10 transition-colors h-full">
                   <TrendingUp className="h-7 w-7 text-blue-400 mb-4" />
                   <h3 className="apple-h3">Grow Wealth</h3>
                   <p className="apple-body text-gray-300">
                     Track investments and optimize your portfolio
                   </p>
-                </Card>
+                </div>
               </div>
             </div>
           </div>
@@ -1977,7 +1976,7 @@ export default function LandingNew() {
 
                   <div className="mt-4 space-y-4">
                     <TabsContent value="transactions" className="space-y-4 m-0">
-                      <Card className="bg-gray-800/50 border-gray-700">
+                      <div className="bg-gray-800/50 border-gray-700">
                         <div className="p-4">
                           <div className="flex items-center justify-between mb-4">
                             <h3 className="text-white font-semibold flex items-center gap-2">
@@ -2012,11 +2011,11 @@ export default function LandingNew() {
                             ))}
                           </div>
                         </div>
-                      </Card>
+                      </div>
 
                       {/* Credit Card Extra Info */}
                       {selectedAccount.type === 'Credit' && selectedAccount.creditLimit && (
-                        <Card className="bg-gray-800/50 border-gray-700">
+                        <div className="bg-gray-800/50 border-gray-700">
                           <div className="p-4">
                             <h3 className="text-white font-semibold mb-4">Credit Card Overview</h3>
                             <div className="grid grid-cols-2 gap-4">
@@ -2038,12 +2037,12 @@ export default function LandingNew() {
                               </div>
                             </div>
                           </div>
-                        </Card>
+                        </div>
                       )}
                     </TabsContent>
 
                     <TabsContent value="details" className="space-y-4 m-0">
-                      <Card className="bg-gray-800/50 border-gray-700">
+                      <div className="bg-gray-800/50 border-gray-700">
                         <div className="p-4">
                           <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
                             <CreditCard className="h-5 w-5 text-blue-400" />
@@ -2079,11 +2078,11 @@ export default function LandingNew() {
                             </div>
                           </div>
                         </div>
-                      </Card>
+                      </div>
                     </TabsContent>
 
                     <TabsContent value="settings" className="space-y-4 m-0">
-                      <Card className="bg-gray-800/50 border-gray-700">
+                      <div className="bg-gray-800/50 border-gray-700">
                         <div className="p-4 space-y-4">
                           <h3 className="text-white font-semibold">Account Settings</h3>
                           <div className="flex items-center justify-between p-4 rounded-lg bg-gray-700/30">
@@ -2104,7 +2103,7 @@ export default function LandingNew() {
                             <p className="text-sm text-gray-400 mb-2">This is a demo account. Real accounts can be disconnected from Settings.</p>
                           </div>
                         </div>
-                      </Card>
+                      </div>
                     </TabsContent>
                   </div>
                 </Tabs>
@@ -2122,7 +2121,7 @@ export default function LandingNew() {
                   <div className="mt-4 space-y-4">
                     <TabsContent value="overview" className="space-y-4 m-0">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <Card className="bg-gray-800/50 border-gray-700">
+                        <div className="bg-gray-800/50 border-gray-700">
                           <div className="p-4">
                             <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
                               <Building2 className="h-5 w-5 text-blue-400" />
@@ -2150,9 +2149,9 @@ export default function LandingNew() {
                               </div>
                             </div>
                           </div>
-                        </Card>
+                        </div>
 
-                        <Card className="bg-gray-800/50 border-gray-700">
+                        <div className="bg-gray-800/50 border-gray-700">
                           <div className="p-4">
                             <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
                               <DollarSign className="h-5 w-5 text-green-400" />
@@ -2173,10 +2172,10 @@ export default function LandingNew() {
                               </div>
                             </div>
                           </div>
-                        </Card>
+                        </div>
                       </div>
 
-                      <Card className="bg-gray-800/50 border-gray-700">
+                      <div className="bg-gray-800/50 border-gray-700">
                         <div className="p-4">
                           <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
                             <Zap className="h-5 w-5 text-blue-400" />
@@ -2194,11 +2193,11 @@ export default function LandingNew() {
                             </Button>
                           </div>
                         </div>
-                      </Card>
+                      </div>
                     </TabsContent>
 
                     <TabsContent value="holdings" className="space-y-4 m-0">
-                      <Card className="bg-gray-800/50 border-gray-700">
+                      <div className="bg-gray-800/50 border-gray-700">
                         <div className="p-4">
                           <div className="flex items-center justify-between mb-4">
                             <h3 className="text-white font-semibold flex items-center gap-2">
@@ -2255,11 +2254,11 @@ export default function LandingNew() {
                               })}
                           </div>
                         </div>
-                      </Card>
+                      </div>
                     </TabsContent>
 
                     <TabsContent value="orders" className="space-y-4 m-0">
-                      <Card className="bg-gray-800/50 border-gray-700">
+                      <div className="bg-gray-800/50 border-gray-700">
                         <div className="p-4">
                           <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
                             <TrendingUp className="h-5 w-5 text-blue-400" />
@@ -2296,7 +2295,7 @@ export default function LandingNew() {
                             ))}
                           </div>
                         </div>
-                      </Card>
+                      </div>
                     </TabsContent>
                   </div>
                 </Tabs>
