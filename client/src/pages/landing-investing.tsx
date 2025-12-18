@@ -314,9 +314,7 @@ export default function LandingInvesting() {
             
             <div className="space-y-10">
               <div className="flex items-start gap-6">
-                <div className="w-16 h-16 rounded-2xl bg-blue-600 flex items-center justify-center flex-shrink-0">
-                  <span className="text-3xl font-black">1</span>
-                </div>
+                <span className="text-4xl font-black text-blue-500 flex-shrink-0">1</span>
                 <div>
                   <h3 className="text-xl font-bold mb-2">Connect Your Brokerages</h3>
                   <p className="text-gray-400">Link Robinhood, Schwab, Fidelity, E*TRADE, and 50+ more in seconds.</p>
@@ -324,9 +322,7 @@ export default function LandingInvesting() {
               </div>
               
               <div className="flex items-start gap-6">
-                <div className="w-16 h-16 rounded-2xl bg-blue-600 flex items-center justify-center flex-shrink-0">
-                  <span className="text-3xl font-black">2</span>
-                </div>
+                <span className="text-4xl font-black text-blue-500 flex-shrink-0">2</span>
                 <div>
                   <h3 className="text-xl font-bold mb-2">See Your Total Portfolio</h3>
                   <p className="text-gray-400">View all your positions, track performance, and see your total value update in real time.</p>
@@ -334,9 +330,7 @@ export default function LandingInvesting() {
               </div>
               
               <div className="flex items-start gap-6">
-                <div className="w-16 h-16 rounded-2xl bg-blue-600 flex items-center justify-center flex-shrink-0">
-                  <span className="text-3xl font-black">3</span>
-                </div>
+                <span className="text-4xl font-black text-blue-500 flex-shrink-0">3</span>
                 <div>
                   <h3 className="text-xl font-bold mb-2">Trade Smarter</h3>
                   <p className="text-gray-400">Set price alerts, track dividends, and place trades without switching apps.</p>
