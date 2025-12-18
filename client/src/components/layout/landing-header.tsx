@@ -60,7 +60,7 @@ export function LandingHeader({ currentPage = 'main', onGetStarted }: LandingHea
       )}
     >
       <nav className="mx-auto flex items-center justify-between p-2 px-3 sm:px-4">
-        <Link href="/new">
+        <Link href="/">
           <div className="hover:bg-gray-800/50 flex cursor-pointer items-center gap-2 rounded-md px-2 sm:px-3 py-1.5 duration-100">
             <img src={flintLogo} alt="Flint" className="h-6 sm:h-7 w-auto" />
             <span className="font-semibold text-sm hidden sm:inline">Flint</span>
@@ -79,7 +79,7 @@ export function LandingHeader({ currentPage = 'main', onGetStarted }: LandingHea
                 {link.label}
               </button>
             ) : (
-              <Link key={link.sectionId} href={`/new#${link.sectionId}`}>
+              <Link key={link.sectionId} href={`/#${link.sectionId}`}>
                 <span
                   className="text-gray-300 hover:text-white hover:bg-gray-800/50 px-3 py-1.5 rounded-md text-sm transition-colors cursor-pointer"
                   data-testid={`link-nav-${link.label.toLowerCase()}`}
@@ -179,7 +179,7 @@ export function LandingHeader({ currentPage = 'main', onGetStarted }: LandingHea
                         {link.label}
                       </button>
                     ) : (
-                      <Link key={link.sectionId} href={`/new#${link.sectionId}`}>
+                      <Link key={link.sectionId} href={`/#${link.sectionId}`}>
                         <button
                           onClick={() => setMobileOpen(false)}
                           className="w-full text-left text-gray-300 hover:text-white hover:bg-gray-800/50 px-3 py-2 rounded-md text-sm transition-colors"
