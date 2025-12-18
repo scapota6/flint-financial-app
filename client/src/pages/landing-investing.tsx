@@ -263,7 +263,6 @@ export default function LandingInvesting() {
               <div className="relative rounded-xl border border-white/10 p-2">
                 <GlowingEffect spread={40} glow={true} disabled={isMobile} proximity={64} inactiveZone={0.01} borderWidth={1} />
                 <div className="bg-white/5 rounded-lg p-6 h-full">
-                  <LineChart className="h-8 w-8 text-blue-400 mb-4" />
                   <h3 className="text-lg font-semibold mb-2">Unified Portfolio</h3>
                   <p className="text-gray-400 text-sm">
                     See all your stocks, ETFs, and funds from every brokerage in one view.
@@ -274,7 +273,6 @@ export default function LandingInvesting() {
               <div className="relative rounded-xl border border-white/10 p-2">
                 <GlowingEffect spread={40} glow={true} disabled={isMobile} proximity={64} inactiveZone={0.01} borderWidth={1} />
                 <div className="bg-white/5 rounded-lg p-6 h-full">
-                  <TrendingUp className="h-8 w-8 text-green-400 mb-4" />
                   <h3 className="text-lg font-semibold mb-2">Track Performance</h3>
                   <p className="text-gray-400 text-sm">
                     Watch your gains and losses in real time. No spreadsheets needed.
@@ -285,7 +283,6 @@ export default function LandingInvesting() {
               <div className="relative rounded-xl border border-blue-400/30 p-2">
                 <GlowingEffect spread={40} glow={true} disabled={isMobile} proximity={64} inactiveZone={0.01} borderWidth={1} />
                 <div className="bg-gradient-to-b from-blue-500/10 to-transparent rounded-lg p-6 h-full">
-                  <Zap className="h-8 w-8 text-blue-400 mb-4" />
                   <h3 className="text-lg font-semibold mb-2">Trade from Flint</h3>
                   <p className="text-gray-400 text-sm">
                     Place trades on your connected brokerages without leaving the app.
@@ -296,7 +293,6 @@ export default function LandingInvesting() {
               <div className="relative rounded-xl border border-white/10 p-2">
                 <GlowingEffect spread={40} glow={true} disabled={isMobile} proximity={64} inactiveZone={0.01} borderWidth={1} />
                 <div className="bg-white/5 rounded-lg p-6 h-full">
-                  <Shield className="h-8 w-8 text-green-400 mb-4" />
                   <h3 className="text-lg font-semibold mb-2">Bank-Level Security</h3>
                   <p className="text-gray-400 text-sm">
                     We never store your passwords or keys. We're not a custodian and never move your funds.

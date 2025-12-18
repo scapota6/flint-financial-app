@@ -261,7 +261,6 @@ export default function LandingBanking() {
               <div className="relative rounded-xl border border-white/10 p-1.5 md:p-2">
                 <GlowingEffect spread={40} glow={true} disabled={isMobile} proximity={64} inactiveZone={0.01} borderWidth={1} />
                 <div className="bg-white/5 rounded-lg p-4 md:p-6 h-full">
-                  <DollarSign className="h-6 w-6 md:h-8 md:w-8 text-blue-400 mb-2 md:mb-4" />
                   <h3 className="text-base md:text-lg font-semibold mb-2">Total Net Worth</h3>
                   <p className="text-gray-400 text-sm">
                     See your complete financial picture across all accounts.
@@ -272,7 +271,6 @@ export default function LandingBanking() {
               <div className="relative rounded-xl border border-white/10 p-1.5 md:p-2">
                 <GlowingEffect spread={40} glow={true} disabled={isMobile} proximity={64} inactiveZone={0.01} borderWidth={1} />
                 <div className="bg-white/5 rounded-lg p-4 md:p-6 h-full">
-                  <CreditCard className="h-6 w-6 md:h-8 md:w-8 text-green-400 mb-2 md:mb-4" />
                   <h3 className="text-base md:text-lg font-semibold mb-2">Track Credit Cards</h3>
                   <p className="text-gray-400 text-sm">
                     Monitor balances and pay down debt faster.
@@ -283,7 +281,6 @@ export default function LandingBanking() {
               <div className="relative rounded-xl border border-blue-400/30 p-1.5 md:p-2">
                 <GlowingEffect spread={40} glow={true} disabled={isMobile} proximity={64} inactiveZone={0.01} borderWidth={1} />
                 <div className="bg-gradient-to-b from-blue-500/10 to-transparent rounded-lg p-4 md:p-6 h-full">
-                  <Send className="h-6 w-6 md:h-8 md:w-8 text-blue-400 mb-2 md:mb-4" />
                   <h3 className="text-base md:text-lg font-semibold mb-2">Transfer Money</h3>
                   <p className="text-gray-400 text-sm">
                     Move money between accounts without leaving Flint.
@@ -294,7 +291,6 @@ export default function LandingBanking() {
               <div className="relative rounded-xl border border-white/10 p-1.5 md:p-2">
                 <GlowingEffect spread={40} glow={true} disabled={isMobile} proximity={64} inactiveZone={0.01} borderWidth={1} />
                 <div className="bg-white/5 rounded-lg p-4 md:p-6 h-full">
-                  <Shield className="h-6 w-6 md:h-8 md:w-8 text-green-400 mb-2 md:mb-4" />
                   <h3 className="text-base md:text-lg font-semibold mb-2">Bank-Level Security</h3>
                   <p className="text-gray-400 text-sm">
                     We never store your passwords. We're not a custodian and never move your funds.

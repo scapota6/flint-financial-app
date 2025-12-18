@@ -6,6 +6,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
+import { Helmet } from 'react-helmet';
 import forbesLogo from '@assets/forbes-logo-white_1760732850878.png';
 import wsjLogo from '@assets/12450_65f1b42317bb1_3142_1760732860674.png';
 import entrepreneurLogo from '@assets/images_1760732961328.png';
@@ -200,6 +201,16 @@ function Landing() {
 
   return (
     <div className="min-h-screen bg-black text-white relative overflow-hidden">
+      <Helmet>
+        <title>Flint - See All Your Money in One Place | Financial Dashboard</title>
+        <meta name="description" content="Flint is a free financial dashboard that connects all your bank accounts, investments, and credit cards in one place. Track your net worth, monitor spending, pay down debt, and reach your money goals. Connect over 10,000 financial institutions securely." />
+        <meta name="keywords" content="personal finance, money management, net worth tracker, budgeting app, financial dashboard, bank account aggregator, investment tracking" />
+        <meta property="og:title" content="Flint - See All Your Money in One Place" />
+        <meta property="og:description" content="Free financial dashboard that connects all your accounts. Track net worth, monitor spending, and reach your goals." />
+        <meta property="og:type" content="website" />
+        <link rel="canonical" href="https://flint-investing.com/" />
+      </Helmet>
+
       {/* Animated gradient background */}
       <div className="fixed inset-0 bg-gradient-to-br from-blue-900/30 via-black to-blue-900/30 pointer-events-none" />
       
@@ -269,36 +280,27 @@ function Landing() {
       <main className="mx-auto max-w-7xl px-4 lg:px-8 relative z-10">
         <section className="py-20 text-center space-y-8">
           <div className="space-y-6">
-            <h2 className="h1 tracking-tight">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight">
               See all your money in one place.{' '}
               <span className="bg-gradient-to-r from-blue-400 via-cyan-400 to-blue-500 bg-clip-text text-transparent">
                 Save money. Reach your goals.
               </span>
-            </h2>
+            </h1>
             <p className="text-xl lg:text-2xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
               Flint brings all your accounts together, helps you cut hidden fees, and grow toward your goals{' '}
               <span className="text-white font-semibold">simply and clearly.</span>
             </p>
             
             {/* Visual elements */}
-            <div className="flex items-center justify-center gap-8 pt-8">
-              <div className="flex items-center gap-3 text-gray-300">
-                <div className="h-12 w-12 rounded-full bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center">
-                  <TrendingUp className="h-6 w-6 text-white" />
-                </div>
-                <span className="text-sm font-medium">Track Growth</span>
+            <div className="flex items-center justify-center gap-6 md:gap-8 pt-8">
+              <div className="flex items-center gap-2 md:gap-3 text-gray-300">
+                <span className="text-sm md:text-base font-medium">Track Growth</span>
               </div>
-              <div className="flex items-center gap-3 text-gray-300">
-                <div className="h-12 w-12 rounded-full bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center">
-                  <DollarSign className="h-6 w-6 text-white" />
-                </div>
-                <span className="text-sm font-medium">Cut Fees</span>
+              <div className="flex items-center gap-2 md:gap-3 text-gray-300">
+                <span className="text-sm md:text-base font-medium">Cut Fees</span>
               </div>
-              <div className="flex items-center gap-3 text-gray-300">
-                <div className="h-12 w-12 rounded-full bg-gradient-to-br from-green-500 to-green-700 flex items-center justify-center">
-                  <Shield className="h-6 w-6 text-white" />
-                </div>
-                <span className="text-sm font-medium">Stay Secure</span>
+              <div className="flex items-center gap-2 md:gap-3 text-gray-300">
+                <span className="text-sm md:text-base font-medium">Stay Secure</span>
               </div>
             </div>
           </div>
@@ -1355,7 +1357,7 @@ function Landing() {
         style={{ background: 'var(--surface-glass)', backdropFilter: 'blur(16px) saturate(140%)' }}
       >
         <div className="mx-auto max-w-7xl px-4 py-12 lg:px-8">
-          <div className="grid md:grid-cols-2 gap-8">
+          <div className="grid md:grid-cols-4 gap-8">
             <div className="space-y-4">
               <div className="flex items-center space-x-2">
                 <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
@@ -1370,11 +1372,29 @@ function Landing() {
             </div>
             
             <div className="space-y-4">
+              <h4 className="text-white font-semibold">Product</h4>
+              <div className="flex flex-col gap-2 text-sm">
+                <Link href="/banking" className="text-gray-300 hover:text-blue-400 transition-colors">Bank Account Tracker</Link>
+                <Link href="/investing" className="text-gray-300 hover:text-blue-400 transition-colors">Stock Portfolio Tracker</Link>
+                <Link href="/crypto" className="text-gray-300 hover:text-blue-400 transition-colors">Crypto Portfolio Tracker</Link>
+                <Link href="/blog" className="text-gray-300 hover:text-blue-400 transition-colors">Blog</Link>
+              </div>
+            </div>
+            
+            <div className="space-y-4">
+              <h4 className="text-white font-semibold">Account</h4>
+              <div className="flex flex-col gap-2 text-sm">
+                <Link href="/login" className="text-gray-300 hover:text-blue-400 transition-colors">Log In</Link>
+                <Link href="/reset-password" className="text-gray-300 hover:text-blue-400 transition-colors">Reset Password</Link>
+              </div>
+            </div>
+            
+            <div className="space-y-4">
               <h4 className="text-white font-semibold">Legal</h4>
-              <div className="flex flex-wrap gap-6 text-sm">
+              <div className="flex flex-col gap-2 text-sm">
                 <a href="/tos" className="text-gray-300 hover:text-blue-400 transition-colors">Terms of Service</a>
                 <a href="/privacy-policy" className="text-gray-300 hover:text-blue-400 transition-colors">Privacy Policy</a>
-                <span className="text-gray-300">contact us at <a href="mailto:support@flint-investing.com" className="text-blue-400 hover:text-blue-300 transition-colors">support@flint-investing.com</a></span>
+                <a href="mailto:support@flint-investing.com" className="text-blue-400 hover:text-blue-300 transition-colors">support@flint-investing.com</a>
               </div>
             </div>
           </div>

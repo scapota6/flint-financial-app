@@ -5,6 +5,7 @@
  */
 
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
+import { Helmet } from 'react-helmet';
 import { Button } from "@/components/ui/button";
 import { RainbowButton } from "@/components/ui/rainbow-button";
 import { FloatingHeader } from "@/components/ui/floating-header";
@@ -643,6 +644,16 @@ export default function LandingNew() {
 
   return (
     <BeamsBackground className="min-h-screen text-white overflow-x-hidden">
+      <Helmet>
+        <title>Flint - Free Financial Dashboard | Track All Your Money</title>
+        <meta name="description" content="Flint is a free personal finance app that shows all your bank accounts, investments, and credit cards in one dashboard. Track your net worth, monitor spending, find hidden fees, and reach your financial goals. Connect 10,000+ banks, brokerages, and crypto wallets securely." />
+        <meta name="keywords" content="personal finance app, money tracker, net worth calculator, budgeting tool, financial dashboard, bank aggregator, investment portfolio tracker, credit card tracker" />
+        <meta property="og:title" content="Flint - Free Financial Dashboard" />
+        <meta property="og:description" content="See all your money in one place. Connect banks, investments, and crypto. Track spending and reach your goals." />
+        <meta property="og:type" content="website" />
+        <link rel="canonical" href="https://flint-investing.com/new" />
+      </Helmet>
+
       {/* Floating Header */}
       <div className="px-4 pt-2">
         <FloatingHeader variant="landing" onSignupClick={scrollToSignup} />
@@ -1832,22 +1843,47 @@ export default function LandingNew() {
         {/* Footer */}
         <footer className="border-t border-white/10 bg-white/5 py-12">
           <div className="max-w-7xl mx-auto px-4 sm:px-6">
-            <div className="flex flex-col md:flex-row justify-between items-center gap-6">
-              <div className="flex items-center gap-3">
-                <img src={flintLogo} alt="Flint" className="h-8 w-auto" />
-                <span className="text-xl font-semibold">Flint</span>
+            <div className="grid md:grid-cols-4 gap-8">
+              <div className="space-y-4">
+                <div className="flex items-center gap-3">
+                  <img src={flintLogo} alt="Flint" className="h-8 w-auto" />
+                  <span className="text-xl font-semibold">Flint</span>
+                </div>
+                <p className="text-sm text-gray-400">
+                  Connect all your financial accounts in one secure platform.
+                </p>
               </div>
 
-              <div className="flex gap-6 text-sm text-gray-400">
-                <Link href="/blog" className="hover:text-white transition-colors">Blog</Link>
-                <Link href="/terms" className="hover:text-white transition-colors">Terms</Link>
-                <Link href="/privacy" className="hover:text-white transition-colors">Privacy</Link>
-                <Link href="/support" className="hover:text-white transition-colors">Support</Link>
+              <div className="space-y-3">
+                <h4 className="text-white font-semibold text-sm">Product</h4>
+                <div className="flex flex-col gap-2 text-sm text-gray-400">
+                  <Link href="/banking" className="hover:text-white transition-colors">Bank Account Tracker</Link>
+                  <Link href="/investing" className="hover:text-white transition-colors">Stock Portfolio Tracker</Link>
+                  <Link href="/crypto" className="hover:text-white transition-colors">Crypto Portfolio Tracker</Link>
+                  <Link href="/blog" className="hover:text-white transition-colors">Blog</Link>
+                </div>
+              </div>
+              
+              <div className="space-y-3">
+                <h4 className="text-white font-semibold text-sm">Account</h4>
+                <div className="flex flex-col gap-2 text-sm text-gray-400">
+                  <Link href="/login" className="hover:text-white transition-colors">Log In</Link>
+                  <Link href="/reset-password" className="hover:text-white transition-colors">Reset Password</Link>
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <h4 className="text-white font-semibold text-sm">Legal</h4>
+                <div className="flex flex-col gap-2 text-sm text-gray-400">
+                  <Link href="/tos" className="hover:text-white transition-colors">Terms of Service</Link>
+                  <Link href="/privacy-policy" className="hover:text-white transition-colors">Privacy Policy</Link>
+                  <a href="mailto:support@flint-investing.com" className="text-blue-400 hover:text-blue-300 transition-colors">support@flint-investing.com</a>
+                </div>
               </div>
             </div>
 
-            <div className="mt-8 text-center text-sm text-gray-400">
-              <p>Flint is not a broker or bank. Investing and transfers depend on the platforms you connect.</p>
+            <div className="mt-8 pt-8 border-t border-white/10 text-center text-sm text-gray-400">
+              <p>&copy; 2025 Flint Tech Inc. All rights reserved. Flint is not a broker or bank.</p>
             </div>
           </div>
         </footer>

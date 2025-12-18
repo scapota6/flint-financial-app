@@ -257,7 +257,6 @@ export default function LandingCrypto() {
               <div className="relative rounded-xl border border-white/10 p-1.5 md:p-2">
                 <GlowingEffect spread={40} glow={true} disabled={isMobile} proximity={64} inactiveZone={0.01} borderWidth={1} />
                 <div className="bg-white/5 rounded-lg p-4 md:p-6 h-full">
-                  <Eye className="h-6 w-6 md:h-8 md:w-8 text-blue-400 mb-2 md:mb-4" />
                   <h3 className="text-base md:text-lg font-semibold mb-2">One Dashboard</h3>
                   <p className="text-gray-400 text-sm">
                     See all your crypto from every wallet and exchange in a single view.
@@ -268,7 +267,6 @@ export default function LandingCrypto() {
               <div className="relative rounded-xl border border-white/10 p-1.5 md:p-2">
                 <GlowingEffect spread={40} glow={true} disabled={isMobile} proximity={64} inactiveZone={0.01} borderWidth={1} />
                 <div className="bg-white/5 rounded-lg p-4 md:p-6 h-full">
-                  <RefreshCw className="h-6 w-6 md:h-8 md:w-8 text-green-400 mb-2 md:mb-4" />
                   <h3 className="text-base md:text-lg font-semibold mb-2">Real-Time Tracking</h3>
                   <p className="text-gray-400 text-sm">
                     Watch your total crypto value update live across all chains.
@@ -279,7 +277,6 @@ export default function LandingCrypto() {
               <div className="relative rounded-xl border border-blue-400/30 p-1.5 md:p-2">
                 <GlowingEffect spread={40} glow={true} disabled={isMobile} proximity={64} inactiveZone={0.01} borderWidth={1} />
                 <div className="bg-gradient-to-b from-blue-500/10 to-transparent rounded-lg p-4 md:p-6 h-full">
-                  <Send className="h-6 w-6 md:h-8 md:w-8 text-blue-400 mb-2 md:mb-4" />
                   <h3 className="text-base md:text-lg font-semibold mb-2">Trade & Send</h3>
                   <p className="text-gray-400 text-sm">
                     Send crypto and place trades without leaving Flint.
@@ -290,7 +287,6 @@ export default function LandingCrypto() {
               <div className="relative rounded-xl border border-white/10 p-1.5 md:p-2">
                 <GlowingEffect spread={40} glow={true} disabled={isMobile} proximity={64} inactiveZone={0.01} borderWidth={1} />
                 <div className="bg-white/5 rounded-lg p-4 md:p-6 h-full">
-                  <Shield className="h-6 w-6 md:h-8 md:w-8 text-green-400 mb-2 md:mb-4" />
                   <h3 className="text-base md:text-lg font-semibold mb-2">Your Keys, Your Crypto</h3>
                   <p className="text-gray-400 text-sm">
                     We never take custody. Your private keys stay with you.
