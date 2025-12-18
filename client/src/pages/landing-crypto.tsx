@@ -1,5 +1,5 @@
 /**
- * Flint Crypto Landing Page - SEO optimized for crypto/DeFi users
+ * Flint Crypto Landing Page - SEO optimized for "crypto portfolio tracker"
  * Route: /crypto
  */
 
@@ -14,7 +14,10 @@ import {
   Wallet, 
   Check,
   ArrowRight,
-  Eye
+  Eye,
+  Zap,
+  RefreshCw,
+  Send
 } from "lucide-react";
 import { Link } from "wouter";
 import flintLogo from "@assets/flint-logo.png";
@@ -66,12 +69,12 @@ export default function LandingCrypto() {
   return (
     <>
       <Helmet>
-        <title>Crypto Portfolio Tracker - Connect All Your Wallets in One Place | Flint</title>
-        <meta name="description" content="Track all your crypto in one dashboard. Connect MetaMask, Coinbase, Binance, Kraken and 50+ wallets. See your total crypto value, track gains and losses, manage your DeFi portfolio. Free to start." />
-        <meta property="og:title" content="Crypto Portfolio Tracker - See All Your Crypto in One Place | Flint" />
-        <meta property="og:description" content="The Apple Wallet for all your crypto wallets. Connect MetaMask, Coinbase, and every exchange. See your total crypto value in seconds." />
+        <title>Crypto Portfolio Tracker - Track and Trade All Your Crypto in One Place | Flint</title>
+        <meta name="description" content="Track all your crypto exchanges and wallets in one dashboard. Connect Coinbase, Binance, Kraken, MetaMask and more. Send Ethereum and place trades without leaving Flint. Free to start." />
+        <meta property="og:title" content="Crypto Portfolio Tracker - Track and Trade Crypto in One Place | Flint" />
+        <meta property="og:description" content="The multi-exchange crypto tracker that lets you take action. Connect all your wallets, see real-time values, send crypto and place trades from one dashboard." />
         <meta property="og:type" content="website" />
-        <meta name="keywords" content="crypto portfolio tracker, DeFi dashboard, MetaMask tracker, Coinbase portfolio, crypto wallet aggregator, bitcoin tracker, ethereum portfolio, cryptocurrency dashboard, multi-wallet tracker, crypto net worth" />
+        <meta name="keywords" content="crypto portfolio tracker, multi-exchange crypto tracker, track all your wallets and exchanges, track and trade crypto in one place, cryptocurrency dashboard, DeFi portfolio tracker, bitcoin tracker, ethereum portfolio" />
         <link rel="canonical" href="https://flint-investing.com/crypto" />
       </Helmet>
 
@@ -82,15 +85,19 @@ export default function LandingCrypto() {
           <div className="max-w-4xl mx-auto text-center">
             <div className="inline-flex items-center gap-2 bg-blue-500/20 border border-blue-400/30 rounded-full px-4 py-2 mb-6">
               <Wallet className="h-4 w-4 text-blue-400" />
-              <span className="text-sm text-blue-300">Crypto Portfolio Tracker</span>
+              <span className="text-sm text-blue-300">Multi-Exchange Crypto Tracker</span>
             </div>
             
             <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
-              The Apple Wallet for All Your <span className="text-blue-400">Crypto Wallets</span>
+              The <span className="text-blue-400">Crypto Portfolio Tracker</span> That Lets You Take Action
             </h1>
             
-            <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
-              Connect all your crypto wallets in one place. See your total value. Track your gains. It's that easy.
+            <p className="text-xl text-gray-300 mb-4 max-w-2xl mx-auto">
+              Track all your crypto and take action from one dashboard. Send Ethereum, place trades on connected accounts, and manage your entire portfolio without switching apps.
+            </p>
+
+            <p className="text-gray-400 mb-8 max-w-2xl mx-auto">
+              Connect multiple exchanges and wallets like Coinbase, Binance, Kraken, and MetaMask to see your total crypto value in real time. Unlike read-only trackers, Flint lets you send crypto and execute trades directly on your connected accounts. Your keys stay with you - Flint never takes custody of your funds.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-3 justify-center mb-8">
@@ -112,7 +119,7 @@ export default function LandingCrypto() {
 
         <section className="py-12 border-y border-white/10 bg-white/5">
           <div className="max-w-6xl mx-auto px-4">
-            <p className="text-center text-gray-400 mb-8">Connect 50+ crypto exchanges and wallets</p>
+            <p className="text-center text-gray-400 mb-8">Connect your favorite exchanges and wallets</p>
             <div className="relative overflow-hidden">
               <div className="flex gap-8 animate-[scroll_40s_linear_infinite]">
                 {[...CRYPTO_INSTITUTIONS, ...CRYPTO_INSTITUTIONS].map((inst, idx) => (
@@ -140,17 +147,17 @@ export default function LandingCrypto() {
           <div className="max-w-6xl mx-auto">
             <h2 className="text-3xl md:text-4xl font-bold text-center mb-4">Why Crypto Traders Love Flint</h2>
             <p className="text-gray-400 text-center mb-12 max-w-2xl mx-auto">
-              Stop switching between apps. See all your crypto in one place.
+              More than a tracker. A complete crypto command center.
             </p>
             
-            <div className="grid md:grid-cols-3 gap-8">
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
               <div className="relative rounded-xl border border-white/10 p-2">
                 <GlowingEffect spread={40} glow={true} disabled={isMobile} proximity={64} inactiveZone={0.01} borderWidth={1} />
                 <div className="bg-white/5 rounded-lg p-6 h-full">
                   <Eye className="h-8 w-8 text-blue-400 mb-4" />
-                  <h3 className="text-xl font-semibold mb-2">See Everything</h3>
+                  <h3 className="text-xl font-semibold mb-2">One Dashboard for Everything</h3>
                   <p className="text-gray-400">
-                    View all your crypto from every wallet. Bitcoin, Ethereum, Solana - all in one screen.
+                    See all your crypto from every wallet and exchange in a single view. No more logging into multiple apps to check your holdings.
                   </p>
                 </div>
               </div>
@@ -158,10 +165,21 @@ export default function LandingCrypto() {
               <div className="relative rounded-xl border border-white/10 p-2">
                 <GlowingEffect spread={40} glow={true} disabled={isMobile} proximity={64} inactiveZone={0.01} borderWidth={1} />
                 <div className="bg-white/5 rounded-lg p-6 h-full">
-                  <TrendingUp className="h-8 w-8 text-green-400 mb-4" />
-                  <h3 className="text-xl font-semibold mb-2">Track Your Gains</h3>
+                  <RefreshCw className="h-8 w-8 text-green-400 mb-4" />
+                  <h3 className="text-xl font-semibold mb-2">Real-Time Portfolio Tracking</h3>
                   <p className="text-gray-400">
-                    See how much you've made (or lost). Real-time prices. No spreadsheets needed.
+                    Watch your total crypto value update in real time across all connected wallets and chains. Always know exactly where you stand.
+                  </p>
+                </div>
+              </div>
+              
+              <div className="relative rounded-xl border border-blue-400/30 p-2">
+                <GlowingEffect spread={40} glow={true} disabled={isMobile} proximity={64} inactiveZone={0.01} borderWidth={1} />
+                <div className="bg-gradient-to-b from-blue-500/10 to-transparent rounded-lg p-6 h-full">
+                  <Send className="h-8 w-8 text-blue-400 mb-4" />
+                  <h3 className="text-xl font-semibold mb-2">Trade and Send from One Place</h3>
+                  <p className="text-gray-400">
+                    Go beyond read-only tracking. Send Ethereum and place trades on your connected exchange accounts without leaving Flint.
                   </p>
                 </div>
               </div>
@@ -169,10 +187,10 @@ export default function LandingCrypto() {
               <div className="relative rounded-xl border border-white/10 p-2">
                 <GlowingEffect spread={40} glow={true} disabled={isMobile} proximity={64} inactiveZone={0.01} borderWidth={1} />
                 <div className="bg-white/5 rounded-lg p-6 h-full">
-                  <Shield className="h-8 w-8 text-blue-400 mb-4" />
-                  <h3 className="text-xl font-semibold mb-2">Super Safe</h3>
+                  <Shield className="h-8 w-8 text-green-400 mb-4" />
+                  <h3 className="text-xl font-semibold mb-2">Your Keys, Your Crypto</h3>
                   <p className="text-gray-400">
-                    Read-only access. We can't move your crypto. Bank-level security.
+                    Flint never takes custody of your funds. We use read-only or transaction permissions - your private keys stay with you.
                   </p>
                 </div>
               </div>
@@ -188,24 +206,24 @@ export default function LandingCrypto() {
               <div className="flex items-start gap-4">
                 <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center flex-shrink-0 text-lg font-bold">1</div>
                 <div>
-                  <h3 className="text-xl font-semibold mb-1">Connect Your Wallets</h3>
-                  <p className="text-gray-400">Link MetaMask, Coinbase, or any other wallet in seconds. We support 50+ wallets and exchanges.</p>
+                  <h3 className="text-xl font-semibold mb-1">Connect Your Exchanges and Wallets</h3>
+                  <p className="text-gray-400">Link Coinbase, Binance, Kraken, MetaMask, and 50+ other wallets and exchanges in seconds. Secure API connections - no passwords shared.</p>
                 </div>
               </div>
               
               <div className="flex items-start gap-4">
                 <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center flex-shrink-0 text-lg font-bold">2</div>
                 <div>
-                  <h3 className="text-xl font-semibold mb-1">See Your Total Value</h3>
-                  <p className="text-gray-400">Watch your total crypto value update in real-time. All tokens included.</p>
+                  <h3 className="text-xl font-semibold mb-1">See Your Total Crypto Value in Real Time</h3>
+                  <p className="text-gray-400">View your complete portfolio across all connected accounts. Track positions, monitor performance, and see your total holdings update live.</p>
                 </div>
               </div>
               
               <div className="flex items-start gap-4">
                 <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center flex-shrink-0 text-lg font-bold">3</div>
                 <div>
-                  <h3 className="text-xl font-semibold mb-1">Track & Grow</h3>
-                  <p className="text-gray-400">Set price alerts, track performance, and make smarter moves with your money.</p>
+                  <h3 className="text-xl font-semibold mb-1">Take Action Without Leaving Flint</h3>
+                  <p className="text-gray-400">Send Ethereum from your connected wallet or place trades on your exchange accounts - all from the same dashboard. No app switching required.</p>
                 </div>
               </div>
             </div>
@@ -216,7 +234,7 @@ export default function LandingCrypto() {
           <div className="max-w-5xl mx-auto">
             <div className="text-center mb-12">
               <h2 className="text-3xl md:text-4xl font-bold mb-4">Pick Your Plan</h2>
-              <p className="text-gray-400 mb-6">Start free. Upgrade for advanced features.</p>
+              <p className="text-gray-400 mb-6">Start free. Upgrade for trading and advanced features.</p>
               
               <div className="inline-flex bg-white/10 rounded-lg p-1">
                 <button
@@ -250,8 +268,8 @@ export default function LandingCrypto() {
                   </div>
                   <ul className="space-y-3 mb-8 flex-1">
                     <li className="flex items-center gap-2 text-sm"><Check className="h-4 w-4 text-green-400" /> 4 accounts</li>
-                    <li className="flex items-center gap-2 text-sm"><Check className="h-4 w-4 text-green-400" /> See all your crypto</li>
-                    <li className="flex items-center gap-2 text-sm"><Check className="h-4 w-4 text-green-400" /> Live updates</li>
+                    <li className="flex items-center gap-2 text-sm"><Check className="h-4 w-4 text-green-400" /> Track all your crypto</li>
+                    <li className="flex items-center gap-2 text-sm"><Check className="h-4 w-4 text-green-400" /> Real-time updates</li>
                     <li className="flex items-center gap-2 text-sm"><Check className="h-4 w-4 text-green-400" /> Mobile app</li>
                   </ul>
                   <Link href="/login">
@@ -306,9 +324,9 @@ export default function LandingCrypto() {
                     <li className="flex items-center gap-2 text-sm font-semibold"><Check className="h-4 w-4 text-blue-400" /> Unlimited accounts</li>
                     <li className="flex items-center gap-2 text-sm"><Check className="h-4 w-4 text-blue-400" /> Everything in Standard</li>
                     <li className="flex items-center gap-2 text-sm font-semibold"><Check className="h-4 w-4 text-blue-400" /> Trading</li>
-                    <li className="flex items-center gap-2 text-sm font-semibold"><Check className="h-4 w-4 text-blue-400" /> Transfers</li>
+                    <li className="flex items-center gap-2 text-sm font-semibold"><Check className="h-4 w-4 text-blue-400" /> Send crypto</li>
                     <li className="flex items-center gap-2 text-sm"><Check className="h-4 w-4 text-blue-400" /> Advanced charts</li>
-                    <li className="flex items-center gap-2 text-sm"><Check className="h-4 w-4 text-blue-400" /> Fast support</li>
+                    <li className="flex items-center gap-2 text-sm"><Check className="h-4 w-4 text-blue-400" /> Priority support</li>
                   </ul>
                   <Button variant="outline" className="w-full" onClick={() => openCheckout('pro')} data-testid="button-pro-plan">
                     Get Pro
@@ -326,36 +344,50 @@ export default function LandingCrypto() {
           </div>
         </section>
 
-        <section className="py-20 px-4 bg-white/5 border-t border-white/10">
+        <section id="faq" className="py-20 px-4 bg-white/5 border-t border-white/10">
           <div className="max-w-3xl mx-auto">
-            <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">Common Questions</h2>
+            <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">Frequently Asked Questions</h2>
             
             <Accordion type="single" collapsible className="space-y-4">
               <AccordionItem value="1" className="border border-white/10 rounded-lg px-4">
-                <AccordionTrigger className="text-left">Is my crypto safe?</AccordionTrigger>
+                <AccordionTrigger className="text-left">Can I track all my crypto exchanges in one app?</AccordionTrigger>
                 <AccordionContent className="text-gray-400">
-                  Yes! Flint uses read-only access. We can see your balances but we can never move your crypto. Your keys stay with you.
+                  Yes! Flint lets you connect multiple exchanges and wallets to see your complete crypto portfolio in one dashboard. We support Coinbase, Binance, Kraken, Gemini, Crypto.com, and 50+ other platforms. Just connect via secure API and see your total holdings instantly.
                 </AccordionContent>
               </AccordionItem>
               
               <AccordionItem value="2" className="border border-white/10 rounded-lg px-4">
-                <AccordionTrigger className="text-left">Which wallets do you support?</AccordionTrigger>
+                <AccordionTrigger className="text-left">Is there a crypto portfolio tracker that lets me trade?</AccordionTrigger>
                 <AccordionContent className="text-gray-400">
-                  We support MetaMask, Coinbase, Binance, Kraken, Gemini, Crypto.com, and 50+ more wallets and exchanges.
+                  Yes - that's what makes Flint different. Most portfolio trackers are read-only, but Flint lets you place trades on your connected exchange accounts and send Ethereum directly from your connected wallet. Track and trade crypto in one place without switching between apps.
                 </AccordionContent>
               </AccordionItem>
               
               <AccordionItem value="3" className="border border-white/10 rounded-lg px-4">
-                <AccordionTrigger className="text-left">Can I track DeFi positions?</AccordionTrigger>
+                <AccordionTrigger className="text-left">Which wallets and exchanges does Flint support?</AccordionTrigger>
                 <AccordionContent className="text-gray-400">
-                  Yes! Flint tracks your DeFi positions including staking, liquidity pools, and lending protocols.
+                  Flint supports 50+ wallets and exchanges including MetaMask, Coinbase, Binance, Kraken, Gemini, Crypto.com, KuCoin, Bitstamp, OKX, Bybit, and many more. We're constantly adding new integrations. If you don't see your exchange, let us know!
                 </AccordionContent>
               </AccordionItem>
               
               <AccordionItem value="4" className="border border-white/10 rounded-lg px-4">
-                <AccordionTrigger className="text-left">Is there a free plan?</AccordionTrigger>
+                <AccordionTrigger className="text-left">Is it safe to connect my wallets?</AccordionTrigger>
                 <AccordionContent className="text-gray-400">
-                  Yes! Start free with up to 4 wallets. Upgrade anytime for unlimited wallets and more features.
+                  Absolutely. Flint uses secure API connections with read-only or transaction permissions - we never have access to your passwords or private keys. Your keys stay with you. We are not a bank or custodian and never take custody of your funds. All connections are encrypted with bank-level security.
+                </AccordionContent>
+              </AccordionItem>
+              
+              <AccordionItem value="5" className="border border-white/10 rounded-lg px-4">
+                <AccordionTrigger className="text-left">Is there a free crypto portfolio tracker plan?</AccordionTrigger>
+                <AccordionContent className="text-gray-400">
+                  Yes! Flint offers a free plan that lets you connect up to 4 accounts and track your crypto portfolio with real-time updates. It's free forever with no credit card required. Upgrade to Standard or Pro for unlimited accounts, trading, and advanced features.
+                </AccordionContent>
+              </AccordionItem>
+              
+              <AccordionItem value="6" className="border border-white/10 rounded-lg px-4">
+                <AccordionTrigger className="text-left">Can I track DeFi positions and staking rewards?</AccordionTrigger>
+                <AccordionContent className="text-gray-400">
+                  Yes! Flint tracks your DeFi positions including staking, liquidity pools, and lending protocols. See your complete crypto holdings across centralized exchanges and decentralized protocols in one unified dashboard.
                 </AccordionContent>
               </AccordionItem>
             </Accordion>
@@ -364,8 +396,8 @@ export default function LandingCrypto() {
 
         <section className="py-20 px-4">
           <div className="max-w-3xl mx-auto text-center">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Ready to Track All Your Crypto?</h2>
-            <p className="text-gray-400 mb-8">Join thousands of crypto traders who use Flint every day.</p>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">Ready to Track and Trade All Your Crypto?</h2>
+            <p className="text-gray-400 mb-8">Join thousands of crypto traders who manage their portfolios with Flint.</p>
             <Link href="/login">
               <Button size="lg" className="bg-blue-600 hover:bg-blue-700" data-testid="button-cta-bottom">
                 Get Started Free <ArrowRight className="ml-2 h-5 w-5" />

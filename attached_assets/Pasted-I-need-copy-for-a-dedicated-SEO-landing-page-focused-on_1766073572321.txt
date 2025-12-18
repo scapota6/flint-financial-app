@@ -1,0 +1,50 @@
+I need copy for a dedicated SEO landing page focused on “crypto portfolio tracker” and related phrases. This page is separate from my main site and should be optimized to rank for those terms while clearly explaining what Flint does.
+
+Please generate:
+
+A strong H1 that includes the phrase “Crypto Portfolio Tracker”.
+
+A 1–2 sentence hero subheading that clearly says Flint lets users track and act (send Ethereum, place trades) from one dashboard.
+
+A short hero body paragraph (3–4 sentences) that:
+
+Explains that users can connect multiple exchanges/wallets (Coinbase, Binance, Kraken, MetaMask, etc.).
+
+Emphasizes real‑time portfolio tracking across all wallets and chains.
+
+Highlights that Flint goes beyond read‑only trackers by letting users send crypto and place trades on connected accounts.
+
+A “Why Crypto Traders Love Flint” section with 3–4 benefit cards. Each card should have:
+
+A short title.
+
+A 1–2 sentence description.
+At least one card must focus on actions (e.g., “Trade and send from one place”), not just data/insights.
+
+A “How It Works” section with 3 numbered steps aimed at crypto users:
+
+Step 1: Connect exchanges and wallets.
+
+Step 2: See your total crypto value and positions in real time.
+
+Step 3: Take action (send Ethereum, place trades on connected accounts) without leaving Flint.
+
+An FAQ section with 4–6 Q&As that use natural language and include long‑tail search phrases, such as:
+
+“Can I track all my crypto exchanges in one app?”
+
+“Is there a crypto portfolio tracker that lets me trade?”
+
+“Which wallets and exchanges does Flint support?”
+
+“Is it safe to connect my wallets?”
+
+“Is there a free crypto portfolio tracker plan?”
+
+Requirements:
+
+Write in a clear, concise, trustworthy tone targeted at active retail crypto traders who already use multiple apps.
+
+Naturally weave in SEO phrases like “crypto portfolio tracker”, “track all your wallets and exchanges”, “multi‑exchange crypto tracker”, and “track and trade crypto in one place” without keyword stuffing.
+
+Avoid any mention of being a bank or custodian; clarify that Flint uses read‑only or transaction permissions and does not take custody of user funds.
