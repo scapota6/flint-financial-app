@@ -32,7 +32,9 @@ import {
   CreditCard,
   PiggyBank,
   Shield,
+  Crown,
 } from "lucide-react";
+import { Link } from "wouter";
 
 import { useAuth } from "@/hooks/useAuth";
 import { isInternalTester } from "@/lib/feature-flags";
@@ -162,6 +164,14 @@ export default function Analytics() {
   const [deletingGoalId, setDeletingGoalId] = useState<number | null>(null);
 
   const hasAccess = isInternalTester(user?.email);
+
+  // Check subscription tier for Basic features (Financial Goals)
+  const { data: userData } = useQuery<{ subscriptionTier?: string }>({
+    queryKey: ['/api/auth/user'],
+    enabled: !!user,
+  });
+  const userTier = userData?.subscriptionTier || 'free';
+  const hasBasicOrHigher = userTier === 'basic' || userTier === 'pro' || userTier === 'premium';
 
   const { data: dashboardData, isLoading: isDashboardLoading } = useQuery({
     queryKey: ["/api/dashboard"],
@@ -1044,35 +1054,68 @@ export default function Analytics() {
             )}
           </div>
 
-          <div className="flex gap-3 pt-2">
-            <Button
-              variant="outline"
-              onClick={() => setIsGoalModalOpen(false)}
-              className="flex-1 border-gray-700 hover:bg-gray-800"
-              data-testid="button-cancel-goal"
-            >
-              Cancel
-            </Button>
-            <Button
-              onClick={() => createGoalMutation.mutate(newGoal)}
-              disabled={
-                !newGoal.name || 
-                !newGoal.targetAmount || 
-                (newGoal.goalType === 'debt_payoff' && !newGoal.linkedAccountId) ||
-                (newGoal.goalType === 'savings' && !newGoal.linkedAccountId) ||
-                (newGoal.goalType === 'emergency_fund' && !newGoal.linkedAccountId) ||
-                createGoalMutation.isPending
-              }
-              className="flex-1 bg-blue-600 hover:bg-blue-700"
-              data-testid="button-save-goal"
-            >
-              {createGoalMutation.isPending ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              ) : (
-                'Create Goal'
-              )}
-            </Button>
-          </div>
+          {hasBasicOrHigher ? (
+            <div className="flex gap-3 pt-2">
+              <Button
+                variant="outline"
+                onClick={() => setIsGoalModalOpen(false)}
+                className="flex-1 border-gray-700 hover:bg-gray-800"
+                data-testid="button-cancel-goal"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={() => createGoalMutation.mutate(newGoal)}
+                disabled={
+                  !newGoal.name || 
+                  !newGoal.targetAmount || 
+                  (newGoal.goalType === 'debt_payoff' && !newGoal.linkedAccountId) ||
+                  (newGoal.goalType === 'savings' && !newGoal.linkedAccountId) ||
+                  (newGoal.goalType === 'emergency_fund' && !newGoal.linkedAccountId) ||
+                  createGoalMutation.isPending
+                }
+                className="flex-1 bg-blue-600 hover:bg-blue-700"
+                data-testid="button-save-goal"
+              >
+                {createGoalMutation.isPending ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  'Create Goal'
+                )}
+              </Button>
+            </div>
+          ) : (
+            <div className="pt-4 space-y-3" data-testid="basic-upgrade-goals">
+              <div className="p-4 bg-gradient-to-r from-blue-900/30 to-purple-900/30 border border-blue-500/30 rounded-lg">
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="p-2 bg-blue-600/20 rounded-full">
+                    <Crown className="h-5 w-5 text-blue-400" />
+                  </div>
+                  <div>
+                    <h4 className="font-medium text-white">Upgrade to Basic</h4>
+                    <p className="text-sm text-gray-400">Track your financial goals with Flint Basic</p>
+                  </div>
+                </div>
+                <p className="text-xs text-gray-500 mb-3">
+                  Set savings goals, track debt payoff, and monitor your emergency fund progress.
+                </p>
+                <Link href="/subscribe">
+                  <Button className="w-full bg-blue-600 hover:bg-blue-700" data-testid="button-upgrade-basic-goals">
+                    <Crown className="h-4 w-4 mr-2" />
+                    Upgrade to Set Goals
+                  </Button>
+                </Link>
+              </div>
+              <Button
+                variant="outline"
+                onClick={() => setIsGoalModalOpen(false)}
+                className="w-full border-gray-700 hover:bg-gray-800"
+                data-testid="button-cancel-goal"
+              >
+                Cancel
+              </Button>
+            </div>
+          )}
         </DialogContent>
       </Dialog>
 
