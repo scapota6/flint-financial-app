@@ -1,5 +1,5 @@
 import React from 'react';
-import { MenuIcon, User, LogOut } from 'lucide-react';
+import { MenuIcon, User, LogOut, ChevronDown } from 'lucide-react';
 import { Link, useLocation } from 'wouter';
 import { Sheet, SheetContent, SheetFooter } from '@/components/ui/sheet';
 import { Button, buttonVariants } from '@/components/ui/button';
@@ -11,6 +11,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+
+const USE_CASES = [
+  { label: 'Crypto', href: '/crypto', description: 'Track all your crypto wallets' },
+  { label: 'Investing', href: '/investing', description: 'Manage your brokerage accounts' },
+  { label: 'Banking', href: '/banking', description: 'Connect your bank accounts' },
+  { label: 'Business', href: '/business', description: 'Solutions for businesses' },
+];
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { useQuery } from '@tanstack/react-query';
 import { cn } from '@/lib/utils';
@@ -150,6 +157,42 @@ export function FloatingHeader({ variant = 'authenticated', onSignupClick }: Flo
               </Link>
             );
           })}
+          
+          {/* Use Cases Dropdown - Landing Page Only */}
+          {variant === 'landing' && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button
+                  className={cn(
+                    buttonVariants({ variant: 'ghost', size: 'sm' }),
+                    'text-gray-300 hover:text-white flex items-center gap-1'
+                  )}
+                  data-testid="dropdown-use-cases"
+                >
+                  Use Cases
+                  <ChevronDown className="h-4 w-4" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                className="w-56 bg-[#1e1e1e] border-gray-700 z-[200]"
+                sideOffset={8}
+              >
+                {USE_CASES.map((useCase) => (
+                  <Link key={useCase.href} href={useCase.href}>
+                    <DropdownMenuItem
+                      className="cursor-pointer p-3"
+                      data-testid={`link-usecase-${useCase.label.toLowerCase()}`}
+                    >
+                      <div>
+                        <div className="font-medium text-white">{useCase.label}</div>
+                        <div className="text-xs text-gray-400">{useCase.description}</div>
+                      </div>
+                    </DropdownMenuItem>
+                  </Link>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
         </div>
 
         {/* User Menu & Mobile Toggle */}
@@ -280,6 +323,29 @@ export function FloatingHeader({ variant = 'authenticated', onSignupClick }: Flo
                     </Link>
                   );
                 })}
+                
+                {/* Use Cases - Mobile Landing */}
+                {variant === 'landing' && (
+                  <div className="border-t border-gray-700 pt-4 mt-4">
+                    <p className="text-xs text-gray-500 uppercase tracking-wider px-3 mb-2">Use Cases</p>
+                    {USE_CASES.map((useCase) => (
+                      <Link key={useCase.href} href={useCase.href}>
+                        <button
+                          onClick={() => setOpen(false)}
+                          className={cn(
+                            buttonVariants({
+                              variant: 'ghost',
+                              className: 'justify-start w-full',
+                            }),
+                            'text-gray-300 hover:text-white'
+                          )}
+                        >
+                          {useCase.label}
+                        </button>
+                      </Link>
+                    ))}
+                  </div>
+                )}
               </div>
               <SheetFooter className="flex-col sm:flex-col gap-2">
                 {variant === 'landing' ? (
