@@ -19,7 +19,7 @@ import {
   Lock
 } from "lucide-react";
 import { Link } from "wouter";
-import flintLogo from "@assets/flint-logo.png";
+import { LandingHeader } from "@/components/layout/landing-header";
 import { Helmet } from 'react-helmet';
 
 export default function LandingBusiness() {
@@ -75,30 +75,10 @@ export default function LandingBusiness() {
       </Helmet>
 
       <div className="min-h-screen bg-black text-white overflow-x-hidden">
-        {/* Header */}
-        <header className="fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-lg border-b border-white/10">
-          <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
-            <Link href="/">
-              <div className="flex items-center gap-2 cursor-pointer">
-                <img src={flintLogo} alt="Flint" className="h-8 w-8" />
-                <span className="font-bold text-xl">Flint</span>
-                <span className="text-xs bg-indigo-500/30 border border-indigo-400/50 text-indigo-300 px-2 py-0.5 rounded-full ml-2">
-                  Business
-                </span>
-              </div>
-            </Link>
-            <div className="flex items-center gap-4">
-              <Link href="/">
-                <Button variant="ghost" className="text-gray-300 hover:text-white">
-                  Personal
-                </Button>
-              </Link>
-            </div>
-          </div>
-        </header>
+        <LandingHeader currentPage="business" />
 
         {/* Hero Section */}
-        <section className="pt-32 pb-20 px-4">
+        <section className="pt-28 pb-20 px-4">
           <div className="max-w-6xl mx-auto">
             <div className="grid lg:grid-cols-2 gap-12 items-center">
               {/* Left - Content */}

@@ -17,7 +17,7 @@ import {
   Eye
 } from "lucide-react";
 import { Link } from "wouter";
-import flintLogo from "@assets/flint-logo.png";
+import { LandingHeader } from "@/components/layout/landing-header";
 import { EmbeddedCheckoutModal } from "@/components/EmbeddedCheckoutModal";
 import { Helmet } from 'react-helmet';
 
@@ -75,30 +75,9 @@ export default function LandingCrypto() {
       </Helmet>
 
       <div className="min-h-screen bg-black text-white overflow-x-hidden">
-        <header className="fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-lg border-b border-white/10">
-          <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
-            <Link href="/">
-              <div className="flex items-center gap-2 cursor-pointer">
-                <img src={flintLogo} alt="Flint" className="h-8 w-8" />
-                <span className="font-bold text-xl">Flint</span>
-              </div>
-            </Link>
-            <div className="flex items-center gap-4">
-              <Link href="/login">
-                <Button variant="ghost" className="text-gray-300 hover:text-white" data-testid="link-login">
-                  Log In
-                </Button>
-              </Link>
-              <Link href="/login">
-                <Button className="bg-blue-600 hover:bg-blue-700" data-testid="button-get-started-header">
-                  Get Started
-                </Button>
-              </Link>
-            </div>
-          </div>
-        </header>
+        <LandingHeader currentPage="crypto" />
 
-        <section className="pt-32 pb-20 px-4">
+        <section className="pt-28 pb-20 px-4">
           <div className="max-w-4xl mx-auto text-center">
             <div className="inline-flex items-center gap-2 bg-blue-500/20 border border-blue-400/30 rounded-full px-4 py-2 mb-6">
               <Wallet className="h-4 w-4 text-blue-400" />
