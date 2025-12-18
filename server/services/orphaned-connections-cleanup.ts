@@ -417,9 +417,13 @@ async function runCleanup(): Promise<void> {
       }
     }
     
-    // 3. Clean up SnapTrade API-level orphans (users in SnapTrade but not in our DB)
-    const apiOrphanResults = await cleanupSnapTradeApiOrphans();
-    console.log(`[Orphaned Connections Cleanup] API orphan cleanup: found=${apiOrphanResults.found}, deleted=${apiOrphanResults.deleted}, failed=${apiOrphanResults.failed}`);
+    // 3. DISABLED: Clean up SnapTrade API-level orphans
+    // This was deleting legitimate production users whose database records weren't synced yet.
+    // The race condition: user connects -> SnapTrade creates user -> cleanup runs before DB record is saved -> user is deleted
+    // Keep the function for manual admin cleanup, but don't run automatically.
+    // TODO: Re-enable with grace period (e.g., skip users created in last 24 hours) when we can get user creation timestamps from SnapTrade API
+    const apiOrphanResults = { found: 0, deleted: 0, failed: 0 };
+    console.log(`[Orphaned Connections Cleanup] API orphan cleanup: DISABLED (was deleting legitimate users)`);
     
     // 4. Find stale connections (report only, don't auto-delete yet)
     const staleConnections = await findStaleConnections();
