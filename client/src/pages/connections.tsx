@@ -432,7 +432,7 @@ export default function Connections() {
           <div className="space-y-2 apple-caption text-muted-foreground">
             <p>• Bank-level 256-bit encryption protects your data</p>
             <p>• We never store your login credentials</p>
-            <p>• Read-only access by default (upgrade for trading)</p>
+            <p>• We never store your passwords or keys</p>
             <p>• You can disconnect accounts at any time</p>
           </div>
         </CardContent>

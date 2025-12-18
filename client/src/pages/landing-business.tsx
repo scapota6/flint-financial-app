@@ -124,7 +124,7 @@ export default function LandingBusiness() {
                     </div>
                     <div>
                       <h3 className="font-semibold">Super Secure</h3>
-                      <p className="text-gray-400 text-sm">Bank-level security. Read-only access. Your data stays safe.</p>
+                      <p className="text-gray-400 text-sm">Bank-level security. We never store passwords or keys. Your data stays safe.</p>
                     </div>
                   </div>
                 </div>
@@ -292,7 +292,7 @@ export default function LandingBusiness() {
                 </div>
                 <h3 className="text-xl font-semibold mb-3">Fund & Wealth Management</h3>
                 <p className="text-gray-400 mb-4">
-                  View client portfolios in one dashboard. Read-only access means you can see assets without liability of moving funds.
+                  View client portfolios in one dashboard. We never store passwords or keys, and we are not a custodian.
                 </p>
                 <ul className="space-y-2 text-gray-300">
                   <li className="flex items-center gap-2"><Check className="h-4 w-4 text-green-400" /> Client invites with one click</li>
@@ -310,7 +310,7 @@ export default function LandingBusiness() {
             <Shield className="h-12 w-12 text-indigo-400 mx-auto mb-6" />
             <h2 className="text-3xl md:text-4xl font-bold mb-4">Enterprise-Grade Security</h2>
             <p className="text-gray-400 mb-8 max-w-2xl mx-auto">
-              Your data is protected by the same security used by banks. We never store passwords. We can never move money. Read-only access only.
+              Your data is protected by the same security used by banks. We never store passwords or keys. We are not a custodian and never take custody of your funds.
             </p>
             
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6">

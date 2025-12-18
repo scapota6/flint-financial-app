@@ -474,7 +474,7 @@ export default function LandingBanking() {
               <AccordionItem value="1" className="bg-white/5 border border-white/10 rounded-lg px-6">
                 <AccordionTrigger className="text-left hover:no-underline">Is my money safe?</AccordionTrigger>
                 <AccordionContent className="text-gray-400">
-                  Yes! Flint uses bank-level encryption and read-only access. We can see your balances but we can never move your money without your permission.
+                  Yes! Flint uses bank-level encryption. We never store your passwords or keys. We are not a custodian and never take custody of your funds.
                 </AccordionContent>
               </AccordionItem>
               
