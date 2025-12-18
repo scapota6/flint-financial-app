@@ -64,6 +64,15 @@ const LEAD_CAPTURE_QUIPS = [
   "Someone wants in on the financial revolution :chart_with_upwards_trend:",
 ];
 
+const BUSINESS_LEAD_QUIPS = [
+  "Big fish alert! A business wants in :briefcase:",
+  "Enterprise incoming! Time to roll out the red carpet :red_carpet:",
+  "B2B lead detected! This could be huge :dart:",
+  "Corporate interest! Time to suit up :necktie:",
+  "Flint for Business is gaining traction :chart_with_upwards_trend:",
+  "New business lead! Revenue potential: HIGH :moneybag:",
+];
+
 function getRandomQuip(quips: string[]): string {
   return quips[Math.floor(Math.random() * quips.length)];
 }
@@ -423,6 +432,74 @@ export async function notifyLeadCapture(data: {
         ],
         text: `_${getRandomQuip(LEAD_CAPTURE_QUIPS)}_\n\n💡 Add to email drip campaign!`,
         footer: 'Flint Investment Platform • Lead Generation',
+        ts: Math.floor(data.submissionTime.getTime() / 1000),
+      },
+    ],
+  };
+
+  await sendSlackMessage(message);
+}
+
+/**
+ * Send notification for new business lead (Flint for Business waitlist)
+ */
+export async function notifyBusinessLead(data: {
+  companyName: string;
+  contactName: string;
+  email: string;
+  phone?: string;
+  companySize?: string;
+  useCase?: string;
+  submissionTime: Date;
+}): Promise<void> {
+  const message: SlackMessage = {
+    text: ':briefcase: *New Business Lead - Flint for Business!*',
+    attachments: [
+      {
+        color: '#6366F1', // Indigo
+        fields: [
+          {
+            title: 'Company',
+            value: data.companyName,
+            short: true,
+          },
+          {
+            title: 'Contact Name',
+            value: data.contactName,
+            short: true,
+          },
+          {
+            title: 'Email',
+            value: data.email,
+            short: true,
+          },
+          {
+            title: 'Phone',
+            value: data.phone || 'Not provided',
+            short: true,
+          },
+          {
+            title: 'Company Size',
+            value: data.companySize || 'Not specified',
+            short: true,
+          },
+          {
+            title: 'Use Case',
+            value: data.useCase || 'Not specified',
+            short: true,
+          },
+          {
+            title: 'Submitted',
+            value: data.submissionTime.toLocaleString('en-US', {
+              timeZone: 'America/New_York',
+              dateStyle: 'medium',
+              timeStyle: 'short',
+            }),
+            short: false,
+          },
+        ],
+        text: `_${getRandomQuip(BUSINESS_LEAD_QUIPS)}_\n\n:rocket: Follow up ASAP!`,
+        footer: 'Flint for Business • Enterprise Sales',
         ts: Math.floor(data.submissionTime.getTime() / 1000),
       },
     ],

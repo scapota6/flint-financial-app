@@ -21,6 +21,10 @@ import Login from "@/pages/login";
 const NotFound = lazy(() => import("@/pages/not-found"));
 const LandingNew = lazy(() => import("@/pages/landing-new")); // New official landing page
 const LandingLegacy = lazy(() => import("@/pages/landing")); // Legacy landing (fallback)
+const LandingCrypto = lazy(() => import("@/pages/landing-crypto")); // SEO: Crypto/DeFi
+const LandingInvesting = lazy(() => import("@/pages/landing-investing")); // SEO: Stocks/Brokerages
+const LandingBanking = lazy(() => import("@/pages/landing-banking")); // SEO: Banks/Credit Cards
+const LandingBusiness = lazy(() => import("@/pages/landing-business")); // B2B Waitlist
 const SuccessPage = lazy(() => import("@/pages/success"));
 const PaymentSuccessPage = lazy(() => import("@/pages/payment-success"));
 const CheckoutSuccess = lazy(() => import("@/pages/checkout-success"));
@@ -104,6 +108,10 @@ function Router() {
                 <Route path="/reset-password" component={ResetPassword} />
                 <Route path="/tos" component={TermsOfService} />
                 <Route path="/privacy-policy" component={PrivacyPolicy} />
+                <Route path="/crypto" component={LandingCrypto} />
+                <Route path="/investing" component={LandingInvesting} />
+                <Route path="/banking" component={LandingBanking} />
+                <Route path="/business" component={LandingBusiness} />
                 {/* Redirect any protected routes to landing page */}
                 <Route path="/dashboard">
                   {() => { window.location.href = '/'; return null; }}

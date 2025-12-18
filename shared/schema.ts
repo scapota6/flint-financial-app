@@ -575,6 +575,29 @@ export const insertLeadCaptureSchema = createInsertSchema(leadCaptures).omit({
 export type InsertLeadCapture = z.infer<typeof insertLeadCaptureSchema>;
 export type SelectLeadCapture = typeof leadCaptures.$inferSelect;
 
+// Business waitlist leads (Flint for Business)
+export const businessLeads = pgTable("business_leads", {
+  id: serial("id").primaryKey(),
+  companyName: varchar("company_name").notNull(),
+  contactName: varchar("contact_name").notNull(),
+  email: varchar("email").notNull(),
+  phone: varchar("phone"), // Optional
+  companySize: varchar("company_size"), // Optional - small, medium, large, enterprise
+  useCase: varchar("use_case"), // Optional - funds, corporate, other
+  submittedAt: timestamp("submitted_at").defaultNow(),
+}, (table) => [
+  index("business_leads_email_idx").on(table.email),
+  index("business_leads_submitted_idx").on(table.submittedAt),
+]);
+
+export const insertBusinessLeadSchema = createInsertSchema(businessLeads).omit({
+  id: true,
+  submittedAt: true,
+});
+
+export type InsertBusinessLead = z.infer<typeof insertBusinessLeadSchema>;
+export type SelectBusinessLead = typeof businessLeads.$inferSelect;
+
 // Audit logs table (admin actions tracking)
 export const auditLogs = pgTable("audit_logs", {
   id: serial("id").primaryKey(),
