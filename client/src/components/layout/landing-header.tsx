@@ -27,7 +27,7 @@ const NAV_LINKS = [
 ];
 
 interface LandingHeaderProps {
-  currentPage?: 'crypto' | 'investing' | 'banking' | 'business' | 'main';
+  currentPage?: 'crypto' | 'investing' | 'banking' | 'business' | 'main' | 'blog';
   onGetStarted?: () => void;
 }
 

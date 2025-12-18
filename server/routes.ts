@@ -2819,6 +2819,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   const businessLeadsRouter = await import('./routes/business-leads');
   app.use('/api/business-leads', businessLeadsRouter.default);
   
+  // Mount blog routes (public read, admin write)
+  const blogRouter = await import('./routes/blog');
+  app.use('/api/blog', blogRouter.default);
+  
   // Mount Whop payment routes
   const whopRouter = await import('./routes/whop');
   app.use('/api/whop', whopRouter.default);

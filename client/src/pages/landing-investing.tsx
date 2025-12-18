@@ -597,6 +597,7 @@ export default function LandingInvesting() {
               </div>
 
               <div className="flex gap-6 text-sm text-gray-400">
+                <Link href="/blog" className="hover:text-white transition-colors">Blog</Link>
                 <Link href="/terms" className="hover:text-white transition-colors">Terms</Link>
                 <Link href="/privacy" className="hover:text-white transition-colors">Privacy</Link>
                 <Link href="/support" className="hover:text-white transition-colors">Support</Link>

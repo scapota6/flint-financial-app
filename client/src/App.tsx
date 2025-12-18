@@ -25,6 +25,8 @@ const LandingCrypto = lazy(() => import("@/pages/landing-crypto")); // SEO: Cryp
 const LandingInvesting = lazy(() => import("@/pages/landing-investing")); // SEO: Stocks/Brokerages
 const LandingBanking = lazy(() => import("@/pages/landing-banking")); // SEO: Banks/Credit Cards
 const LandingBusiness = lazy(() => import("@/pages/landing-business")); // B2B Waitlist
+const Blog = lazy(() => import("@/pages/blog")); // SEO: Blog listing
+const BlogPost = lazy(() => import("@/pages/blog-post")); // SEO: Individual blog posts
 const SuccessPage = lazy(() => import("@/pages/success"));
 const PaymentSuccessPage = lazy(() => import("@/pages/payment-success"));
 const CheckoutSuccess = lazy(() => import("@/pages/checkout-success"));
@@ -48,6 +50,7 @@ const Security = lazy(() => import("@/pages/Security"));
 const Monitoring = lazy(() => import("@/pages/Monitoring"));
 const TellerCallback = lazy(() => import("@/pages/TellerCallback"));
 const AdminDashboard = lazy(() => import("@/pages/admin"));
+const AdminBlog = lazy(() => import("@/pages/admin-blog"));
 const Analytics = lazy(() => import("@/pages/analytics"));
 const TermsOfService = lazy(() => import("@/pages/tos"));
 const PrivacyPolicy = lazy(() => import("@/pages/privacy-policy"));
@@ -112,6 +115,8 @@ function Router() {
                 <Route path="/investing" component={LandingInvesting} />
                 <Route path="/banking" component={LandingBanking} />
                 <Route path="/business" component={LandingBusiness} />
+                <Route path="/blog" component={Blog} />
+                <Route path="/blog/:slug" component={BlogPost} />
                 {/* Redirect any protected routes to landing page */}
                 <Route path="/dashboard">
                   {() => { window.location.href = '/'; return null; }}
@@ -189,8 +194,11 @@ function Router() {
                 <Route path="/monitoring" component={Monitoring} />
                 <Route path="/teller/callback" component={TellerCallback} />
                 <Route path="/admin" component={AdminDashboard} />
+                <Route path="/admin/blog" component={AdminBlog} />
                 <Route path="/tos" component={TermsOfService} />
                 <Route path="/privacy-policy" component={PrivacyPolicy} />
+                <Route path="/blog" component={Blog} />
+                <Route path="/blog/:slug" component={BlogPost} />
                 {/* Redirect authenticated users away from landing page */}
                 <Route path="/landing">
                   {() => { window.location.href = '/dashboard'; return null; }}
