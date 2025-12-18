@@ -9,7 +9,7 @@ import { RainbowButton } from "@/components/ui/rainbow-button";
 import { Input } from "@/components/ui/input";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { GlowingEffect } from "@/components/ui/glowing-effect";
-import { AuroraBackground } from "@/components/ui/aurora-background";
+import { BeamsBackground } from "@/components/ui/beams-background";
 import { 
   Shield, 
   TrendingUp, 
@@ -173,8 +173,7 @@ export default function LandingCrypto() {
         <link rel="canonical" href="https://flint-investing.com/crypto" />
       </Helmet>
 
-      <AuroraBackground className="min-h-screen text-white relative overflow-x-hidden">
-        <div className="fixed inset-0 z-[-1] bg-gradient-to-br from-blue-900/20 via-black to-black pointer-events-none" />
+      <BeamsBackground className="min-h-screen text-white overflow-x-hidden">
         <LandingHeader currentPage="crypto" onGetStarted={scrollToSignup} />
 
         <section className="pt-28 pb-20 px-4">
@@ -612,7 +611,7 @@ export default function LandingCrypto() {
             </div>
           </div>
         </footer>
-      </AuroraBackground>
+      </BeamsBackground>
 
       <EmbeddedCheckoutModal
         open={checkoutOpen}

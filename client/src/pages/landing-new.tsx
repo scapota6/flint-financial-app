@@ -14,7 +14,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { AuroraBackground } from "@/components/ui/aurora-background";
+import { BeamsBackground } from "@/components/ui/beams-background";
 import { GlowingEffect } from "@/components/ui/glowing-effect";
 
 // Hook to detect mobile/touch devices for performance optimization
@@ -642,9 +642,7 @@ export default function LandingNew() {
   };
 
   return (
-    <AuroraBackground className="min-h-screen text-white relative overflow-x-hidden">
-      {/* Single subtle background gradient overlay */}
-      <div className="fixed inset-0 z-[-1] bg-gradient-to-br from-blue-900/20 via-black to-black pointer-events-none" />
+    <BeamsBackground className="min-h-screen text-white overflow-x-hidden">
       {/* Floating Header */}
       <div className="px-4 pt-2">
         <FloatingHeader variant="landing" onSignupClick={scrollToSignup} />
@@ -2323,6 +2321,6 @@ export default function LandingNew() {
           )}
         </DialogContent>
       </Dialog>
-    </AuroraBackground>
+    </BeamsBackground>
   );
 }
