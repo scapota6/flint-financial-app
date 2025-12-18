@@ -1137,7 +1137,7 @@ router.get('/connections', requireAuth, requireAdmin(), async (req: any, res) =>
       tellerConditions = [eq(connectedAccounts.provider, 'teller'), eq(connectedAccounts.status, status as string)];
     }
 
-    const tellerConnections = provider === 'snaptrade' ? [] : await db
+    const tellerConnections = (provider === 'snaptrade' || provider === 'metamask') ? [] : await db
       .select({
         id: connectedAccounts.id,
         userId: connectedAccounts.userId,
@@ -1166,7 +1166,7 @@ router.get('/connections', requireAuth, requireAdmin(), async (req: any, res) =>
       snapConditions = [eq(snaptradeConnections.disabled, false)];
     }
 
-    const snapConnections = provider === 'teller' ? [] : await db
+    const snapConnections = provider === 'teller' || provider === 'metamask' ? [] : await db
       .select({
         id: snaptradeConnections.id,
         userId: snaptradeConnections.flintUserId,
@@ -1187,8 +1187,35 @@ router.get('/connections', requireAuth, requireAdmin(), async (req: any, res) =>
       .leftJoin(users, eq(snaptradeConnections.flintUserId, users.id))
       .where(and(...snapConditions));
 
+    // Get MetaMask connections with user info
+    let metamaskConditions = [eq(connectedAccounts.provider, 'metamask'), eq(connectedAccounts.status, 'connected')];
+    if (status) {
+      metamaskConditions = [eq(connectedAccounts.provider, 'metamask'), eq(connectedAccounts.status, status as string)];
+    }
+
+    const metamaskConnections = (provider === 'teller' || provider === 'snaptrade') ? [] : await db
+      .select({
+        id: connectedAccounts.id,
+        userId: connectedAccounts.userId,
+        email: users.email,
+        tier: users.subscriptionTier,
+        isAdmin: users.isAdmin,
+        provider: connectedAccounts.provider,
+        accountId: connectedAccounts.externalAccountId,
+        accountType: connectedAccounts.accountType,
+        accountName: connectedAccounts.accountName,
+        institutionName: connectedAccounts.institutionName,
+        status: connectedAccounts.status,
+        balance: connectedAccounts.balance,
+        lastSynced: connectedAccounts.lastSynced,
+        createdAt: connectedAccounts.createdAt,
+      })
+      .from(connectedAccounts)
+      .leftJoin(users, eq(connectedAccounts.userId, users.id))
+      .where(and(...metamaskConditions));
+
     // Combine and sort by userId and createdAt
-    const allConnections = [...tellerConnections, ...snapConnections]
+    const allConnections = [...tellerConnections, ...snapConnections, ...metamaskConnections]
       .sort((a, b) => {
         if (a.userId !== b.userId) {
           return (a.userId || '').localeCompare(b.userId || '');
