@@ -1,12 +1,10 @@
 /**
  * Flint Banking Landing Page - SEO optimized for bank account users
  * Route: /banking
- * Focus: Chase, BofA, Amex, bank account and credit card tracking
  */
 
 import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { GlowingEffect } from "@/components/ui/glowing-effect";
 import { 
@@ -39,57 +37,48 @@ const useIsMobile = () => {
 const BANKING_INSTITUTIONS = [
   { name: 'Chase', domain: 'chase.com' },
   { name: 'Bank of America', domain: 'bankofamerica.com' },
-  { name: 'American Express', domain: 'americanexpress.com' },
   { name: 'Wells Fargo', domain: 'wellsfargo.com' },
   { name: 'Citi', domain: 'citi.com' },
   { name: 'Capital One', domain: 'capitalone.com' },
   { name: 'US Bank', domain: 'usbank.com' },
   { name: 'PNC', domain: 'pnc.com' },
+  { name: 'Truist', domain: 'truist.com' },
+  { name: 'TD Bank', domain: 'td.com' },
+  { name: 'Discover', domain: 'discover.com' },
+  { name: 'American Express', domain: 'americanexpress.com' },
+  { name: 'Navy Federal', domain: 'navyfederal.org' },
+  { name: 'USAA', domain: 'usaa.com' },
+  { name: 'Ally Bank', domain: 'ally.com' },
+  { name: 'Marcus', domain: 'marcus.com' },
+  { name: 'Chime', domain: 'chime.com' },
 ];
 
 export default function LandingBanking() {
   const isMobile = useIsMobile();
-  const [email, setEmail] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
+  const [isAnnual, setIsAnnual] = useState(false);
   const [checkoutOpen, setCheckoutOpen] = useState(false);
-  const [checkoutTier, setCheckoutTier] = useState<'standard' | 'pro'>('standard');
+  const [checkoutTier, setCheckoutTier] = useState<'basic' | 'pro'>('basic');
+  const [checkoutBillingPeriod, setCheckoutBillingPeriod] = useState<'monthly' | 'yearly'>('monthly');
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!email) return;
-    setIsSubmitting(true);
-    try {
-      await fetch('/api/leads', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, goals: ['banking'], source: 'banking_landing' }),
-      });
-      setSubmitted(true);
-    } catch (error) {
-      console.error('Failed to submit:', error);
-    }
-    setIsSubmitting(false);
-  };
-
-  const openCheckout = (tier: 'standard' | 'pro') => {
+  const openCheckout = (tier: 'basic' | 'pro') => {
     setCheckoutTier(tier);
+    setCheckoutBillingPeriod(isAnnual ? 'yearly' : 'monthly');
     setCheckoutOpen(true);
   };
 
   return (
     <>
       <Helmet>
-        <title>Bank Account Tracker | See All Your Accounts | Flint</title>
-        <meta name="description" content="Track all your bank accounts and credit cards in one place. Connect Chase, Bank of America, Amex and more. See your total balance, track spending, and pay off debt faster." />
-        <meta property="og:title" content="Bank Account Tracker | Flint" />
+        <title>Bank Account Tracker - See All Your Accounts in One Place | Flint</title>
+        <meta name="description" content="Track all your bank accounts and credit cards in one dashboard. Connect Chase, Bank of America, Wells Fargo, Capital One and 10,000+ banks. See your total balance, track spending, pay off debt. Free to start." />
+        <meta property="og:title" content="Bank Account Tracker - See All Your Money in One Place | Flint" />
         <meta property="og:description" content="The Apple Wallet for all your bank accounts. Connect every account and see your total balance in seconds." />
         <meta property="og:type" content="website" />
-        <meta name="keywords" content="bank account tracker, net worth tracker, credit card tracker, Chase tracker, Bank of America, account aggregator, personal finance app" />
+        <meta name="keywords" content="bank account tracker, net worth tracker, credit card tracker, Chase tracker, Bank of America, account aggregator, personal finance app, money tracker, spending tracker, budget app" />
+        <link rel="canonical" href="https://flint-investing.com/banking" />
       </Helmet>
 
       <div className="min-h-screen bg-black text-white overflow-x-hidden">
-        {/* Header */}
         <header className="fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-lg border-b border-white/10">
           <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
             <Link href="/">
@@ -100,18 +89,19 @@ export default function LandingBanking() {
             </Link>
             <div className="flex items-center gap-4">
               <Link href="/login">
-                <Button variant="ghost" className="text-gray-300 hover:text-white">
+                <Button variant="ghost" className="text-gray-300 hover:text-white" data-testid="link-login">
                   Log In
                 </Button>
               </Link>
-              <Button onClick={() => openCheckout('standard')} className="bg-blue-600 hover:bg-blue-700">
-                Get Started
-              </Button>
+              <Link href="/login">
+                <Button className="bg-blue-600 hover:bg-blue-700" data-testid="button-get-started-header">
+                  Get Started
+                </Button>
+              </Link>
             </div>
           </div>
         </header>
 
-        {/* Hero Section */}
         <section className="pt-32 pb-20 px-4">
           <div className="max-w-4xl mx-auto text-center">
             <div className="inline-flex items-center gap-2 bg-blue-500/20 border border-blue-400/30 rounded-full px-4 py-2 mb-6">
@@ -127,52 +117,49 @@ export default function LandingBanking() {
               Connect all your banks and cards in one place. See your total money. Track your spending. It's that simple.
             </p>
 
-            {!submitted ? (
-              <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto mb-8">
-                <Input
-                  type="email"
-                  placeholder="Enter your email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="flex-1 bg-white/10 border-white/20 text-white placeholder:text-gray-400"
-                  required
-                />
-                <Button type="submit" disabled={isSubmitting} className="bg-blue-500 hover:bg-blue-600">
-                  {isSubmitting ? 'Joining...' : 'Get Started Free'}
+            <div className="flex flex-col sm:flex-row gap-3 justify-center mb-8">
+              <Link href="/login">
+                <Button size="lg" className="bg-blue-600 hover:bg-blue-700" data-testid="button-get-started-hero">
+                  Get Started Free <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
-              </form>
-            ) : (
-              <div className="bg-green-500/20 border border-green-400/30 rounded-lg p-4 max-w-md mx-auto mb-8">
-                <Check className="h-6 w-6 text-green-400 mx-auto mb-2" />
-                <p className="text-green-400">You're in! Check your email.</p>
-              </div>
-            )}
+              </Link>
+              <Link href="/login">
+                <Button size="lg" variant="outline" className="border-white/20" data-testid="button-login-hero">
+                  Log In
+                </Button>
+              </Link>
+            </div>
 
             <p className="text-sm text-gray-400">Free to start. No credit card needed.</p>
           </div>
         </section>
 
-        {/* Supported Banks */}
         <section className="py-12 border-y border-white/10 bg-white/5">
           <div className="max-w-6xl mx-auto px-4">
-            <p className="text-center text-gray-400 mb-8">Connect your favorite banks and cards</p>
-            <div className="flex flex-wrap justify-center gap-8">
-              {BANKING_INSTITUTIONS.map((inst) => (
-                <div key={inst.name} className="flex items-center gap-2 opacity-70 hover:opacity-100 transition-opacity">
-                  <img 
-                    src={`https://cdn.brandfetch.io/${inst.domain}/w/48/h/48?c=1id_IeGVi5W4b9Ev4e5`} 
-                    alt={inst.name}
-                    className="h-8 w-8 rounded-lg"
-                    onError={(e) => { e.currentTarget.style.display = 'none'; }}
-                  />
-                  <span className="text-gray-300 font-medium">{inst.name}</span>
-                </div>
-              ))}
+            <p className="text-center text-gray-400 mb-8">Connect 10,000+ banks and credit unions</p>
+            <div className="relative overflow-hidden">
+              <div className="flex gap-8 animate-[scroll_45s_linear_infinite]">
+                {[...BANKING_INSTITUTIONS, ...BANKING_INSTITUTIONS].map((inst, idx) => (
+                  <div key={idx} className="flex-shrink-0 w-40 h-20 bg-white/5 rounded-lg flex items-center justify-center border border-white/10 p-4">
+                    <img 
+                      src={`https://cdn.brandfetch.io/${inst.domain}`}
+                      alt={inst.name}
+                      className="max-h-12 max-w-full object-contain filter brightness-0 invert opacity-70 hover:opacity-100 transition-opacity"
+                      onError={(e) => {
+                        e.currentTarget.style.display = 'none';
+                        const parent = e.currentTarget.parentElement;
+                        if (parent) {
+                          parent.innerHTML = `<span class="text-sm text-gray-300 font-medium">${inst.name}</span>`;
+                        }
+                      }}
+                    />
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </section>
 
-        {/* Benefits Section */}
         <section className="py-20 px-4">
           <div className="max-w-6xl mx-auto">
             <h2 className="text-3xl md:text-4xl font-bold text-center mb-4">Why People Love Flint</h2>
@@ -217,7 +204,6 @@ export default function LandingBanking() {
           </div>
         </section>
 
-        {/* How It Works */}
         <section className="py-20 px-4 bg-white/5 border-y border-white/10">
           <div className="max-w-4xl mx-auto">
             <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">How It Works</h2>
@@ -250,62 +236,123 @@ export default function LandingBanking() {
           </div>
         </section>
 
-        {/* Pricing */}
-        <section className="py-20 px-4">
+        <section id="pricing" className="py-20 px-4">
           <div className="max-w-5xl mx-auto">
-            <h2 className="text-3xl md:text-4xl font-bold text-center mb-4">Simple Pricing</h2>
-            <p className="text-gray-400 text-center mb-12">Start free. Upgrade when you need more.</p>
+            <div className="text-center mb-12">
+              <h2 className="text-3xl md:text-4xl font-bold mb-4">Pick Your Plan</h2>
+              <p className="text-gray-400 mb-6">Start free. Upgrade for advanced features.</p>
+              
+              <div className="inline-flex bg-white/10 rounded-lg p-1">
+                <button
+                  onClick={() => setIsAnnual(false)}
+                  className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${!isAnnual ? 'bg-blue-600 text-white' : 'text-gray-400 hover:text-white'}`}
+                  data-testid="toggle-monthly"
+                >
+                  Monthly
+                </button>
+                <button
+                  onClick={() => setIsAnnual(true)}
+                  className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${isAnnual ? 'bg-blue-600 text-white' : 'text-gray-400 hover:text-white'}`}
+                  data-testid="toggle-annual"
+                >
+                  Annual <span className="text-green-400 ml-1">Save 17%</span>
+                </button>
+              </div>
+            </div>
             
             <div className="grid md:grid-cols-3 gap-6">
-              <div className="bg-white/5 border border-white/10 rounded-xl p-6">
-                <h3 className="text-xl font-semibold mb-2">Free</h3>
-                <p className="text-3xl font-bold mb-4">$0<span className="text-lg text-gray-400">/mo</span></p>
-                <ul className="space-y-3 mb-6 text-gray-300">
-                  <li className="flex items-center gap-2"><Check className="h-4 w-4 text-green-400" /> Up to 4 accounts</li>
-                  <li className="flex items-center gap-2"><Check className="h-4 w-4 text-green-400" /> Real-time balances</li>
-                  <li className="flex items-center gap-2"><Check className="h-4 w-4 text-green-400" /> Basic tracking</li>
-                </ul>
-                <Button variant="outline" className="w-full" onClick={() => openCheckout('standard')}>
-                  Get Started
-                </Button>
+              <div className="relative rounded-xl border border-white/10 p-2">
+                <GlowingEffect spread={40} glow={true} disabled={isMobile} proximity={64} inactiveZone={0.01} borderWidth={1} />
+                <div className="bg-white/5 rounded-lg p-6 h-full flex flex-col">
+                  <div className="mb-6">
+                    <h3 className="text-xl font-semibold mb-2">Free</h3>
+                    <div className="flex items-baseline gap-2 mb-2">
+                      <span className="text-4xl font-bold">$0</span>
+                      <span className="text-gray-400">forever</span>
+                    </div>
+                    <p className="text-sm text-gray-400">Try it out</p>
+                  </div>
+                  <ul className="space-y-3 mb-8 flex-1">
+                    <li className="flex items-center gap-2 text-sm"><Check className="h-4 w-4 text-green-400" /> 4 accounts</li>
+                    <li className="flex items-center gap-2 text-sm"><Check className="h-4 w-4 text-green-400" /> See all your money</li>
+                    <li className="flex items-center gap-2 text-sm"><Check className="h-4 w-4 text-green-400" /> Live updates</li>
+                    <li className="flex items-center gap-2 text-sm"><Check className="h-4 w-4 text-green-400" /> Mobile app</li>
+                  </ul>
+                  <Link href="/login">
+                    <Button variant="outline" className="w-full" data-testid="button-free-plan">
+                      Start Free
+                    </Button>
+                  </Link>
+                </div>
               </div>
               
-              <div className="bg-gradient-to-b from-blue-500/20 to-transparent border border-blue-400/30 rounded-xl p-6 transform scale-105">
-                <div className="text-blue-400 text-sm font-semibold mb-2">MOST POPULAR</div>
-                <h3 className="text-xl font-semibold mb-2">Standard</h3>
-                <p className="text-3xl font-bold mb-4">$9<span className="text-lg text-gray-400">/mo</span></p>
-                <ul className="space-y-3 mb-6 text-gray-300">
-                  <li className="flex items-center gap-2"><Check className="h-4 w-4 text-green-400" /> Unlimited accounts</li>
-                  <li className="flex items-center gap-2"><Check className="h-4 w-4 text-green-400" /> Spending alerts</li>
-                  <li className="flex items-center gap-2"><Check className="h-4 w-4 text-green-400" /> Bill reminders</li>
-                  <li className="flex items-center gap-2"><Check className="h-4 w-4 text-green-400" /> Export reports</li>
-                </ul>
-                <Button className="w-full bg-blue-500 hover:bg-blue-600" onClick={() => openCheckout('standard')}>
-                  Start Free Trial
-                </Button>
+              <div className="relative rounded-xl border border-blue-400/30 p-2">
+                <GlowingEffect spread={40} glow={true} disabled={isMobile} proximity={64} inactiveZone={0.01} borderWidth={1} />
+                <div className="bg-gradient-to-b from-blue-500/10 to-transparent rounded-lg p-6 h-full flex flex-col relative">
+                  <div className="absolute top-4 right-4">
+                    <span className="bg-blue-500 text-white text-xs font-semibold px-2 py-1 rounded">Most Popular</span>
+                  </div>
+                  <div className="mb-6">
+                    <h3 className="text-xl font-semibold mb-2">Standard</h3>
+                    <div className="flex items-baseline gap-2 mb-2">
+                      <span className="text-4xl font-bold">${isAnnual ? '199' : '19.99'}</span>
+                      <span className="text-gray-400">{isAnnual ? '/year' : '/month'}</span>
+                    </div>
+                    {isAnnual && <p className="text-sm text-green-400">$199/year - 2 months free!</p>}
+                    <p className="text-sm text-gray-400">For active users</p>
+                  </div>
+                  <ul className="space-y-3 mb-8 flex-1">
+                    <li className="flex items-center gap-2 text-sm font-semibold"><Check className="h-4 w-4 text-blue-400" /> Unlimited accounts</li>
+                    <li className="flex items-center gap-2 text-sm"><Check className="h-4 w-4 text-blue-400" /> Everything in Free</li>
+                    <li className="flex items-center gap-2 text-sm"><Check className="h-4 w-4 text-blue-400" /> Spending alerts</li>
+                    <li className="flex items-center gap-2 text-sm"><Check className="h-4 w-4 text-blue-400" /> Bill reminders</li>
+                    <li className="flex items-center gap-2 text-sm"><Check className="h-4 w-4 text-blue-400" /> Email support</li>
+                  </ul>
+                  <Button className="w-full bg-blue-600 hover:bg-blue-700" onClick={() => openCheckout('basic')} data-testid="button-standard-plan">
+                    Get Standard
+                  </Button>
+                </div>
               </div>
               
-              <div className="bg-white/5 border border-white/10 rounded-xl p-6">
-                <h3 className="text-xl font-semibold mb-2">Pro</h3>
-                <p className="text-3xl font-bold mb-4">$19<span className="text-lg text-gray-400">/mo</span></p>
-                <ul className="space-y-3 mb-6 text-gray-300">
-                  <li className="flex items-center gap-2"><Check className="h-4 w-4 text-green-400" /> Everything in Standard</li>
-                  <li className="flex items-center gap-2"><Check className="h-4 w-4 text-green-400" /> Transfer money</li>
-                  <li className="flex items-center gap-2"><Check className="h-4 w-4 text-green-400" /> Budgeting tools</li>
-                  <li className="flex items-center gap-2"><Check className="h-4 w-4 text-green-400" /> Priority support</li>
-                </ul>
-                <Button variant="outline" className="w-full" onClick={() => openCheckout('pro')}>
-                  Start Free Trial
-                </Button>
+              <div className="relative rounded-xl border border-white/10 p-2">
+                <GlowingEffect spread={40} glow={true} disabled={isMobile} proximity={64} inactiveZone={0.01} borderWidth={1} />
+                <div className="bg-white/5 rounded-lg p-6 h-full flex flex-col">
+                  <div className="mb-6">
+                    <h3 className="text-xl font-semibold mb-2">Pro</h3>
+                    <div className="flex items-baseline gap-2 mb-2">
+                      <span className="text-4xl font-bold">${isAnnual ? '399' : '39.99'}</span>
+                      <span className="text-gray-400">{isAnnual ? '/year' : '/month'}</span>
+                    </div>
+                    {isAnnual && <p className="text-sm text-green-400">$399/year - 2 months free!</p>}
+                    <p className="text-sm text-gray-400">For power users</p>
+                  </div>
+                  <ul className="space-y-3 mb-8 flex-1">
+                    <li className="flex items-center gap-2 text-sm font-semibold"><Check className="h-4 w-4 text-blue-400" /> Unlimited accounts</li>
+                    <li className="flex items-center gap-2 text-sm"><Check className="h-4 w-4 text-blue-400" /> Everything in Standard</li>
+                    <li className="flex items-center gap-2 text-sm font-semibold"><Check className="h-4 w-4 text-blue-400" /> Trading</li>
+                    <li className="flex items-center gap-2 text-sm font-semibold"><Check className="h-4 w-4 text-blue-400" /> Transfers</li>
+                    <li className="flex items-center gap-2 text-sm"><Check className="h-4 w-4 text-blue-400" /> Budgeting tools</li>
+                    <li className="flex items-center gap-2 text-sm"><Check className="h-4 w-4 text-blue-400" /> Fast support</li>
+                  </ul>
+                  <Button variant="outline" className="w-full" onClick={() => openCheckout('pro')} data-testid="button-pro-plan">
+                    Get Pro
+                  </Button>
+                </div>
               </div>
+            </div>
+            
+            <div className="text-center mt-8">
+              <p className="text-gray-400 text-sm">
+                <Shield className="h-4 w-4 inline mr-2 text-green-400" />
+                Cancel anytime. No risk.
+              </p>
             </div>
           </div>
         </section>
 
-        {/* FAQ */}
         <section className="py-20 px-4 bg-white/5 border-t border-white/10">
           <div className="max-w-3xl mx-auto">
-            <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">Questions? We Got You.</h2>
+            <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">Common Questions</h2>
             
             <Accordion type="single" collapsible className="space-y-4">
               <AccordionItem value="1" className="border border-white/10 rounded-lg px-4">
@@ -339,18 +386,18 @@ export default function LandingBanking() {
           </div>
         </section>
 
-        {/* CTA */}
         <section className="py-20 px-4">
           <div className="max-w-3xl mx-auto text-center">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">Ready to See All Your Money?</h2>
             <p className="text-gray-400 mb-8">Join thousands of people who use Flint every day.</p>
-            <Button size="lg" className="bg-blue-500 hover:bg-blue-600" onClick={() => openCheckout('standard')}>
-              Get Started Free <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
+            <Link href="/login">
+              <Button size="lg" className="bg-blue-600 hover:bg-blue-700" data-testid="button-cta-bottom">
+                Get Started Free <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+            </Link>
           </div>
         </section>
 
-        {/* Footer */}
         <footer className="py-8 px-4 border-t border-white/10">
           <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-2">
@@ -366,10 +413,10 @@ export default function LandingBanking() {
       </div>
 
       <EmbeddedCheckoutModal
-        isOpen={checkoutOpen}
-        onClose={() => setCheckoutOpen(false)}
+        open={checkoutOpen}
+        onOpenChange={setCheckoutOpen}
         tier={checkoutTier}
-        billingPeriod="monthly"
+        billingPeriod={checkoutBillingPeriod}
       />
     </>
   );
