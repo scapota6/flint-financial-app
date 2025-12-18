@@ -644,7 +644,7 @@ export default function LandingNew() {
   return (
     <AuroraBackground className="min-h-screen text-white relative overflow-x-hidden">
       {/* Single subtle background gradient overlay */}
-      <div className="fixed inset-0 bg-gradient-to-br from-blue-900/20 via-black to-black pointer-events-none" />
+      <div className="fixed inset-0 z-[-1] bg-gradient-to-br from-blue-900/20 via-black to-black pointer-events-none" />
       {/* Floating Header */}
       <div className="px-4 pt-2">
         <FloatingHeader variant="landing" onSignupClick={scrollToSignup} />
