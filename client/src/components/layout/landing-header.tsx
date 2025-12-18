@@ -9,15 +9,15 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { ChevronDown, Menu, Bitcoin, TrendingUp, Building2, Briefcase } from 'lucide-react';
+import { ChevronDown, Menu } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import flintLogo from '@assets/flint-logo.png';
 
 const USE_CASES = [
-  { label: 'Crypto', href: '/crypto', icon: Bitcoin, description: 'Track all your crypto wallets' },
-  { label: 'Investing', href: '/investing', icon: TrendingUp, description: 'Manage your brokerage accounts' },
-  { label: 'Banking', href: '/banking', icon: Building2, description: 'Connect your bank accounts' },
-  { label: 'Business', href: '/business', icon: Briefcase, description: 'Solutions for businesses' },
+  { label: 'Crypto', href: '/crypto', description: 'Track all your crypto wallets' },
+  { label: 'Investing', href: '/investing', description: 'Manage your brokerage accounts' },
+  { label: 'Banking', href: '/banking', description: 'Connect your bank accounts' },
+  { label: 'Business', href: '/business', description: 'Solutions for businesses' },
 ];
 
 const NAV_LINKS = [
@@ -105,18 +105,16 @@ export function LandingHeader({ currentPage = 'main', onGetStarted }: LandingHea
               sideOffset={8}
             >
               {USE_CASES.map((useCase) => {
-                const Icon = useCase.icon;
                 const isActive = location === useCase.href;
                 return (
                   <Link key={useCase.href} href={useCase.href}>
                     <DropdownMenuItem
                       className={cn(
-                        'cursor-pointer flex items-start gap-3 p-3',
+                        'cursor-pointer p-3',
                         isActive && 'bg-blue-600/20'
                       )}
                       data-testid={`link-usecase-${useCase.label.toLowerCase()}`}
                     >
-                      <Icon className="h-5 w-5 mt-0.5 text-blue-400" />
                       <div>
                         <div className="font-medium text-white">{useCase.label}</div>
                         <div className="text-xs text-gray-400">{useCase.description}</div>
@@ -197,20 +195,18 @@ export function LandingHeader({ currentPage = 'main', onGetStarted }: LandingHea
                   <p className="text-xs text-gray-500 uppercase tracking-wider px-3 mb-2">Use Cases</p>
                   <div className="space-y-1">
                     {USE_CASES.map((useCase) => {
-                      const Icon = useCase.icon;
                       const isActive = location === useCase.href;
                       return (
                         <Link key={useCase.href} href={useCase.href}>
                           <button
                             onClick={() => setMobileOpen(false)}
                             className={cn(
-                              'w-full text-left flex items-center gap-3 px-3 py-2 rounded-md text-sm transition-colors',
+                              'w-full text-left px-3 py-2 rounded-md text-sm transition-colors',
                               isActive
                                 ? 'bg-blue-600/20 text-white'
                                 : 'text-gray-300 hover:text-white hover:bg-gray-800/50'
                             )}
                           >
-                            <Icon className="h-4 w-4 text-blue-400" />
                             {useCase.label}
                           </button>
                         </Link>
