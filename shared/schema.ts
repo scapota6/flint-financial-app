@@ -839,3 +839,37 @@ export const insertAccountSnapshotSchema = createInsertSchema(accountSnapshots).
 
 export type AccountSnapshot = typeof accountSnapshots.$inferSelect;
 export type InsertAccountSnapshot = z.infer<typeof insertAccountSnapshotSchema>;
+
+// Blog posts table for public SEO content
+export const blogPosts = pgTable('blog_posts', {
+  id: serial('id').primaryKey(),
+  slug: varchar('slug', { length: 255 }).notNull().unique(),
+  title: varchar('title', { length: 255 }).notNull(),
+  excerpt: text('excerpt'), // Short summary for listings and meta description
+  content: text('content').notNull(), // Markdown content
+  heroImage: varchar('hero_image', { length: 500 }), // Optional hero image URL
+  authorId: varchar('author_id', { length: 255 }).notNull().references(() => users.id),
+  status: varchar('status', { length: 20 }).default('draft').notNull(), // 'draft' | 'published'
+  tags: text('tags').array(), // Array of tag strings for categorization
+  publishedAt: timestamp('published_at'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+}, (table) => [
+  index("blog_posts_slug_idx").on(table.slug),
+  index("blog_posts_status_idx").on(table.status),
+  index("blog_posts_published_idx").on(table.publishedAt),
+]);
+
+export const insertBlogPostSchema = createInsertSchema(blogPosts).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+}).extend({
+  status: z.enum(['draft', 'published']).default('draft'),
+  slug: z.string().min(1).max(255).regex(/^[a-z0-9-]+$/, 'Slug must be lowercase letters, numbers, and hyphens only'),
+  title: z.string().min(1).max(255),
+  content: z.string().min(1),
+});
+
+export type BlogPost = typeof blogPosts.$inferSelect;
+export type InsertBlogPost = z.infer<typeof insertBlogPostSchema>;
