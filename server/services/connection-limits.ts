@@ -31,6 +31,7 @@ export function getAccountLimit(tier: string, isAdmin?: boolean): number | null 
  * Counts connections properly by provider:
  * - Teller: Each account counts as 1 connection
  * - SnapTrade: Each authorization (brokerage login) counts as 1 connection (may have multiple accounts)
+ * - MetaMask: Each connected wallet counts as 1 connection
  * 
  * @param userId - Flint user ID
  * @returns Total connection count across all providers
@@ -57,5 +58,17 @@ export async function getConnectionCount(userId: string): Promise<number> {
     .from(snaptradeConnections)
     .where(eq(snaptradeConnections.flintUserId, userId));
   
-  return tellerAccounts.length + snaptradeAuths.length;
+  // Count MetaMask wallets (each connected wallet = 1 connection)
+  const metamaskWallets = await db
+    .select()
+    .from(connectedAccounts)
+    .where(
+      and(
+        eq(connectedAccounts.userId, userId),
+        eq(connectedAccounts.provider, 'metamask'),
+        eq(connectedAccounts.status, 'connected')
+      )
+    );
+  
+  return tellerAccounts.length + snaptradeAuths.length + metamaskWallets.length;
 }

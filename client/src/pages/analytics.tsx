@@ -37,7 +37,6 @@ import {
 import { Link } from "wouter";
 
 import { useAuth } from "@/hooks/useAuth";
-import { isInternalTester } from "@/lib/feature-flags";
 import { apiGet, apiRequest, queryClient } from "@/lib/queryClient";
 import { getInstitutionLogo } from "@/lib/bank-logos";
 import { Button } from "@/components/ui/button";
@@ -142,7 +141,7 @@ function formatDate(dateString: string): string {
 }
 
 export default function Analytics() {
-  const { user } = useAuth();
+  const { user, isLoading: isAuthLoading } = useAuth();
   const [selectedMonth, setSelectedMonth] = useState(() => startOfMonth(new Date()));
   const [viewMode, setViewMode] = useState<"1" | "3">("1");
   const [selectedAccountIds, setSelectedAccountIds] = useState<string[]>([]);
@@ -163,7 +162,8 @@ export default function Analytics() {
   });
   const [deletingGoalId, setDeletingGoalId] = useState<number | null>(null);
 
-  const hasAccess = isInternalTester(user?.email);
+  // Analytics is now available to all authenticated users
+  const hasAccess = !!user;
 
   // Check subscription tier for Basic features (Financial Goals)
   const { data: userData } = useQuery<{ subscriptionTier?: string }>({
@@ -311,6 +311,23 @@ export default function Analytics() {
       .sort((a, b) => b.amount - a.amount);
   }, [spendingData]);
 
+  // Show loading while auth is being checked
+  if (isAuthLoading) {
+    return (
+      <div className="min-h-screen bg-black text-white flex items-center justify-center">
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="text-center p-8"
+        >
+          <div className="w-10 h-10 mx-auto mb-4 border-2 border-gray-600 border-t-white rounded-full animate-spin" />
+          <p className="text-gray-400">Loading...</p>
+        </motion.div>
+      </div>
+    );
+  }
+
+  // Only show access restricted if auth has finished loading and there's no user
   if (!hasAccess) {
     return (
       <div className="min-h-screen bg-black text-white flex items-center justify-center">
@@ -323,10 +340,9 @@ export default function Analytics() {
           <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-gray-900/50 backdrop-blur-lg border border-gray-800 flex items-center justify-center">
             <Lock className="w-10 h-10 text-gray-500" />
           </div>
-          <h2 className="text-2xl font-semibold mb-2">Access Restricted</h2>
+          <h2 className="text-2xl font-semibold mb-2">Sign In Required</h2>
           <p className="text-gray-400 max-w-md">
-            Analytics is currently available to internal testers only. Check back soon
-            for general availability.
+            Please sign in to access spending analytics.
           </p>
         </motion.div>
       </div>

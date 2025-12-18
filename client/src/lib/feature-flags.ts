@@ -40,10 +40,10 @@ function parseFlag(envValue: string | undefined, defaultValue: boolean = false):
 }
 
 export const featureFlags: FeatureFlags = {
-  // MetaMask wallet integration - internal testers only
+  // MetaMask wallet integration - available to all users
   metamask: {
-    enabled: parseFlag(import.meta.env.VITE_FEATURE_METAMASK, false),
-    internalOnly: true,
+    enabled: true,
+    internalOnly: false,
   },
 };
 
