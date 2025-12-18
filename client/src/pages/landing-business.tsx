@@ -9,14 +9,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { BeamsBackground } from "@/components/ui/beams-background";
 import { 
   Building2, 
-  Users, 
   Shield, 
   Check,
   Briefcase,
-  BarChart3,
-  Lock
+  BarChart3
 } from "lucide-react";
 import { Link } from "wouter";
 import flintLogo from "@assets/flint-logo.png";
@@ -75,7 +74,7 @@ export default function LandingBusiness() {
         <meta name="keywords" content="enterprise financial tools, corporate finance app, employee financial wellness, fund management software, business finance dashboard" />
       </Helmet>
 
-      <div className="min-h-screen bg-black text-white overflow-x-hidden">
+      <BeamsBackground className="min-h-screen text-white overflow-x-hidden">
         <LandingHeader currentPage="business" />
 
         {/* Hero Section */}
@@ -98,34 +97,19 @@ export default function LandingBusiness() {
                 </p>
 
                 <div className="space-y-4 mb-8">
-                  <div className="flex items-start gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-indigo-500/20 flex items-center justify-center flex-shrink-0">
-                      <Users className="h-4 w-4 text-indigo-400" />
-                    </div>
-                    <div>
-                      <h3 className="font-semibold">For Corporations</h3>
-                      <p className="text-gray-400 text-sm">Give employees a benefit they'll actually use. Help them see all their money in one place.</p>
-                    </div>
+                  <div>
+                    <h3 className="font-semibold text-lg">For Corporations</h3>
+                    <p className="text-gray-400">Give employees a benefit they'll actually use. Help them see all their money in one place.</p>
                   </div>
                   
-                  <div className="flex items-start gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-indigo-500/20 flex items-center justify-center flex-shrink-0">
-                      <BarChart3 className="h-4 w-4 text-indigo-400" />
-                    </div>
-                    <div>
-                      <h3 className="font-semibold">For Funds</h3>
-                      <p className="text-gray-400 text-sm">View-only access to client portfolios. Help manage assets without moving money.</p>
-                    </div>
+                  <div>
+                    <h3 className="font-semibold text-lg">For Funds</h3>
+                    <p className="text-gray-400">View client portfolios in one dashboard. Help manage assets without moving money.</p>
                   </div>
                   
-                  <div className="flex items-start gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-indigo-500/20 flex items-center justify-center flex-shrink-0">
-                      <Lock className="h-4 w-4 text-indigo-400" />
-                    </div>
-                    <div>
-                      <h3 className="font-semibold">Super Secure</h3>
-                      <p className="text-gray-400 text-sm">Bank-level security. We never store passwords or keys. Your data stays safe.</p>
-                    </div>
+                  <div>
+                    <h3 className="font-semibold text-lg">Enterprise Security</h3>
+                    <p className="text-gray-400">Bank-level encryption. We never store passwords or keys. Your data stays safe.</p>
                   </div>
                 </div>
               </div>
@@ -263,7 +247,7 @@ export default function LandingBusiness() {
         </section>
 
         {/* Use Cases */}
-        <section className="py-20 px-4 bg-white/5 border-y border-white/10">
+        <section className="py-20 px-4">
           <div className="max-w-6xl mx-auto">
             <h2 className="text-3xl md:text-4xl font-bold text-center mb-4">Built for Business</h2>
             <p className="text-gray-400 text-center mb-12 max-w-2xl mx-auto">
@@ -313,22 +297,18 @@ export default function LandingBusiness() {
               Your data is protected by the same security used by banks. We never store passwords or keys. We are not a custodian and never take custody of your funds.
             </p>
             
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            <div className="grid grid-cols-3 gap-6 max-w-2xl mx-auto">
               <div className="text-center">
                 <div className="text-2xl font-bold text-white">256-bit</div>
                 <div className="text-sm text-gray-400">Encryption</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-white">SOC 2</div>
-                <div className="text-sm text-gray-400">Compliant</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-white">Read-Only</div>
-                <div className="text-sm text-gray-400">Access</div>
-              </div>
-              <div className="text-center">
                 <div className="text-2xl font-bold text-white">0</div>
                 <div className="text-sm text-gray-400">Stored Passwords</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-white">24/7</div>
+                <div className="text-sm text-gray-400">Monitoring</div>
               </div>
             </div>
           </div>
@@ -355,7 +335,7 @@ export default function LandingBusiness() {
             </div>
           </div>
         </footer>
-      </div>
+      </BeamsBackground>
     </>
   );
 }
