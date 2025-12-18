@@ -1620,11 +1620,7 @@ export default function LandingNew() {
                     </li>
                     <li className="flex items-start gap-2">
                       <Check className="h-5 w-5 text-green-400 flex-shrink-0 mt-0.5" />
-                      <span className="text-sm">Live updates</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <Check className="h-5 w-5 text-green-400 flex-shrink-0 mt-0.5" />
-                      <span className="text-sm">Mobile app</span>
+                      <span className="text-sm">Real-time updates</span>
                     </li>
                   </ul>
 
@@ -1638,7 +1634,7 @@ export default function LandingNew() {
                 </div>
               </div>
 
-              {/* Standard Plan */}
+              {/* Basic Plan */}
               <div className="relative h-full rounded-xl border border-blue-400/30 p-2">
                 <GlowingEffect spread={40} glow={true} disabled={isMobile} proximity={64} inactiveZone={0.01} borderWidth={1} variant="default" />
                 <div className="panel relative overflow-hidden h-full">
@@ -1649,7 +1645,7 @@ export default function LandingNew() {
                   </div>
 
                   <div className="mb-6">
-                    <h3>Standard</h3>
+                    <h3>Basic</h3>
                     <div className="flex items-baseline gap-2 mb-2">
                       <span className="text-4xl font-bold">${isAnnual ? '199' : '19.99'}</span>
                       <span className="text-sm text-gray-400">{isAnnual ? '/year' : '/month'}</span>
@@ -1669,15 +1665,15 @@ export default function LandingNew() {
                     </li>
                     <li className="flex items-start gap-2">
                       <Check className="h-5 w-5 text-blue-400 flex-shrink-0 mt-0.5" />
-                      <span className="text-sm">Price alerts</span>
+                      <span className="text-sm">Recurring subscriptions</span>
                     </li>
                     <li className="flex items-start gap-2">
                       <Check className="h-5 w-5 text-blue-400 flex-shrink-0 mt-0.5" />
-                      <span className="text-sm">Track spending</span>
+                      <span className="text-sm">Spending analyzer</span>
                     </li>
                     <li className="flex items-start gap-2">
                       <Check className="h-5 w-5 text-blue-400 flex-shrink-0 mt-0.5" />
-                      <span className="text-sm">Email support</span>
+                      <span className="text-sm">Goal tracking</span>
                     </li>
                   </ul>
 
@@ -1688,9 +1684,9 @@ export default function LandingNew() {
                       setCheckoutModalOpen(true);
                     }}
                     className="w-full"
-                    data-testid="button-standard-plan"
+                    data-testid="button-basic-plan"
                   >
-                    Get Standard
+                    Get Basic
                   </RainbowButton>
                 </div>
               </div>
@@ -1716,7 +1712,7 @@ export default function LandingNew() {
                     </li>
                     <li className="flex items-start gap-2">
                       <Check className="h-5 w-5 text-blue-400 flex-shrink-0 mt-0.5" />
-                      <span className="apple-caption">Everything in Standard</span>
+                      <span className="apple-caption">Everything in Basic</span>
                     </li>
                     <li className="flex items-start gap-2">
                       <Check className="h-5 w-5 text-blue-400 flex-shrink-0 mt-0.5" />
@@ -1724,19 +1720,11 @@ export default function LandingNew() {
                     </li>
                     <li className="flex items-start gap-2">
                       <Check className="h-5 w-5 text-blue-400 flex-shrink-0 mt-0.5" />
-                      <span className="apple-caption font-semibold">Transfers</span>
+                      <span className="apple-caption font-semibold">Transfers <span className="text-gray-500 font-normal">(coming soon)</span></span>
                     </li>
                     <li className="flex items-start gap-2">
                       <Check className="h-5 w-5 text-blue-400 flex-shrink-0 mt-0.5" />
-                      <span className="apple-caption">Advanced charts</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <Check className="h-5 w-5 text-blue-400 flex-shrink-0 mt-0.5" />
-                      <span className="apple-caption">Custom alerts</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <Check className="h-5 w-5 text-blue-400 flex-shrink-0 mt-0.5" />
-                      <span className="apple-caption">Fast support</span>
+                      <span className="apple-caption">Priority support</span>
                     </li>
                     <li className="flex items-start gap-2">
                       <Check className="h-5 w-5 text-blue-400 flex-shrink-0 mt-0.5" />

@@ -387,7 +387,6 @@ export default function LandingBanking() {
                     <li className="flex items-center gap-2 text-sm"><Check className="h-4 w-4 text-green-400" /> 4 accounts</li>
                     <li className="flex items-center gap-2 text-sm"><Check className="h-4 w-4 text-green-400" /> See all your money</li>
                     <li className="flex items-center gap-2 text-sm"><Check className="h-4 w-4 text-green-400" /> Real-time updates</li>
-                    <li className="flex items-center gap-2 text-sm"><Check className="h-4 w-4 text-green-400" /> Mobile app</li>
                   </ul>
                   <RainbowButton onClick={scrollToSignup} className="w-full" data-testid="button-free-plan">
                     Start Free
@@ -402,7 +401,7 @@ export default function LandingBanking() {
                     <span className="bg-blue-500 text-white text-xs font-semibold px-2 py-1 rounded">Most Popular</span>
                   </div>
                   <div className="mb-6">
-                    <h3 className="text-xl font-semibold mb-2">Standard</h3>
+                    <h3 className="text-xl font-semibold mb-2">Basic</h3>
                     <div className="flex items-baseline gap-2 mb-2">
                       <span className="text-4xl font-bold">${isAnnual ? '199' : '19.99'}</span>
                       <span className="text-gray-400">{isAnnual ? '/year' : '/month'}</span>
@@ -413,12 +412,12 @@ export default function LandingBanking() {
                   <ul className="space-y-3 mb-8 flex-1">
                     <li className="flex items-center gap-2 text-sm font-semibold"><Check className="h-4 w-4 text-blue-400" /> Unlimited accounts</li>
                     <li className="flex items-center gap-2 text-sm"><Check className="h-4 w-4 text-blue-400" /> Everything in Free</li>
-                    <li className="flex items-center gap-2 text-sm"><Check className="h-4 w-4 text-blue-400" /> Spending alerts</li>
-                    <li className="flex items-center gap-2 text-sm"><Check className="h-4 w-4 text-blue-400" /> Bill reminders</li>
-                    <li className="flex items-center gap-2 text-sm"><Check className="h-4 w-4 text-blue-400" /> Email support</li>
+                    <li className="flex items-center gap-2 text-sm"><Check className="h-4 w-4 text-blue-400" /> Recurring subscriptions</li>
+                    <li className="flex items-center gap-2 text-sm"><Check className="h-4 w-4 text-blue-400" /> Spending analyzer</li>
+                    <li className="flex items-center gap-2 text-sm"><Check className="h-4 w-4 text-blue-400" /> Goal tracking</li>
                   </ul>
-                  <RainbowButton className="w-full" onClick={() => openCheckout('basic')} data-testid="button-standard-plan">
-                    Get Standard
+                  <RainbowButton className="w-full" onClick={() => openCheckout('basic')} data-testid="button-basic-plan">
+                    Get Basic
                   </RainbowButton>
                 </div>
               </div>
@@ -437,10 +436,9 @@ export default function LandingBanking() {
                   </div>
                   <ul className="space-y-3 mb-8 flex-1">
                     <li className="flex items-center gap-2 text-sm font-semibold"><Check className="h-4 w-4 text-blue-400" /> Unlimited accounts</li>
-                    <li className="flex items-center gap-2 text-sm"><Check className="h-4 w-4 text-blue-400" /> Everything in Standard</li>
+                    <li className="flex items-center gap-2 text-sm"><Check className="h-4 w-4 text-blue-400" /> Everything in Basic</li>
                     <li className="flex items-center gap-2 text-sm font-semibold"><Check className="h-4 w-4 text-blue-400" /> Trading</li>
-                    <li className="flex items-center gap-2 text-sm font-semibold"><Check className="h-4 w-4 text-blue-400" /> Transfers</li>
-                    <li className="flex items-center gap-2 text-sm"><Check className="h-4 w-4 text-blue-400" /> Budgeting tools</li>
+                    <li className="flex items-center gap-2 text-sm font-semibold"><Check className="h-4 w-4 text-blue-400" /> Transfers <span className="text-gray-500 font-normal">(coming soon)</span></li>
                     <li className="flex items-center gap-2 text-sm"><Check className="h-4 w-4 text-blue-400" /> Priority support</li>
                   </ul>
                   <RainbowButton className="w-full" onClick={() => openCheckout('pro')} data-testid="button-pro-plan">
