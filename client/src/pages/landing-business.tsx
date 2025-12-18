@@ -115,7 +115,7 @@ export default function LandingBusiness() {
               </div>
 
               {/* Right - Waitlist Form */}
-              <div className="bg-white/5 border border-white/10 rounded-2xl p-8">
+              <div className="bg-white/5 border border-white/10 rounded-2xl p-4 md:p-8">
                 {!submitted ? (
                   <>
                     <h2 className="text-2xl font-bold mb-2">Join the Waitlist</h2>
@@ -254,31 +254,31 @@ export default function LandingBusiness() {
               Whether you manage funds or run a company, Flint helps your team.
             </p>
             
-            <div className="grid md:grid-cols-2 gap-8">
-              <div className="bg-black/40 border border-white/10 rounded-xl p-8">
-                <div className="w-12 h-12 rounded-xl bg-indigo-500/20 flex items-center justify-center mb-4">
-                  <Building2 className="h-6 w-6 text-indigo-400" />
+            <div className="grid md:grid-cols-2 gap-4 md:gap-8">
+              <div className="bg-black/40 border border-white/10 rounded-xl p-4 md:p-8">
+                <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-indigo-500/20 flex items-center justify-center mb-3 md:mb-4">
+                  <Building2 className="h-5 w-5 md:h-6 md:w-6 text-indigo-400" />
                 </div>
-                <h3 className="text-xl font-semibold mb-3">Corporate Wellness</h3>
-                <p className="text-gray-400 mb-4">
+                <h3 className="text-lg md:text-xl font-semibold mb-2 md:mb-3">Corporate Wellness</h3>
+                <p className="text-gray-400 mb-3 md:mb-4 text-sm md:text-base">
                   Give employees a real financial benefit. Help them see all their accounts, track spending, and reach their money goals.
                 </p>
-                <ul className="space-y-2 text-gray-300">
+                <ul className="space-y-2 text-gray-300 text-sm md:text-base">
                   <li className="flex items-center gap-2"><Check className="h-4 w-4 text-green-400" /> Easy employee onboarding</li>
                   <li className="flex items-center gap-2"><Check className="h-4 w-4 text-green-400" /> Anonymous usage - you see adoption, not data</li>
                   <li className="flex items-center gap-2"><Check className="h-4 w-4 text-green-400" /> Bulk pricing for teams</li>
                 </ul>
               </div>
               
-              <div className="bg-black/40 border border-white/10 rounded-xl p-8">
-                <div className="w-12 h-12 rounded-xl bg-indigo-500/20 flex items-center justify-center mb-4">
-                  <BarChart3 className="h-6 w-6 text-indigo-400" />
+              <div className="bg-black/40 border border-white/10 rounded-xl p-4 md:p-8">
+                <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-indigo-500/20 flex items-center justify-center mb-3 md:mb-4">
+                  <BarChart3 className="h-5 w-5 md:h-6 md:w-6 text-indigo-400" />
                 </div>
-                <h3 className="text-xl font-semibold mb-3">Fund & Wealth Management</h3>
-                <p className="text-gray-400 mb-4">
+                <h3 className="text-lg md:text-xl font-semibold mb-2 md:mb-3">Fund & Wealth Management</h3>
+                <p className="text-gray-400 mb-3 md:mb-4 text-sm md:text-base">
                   View client portfolios in one dashboard. We never store passwords or keys, and we are not a custodian.
                 </p>
-                <ul className="space-y-2 text-gray-300">
+                <ul className="space-y-2 text-gray-300 text-sm md:text-base">
                   <li className="flex items-center gap-2"><Check className="h-4 w-4 text-green-400" /> Client invites with one click</li>
                   <li className="flex items-center gap-2"><Check className="h-4 w-4 text-green-400" /> View-only access - never move money</li>
                   <li className="flex items-center gap-2"><Check className="h-4 w-4 text-green-400" /> Export reports for clients</li>
@@ -297,18 +297,18 @@ export default function LandingBusiness() {
               Your data is protected by the same security used by banks. We never store passwords or keys. We are not a custodian and never take custody of your funds.
             </p>
             
-            <div className="grid grid-cols-3 gap-6 max-w-2xl mx-auto">
+            <div className="grid grid-cols-3 gap-3 md:gap-6 max-w-2xl mx-auto">
               <div className="text-center">
-                <div className="text-2xl font-bold text-white">256-bit</div>
-                <div className="text-sm text-gray-400">Encryption</div>
+                <div className="text-xl md:text-2xl font-bold text-white">256-bit</div>
+                <div className="text-xs md:text-sm text-gray-400">Encryption</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-white">0</div>
-                <div className="text-sm text-gray-400">Stored Passwords</div>
+                <div className="text-xl md:text-2xl font-bold text-white">0</div>
+                <div className="text-xs md:text-sm text-gray-400">Stored Passwords</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-white">24/7</div>
-                <div className="text-sm text-gray-400">Monitoring</div>
+                <div className="text-xl md:text-2xl font-bold text-white">24/7</div>
+                <div className="text-xs md:text-sm text-gray-400">Monitoring</div>
               </div>
             </div>
           </div>

@@ -667,7 +667,7 @@ export default function LandingNew() {
           <div className="apple-container">
             <div className="max-w-md mx-auto">
               {!goalsSubmitted ? (
-                <div className="p-8 bg-white/5 border border-white/10 rounded-xl space-y-6 text-center">
+                <div className="p-4 md:p-8 bg-white/5 border border-white/10 rounded-xl space-y-4 md:space-y-6 text-center">
                   <h3 className="apple-h3">What's your #1 money goal?</h3>
                   <p className="apple-caption text-gray-300">Get a personalized tip when you join</p>
                     
@@ -726,31 +726,31 @@ export default function LandingNew() {
               Join now — help us hit our first 10,000 users and win big
             </p>
 
-            <div className="grid md:grid-cols-3 gap-6 mb-8">
-              <div className="relative h-full rounded-xl border border-white/10 p-2">
+            <div className="grid md:grid-cols-3 gap-3 md:gap-6 mb-6 md:mb-8">
+              <div className="relative h-full rounded-xl border border-white/10 p-1.5 md:p-2">
                 <GlowingEffect spread={40} glow={true} disabled={isMobile} proximity={64} inactiveZone={0.01} borderWidth={1} />
-                <div className="bg-white/10 border-blue-400/30 rounded-lg p-6 h-full">
-                  <span className="text-5xl block mb-2">🎟️</span>
-                  <h3 className="apple-h3">5 Winners</h3>
-                  <p className="apple-body text-gray-300">Get 1 year of Flint Pro</p>
+                <div className="bg-white/10 border-blue-400/30 rounded-lg p-4 md:p-6 h-full">
+                  <span className="text-3xl md:text-5xl block mb-1 md:mb-2">🎟️</span>
+                  <h3 className="apple-h3 text-lg md:text-xl">5 Winners</h3>
+                  <p className="apple-body text-gray-300 text-sm md:text-base">Get 1 year of Flint Pro</p>
                 </div>
               </div>
 
-              <div className="relative h-full rounded-xl border border-yellow-400/30 p-2">
+              <div className="relative h-full rounded-xl border border-yellow-400/30 p-1.5 md:p-2">
                 <GlowingEffect spread={40} glow={true} disabled={isMobile} proximity={64} inactiveZone={0.01} borderWidth={1} variant="default" />
-                <div className="bg-gradient-to-br from-yellow-600/20 to-orange-600/20 border-yellow-400/40 rounded-lg p-6 transform scale-105 h-full">
-                  <span className="text-5xl block mb-2">🏆</span>
-                  <h3 className="apple-h3">1 Grand Prize</h3>
-                  <p className="apple-body text-yellow-200 font-semibold">Flint Pro for Life</p>
+                <div className="bg-gradient-to-br from-yellow-600/20 to-orange-600/20 border-yellow-400/40 rounded-lg p-4 md:p-6 md:transform md:scale-105 h-full">
+                  <span className="text-3xl md:text-5xl block mb-1 md:mb-2">🏆</span>
+                  <h3 className="apple-h3 text-lg md:text-xl">1 Grand Prize</h3>
+                  <p className="apple-body text-yellow-200 font-semibold text-sm md:text-base">Flint Pro for Life</p>
                 </div>
               </div>
 
-              <div className="relative h-full rounded-xl border border-white/10 p-2">
+              <div className="relative h-full rounded-xl border border-white/10 p-1.5 md:p-2">
                 <GlowingEffect spread={40} glow={true} disabled={isMobile} proximity={64} inactiveZone={0.01} borderWidth={1} />
-                <div className="bg-white/10 border-blue-400/30 rounded-lg p-6 h-full">
-                  <span className="text-5xl block mb-2">📈</span>
-                  <h3 className="apple-h3">Boost Odds</h3>
-                  <p className="apple-body text-gray-300">Refer friends or upgrade</p>
+                <div className="bg-white/10 border-blue-400/30 rounded-lg p-4 md:p-6 h-full">
+                  <span className="text-3xl md:text-5xl block mb-1 md:mb-2">📈</span>
+                  <h3 className="apple-h3 text-lg md:text-xl">Boost Odds</h3>
+                  <p className="apple-body text-gray-300 text-sm md:text-base">Refer friends or upgrade</p>
                 </div>
               </div>
             </div>
@@ -778,38 +778,38 @@ export default function LandingNew() {
         {/* Value Proposition Cards */}
         <section className="section">
           <div className="container">
-            <div className="cards-grid">
+            <div className="grid md:grid-cols-3 gap-3 md:gap-6">
               {/* Cut Hidden Fees */}
-              <div className="relative h-full rounded-xl border border-white/10 p-2">
+              <div className="relative h-full rounded-xl border border-white/10 p-1.5 md:p-2">
                 <GlowingEffect spread={40} glow={true} disabled={isMobile} proximity={64} inactiveZone={0.01} borderWidth={1} />
-                <div className="card text-center h-full">
-                  <DollarSign className="h-7 w-7 text-blue-400 mx-auto mb-4" />
-                  <h3>Cut Hidden Fees</h3>
-                  <p>
+                <div className="bg-white/5 rounded-lg p-4 md:p-6 text-center h-full">
+                  <DollarSign className="h-5 w-5 md:h-7 md:w-7 text-blue-400 mx-auto mb-2 md:mb-4" />
+                  <h3 className="text-base md:text-lg font-semibold mb-1 md:mb-2">Cut Hidden Fees</h3>
+                  <p className="text-sm md:text-base text-gray-300">
                     We find and alert you to unnecessary bank charges
                   </p>
                 </div>
               </div>
 
               {/* Grow Net Worth */}
-              <div className="relative h-full rounded-xl border border-white/10 p-2">
+              <div className="relative h-full rounded-xl border border-white/10 p-1.5 md:p-2">
                 <GlowingEffect spread={40} glow={true} disabled={isMobile} proximity={64} inactiveZone={0.01} borderWidth={1} />
-                <div className="card text-center h-full">
-                  <TrendingUp className="h-7 w-7 text-green-400 mx-auto mb-4" />
-                  <h3>Grow Net Worth</h3>
-                  <p>
+                <div className="bg-white/5 rounded-lg p-4 md:p-6 text-center h-full">
+                  <TrendingUp className="h-5 w-5 md:h-7 md:w-7 text-green-400 mx-auto mb-2 md:mb-4" />
+                  <h3 className="text-base md:text-lg font-semibold mb-1 md:mb-2">Grow Net Worth</h3>
+                  <p className="text-sm md:text-base text-gray-300">
                     See the big picture and make smarter money moves
                   </p>
                 </div>
               </div>
 
               {/* Stay in Control */}
-              <div className="relative h-full rounded-xl border border-white/10 p-2">
+              <div className="relative h-full rounded-xl border border-white/10 p-1.5 md:p-2">
                 <GlowingEffect spread={40} glow={true} disabled={isMobile} proximity={64} inactiveZone={0.01} borderWidth={1} />
-                <div className="card text-center h-full">
-                  <Shield className="h-7 w-7 text-blue-400 mx-auto mb-4" />
-                  <h3>Stay in Control</h3>
-                  <p>
+                <div className="bg-white/5 rounded-lg p-4 md:p-6 text-center h-full">
+                  <Shield className="h-5 w-5 md:h-7 md:w-7 text-blue-400 mx-auto mb-2 md:mb-4" />
+                  <h3 className="text-base md:text-lg font-semibold mb-1 md:mb-2">Stay in Control</h3>
+                  <p className="text-sm md:text-base text-gray-300">
                     Personalized budgets that work with you, not against you
                   </p>
                 </div>
@@ -849,26 +849,26 @@ export default function LandingNew() {
             </div>
 
             {/* Trust badges */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-4xl mx-auto">
-              <div className="flex items-center gap-3 justify-center">
-                <Shield className="h-6 w-6 text-blue-400" />
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6 max-w-4xl mx-auto">
+              <div className="flex items-center gap-2 md:gap-3 justify-center">
+                <Shield className="h-5 w-5 md:h-6 md:w-6 text-blue-400" />
                 <div>
-                  <p className="font-semibold">3,000+ people</p>
-                  <p className="text-sm text-gray-400">Use Flint every day</p>
+                  <p className="font-semibold text-sm md:text-base">3,000+ people</p>
+                  <p className="text-xs md:text-sm text-gray-400">Use Flint every day</p>
                 </div>
               </div>
-              <div className="flex items-center gap-3 justify-center">
-                <Lock className="h-6 w-6 text-blue-400" />
+              <div className="flex items-center gap-2 md:gap-3 justify-center">
+                <Lock className="h-5 w-5 md:h-6 md:w-6 text-blue-400" />
                 <div>
-                  <p className="font-semibold">Super safe</p>
-                  <p className="text-sm text-gray-400">Same security as banks</p>
+                  <p className="font-semibold text-sm md:text-base">Super safe</p>
+                  <p className="text-xs md:text-sm text-gray-400">Same security as banks</p>
                 </div>
               </div>
-              <div className="flex items-center gap-3 justify-center">
-                <Shield className="h-6 w-6 text-blue-400" />
+              <div className="flex items-center gap-2 md:gap-3 justify-center">
+                <Shield className="h-5 w-5 md:h-6 md:w-6 text-blue-400" />
                 <div>
-                  <p className="font-semibold">Free to start</p>
-                  <p className="text-sm text-gray-400">No credit card needed</p>
+                  <p className="font-semibold text-sm md:text-base">Free to start</p>
+                  <p className="text-xs md:text-sm text-gray-400">No credit card needed</p>
                 </div>
               </div>
             </div>
@@ -880,7 +880,7 @@ export default function LandingNew() {
           <div className="apple-container">
             <div className="text-center mb-16">
               <h2 className="apple-h2 mb-8">Loved by Early Adopters</h2>
-              <div className="inline-block bg-blue-600/10 border border-blue-400/30 rounded-xl p-6 mb-6">
+              <div className="inline-block bg-blue-600/10 border border-blue-400/30 rounded-xl p-4 md:p-6 mb-4 md:mb-6">
                 <p className="apple-caption text-blue-400 font-semibold mb-3">🔥 LAUNCH POOL FILLING FAST</p>
                 <div className="flex items-center gap-3 mb-3">
                   <div className="flex-1 h-3 bg-white/10 rounded-xl overflow-hidden">
@@ -892,27 +892,27 @@ export default function LandingNew() {
             </div>
 
             {/* Testimonials */}
-            <div className="grid md:grid-cols-3 gap-6">
+            <div className="grid md:grid-cols-3 gap-3 md:gap-6">
               {/* Testimonial 1 */}
-              <div className="relative h-full rounded-xl border border-white/10 p-2">
+              <div className="relative h-full rounded-xl border border-white/10 p-1.5 md:p-2">
                 <GlowingEffect spread={40} glow={true} disabled={isMobile} proximity={64} inactiveZone={0.01} borderWidth={1} />
-                <div className="bg-white/5 border-white/10 p-6 h-full">
-                  <div className="space-y-4">
+                <div className="bg-white/5 border-white/10 p-4 md:p-6 h-full">
+                  <div className="space-y-3 md:space-y-4">
                     <div className="flex gap-1">
                       {[...Array(5)].map((_, i) => (
-                        <span key={i} className="text-yellow-400">★</span>
+                        <span key={i} className="text-yellow-400 text-sm md:text-base">★</span>
                       ))}
                     </div>
-                    <p className="text-gray-300 italic">
+                    <p className="text-gray-300 italic text-sm md:text-base">
                       "Finally, I can see all my accounts in one place. Found $400 in fees I didn't know I was paying!"
                     </p>
-                    <div className="flex items-center gap-3">
-                      <div className="h-10 w-10 rounded-full bg-blue-600/20 flex items-center justify-center text-blue-400 font-semibold">
+                    <div className="flex items-center gap-2 md:gap-3">
+                      <div className="h-8 w-8 md:h-10 md:w-10 rounded-full bg-blue-600/20 flex items-center justify-center text-blue-400 font-semibold text-sm md:text-base">
                         JM
                       </div>
                       <div>
-                        <p className="font-semibold text-white">Jessica M.</p>
-                        <p className="text-sm text-gray-400">Early Adopter</p>
+                        <p className="font-semibold text-white text-sm md:text-base">Jessica M.</p>
+                        <p className="text-xs md:text-sm text-gray-400">Early Adopter</p>
                       </div>
                     </div>
                   </div>
@@ -920,25 +920,25 @@ export default function LandingNew() {
               </div>
 
               {/* Testimonial 2 */}
-              <div className="relative h-full rounded-xl border border-white/10 p-2">
+              <div className="relative h-full rounded-xl border border-white/10 p-1.5 md:p-2">
                 <GlowingEffect spread={40} glow={true} disabled={isMobile} proximity={64} inactiveZone={0.01} borderWidth={1} />
-                <div className="bg-white/5 border-white/10 p-6 h-full">
-                  <div className="space-y-4">
+                <div className="bg-white/5 border-white/10 p-4 md:p-6 h-full">
+                  <div className="space-y-3 md:space-y-4">
                     <div className="flex gap-1">
                       {[...Array(5)].map((_, i) => (
-                        <span key={i} className="text-yellow-400">★</span>
+                        <span key={i} className="text-yellow-400 text-sm md:text-base">★</span>
                       ))}
                     </div>
-                    <p className="text-gray-300 italic">
+                    <p className="text-gray-300 italic text-sm md:text-base">
                       "Super easy to use. I connected 8 accounts in under 5 minutes. The alerts are game-changing."
                     </p>
-                    <div className="flex items-center gap-3">
-                      <div className="h-10 w-10 rounded-full bg-green-600/20 flex items-center justify-center text-green-400 font-semibold">
+                    <div className="flex items-center gap-2 md:gap-3">
+                      <div className="h-8 w-8 md:h-10 md:w-10 rounded-full bg-green-600/20 flex items-center justify-center text-green-400 font-semibold text-sm md:text-base">
                         DR
                       </div>
                       <div>
-                        <p className="font-semibold text-white">David R.</p>
-                        <p className="text-sm text-gray-400">Pro User</p>
+                        <p className="font-semibold text-white text-sm md:text-base">David R.</p>
+                        <p className="text-xs md:text-sm text-gray-400">Pro User</p>
                       </div>
                     </div>
                   </div>
@@ -946,25 +946,25 @@ export default function LandingNew() {
               </div>
 
               {/* Testimonial 3 */}
-              <div className="relative h-full rounded-xl border border-white/10 p-2">
+              <div className="relative h-full rounded-xl border border-white/10 p-1.5 md:p-2">
                 <GlowingEffect spread={40} glow={true} disabled={isMobile} proximity={64} inactiveZone={0.01} borderWidth={1} />
-                <div className="bg-white/5 border-white/10 p-6 h-full">
-                  <div className="space-y-4">
+                <div className="bg-white/5 border-white/10 p-4 md:p-6 h-full">
+                  <div className="space-y-3 md:space-y-4">
                     <div className="flex gap-1">
                       {[...Array(5)].map((_, i) => (
-                        <span key={i} className="text-yellow-400">★</span>
+                        <span key={i} className="text-yellow-400 text-sm md:text-base">★</span>
                       ))}
                     </div>
-                    <p className="text-gray-300 italic">
+                    <p className="text-gray-300 italic text-sm md:text-base">
                       "Clean design, works perfectly. Helps me track crypto and stocks without jumping between apps."
                     </p>
-                    <div className="flex items-center gap-3">
-                      <div className="h-10 w-10 rounded-full bg-blue-600/20 flex items-center justify-center text-blue-400 font-semibold">
+                    <div className="flex items-center gap-2 md:gap-3">
+                      <div className="h-8 w-8 md:h-10 md:w-10 rounded-full bg-blue-600/20 flex items-center justify-center text-blue-400 font-semibold text-sm md:text-base">
                         SK
                       </div>
                       <div>
-                        <p className="font-semibold text-white">Sarah K.</p>
-                        <p className="text-sm text-gray-400">Investor</p>
+                        <p className="font-semibold text-white text-sm md:text-base">Sarah K.</p>
+                        <p className="text-xs md:text-sm text-gray-400">Investor</p>
                       </div>
                     </div>
                   </div>
@@ -982,35 +982,35 @@ export default function LandingNew() {
               <p className="apple-caption text-gray-300">Simple. Fast. Free to try.</p>
             </div>
 
-            <div className="grid md:grid-cols-3 gap-8">
-              <div className="relative h-full rounded-xl border border-white/10 p-2">
+            <div className="grid md:grid-cols-3 gap-3 md:gap-8">
+              <div className="relative h-full rounded-xl border border-white/10 p-1.5 md:p-2">
                 <GlowingEffect spread={40} glow={true} disabled={isMobile} proximity={64} inactiveZone={0.01} borderWidth={1} />
-                <div className="bg-white/5 border-white/10 rounded-lg p-8 hover:bg-white/10 transition-colors h-full">
-                  <Wallet className="h-7 w-7 text-blue-400 mb-4" />
-                  <h3 className="apple-h3">All Your Money</h3>
-                  <p className="apple-body text-gray-300">
+                <div className="bg-white/5 border-white/10 rounded-lg p-4 md:p-8 hover:bg-white/10 transition-colors h-full">
+                  <Wallet className="h-5 w-5 md:h-7 md:w-7 text-blue-400 mb-2 md:mb-4" />
+                  <h3 className="apple-h3 text-base md:text-xl">All Your Money</h3>
+                  <p className="apple-body text-gray-300 text-sm md:text-base">
                     See your bank, cards, stocks, and crypto together
                   </p>
                 </div>
               </div>
 
-              <div className="relative h-full rounded-xl border border-white/10 p-2">
+              <div className="relative h-full rounded-xl border border-white/10 p-1.5 md:p-2">
                 <GlowingEffect spread={40} glow={true} disabled={isMobile} proximity={64} inactiveZone={0.01} borderWidth={1} />
-                <div className="bg-white/5 border-white/10 rounded-lg p-8 hover:bg-white/10 transition-colors h-full">
-                  <span className="text-3xl mb-4 block">🔁</span>
-                  <h3 className="apple-h3">Trade & Transfer</h3>
-                  <p className="apple-body text-gray-300">
+                <div className="bg-white/5 border-white/10 rounded-lg p-4 md:p-8 hover:bg-white/10 transition-colors h-full">
+                  <span className="text-2xl md:text-3xl mb-2 md:mb-4 block">🔁</span>
+                  <h3 className="apple-h3 text-base md:text-xl">Trade & Transfer</h3>
+                  <p className="apple-body text-gray-300 text-sm md:text-base">
                     Move money and buy stocks directly from Flint
                   </p>
                 </div>
               </div>
 
-              <div className="relative h-full rounded-xl border border-white/10 p-2">
+              <div className="relative h-full rounded-xl border border-white/10 p-1.5 md:p-2">
                 <GlowingEffect spread={40} glow={true} disabled={isMobile} proximity={64} inactiveZone={0.01} borderWidth={1} />
-                <div className="bg-white/5 border-white/10 rounded-lg p-8 hover:bg-white/10 transition-colors h-full">
-                  <TrendingUp className="h-7 w-7 text-blue-400 mb-4" />
-                  <h3 className="apple-h3">Grow Wealth</h3>
-                  <p className="apple-body text-gray-300">
+                <div className="bg-white/5 border-white/10 rounded-lg p-4 md:p-8 hover:bg-white/10 transition-colors h-full">
+                  <TrendingUp className="h-5 w-5 md:h-7 md:w-7 text-blue-400 mb-2 md:mb-4" />
+                  <h3 className="apple-h3 text-base md:text-xl">Grow Wealth</h3>
+                  <p className="apple-body text-gray-300 text-sm md:text-base">
                     Track investments and optimize your portfolio
                   </p>
                 </div>
@@ -1597,19 +1597,19 @@ export default function LandingNew() {
 
             <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 max-w-6xl mx-auto">
               {/* Free Plan */}
-              <div className="relative h-full rounded-xl border border-white/10 p-2">
+              <div className="relative h-full rounded-xl border border-white/10 p-1.5 md:p-2">
                 <GlowingEffect spread={40} glow={true} disabled={isMobile} proximity={64} inactiveZone={0.01} borderWidth={1} />
-                <div className="card flex flex-col h-full">
-                  <div className="mb-6">
-                    <h3>Free</h3>
-                    <div className="flex items-baseline gap-2 mb-3">
-                      <span className="text-4xl font-bold">$0</span>
-                      <span className="text-sm text-gray-400">forever</span>
+                <div className="card flex flex-col h-full !p-4 md:!p-6">
+                  <div className="mb-4 md:mb-6">
+                    <h3 className="text-lg md:text-xl">Free</h3>
+                    <div className="flex items-baseline gap-2 mb-2 md:mb-3">
+                      <span className="text-3xl md:text-4xl font-bold">$0</span>
+                      <span className="text-xs md:text-sm text-gray-400">forever</span>
                     </div>
-                    <p className="text-sm text-gray-300">Try it out</p>
+                    <p className="text-xs md:text-sm text-gray-300">Try it out</p>
                   </div>
 
-                  <ul className="space-y-2 mb-8">
+                  <ul className="space-y-2 mb-6 md:mb-8">
                     <li className="flex items-start gap-2">
                       <Check className="h-5 w-5 text-green-400 flex-shrink-0 mt-0.5" />
                       <span className="text-sm">4 accounts</span>
@@ -1635,26 +1635,26 @@ export default function LandingNew() {
               </div>
 
               {/* Basic Plan */}
-              <div className="relative h-full rounded-xl border border-blue-400/30 p-2">
+              <div className="relative h-full rounded-xl border border-blue-400/30 p-1.5 md:p-2">
                 <GlowingEffect spread={40} glow={true} disabled={isMobile} proximity={64} inactiveZone={0.01} borderWidth={1} variant="default" />
-                <div className="panel relative overflow-hidden h-full">
-                  <div className="absolute top-4 right-4">
-                    <span className="bg-blue-500 text-white text-sm font-semibold px-2 py-1 rounded-lg">
+                <div className="panel relative overflow-hidden h-full !p-4 md:!p-6">
+                  <div className="absolute top-3 right-3 md:top-4 md:right-4">
+                    <span className="bg-blue-500 text-white text-xs md:text-sm font-semibold px-2 py-1 rounded-lg">
                       Most Popular
                     </span>
                   </div>
 
-                  <div className="mb-6">
-                    <h3>Basic</h3>
+                  <div className="mb-4 md:mb-6">
+                    <h3 className="text-lg md:text-xl">Basic</h3>
                     <div className="flex items-baseline gap-2 mb-2">
-                      <span className="text-4xl font-bold">${isAnnual ? '199' : '19.99'}</span>
-                      <span className="text-sm text-gray-400">{isAnnual ? '/year' : '/month'}</span>
+                      <span className="text-3xl md:text-4xl font-bold">${isAnnual ? '199' : '19.99'}</span>
+                      <span className="text-xs md:text-sm text-gray-400">{isAnnual ? '/year' : '/month'}</span>
                     </div>
-                    {isAnnual && <p className="text-sm text-green-400 mb-1">$199/year - 2 months free!</p>}
-                    <p className="text-sm text-gray-300">For active users</p>
+                    {isAnnual && <p className="text-xs md:text-sm text-green-400 mb-1">$199/year - 2 months free!</p>}
+                    <p className="text-xs md:text-sm text-gray-300">For active users</p>
                   </div>
 
-                  <ul className="space-y-2 mb-8">
+                  <ul className="space-y-2 mb-6 md:mb-8">
                     <li className="flex items-start gap-2">
                       <Check className="h-5 w-5 text-blue-400 flex-shrink-0 mt-0.5" />
                       <span className="text-sm font-semibold">Unlimited accounts</span>
@@ -1692,20 +1692,20 @@ export default function LandingNew() {
               </div>
 
               {/* Pro Plan */}
-              <div className="relative h-full rounded-xl border border-white/10 p-2">
+              <div className="relative h-full rounded-xl border border-white/10 p-1.5 md:p-2">
                 <GlowingEffect spread={40} glow={true} disabled={isMobile} proximity={64} inactiveZone={0.01} borderWidth={1} />
-                <div className="card h-full">
-                  <div className="mb-6">
-                    <h3 className="apple-h3">Pro</h3>
+                <div className="card h-full !p-4 md:!p-6">
+                  <div className="mb-4 md:mb-6">
+                    <h3 className="text-lg md:text-xl">Pro</h3>
                     <div className="flex items-baseline gap-2 mb-2">
-                      <span className="apple-h2">${isAnnual ? '399' : '39.99'}</span>
-                      <span className="apple-caption text-gray-400">{isAnnual ? '/year' : '/month'}</span>
+                      <span className="text-3xl md:text-4xl font-bold">${isAnnual ? '399' : '39.99'}</span>
+                      <span className="text-xs md:text-sm text-gray-400">{isAnnual ? '/year' : '/month'}</span>
                     </div>
-                    {isAnnual && <p className="apple-caption text-green-400 mb-1">$399/year - 2 months free!</p>}
-                    <p className="apple-caption text-gray-300">For power users</p>
+                    {isAnnual && <p className="text-xs md:text-sm text-green-400 mb-1">$399/year - 2 months free!</p>}
+                    <p className="text-xs md:text-sm text-gray-300">For power users</p>
                   </div>
 
-                  <ul className="space-y-2 mb-8">
+                  <ul className="space-y-2 mb-6 md:mb-8">
                     <li className="flex items-start gap-2">
                       <Check className="h-5 w-5 text-blue-400 flex-shrink-0 mt-0.5" />
                       <span className="apple-caption font-semibold">Unlimited accounts</span>
@@ -1854,7 +1854,7 @@ export default function LandingNew() {
       </main>
       {/* Scroll Popup */}
       {showScrollPopup && !scrollPopupSubmitted && (
-        <div className="fixed bottom-4 right-4 max-w-sm bg-black border border-white/20 rounded-lg p-6 shadow-2xl z-50 animate-[fadeInUp_0.3s_ease-out]">
+        <div className="fixed bottom-4 right-4 max-w-[90vw] sm:max-w-sm bg-black border border-white/20 rounded-lg p-4 md:p-6 shadow-2xl z-50 animate-[fadeInUp_0.3s_ease-out]">
           <button 
             onClick={() => setShowScrollPopup(false)} 
             className="absolute top-2 right-2 text-gray-400 hover:text-white"
@@ -1882,7 +1882,7 @@ export default function LandingNew() {
         </div>
       )}
       {showScrollPopup && scrollPopupSubmitted && (
-        <div className="fixed bottom-4 right-4 max-w-sm bg-green-500/10 border border-green-500/20 rounded-lg p-6 shadow-2xl z-50">
+        <div className="fixed bottom-4 right-4 max-w-[90vw] sm:max-w-sm bg-green-500/10 border border-green-500/20 rounded-lg p-4 md:p-6 shadow-2xl z-50">
           <Check className="h-6 w-6 text-green-400 mb-2" />
           <p className="text-green-400">Thanks for subscribing!</p>
         </div>

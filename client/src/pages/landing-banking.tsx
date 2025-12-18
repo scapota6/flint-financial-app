@@ -207,7 +207,7 @@ export default function LandingBanking() {
 
         <section className="py-16 px-4">
           <div className="max-w-4xl mx-auto">
-            <div className="grid md:grid-cols-3 gap-8 text-center">
+            <div className="grid md:grid-cols-3 gap-4 md:gap-8 text-center">
               <div>
                 <p className="text-3xl font-bold text-blue-400 mb-2">10,000+</p>
                 <p className="text-gray-400">Banks Supported</p>
@@ -257,45 +257,45 @@ export default function LandingBanking() {
               Stop logging into multiple bank apps. See everything in one place.
             </p>
             
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <div className="relative rounded-xl border border-white/10 p-2">
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
+              <div className="relative rounded-xl border border-white/10 p-1.5 md:p-2">
                 <GlowingEffect spread={40} glow={true} disabled={isMobile} proximity={64} inactiveZone={0.01} borderWidth={1} />
-                <div className="bg-white/5 rounded-lg p-6 h-full">
-                  <DollarSign className="h-8 w-8 text-blue-400 mb-4" />
-                  <h3 className="text-lg font-semibold mb-2">Total Net Worth</h3>
+                <div className="bg-white/5 rounded-lg p-4 md:p-6 h-full">
+                  <DollarSign className="h-6 w-6 md:h-8 md:w-8 text-blue-400 mb-2 md:mb-4" />
+                  <h3 className="text-base md:text-lg font-semibold mb-2">Total Net Worth</h3>
                   <p className="text-gray-400 text-sm">
                     See your complete financial picture across all accounts.
                   </p>
                 </div>
               </div>
               
-              <div className="relative rounded-xl border border-white/10 p-2">
+              <div className="relative rounded-xl border border-white/10 p-1.5 md:p-2">
                 <GlowingEffect spread={40} glow={true} disabled={isMobile} proximity={64} inactiveZone={0.01} borderWidth={1} />
-                <div className="bg-white/5 rounded-lg p-6 h-full">
-                  <CreditCard className="h-8 w-8 text-green-400 mb-4" />
-                  <h3 className="text-lg font-semibold mb-2">Track Credit Cards</h3>
+                <div className="bg-white/5 rounded-lg p-4 md:p-6 h-full">
+                  <CreditCard className="h-6 w-6 md:h-8 md:w-8 text-green-400 mb-2 md:mb-4" />
+                  <h3 className="text-base md:text-lg font-semibold mb-2">Track Credit Cards</h3>
                   <p className="text-gray-400 text-sm">
                     Monitor balances and pay down debt faster.
                   </p>
                 </div>
               </div>
               
-              <div className="relative rounded-xl border border-blue-400/30 p-2">
+              <div className="relative rounded-xl border border-blue-400/30 p-1.5 md:p-2">
                 <GlowingEffect spread={40} glow={true} disabled={isMobile} proximity={64} inactiveZone={0.01} borderWidth={1} />
-                <div className="bg-gradient-to-b from-blue-500/10 to-transparent rounded-lg p-6 h-full">
-                  <Send className="h-8 w-8 text-blue-400 mb-4" />
-                  <h3 className="text-lg font-semibold mb-2">Transfer Money</h3>
+                <div className="bg-gradient-to-b from-blue-500/10 to-transparent rounded-lg p-4 md:p-6 h-full">
+                  <Send className="h-6 w-6 md:h-8 md:w-8 text-blue-400 mb-2 md:mb-4" />
+                  <h3 className="text-base md:text-lg font-semibold mb-2">Transfer Money</h3>
                   <p className="text-gray-400 text-sm">
                     Move money between accounts without leaving Flint.
                   </p>
                 </div>
               </div>
               
-              <div className="relative rounded-xl border border-white/10 p-2">
+              <div className="relative rounded-xl border border-white/10 p-1.5 md:p-2">
                 <GlowingEffect spread={40} glow={true} disabled={isMobile} proximity={64} inactiveZone={0.01} borderWidth={1} />
-                <div className="bg-white/5 rounded-lg p-6 h-full">
-                  <Shield className="h-8 w-8 text-green-400 mb-4" />
-                  <h3 className="text-lg font-semibold mb-2">Bank-Level Security</h3>
+                <div className="bg-white/5 rounded-lg p-4 md:p-6 h-full">
+                  <Shield className="h-6 w-6 md:h-8 md:w-8 text-green-400 mb-2 md:mb-4" />
+                  <h3 className="text-base md:text-lg font-semibold mb-2">Bank-Level Security</h3>
                   <p className="text-gray-400 text-sm">
                     We never store your passwords. We're not a custodian and never move your funds.
                   </p>
@@ -310,24 +310,24 @@ export default function LandingBanking() {
             <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">How It Works</h2>
             
             <div className="space-y-10">
-              <div className="flex items-start gap-6">
-                <span className="text-4xl font-black text-blue-500 flex-shrink-0">1</span>
+              <div className="flex items-start gap-4 md:gap-6">
+                <span className="text-3xl md:text-4xl font-black text-blue-500 flex-shrink-0">1</span>
                 <div>
                   <h3 className="text-xl font-bold mb-2">Connect Your Accounts</h3>
                   <p className="text-gray-400">Link Chase, Bank of America, Capital One, and 10,000+ more banks in seconds.</p>
                 </div>
               </div>
               
-              <div className="flex items-start gap-6">
-                <span className="text-4xl font-black text-blue-500 flex-shrink-0">2</span>
+              <div className="flex items-start gap-4 md:gap-6">
+                <span className="text-3xl md:text-4xl font-black text-blue-500 flex-shrink-0">2</span>
                 <div>
                   <h3 className="text-xl font-bold mb-2">See Your Total Balance</h3>
                   <p className="text-gray-400">View all your accounts, track spending, and see your total money in real time.</p>
                 </div>
               </div>
               
-              <div className="flex items-start gap-6">
-                <span className="text-4xl font-black text-blue-500 flex-shrink-0">3</span>
+              <div className="flex items-start gap-4 md:gap-6">
+                <span className="text-3xl md:text-4xl font-black text-blue-500 flex-shrink-0">3</span>
                 <div>
                   <h3 className="text-xl font-bold mb-2">Take Control</h3>
                   <p className="text-gray-400">Set spending alerts, pay off debt, and transfer money without switching apps.</p>
@@ -371,11 +371,11 @@ export default function LandingBanking() {
               </div>
             </div>
             
-            <div className="grid md:grid-cols-3 gap-6">
-              <div className="relative rounded-xl border border-white/10 p-2">
+            <div className="grid md:grid-cols-3 gap-3 md:gap-6">
+              <div className="relative rounded-xl border border-white/10 p-1.5 md:p-2">
                 <GlowingEffect spread={40} glow={true} disabled={isMobile} proximity={64} inactiveZone={0.01} borderWidth={1} />
-                <div className="bg-white/5 rounded-lg p-6 h-full flex flex-col">
-                  <div className="mb-6">
+                <div className="bg-white/5 rounded-lg p-4 md:p-6 h-full flex flex-col">
+                  <div className="mb-4 md:mb-6">
                     <h3 className="text-xl font-semibold mb-2">Free</h3>
                     <div className="flex items-baseline gap-2 mb-2">
                       <span className="text-4xl font-bold">$0</span>
@@ -394,13 +394,13 @@ export default function LandingBanking() {
                 </div>
               </div>
               
-              <div className="relative rounded-xl border border-blue-400/30 p-2">
+              <div className="relative rounded-xl border border-blue-400/30 p-1.5 md:p-2">
                 <GlowingEffect spread={40} glow={true} disabled={isMobile} proximity={64} inactiveZone={0.01} borderWidth={1} />
-                <div className="bg-gradient-to-b from-blue-500/10 to-transparent rounded-lg p-6 h-full flex flex-col relative">
+                <div className="bg-gradient-to-b from-blue-500/10 to-transparent rounded-lg p-4 md:p-6 h-full flex flex-col relative">
                   <div className="absolute top-4 right-4">
                     <span className="bg-blue-500 text-white text-xs font-semibold px-2 py-1 rounded">Most Popular</span>
                   </div>
-                  <div className="mb-6">
+                  <div className="mb-4 md:mb-6">
                     <h3 className="text-xl font-semibold mb-2">Basic</h3>
                     <div className="flex items-baseline gap-2 mb-2">
                       <span className="text-4xl font-bold">${isAnnual ? '199' : '19.99'}</span>
@@ -422,10 +422,10 @@ export default function LandingBanking() {
                 </div>
               </div>
               
-              <div className="relative rounded-xl border border-white/10 p-2">
+              <div className="relative rounded-xl border border-white/10 p-1.5 md:p-2">
                 <GlowingEffect spread={40} glow={true} disabled={isMobile} proximity={64} inactiveZone={0.01} borderWidth={1} />
-                <div className="bg-white/5 rounded-lg p-6 h-full flex flex-col">
-                  <div className="mb-6">
+                <div className="bg-white/5 rounded-lg p-4 md:p-6 h-full flex flex-col">
+                  <div className="mb-4 md:mb-6">
                     <h3 className="text-xl font-semibold mb-2">Pro</h3>
                     <div className="flex items-baseline gap-2 mb-2">
                       <span className="text-4xl font-bold">${isAnnual ? '399' : '39.99'}</span>

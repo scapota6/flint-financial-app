@@ -468,20 +468,20 @@ function Landing() {
               </p>
             </div>
 
-            <div className="grid md:grid-cols-3 gap-8">
+            <div className="grid md:grid-cols-3 gap-4 md:gap-8">
               {/* Time Wasted */}
               <Card className="bg-gray-900/80 border-red-900/50">
-                <CardContent className="p-8 text-center space-y-4">
+                <CardContent className="p-4 md:p-8 text-center space-y-3 md:space-y-4">
                   <div className="flex justify-center">
-                    <div className="h-16 w-16 rounded-full bg-gradient-to-br from-red-500 to-red-700 flex items-center justify-center">
-                      <Users className="h-8 w-8 text-white" />
+                    <div className="h-12 w-12 md:h-16 md:w-16 rounded-full bg-gradient-to-br from-red-500 to-red-700 flex items-center justify-center">
+                      <Users className="h-6 w-6 md:h-8 md:w-8 text-white" />
                     </div>
                   </div>
-                  <div className="space-y-2">
-                    <div className="stat-number text-red-400">3+ hours</div>
-                    <div className="text-gray-400 text-lg">wasted every week</div>
+                  <div className="space-y-1 md:space-y-2">
+                    <div className="stat-number text-red-400 text-3xl md:text-4xl">3+ hours</div>
+                    <div className="text-gray-400 text-base md:text-lg">wasted every week</div>
                   </div>
-                  <p className="text-gray-300">
+                  <p className="text-gray-300 text-sm md:text-base">
                     Switching between 5-8 different banking apps, brokerages, and spreadsheets just to check your finances
                   </p>
                 </CardContent>
@@ -489,17 +489,17 @@ function Landing() {
 
               {/* Money Lost */}
               <Card className="bg-gray-900/80 border-red-900/50">
-                <CardContent className="p-8 text-center space-y-4">
+                <CardContent className="p-4 md:p-8 text-center space-y-3 md:space-y-4">
                   <div className="flex justify-center">
-                    <div className="h-16 w-16 rounded-full bg-gradient-to-br from-orange-500 to-orange-700 flex items-center justify-center">
-                      <DollarSign className="h-8 w-8 text-white" />
+                    <div className="h-12 w-12 md:h-16 md:w-16 rounded-full bg-gradient-to-br from-orange-500 to-orange-700 flex items-center justify-center">
+                      <DollarSign className="h-6 w-6 md:h-8 md:w-8 text-white" />
                     </div>
                   </div>
-                  <div className="space-y-2">
-                    <div className="stat-number text-orange-400">$1,847</div>
-                    <div className="text-gray-400 text-lg">lost per year</div>
+                  <div className="space-y-1 md:space-y-2">
+                    <div className="stat-number text-orange-400 text-3xl md:text-4xl">$1,847</div>
+                    <div className="text-gray-400 text-base md:text-lg">lost per year</div>
                   </div>
-                  <p className="text-gray-300">
+                  <p className="text-gray-300 text-sm md:text-base">
                     Hidden fees, forgotten subscriptions, and missed opportunities across disconnected accounts
                   </p>
                 </CardContent>
@@ -507,17 +507,17 @@ function Landing() {
 
               {/* Financial Confusion */}
               <Card className="bg-gray-900/80 border-red-900/50">
-                <CardContent className="p-8 text-center space-y-4">
+                <CardContent className="p-4 md:p-8 text-center space-y-3 md:space-y-4">
                   <div className="flex justify-center">
-                    <div className="h-16 w-16 rounded-full bg-gradient-to-br from-yellow-500 to-yellow-700 flex items-center justify-center">
-                      <Shield className="h-8 w-8 text-white" />
+                    <div className="h-12 w-12 md:h-16 md:w-16 rounded-full bg-gradient-to-br from-yellow-500 to-yellow-700 flex items-center justify-center">
+                      <Shield className="h-6 w-6 md:h-8 md:w-8 text-white" />
                     </div>
                   </div>
-                  <div className="space-y-2">
-                    <div className="text-5xl font-bold text-yellow-400">68%</div>
-                    <div className="text-gray-400 text-lg">don't know their net worth</div>
+                  <div className="space-y-1 md:space-y-2">
+                    <div className="text-4xl md:text-5xl font-bold text-yellow-400">68%</div>
+                    <div className="text-gray-400 text-base md:text-lg">don't know their net worth</div>
                   </div>
-                  <p className="text-gray-300">
+                  <p className="text-gray-300 text-sm md:text-base">
                     Because their money is too scattered across banks, brokerages, and crypto wallets to track
                   </p>
                 </CardContent>
@@ -547,15 +547,15 @@ function Landing() {
               </p>
             </div>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6">
               {/* Money In/Out Flow */}
               <Card className="bg-gray-900/80 border-gray-700 hover:border-blue-500/50 transition-all duration-300">
-                <CardHeader>
-                  <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center mb-4">
-                    <ArrowUpDown className="h-6 w-6 text-white" />
+                <CardHeader className="p-4 md:p-6">
+                  <div className="h-10 w-10 md:h-12 md:w-12 rounded-lg bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center mb-2 md:mb-4">
+                    <ArrowUpDown className="h-5 w-5 md:h-6 md:w-6 text-white" />
                   </div>
-                  <CardTitle className="text-white">Money In/Out Flow</CardTitle>
-                  <CardDescription className="text-gray-400">
+                  <CardTitle className="text-white text-base md:text-lg">Money In/Out Flow</CardTitle>
+                  <CardDescription className="text-gray-400 text-sm md:text-base">
                     Track where your money comes from and where it goes.
                   </CardDescription>
                 </CardHeader>
@@ -563,9 +563,9 @@ function Landing() {
 
               {/* Recurring Subscriptions */}
               <Card className="bg-gray-900/80 border-gray-700 hover:border-blue-500/50 transition-all duration-300">
-                <CardHeader>
-                  <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-purple-500 to-purple-700 flex items-center justify-center mb-4">
-                    <RefreshCcw className="h-6 w-6 text-white" />
+                <CardHeader className="p-4 md:p-6">
+                  <div className="h-10 w-10 md:h-12 md:w-12 rounded-lg bg-gradient-to-br from-purple-500 to-purple-700 flex items-center justify-center mb-2 md:mb-4">
+                    <RefreshCcw className="h-5 w-5 md:h-6 md:w-6 text-white" />
                   </div>
                   <CardTitle className="text-white">Recurring Subscriptions</CardTitle>
                   <CardDescription className="text-gray-400">
@@ -576,12 +576,12 @@ function Landing() {
 
               {/* Investment P&L */}
               <Card className="bg-gray-900/80 border-gray-700 hover:border-green-500/50 transition-all duration-300">
-                <CardHeader>
-                  <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-green-500 to-green-700 flex items-center justify-center mb-4">
-                    <TrendingUp className="h-6 w-6 text-white" />
+                <CardHeader className="p-4 md:p-6">
+                  <div className="h-10 w-10 md:h-12 md:w-12 rounded-lg bg-gradient-to-br from-green-500 to-green-700 flex items-center justify-center mb-2 md:mb-4">
+                    <TrendingUp className="h-5 w-5 md:h-6 md:w-6 text-white" />
                   </div>
-                  <CardTitle className="text-white">Investment Profit/Loss</CardTitle>
-                  <CardDescription className="text-gray-400">
+                  <CardTitle className="text-white text-base md:text-lg">Investment Profit/Loss</CardTitle>
+                  <CardDescription className="text-gray-400 text-sm md:text-base">
                     Full view of gains and losses across all investments.
                   </CardDescription>
                 </CardHeader>
@@ -589,12 +589,12 @@ function Landing() {
 
               {/* Transaction Review */}
               <Card className="bg-gray-900/80 border-gray-700 hover:border-cyan-500/50 transition-all duration-300">
-                <CardHeader>
-                  <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-cyan-500 to-cyan-700 flex items-center justify-center mb-4">
-                    <Receipt className="h-6 w-6 text-white" />
+                <CardHeader className="p-4 md:p-6">
+                  <div className="h-10 w-10 md:h-12 md:w-12 rounded-lg bg-gradient-to-br from-cyan-500 to-cyan-700 flex items-center justify-center mb-2 md:mb-4">
+                    <Receipt className="h-5 w-5 md:h-6 md:w-6 text-white" />
                   </div>
-                  <CardTitle className="text-white">Transaction History</CardTitle>
-                  <CardDescription className="text-gray-400">
+                  <CardTitle className="text-white text-base md:text-lg">Transaction History</CardTitle>
+                  <CardDescription className="text-gray-400 text-sm md:text-base">
                     Browse and analyze every transaction from all accounts.
                   </CardDescription>
                 </CardHeader>
@@ -602,12 +602,12 @@ function Landing() {
 
               {/* Stock Charts */}
               <Card className="bg-gray-900/80 border-gray-700 hover:border-blue-500/50 transition-all duration-300">
-                <CardHeader>
-                  <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-700 flex items-center justify-center mb-4">
-                    <LineChart className="h-6 w-6 text-white" />
+                <CardHeader className="p-4 md:p-6">
+                  <div className="h-10 w-10 md:h-12 md:w-12 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-700 flex items-center justify-center mb-2 md:mb-4">
+                    <LineChart className="h-5 w-5 md:h-6 md:w-6 text-white" />
                   </div>
-                  <CardTitle className="text-white">Smart Stock Charts</CardTitle>
-                  <CardDescription className="text-gray-400">
+                  <CardTitle className="text-white text-base md:text-lg">Smart Stock Charts</CardTitle>
+                  <CardDescription className="text-gray-400 text-sm md:text-base">
                     Make informed investment decisions with detailed charts.
                   </CardDescription>
                 </CardHeader>
@@ -615,12 +615,12 @@ function Landing() {
 
               {/* Credit Card Utilization */}
               <Card className="bg-gray-900/80 border-gray-700 hover:border-orange-500/50 transition-all duration-300">
-                <CardHeader>
-                  <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-orange-500 to-orange-700 flex items-center justify-center mb-4">
-                    <CreditCard className="h-6 w-6 text-white" />
+                <CardHeader className="p-4 md:p-6">
+                  <div className="h-10 w-10 md:h-12 md:w-12 rounded-lg bg-gradient-to-br from-orange-500 to-orange-700 flex items-center justify-center mb-2 md:mb-4">
+                    <CreditCard className="h-5 w-5 md:h-6 md:w-6 text-white" />
                   </div>
-                  <CardTitle className="text-white">Credit Card Management</CardTitle>
-                  <CardDescription className="text-gray-400">
+                  <CardTitle className="text-white text-base md:text-lg">Credit Card Management</CardTitle>
+                  <CardDescription className="text-gray-400 text-sm md:text-base">
                     Monitor and manage your credit card utilization.
                   </CardDescription>
                 </CardHeader>
@@ -641,16 +641,16 @@ function Landing() {
               </p>
             </div>
 
-            <div className="grid md:grid-cols-3 gap-8 lg:gap-12">
+            <div className="grid md:grid-cols-3 gap-4 md:gap-8 lg:gap-12">
               {/* Step 1 */}
-              <div className="relative space-y-4 text-center">
-                <div className="flex items-center justify-center mb-6">
-                  <div className="h-20 w-20 rounded-full bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center">
-                    <span className="text-3xl font-bold text-white">1</span>
+              <div className="relative space-y-3 md:space-y-4 text-center">
+                <div className="flex items-center justify-center mb-4 md:mb-6">
+                  <div className="h-16 w-16 md:h-20 md:w-20 rounded-full bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center">
+                    <span className="text-2xl md:text-3xl font-bold text-white">1</span>
                   </div>
                 </div>
-                <h3 className="text-2xl font-bold text-white">Connect Your Accounts</h3>
-                <p className="text-gray-400">
+                <h3 className="text-xl md:text-2xl font-bold text-white">Connect Your Accounts</h3>
+                <p className="text-gray-400 text-sm md:text-base">
                   Connect your accounts in seconds.
                 </p>
               </div>
@@ -661,14 +661,14 @@ function Landing() {
               </div>
 
               {/* Step 2 */}
-              <div className="relative space-y-4 text-center">
-                <div className="flex items-center justify-center mb-6">
-                  <div className="h-20 w-20 rounded-full bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center">
-                    <span className="text-3xl font-bold text-white">2</span>
+              <div className="relative space-y-3 md:space-y-4 text-center">
+                <div className="flex items-center justify-center mb-4 md:mb-6">
+                  <div className="h-16 w-16 md:h-20 md:w-20 rounded-full bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center">
+                    <span className="text-2xl md:text-3xl font-bold text-white">2</span>
                   </div>
                 </div>
-                <h3 className="text-2xl font-bold text-white">See Everything Unified</h3>
-                <p className="text-gray-400">
+                <h3 className="text-xl md:text-2xl font-bold text-white">See Everything Unified</h3>
+                <p className="text-gray-400 text-sm md:text-base">
                   See all your money in one place.
                 </p>
               </div>

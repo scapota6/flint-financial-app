@@ -203,7 +203,7 @@ export default function LandingCrypto() {
 
         <section className="py-16 px-4">
           <div className="max-w-4xl mx-auto">
-            <div className="grid md:grid-cols-3 gap-8 text-center">
+            <div className="grid md:grid-cols-3 gap-4 md:gap-8 text-center">
               <div>
                 <p className="text-3xl font-bold text-blue-400 mb-2">50+</p>
                 <p className="text-gray-400">Exchanges & Wallets</p>
@@ -253,45 +253,45 @@ export default function LandingCrypto() {
               More than a tracker. A complete crypto command center.
             </p>
             
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <div className="relative rounded-xl border border-white/10 p-2">
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
+              <div className="relative rounded-xl border border-white/10 p-1.5 md:p-2">
                 <GlowingEffect spread={40} glow={true} disabled={isMobile} proximity={64} inactiveZone={0.01} borderWidth={1} />
-                <div className="bg-white/5 rounded-lg p-6 h-full">
-                  <Eye className="h-8 w-8 text-blue-400 mb-4" />
-                  <h3 className="text-lg font-semibold mb-2">One Dashboard</h3>
+                <div className="bg-white/5 rounded-lg p-4 md:p-6 h-full">
+                  <Eye className="h-6 w-6 md:h-8 md:w-8 text-blue-400 mb-2 md:mb-4" />
+                  <h3 className="text-base md:text-lg font-semibold mb-2">One Dashboard</h3>
                   <p className="text-gray-400 text-sm">
                     See all your crypto from every wallet and exchange in a single view.
                   </p>
                 </div>
               </div>
               
-              <div className="relative rounded-xl border border-white/10 p-2">
+              <div className="relative rounded-xl border border-white/10 p-1.5 md:p-2">
                 <GlowingEffect spread={40} glow={true} disabled={isMobile} proximity={64} inactiveZone={0.01} borderWidth={1} />
-                <div className="bg-white/5 rounded-lg p-6 h-full">
-                  <RefreshCw className="h-8 w-8 text-green-400 mb-4" />
-                  <h3 className="text-lg font-semibold mb-2">Real-Time Tracking</h3>
+                <div className="bg-white/5 rounded-lg p-4 md:p-6 h-full">
+                  <RefreshCw className="h-6 w-6 md:h-8 md:w-8 text-green-400 mb-2 md:mb-4" />
+                  <h3 className="text-base md:text-lg font-semibold mb-2">Real-Time Tracking</h3>
                   <p className="text-gray-400 text-sm">
                     Watch your total crypto value update live across all chains.
                   </p>
                 </div>
               </div>
               
-              <div className="relative rounded-xl border border-blue-400/30 p-2">
+              <div className="relative rounded-xl border border-blue-400/30 p-1.5 md:p-2">
                 <GlowingEffect spread={40} glow={true} disabled={isMobile} proximity={64} inactiveZone={0.01} borderWidth={1} />
-                <div className="bg-gradient-to-b from-blue-500/10 to-transparent rounded-lg p-6 h-full">
-                  <Send className="h-8 w-8 text-blue-400 mb-4" />
-                  <h3 className="text-lg font-semibold mb-2">Trade & Send</h3>
+                <div className="bg-gradient-to-b from-blue-500/10 to-transparent rounded-lg p-4 md:p-6 h-full">
+                  <Send className="h-6 w-6 md:h-8 md:w-8 text-blue-400 mb-2 md:mb-4" />
+                  <h3 className="text-base md:text-lg font-semibold mb-2">Trade & Send</h3>
                   <p className="text-gray-400 text-sm">
                     Send crypto and place trades without leaving Flint.
                   </p>
                 </div>
               </div>
               
-              <div className="relative rounded-xl border border-white/10 p-2">
+              <div className="relative rounded-xl border border-white/10 p-1.5 md:p-2">
                 <GlowingEffect spread={40} glow={true} disabled={isMobile} proximity={64} inactiveZone={0.01} borderWidth={1} />
-                <div className="bg-white/5 rounded-lg p-6 h-full">
-                  <Shield className="h-8 w-8 text-green-400 mb-4" />
-                  <h3 className="text-lg font-semibold mb-2">Your Keys, Your Crypto</h3>
+                <div className="bg-white/5 rounded-lg p-4 md:p-6 h-full">
+                  <Shield className="h-6 w-6 md:h-8 md:w-8 text-green-400 mb-2 md:mb-4" />
+                  <h3 className="text-base md:text-lg font-semibold mb-2">Your Keys, Your Crypto</h3>
                   <p className="text-gray-400 text-sm">
                     We never take custody. Your private keys stay with you.
                   </p>
@@ -306,24 +306,24 @@ export default function LandingCrypto() {
             <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">How It Works</h2>
             
             <div className="space-y-10">
-              <div className="flex items-start gap-6">
-                <span className="text-4xl font-black text-blue-500 flex-shrink-0">1</span>
+              <div className="flex items-start gap-4 md:gap-6">
+                <span className="text-3xl md:text-4xl font-black text-blue-500 flex-shrink-0">1</span>
                 <div>
                   <h3 className="text-xl font-bold mb-2">Connect Your Exchanges and Wallets</h3>
                   <p className="text-gray-400">Link Coinbase, Binance, Kraken, MetaMask, and 50+ more in seconds.</p>
                 </div>
               </div>
               
-              <div className="flex items-start gap-6">
-                <span className="text-4xl font-black text-blue-500 flex-shrink-0">2</span>
+              <div className="flex items-start gap-4 md:gap-6">
+                <span className="text-3xl md:text-4xl font-black text-blue-500 flex-shrink-0">2</span>
                 <div>
                   <h3 className="text-xl font-bold mb-2">See Your Total Crypto Value in Real Time</h3>
                   <p className="text-gray-400">View your complete portfolio across all connected accounts. Track everything live.</p>
                 </div>
               </div>
               
-              <div className="flex items-start gap-6">
-                <span className="text-4xl font-black text-blue-500 flex-shrink-0">3</span>
+              <div className="flex items-start gap-4 md:gap-6">
+                <span className="text-3xl md:text-4xl font-black text-blue-500 flex-shrink-0">3</span>
                 <div>
                   <h3 className="text-xl font-bold mb-2">Take Action Without Leaving Flint</h3>
                   <p className="text-gray-400">Send crypto or place trades on your connected accounts. No app switching required.</p>
@@ -367,11 +367,11 @@ export default function LandingCrypto() {
               </div>
             </div>
             
-            <div className="grid md:grid-cols-3 gap-6">
-              <div className="relative rounded-xl border border-white/10 p-2">
+            <div className="grid md:grid-cols-3 gap-3 md:gap-6">
+              <div className="relative rounded-xl border border-white/10 p-1.5 md:p-2">
                 <GlowingEffect spread={40} glow={true} disabled={isMobile} proximity={64} inactiveZone={0.01} borderWidth={1} />
-                <div className="bg-white/5 rounded-lg p-6 h-full flex flex-col">
-                  <div className="mb-6">
+                <div className="bg-white/5 rounded-lg p-4 md:p-6 h-full flex flex-col">
+                  <div className="mb-4 md:mb-6">
                     <h3 className="text-xl font-semibold mb-2">Free</h3>
                     <div className="flex items-baseline gap-2 mb-2">
                       <span className="text-4xl font-bold">$0</span>
@@ -390,13 +390,13 @@ export default function LandingCrypto() {
                 </div>
               </div>
               
-              <div className="relative rounded-xl border border-blue-400/30 p-2">
+              <div className="relative rounded-xl border border-blue-400/30 p-1.5 md:p-2">
                 <GlowingEffect spread={40} glow={true} disabled={isMobile} proximity={64} inactiveZone={0.01} borderWidth={1} />
-                <div className="bg-gradient-to-b from-blue-500/10 to-transparent rounded-lg p-6 h-full flex flex-col relative">
+                <div className="bg-gradient-to-b from-blue-500/10 to-transparent rounded-lg p-4 md:p-6 h-full flex flex-col relative">
                   <div className="absolute top-4 right-4">
                     <span className="bg-blue-500 text-white text-xs font-semibold px-2 py-1 rounded">Most Popular</span>
                   </div>
-                  <div className="mb-6">
+                  <div className="mb-4 md:mb-6">
                     <h3 className="text-xl font-semibold mb-2">Basic</h3>
                     <div className="flex items-baseline gap-2 mb-2">
                       <span className="text-4xl font-bold">${isAnnual ? '199' : '19.99'}</span>
@@ -418,10 +418,10 @@ export default function LandingCrypto() {
                 </div>
               </div>
               
-              <div className="relative rounded-xl border border-white/10 p-2">
+              <div className="relative rounded-xl border border-white/10 p-1.5 md:p-2">
                 <GlowingEffect spread={40} glow={true} disabled={isMobile} proximity={64} inactiveZone={0.01} borderWidth={1} />
-                <div className="bg-white/5 rounded-lg p-6 h-full flex flex-col">
-                  <div className="mb-6">
+                <div className="bg-white/5 rounded-lg p-4 md:p-6 h-full flex flex-col">
+                  <div className="mb-4 md:mb-6">
                     <h3 className="text-xl font-semibold mb-2">Pro</h3>
                     <div className="flex items-baseline gap-2 mb-2">
                       <span className="text-4xl font-bold">${isAnnual ? '399' : '39.99'}</span>
