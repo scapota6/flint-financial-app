@@ -178,7 +178,7 @@ export default function LandingBanking() {
       </Helmet>
 
       <AuroraBackground className="min-h-screen text-white relative overflow-x-hidden">
-        <div className="fixed inset-0 bg-gradient-to-br from-blue-900/20 via-black to-black pointer-events-none" />
+        <div className="fixed inset-0 z-[-1] bg-gradient-to-br from-blue-900/20 via-black to-black pointer-events-none" />
         <LandingHeader currentPage="banking" onGetStarted={scrollToSignup} />
 
         <section className="pt-28 pb-20 px-4">
