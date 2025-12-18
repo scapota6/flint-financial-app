@@ -1,0 +1,13 @@
+# Flint Financial Dashboard - robots.txt
+# https://flint-investing.com
+
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://flint-investing.com/sitemap.xml
+
+# Disallow private/authenticated areas
+Disallow: /dashboard
+Disallow: /api/
+Disallow: /admin/

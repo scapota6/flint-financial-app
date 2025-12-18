@@ -1,0 +1,78 @@
+If your robots.txt file is malformed, crawlers may not be able to understand how you want your website to be crawled or indexed. Learn more about robots.txt →
+
+Impact: Medium Category: seo-crawl
+
+
+Item	Description
+message:	Syntax not understood
+line:	<!DOCTYPE html>
+index:	1
+Item	Description
+message:	Syntax not understood
+line:	<html lang="en">
+index:	2
+Item	Description
+index:	3
+line:	<head>
+message:	Syntax not understood
+Item	Description
+line:	<meta charset="UTF-8" />
+message:	Syntax not understood
+index:	4
+Item	Description
+index:	5
+line:	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
+message:	Syntax not understood
+Item	Description
+line:	<link rel="icon" type="image/png" href="/favicon.png" />
+message:	Syntax not understood
+index:	6
+Item	Description
+index:	7
+line:	<title>Flint - Your Complete Financial Dashboard</title>
+message:	Syntax not understood
+Item	Description
+index:	8
+line:	<script type="module" crossorigin src="/assets/index-IzsjiEQq.js"></script>
+message:	Syntax not understood
+Item	Description
+line:	<link rel="stylesheet" crossorigin href="/assets/index-BiH-r7CK.css">
+message:	Syntax not understood
+index:	9
+Item	Description
+index:	10
+line:	</head>
+message:	Syntax not understood
+Item	Description
+message:	Syntax not understood
+index:	11
+line:	<body>
+Item	Description
+line:	<div id="root"></div>
+index:	12
+message:	Syntax not understood
+Item	Description
+message:	Syntax not understood
+line:	<!-- Teller Connect SDK -->
+index:	13
+Item	Description
+index:	14
+line:	<script src="https://cdn.teller.io/connect/connect.js"></script>
+message:	Unknown directive
+Item	Description
+line:	<!-- This is a replit script which adds a banner on the top of the page when opened in development mode outside the replit environment -->
+message:	Syntax not understood
+index:	15
+Item	Description
+line:	<script type="text/javascript" src="https://replit.com/public/js/replit-dev-banner.js"></script>
+message:	Unknown directive
+index:	16
+Item	Description
+index:	17
+line:	</body>
+message:	Syntax not understood
+Item	Description
+message:	Syntax not understood
+index:	18
+line:	</html>
+Importance:
