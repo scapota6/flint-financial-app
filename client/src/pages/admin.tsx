@@ -48,6 +48,7 @@ interface OverviewData {
   totalConnections: number;
   tellerConnections: number;
   snaptradeConnections: number;
+  metamaskConnections: number;
   monthlyRevenue: string;
   annualRevenue: string;
 }
@@ -344,7 +345,7 @@ function OverviewTab() {
         <CardContent>
           <div className="text-2xl font-bold" data-testid="text-total-connections">{overview?.totalConnections || 0}</div>
           <p className="text-xs text-gray-500 mt-1">
-            {overview?.tellerConnections || 0} Teller, {overview?.snaptradeConnections || 0} SnapTrade
+            {overview?.tellerConnections || 0} Teller, {overview?.snaptradeConnections || 0} SnapTrade, {overview?.metamaskConnections || 0} MetaMask
           </p>
         </CardContent>
       </Card>

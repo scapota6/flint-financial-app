@@ -775,7 +775,7 @@ router.get('/analytics/overview', requireAuth, requireAdmin(), async (req: any, 
       .from(users)
       .where(eq(users.isBanned, false));
 
-    // Total connections (both Teller and SnapTrade)
+    // Total connections (Teller, SnapTrade, and MetaMask)
     const [{ tellerConnections }] = await db
       .select({ tellerConnections: count() })
       .from(connectedAccounts)
@@ -786,6 +786,15 @@ router.get('/analytics/overview', requireAuth, requireAdmin(), async (req: any, 
 
     const snapUsers = await getAllSnapUsers();
     const snaptradeConnectionsCount = Object.keys(snapUsers).length;
+
+    // MetaMask connections count (only connected wallets)
+    const [{ metamaskConnections }] = await db
+      .select({ metamaskConnections: count() })
+      .from(connectedAccounts)
+      .where(and(
+        eq(connectedAccounts.provider, 'metamask'),
+        eq(connectedAccounts.status, 'connected')
+      ));
 
     // Revenue estimate (based on subscription tiers)
     const tierPrices = {
@@ -816,9 +825,10 @@ router.get('/analytics/overview', requireAuth, requireAdmin(), async (req: any, 
     const overview = {
       totalUsers: Number(totalUsers),
       activeUsers: Number(activeUsers),
-      totalConnections: Number(tellerConnections) + Number(snaptradeConnectionsCount),
+      totalConnections: Number(tellerConnections) + Number(snaptradeConnectionsCount) + Number(metamaskConnections),
       tellerConnections: Number(tellerConnections),
       snaptradeConnections: Number(snaptradeConnectionsCount),
+      metamaskConnections: Number(metamaskConnections),
       monthlyRevenue: monthlyRevenue.toFixed(2),
       annualRevenue: (monthlyRevenue * 12).toFixed(2),
     };
@@ -866,6 +876,16 @@ router.get('/analytics/connections', requireAuth, requireAdmin(), async (req: an
       .where(eq(snaptradeConnections.disabled, false))
       .groupBy(snaptradeConnections.brokerageName);
 
+    // MetaMask connections (crypto wallets)
+    const metamaskStats = await db
+      .select({
+        status: connectedAccounts.status,
+        count: count(),
+      })
+      .from(connectedAccounts)
+      .where(eq(connectedAccounts.provider, 'metamask'))
+      .groupBy(connectedAccounts.status);
+
     const stats = {
       teller: {
         total: tellerStats.reduce((sum, stat) => sum + Number(stat.count), 0),
@@ -880,6 +900,13 @@ router.get('/analytics/connections', requireAuth, requireAdmin(), async (req: an
         total: Number(snaptradeActive) + Number(snaptradeDisabled),
         byBrokerage: snaptradeByBrokerage.map(stat => ({
           brokerage: stat.brokerage,
+          count: Number(stat.count),
+        })),
+      },
+      metamask: {
+        total: metamaskStats.reduce((sum, stat) => sum + Number(stat.count), 0),
+        byStatus: metamaskStats.map(stat => ({
+          status: stat.status,
           count: Number(stat.count),
         })),
       },
