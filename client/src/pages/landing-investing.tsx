@@ -3,9 +3,10 @@
  * Route: /investing
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { Button } from "@/components/ui/button";
 import { RainbowButton } from "@/components/ui/rainbow-button";
+import { Input } from "@/components/ui/input";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { GlowingEffect } from "@/components/ui/glowing-effect";
 import { 
@@ -65,6 +66,100 @@ export default function LandingInvesting() {
   const [checkoutTier, setCheckoutTier] = useState<'basic' | 'pro'>('basic');
   const [checkoutBillingPeriod, setCheckoutBillingPeriod] = useState<'monthly' | 'yearly'>('monthly');
 
+  const signupRef = useRef<HTMLDivElement>(null);
+  const [signupData, setSignupData] = useState({ name: '', email: '', password: '' });
+  const [signupSuccess, setSignupSuccess] = useState(false);
+  const [signupLoading, setSignupLoading] = useState(false);
+  const [signupError, setSignupError] = useState('');
+  const [passwordFocused, setPasswordFocused] = useState(false);
+
+  const scrollToSignup = useCallback(() => {
+    signupRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, []);
+
+  const validatePassword = (password: string) => {
+    const requirements = {
+      length: password.length >= 8,
+      uppercase: /[A-Z]/.test(password),
+      lowercase: /[a-z]/.test(password),
+      number: /[0-9]/.test(password),
+      special: /[!@#$%^&*(),.?":{}|<>]/.test(password),
+    };
+    return requirements;
+  };
+
+  const passwordRequirements = validatePassword(signupData.password);
+  const isPasswordValid = Object.values(passwordRequirements).every(Boolean);
+
+  const handleSignupSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setSignupError('');
+    
+    if (!signupData.name || !signupData.email || !signupData.password) {
+      setSignupError('Please fill in all fields');
+      return;
+    }
+
+    if (!isPasswordValid) {
+      setSignupError('Password does not meet security requirements');
+      return;
+    }
+
+    setSignupLoading(true);
+    
+    try {
+      const response = await fetch('/api/auth/public-register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          firstName: signupData.name,
+          email: signupData.email,
+          password: signupData.password,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        const loginResponse = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({
+            email: signupData.email,
+            password: signupData.password,
+          }),
+        });
+
+        const loginData = await loginResponse.json();
+
+        if (loginResponse.ok && loginData.success) {
+          setSignupSuccess(true);
+          setTimeout(() => {
+            window.location.href = '/dashboard';
+          }, 1000);
+        } else {
+          setSignupSuccess(true);
+          setTimeout(() => {
+            window.location.href = '/login?registered=true';
+          }, 2000);
+        }
+      } else {
+        if (data.message && data.message.toLowerCase().includes('already')) {
+          setSignupError('An account with this email already exists. Try logging in instead.');
+        } else {
+          setSignupError(data.message || 'Registration failed. Please try again.');
+        }
+      }
+    } catch (error) {
+      console.error('Registration error:', error);
+      setSignupError('Network error. Please check your connection and try again.');
+    } finally {
+      setSignupLoading(false);
+    }
+  };
+
   const openCheckout = (tier: 'basic' | 'pro') => {
     setCheckoutTier(tier);
     setCheckoutBillingPeriod(isAnnual ? 'yearly' : 'monthly');
@@ -102,11 +197,9 @@ export default function LandingInvesting() {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-3 justify-center mb-6">
-              <Link href="/login">
-                <RainbowButton className="h-14 px-8 rounded-xl text-lg" data-testid="button-get-started-hero">
-                  Get Started Free <ArrowRight className="ml-2 h-5 w-5" />
-                </RainbowButton>
-              </Link>
+              <RainbowButton onClick={scrollToSignup} className="h-14 px-8 rounded-xl text-lg" data-testid="button-get-started-hero">
+                Get Started Free <ArrowRight className="ml-2 h-5 w-5" />
+              </RainbowButton>
             </div>
 
             <p className="text-sm text-gray-400">Free forever. No credit card needed.</p>
@@ -255,11 +348,9 @@ export default function LandingInvesting() {
           <div className="max-w-2xl mx-auto text-center">
             <h2 className="text-2xl md:text-3xl font-bold mb-4">Ready to simplify your investing?</h2>
             <p className="text-gray-400 mb-8">Join thousands of investors managing their portfolios with Flint.</p>
-            <Link href="/login">
-              <RainbowButton className="h-14 px-12 rounded-xl text-lg" data-testid="button-cta-mid">
-                Get Started Free
-              </RainbowButton>
-            </Link>
+            <RainbowButton onClick={scrollToSignup} className="h-14 px-12 rounded-xl text-lg" data-testid="button-cta-mid">
+              Get Started Free
+            </RainbowButton>
           </div>
         </section>
 
@@ -305,11 +396,9 @@ export default function LandingInvesting() {
                     <li className="flex items-center gap-2 text-sm"><Check className="h-4 w-4 text-green-400" /> Real-time updates</li>
                     <li className="flex items-center gap-2 text-sm"><Check className="h-4 w-4 text-green-400" /> Mobile app</li>
                   </ul>
-                  <Link href="/login">
-                    <RainbowButton className="w-full" data-testid="button-free-plan">
-                      Start Free
-                    </RainbowButton>
-                  </Link>
+                  <RainbowButton onClick={scrollToSignup} className="w-full" data-testid="button-free-plan">
+                    Start Free
+                  </RainbowButton>
                 </div>
               </div>
               
@@ -413,15 +502,96 @@ export default function LandingInvesting() {
           </div>
         </section>
 
-        <section className="py-20 px-4 bg-white/5 border-t border-white/10">
-          <div className="max-w-2xl mx-auto text-center">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Start managing your investments today</h2>
-            <p className="text-gray-400 mb-8">Free forever. No credit card needed.</p>
-            <Link href="/login">
-              <RainbowButton className="h-14 px-12 rounded-xl text-lg" data-testid="button-cta-bottom">
-                Get Started Free
-              </RainbowButton>
-            </Link>
+        <section ref={signupRef} className="py-20 px-4">
+          <div className="max-w-md mx-auto">
+            <div className="text-center mb-8">
+              <h2 className="text-3xl md:text-4xl font-bold mb-4">Start Free Today</h2>
+              <p className="text-gray-300">No credit card needed. Connect up to 4 accounts free.</p>
+            </div>
+
+            {!signupSuccess ? (
+              <form onSubmit={handleSignupSubmit} className="space-y-4">
+                <Input
+                  type="text"
+                  placeholder="Full Name"
+                  value={signupData.name}
+                  onChange={(e) => setSignupData({ ...signupData, name: e.target.value })}
+                  className="bg-white/10 border-white/20 text-white placeholder:text-gray-400"
+                  required
+                  data-testid="input-signup-name"
+                />
+                <Input
+                  type="email"
+                  placeholder="Email"
+                  value={signupData.email}
+                  onChange={(e) => setSignupData({ ...signupData, email: e.target.value })}
+                  className="bg-white/10 border-white/20 text-white placeholder:text-gray-400"
+                  required
+                  data-testid="input-signup-email"
+                />
+                <div>
+                  <Input
+                    type="password"
+                    placeholder="Password"
+                    value={signupData.password}
+                    onChange={(e) => setSignupData({ ...signupData, password: e.target.value })}
+                    onFocus={() => setPasswordFocused(true)}
+                    onBlur={() => setPasswordFocused(false)}
+                    className="bg-white/10 border-white/20 text-white placeholder:text-gray-400"
+                    required
+                    data-testid="input-signup-password"
+                  />
+                  {passwordFocused && signupData.password && (
+                    <div className="mt-2 p-3 bg-white/5 rounded-lg text-sm space-y-1">
+                      <p className={passwordRequirements.length ? 'text-green-400' : 'text-gray-400'}>
+                        <Check className={`inline h-3 w-3 mr-1 ${passwordRequirements.length ? '' : 'opacity-30'}`} />
+                        At least 8 characters
+                      </p>
+                      <p className={passwordRequirements.uppercase ? 'text-green-400' : 'text-gray-400'}>
+                        <Check className={`inline h-3 w-3 mr-1 ${passwordRequirements.uppercase ? '' : 'opacity-30'}`} />
+                        One uppercase letter
+                      </p>
+                      <p className={passwordRequirements.lowercase ? 'text-green-400' : 'text-gray-400'}>
+                        <Check className={`inline h-3 w-3 mr-1 ${passwordRequirements.lowercase ? '' : 'opacity-30'}`} />
+                        One lowercase letter
+                      </p>
+                      <p className={passwordRequirements.number ? 'text-green-400' : 'text-gray-400'}>
+                        <Check className={`inline h-3 w-3 mr-1 ${passwordRequirements.number ? '' : 'opacity-30'}`} />
+                        One number
+                      </p>
+                      <p className={passwordRequirements.special ? 'text-green-400' : 'text-gray-400'}>
+                        <Check className={`inline h-3 w-3 mr-1 ${passwordRequirements.special ? '' : 'opacity-30'}`} />
+                        One special character
+                      </p>
+                    </div>
+                  )}
+                </div>
+
+                {signupError && (
+                  <p className="text-red-400 text-sm text-center">{signupError}</p>
+                )}
+
+                <RainbowButton 
+                  type="submit" 
+                  className="w-full h-12" 
+                  disabled={signupLoading}
+                  data-testid="button-signup-submit"
+                >
+                  {signupLoading ? 'Creating Account...' : 'Create Free Account'}
+                </RainbowButton>
+
+                <p className="text-center text-sm text-gray-400">
+                  Already have an account?{' '}
+                  <Link href="/login" className="text-blue-400 hover:underline">Log in</Link>
+                </p>
+              </form>
+            ) : (
+              <div className="text-center p-8 bg-green-500/10 border border-green-500/20 rounded-lg">
+                <Check className="h-12 w-12 text-green-400 mx-auto mb-4" />
+                <h3 className="text-xl font-semibold mb-2">Account Created!</h3>
+                <p className="text-gray-300">Redirecting you to your dashboard...</p>
+              </div>
+            )}
           </div>
         </section>
 
