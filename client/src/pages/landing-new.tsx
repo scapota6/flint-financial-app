@@ -663,7 +663,7 @@ export default function LandingNew() {
         </section>
 
         {/* Money Goals Section - Moved below hero */}
-        <section className="apple-section bg-white/5">
+        <section className="apple-section">
           <div className="apple-container">
             <div className="max-w-md mx-auto">
               {!goalsSubmitted ? (
@@ -717,7 +717,7 @@ export default function LandingNew() {
         </section>
 
         {/* Launch Giveaway Section - Single Accent Gradient Allowed */}
-        <section className="apple-section bg-gradient-to-r from-blue-900/30 via-blue-800/30 to-blue-900/30 border-y border-white/10">
+        <section className="apple-section">
           <div className="apple-container text-center">
             <h2 className="apple-h2">
               🚀 Flint Launch Giveaway
@@ -819,7 +819,7 @@ export default function LandingNew() {
         </section>
 
         {/* Trust & Partners Section */}
-        <section className="apple-section border-y border-white/10 bg-white/5">
+        <section className="apple-section">
           <div className="apple-container">
             <div className="text-center mb-12">
               <h2 className="apple-h2">Our Partners</h2>
@@ -1020,7 +1020,7 @@ export default function LandingNew() {
         </section>
 
         {/* Interactive Demo Section */}
-        <section className="apple-section bg-white/5 border-y border-white/10">
+        <section className="apple-section">
           <div className="apple-container max-w-5xl">
             <div className="text-center mb-8 sm:mb-12 px-4">
               <h2 className="apple-h2">See How It Works</h2>
@@ -1770,7 +1770,7 @@ export default function LandingNew() {
         </section>
 
         {/* CTA After Pricing */}
-        <section className="apple-section bg-white/5 border-y border-white/10">
+        <section className="apple-section">
           <div className="apple-container max-w-2xl text-center">
             <h2 className="apple-h2">Start managing your money better today</h2>
             <p className="apple-body text-gray-300">Free forever. No credit card needed.</p>
