@@ -351,79 +351,53 @@ async function cleanupSnapTradeApiOrphans(): Promise<{ found: number; deleted: n
 }
 
 /**
- * Main cleanup function - runs the entire detection and cleanup process
+ * Main cleanup function - MONITOR ONLY MODE
+ * Detects and logs orphaned/stale connections but does NOT automatically delete anything.
+ * All deletions require manual admin action via the admin endpoints.
+ * This prevents accidental deletion of legitimate production users.
  */
 async function runCleanup(): Promise<void> {
   const startTime = Date.now();
-  console.log('\n🧹 [Orphaned Connections Cleanup] Starting automated cleanup...');
+  console.log('\n👁️  [Connection Monitor] Starting connection health check (MONITOR ONLY - no auto-deletions)...');
   
   try {
-    // 1. Find and clean orphaned connections
+    // 1. Find orphaned connections (DB connections without parent SnapTrade user)
     const orphanedConnections = await findOrphanedConnections();
-    console.log(`[Orphaned Connections Cleanup] Found ${orphanedConnections.length} orphaned connections`);
+    console.log(`[Connection Monitor] Found ${orphanedConnections.length} orphaned connections (NOT deleting - manual action required)`);
     
-    let connectionsDeleted = 0;
-    let connectionsFailed = 0;
+    // Log each orphaned connection for admin review (no deletion)
     for (const conn of orphanedConnections) {
-      // Log detection metric IMMEDIATELY when orphan is found (before deletion attempt)
-      logger.logMetric('connection_orphaned', {
+      logger.logMetric('connection_orphaned_detected', {
         brokerage_name: conn.brokerageName,
         user_id: conn.flintUserId,
-        authorization_id: conn.brokerageAuthorizationId
+        authorization_id: conn.brokerageAuthorizationId,
+        user_email: conn.userEmail,
+        action: 'FLAGGED_FOR_REVIEW'
       });
       
-      console.log(`[Orphaned Connections Cleanup] Deleting orphaned connection: ${conn.brokerageName} (${conn.userEmail || conn.flintUserId})`);
-      const deleted = await deleteConnection(conn.id, 'orphaned_connection');
-      if (deleted) {
-        connectionsDeleted++;
-      } else {
-        connectionsFailed++;
-        // High-severity error for failed deletion - requires manual intervention
-        logger.error('CRITICAL: Orphaned connection cleanup failed', {
-          metadata: {
-            severity: 'HIGH',
-            brokerageName: conn.brokerageName,
-            userId: conn.flintUserId,
-            authorizationId: conn.brokerageAuthorizationId,
-            connectionId: conn.id,
-            action_required: 'Manual cleanup may be needed'
-          }
-        });
-      }
+      console.log(`[Connection Monitor] ⚠️  Orphaned connection flagged: ${conn.brokerageName} (${conn.userEmail || conn.flintUserId}) - ID: ${conn.id}`);
     }
     
-    // 2. Find and clean orphaned users
+    // 2. Find orphaned users (DB users without parent Flint user)
     const orphanedUsers = await findOrphanedUsers();
-    console.log(`[Orphaned Connections Cleanup] Found ${orphanedUsers.length} orphaned users`);
+    console.log(`[Connection Monitor] Found ${orphanedUsers.length} orphaned users (NOT deleting - manual action required)`);
     
-    let usersDeleted = 0;
-    let usersFailed = 0;
+    // Log each orphaned user for admin review (no deletion)
     for (const user of orphanedUsers) {
-      console.log(`[Orphaned Connections Cleanup] Deleting orphaned user: ${user.userEmail || user.flintUserId}`);
-      const deleted = await deleteOrphanedUser(user.flintUserId);
-      if (deleted) {
-        usersDeleted++;
-      } else {
-        usersFailed++;
-        // High-severity error for failed deletion
-        logger.error('CRITICAL: Orphaned user cleanup failed', {
-          metadata: {
-            severity: 'HIGH',
-            userId: user.flintUserId,
-            userEmail: user.userEmail,
-            action_required: 'Manual cleanup may be needed'
-          }
-        });
-      }
+      logger.logMetric('user_orphaned_detected', {
+        flint_user_id: user.flintUserId,
+        snaptrade_user_id: user.snaptradeUserId,
+        user_email: user.userEmail,
+        action: 'FLAGGED_FOR_REVIEW'
+      });
+      
+      console.log(`[Connection Monitor] ⚠️  Orphaned user flagged: ${user.userEmail || user.flintUserId}`);
     }
     
-    // 3. DISABLED: Clean up SnapTrade API-level orphans
-    // This was deleting legitimate production users whose database records weren't synced yet.
-    // The race condition: user connects -> SnapTrade creates user -> cleanup runs before DB record is saved -> user is deleted
-    // Keep the function for manual admin cleanup, but don't run automatically.
-    // TODO: Re-enable with grace period (e.g., skip users created in last 24 hours) when we can get user creation timestamps from SnapTrade API
+    // 3. DISABLED: API-level orphan cleanup
+    // This was deleting legitimate production users - NEVER run automatically
     const apiOrphanResults = { found: 0, deleted: 0, failed: 0 };
-    console.log(`[Orphaned Connections Cleanup] API orphan cleanup: DISABLED (was deleting legitimate users)`);
+    console.log(`[Connection Monitor] API orphan check: DISABLED (use admin endpoints for manual cleanup)`);
     
     // 4. Find stale connections (report only, don't auto-delete yet)
     const staleConnections = await findStaleConnections();
@@ -444,50 +418,35 @@ async function runCleanup(): Promise<void> {
     }
     
     const duration = Date.now() - startTime;
-    const totalFailures = connectionsFailed + usersFailed + apiOrphanResults.failed;
-    const hadFailures = totalFailures > 0;
     
-    // Summary log
-    console.log(`[Orphaned Connections Cleanup] Cleanup complete in ${duration}ms:`);
-    console.log(`  - Orphaned connections deleted: ${connectionsDeleted}`);
-    console.log(`  - Orphaned connections FAILED: ${connectionsFailed}`);
-    console.log(`  - Orphaned users deleted: ${usersDeleted}`);
-    console.log(`  - Orphaned users FAILED: ${usersFailed}`);
-    console.log(`  - API orphans deleted: ${apiOrphanResults.deleted}`);
-    console.log(`  - API orphans FAILED: ${apiOrphanResults.failed}`);
-    console.log(`  - Stale connections detected: ${staleConnections.length}`);
+    // Summary log - MONITOR ONLY MODE (no deletions)
+    console.log(`[Connection Monitor] Health check complete in ${duration}ms:`);
+    console.log(`  - Orphaned connections flagged: ${orphanedConnections.length}`);
+    console.log(`  - Orphaned users flagged: ${orphanedUsers.length}`);
+    console.log(`  - Stale connections (30+ days): ${staleConnections.length}`);
+    console.log(`  - Mode: MONITOR ONLY - no automatic deletions`);
     
-    if (hadFailures) {
-      const errorMsg = `[Orphaned Connections Cleanup] ⚠️  CLEANUP HAD ${totalFailures} FAILURES - Manual intervention may be required`;
-      console.error(errorMsg);
-      
-      // High-severity alert for monitoring systems
-      logger.error('ALERT: Orphaned cleanup completed with failures', {
+    // Alert if issues were detected that need admin review
+    const totalIssues = orphanedConnections.length + orphanedUsers.length + staleConnections.length;
+    if (totalIssues > 0) {
+      logger.info('Connection health issues detected - admin review recommended', {
         metadata: {
-          severity: 'HIGH',
-          alert_type: 'ORPHANED_CLEANUP_FAILURES',
-          total_failures: totalFailures,
-          connections_failed: connectionsFailed,
-          users_failed: usersFailed,
-          action_required: 'Review failed deletions and clean up manually or wait for retry',
-          monitoring_note: 'Set up Better Stack alert on this message'
+          orphaned_connections: orphanedConnections.length,
+          orphaned_users: orphanedUsers.length,
+          stale_connections: staleConnections.length,
+          action: 'Use admin endpoints to review and take manual action if needed'
         }
       });
     }
     
-    // Log metrics for VC dashboard with success/failure status
-    logger.logMetric('orphaned_cleanup_completed', {
+    // Log metrics for monitoring dashboard
+    logger.logMetric('connection_health_check_completed', {
       duration_ms: duration,
-      success: !hadFailures,
-      connections_deleted: connectionsDeleted,
-      connections_failed: connectionsFailed,
-      users_deleted: usersDeleted,
-      users_failed: usersFailed,
-      api_orphans_found: apiOrphanResults.found,
-      api_orphans_deleted: apiOrphanResults.deleted,
-      api_orphans_failed: apiOrphanResults.failed,
+      mode: 'monitor_only',
+      orphaned_connections_flagged: orphanedConnections.length,
+      orphaned_users_flagged: orphanedUsers.length,
       stale_connections: staleConnections.length,
-      total_failures: totalFailures
+      total_issues: totalIssues
     });
     
   } catch (error: any) {
@@ -498,35 +457,28 @@ async function runCleanup(): Promise<void> {
       name: error?.name
     };
     
-    console.error('[Orphaned Connections Cleanup] CRITICAL: Cleanup orchestration failed:', errorDetails);
+    console.error('[Connection Monitor] Health check failed:', errorDetails);
     
-    // Critical error - entire cleanup run failed
-    logger.error('CRITICAL: Orphaned cleanup orchestration failed', { 
+    logger.error('Connection health check failed', { 
       metadata: { 
-        severity: 'CRITICAL',
         error: errorDetails,
-        alert_type: 'ORPHANED_CLEANUP_CRASHED',
-        action_required: 'Investigate cleanup service failure immediately'
+        mode: 'monitor_only'
       } 
     });
     
     // Log failed run metric
-    logger.logMetric('orphaned_cleanup_completed', {
+    logger.logMetric('connection_health_check_completed', {
       duration_ms: Date.now() - startTime,
+      mode: 'monitor_only',
       success: false,
-      connections_deleted: 0,
-      connections_failed: 0,
-      users_deleted: 0,
-      users_failed: 0,
-      stale_connections: 0,
-      total_failures: 1,
-      orchestration_error: errorDetails.message
+      error: errorDetails.message
     });
   }
 }
 
 /**
- * Initialize the cleanup service with cron schedule
+ * Initialize the connection health monitor with cron schedule
+ * MONITOR ONLY - detects and logs issues but does NOT delete anything automatically
  */
 export function startOrphanedConnectionsCleanup(): void {
   // Run every 6 hours: 0 */6 * * *
@@ -535,13 +487,13 @@ export function startOrphanedConnectionsCleanup(): void {
   });
   
   job.start();
-  console.log('[Orphaned Connections Cleanup] Service started - runs every 6 hours');
+  console.log('[Connection Monitor] Service started - runs every 6 hours (MONITOR ONLY - no auto-deletions)');
   
-  // Run initial cleanup after 5 minutes (to allow server to fully start)
+  // Run initial health check after 5 minutes (to allow server to fully start)
   setTimeout(() => {
-    console.log('[Orphaned Connections Cleanup] Running initial cleanup...');
+    console.log('[Connection Monitor] Running initial health check...');
     runCleanup().catch(error => {
-      console.error('[Orphaned Connections Cleanup] Initial cleanup failed:', error);
+      console.error('[Connection Monitor] Initial health check failed:', error);
     });
   }, 5 * 60 * 1000);
 }

@@ -64,11 +64,11 @@ The platform features an Apple 2025 "Liquid Glass" aesthetic, utilizing dark neu
 ### System Design Choices
 -   **Modular Architecture**: Dedicated service layers for encryption, wallet management, trading aggregation, and email delivery.
 -   **Webhook-Driven Data Sync**: Primary data updates (e.g., holdings) are driven by SnapTrade webhooks for real-time, event-driven refresh, with a background polling service as a backup.
--   **Orphaned Connection Cleanup**: Automated service (runs every 6 hours) to detect and remove orphaned SnapTrade users. Includes:
-    - Database-level orphan cleanup (connections/users without parent records)
-    - **SnapTrade API-level orphan cleanup** (users in SnapTrade that don't exist in our database)
-    - Cleanup of `connected_accounts` table to ensure disconnected accounts don't appear in dashboard
-    - Stale connection detection (30+ days without sync)
+-   **Connection Health Monitor (MONITOR ONLY)**: Background service (runs every 6 hours) that detects connection issues but does NOT automatically delete anything. Includes:
+    - Database-level orphan detection (connections/users without parent records) - flagged for admin review
+    - Stale connection detection (30+ days without sync) - logged for monitoring
+    - **CRITICAL (Dec 2025)**: API-level orphan cleanup is DISABLED. The previous automatic deletion was incorrectly deleting legitimate production users when run from development environment. All cleanup must be done manually via admin endpoints.
+    - All issues are logged to Betterstack for monitoring - no automatic deletions occur
 -   **Defensive Holdings Sync**: Background sync checks account existence before syncing, handles FK constraint errors gracefully, and auto-cleans orphaned positions.
 -   **Admin Cleanup Endpoints**:
     - `POST /api/admin/users/:userId/cleanup-snaptrade` - Manual cleanup for specific user
