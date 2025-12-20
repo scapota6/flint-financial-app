@@ -1706,6 +1706,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       console.log(`[Analytics] Found ${bankAccounts.length} Teller accounts for user ${userId}`);
+      console.log(`[Analytics] Accounts breakdown:`, bankAccounts.map(a => ({ name: a.accountName, type: a.accountType })));
       console.log(`[Analytics] Teller access token: ${tellerAccessToken ? 'FOUND' : 'NOT FOUND'}`);
       
       if (!tellerAccessToken && bankAccounts.length > 0) {
@@ -1721,7 +1722,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
           continue;
         }
 
-        console.log(`[Analytics] Processing account: ${account.accountName} (${account.accountType}), externalId: ${account.externalAccountId}`);
+        const isCreditCardAccount = account.accountType === 'credit' || account.accountType === 'card';
+        console.log(`[Analytics] Processing account: ${account.accountName} (${account.accountType}), isCreditCard: ${isCreditCardAccount}, externalId: ${account.externalAccountId}`);
 
         // Use access token from teller_users table (primary) or fallback to account.accessToken
         const accessToken = tellerAccessToken || account.accessToken;
@@ -1749,7 +1751,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
           if (tellerResponse.ok) {
             const transactions = await tellerResponse.json();
-            console.log(`[Analytics] Fetched ${transactions.length} transactions for account ${account.accountName}`);
+            console.log(`[Analytics] Fetched ${transactions.length} transactions for account ${account.accountName} (type: ${account.accountType})`);
             
             for (const txn of transactions) {
               const txnDate = new Date(txn.date);
@@ -1757,9 +1759,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
               // Filter by date range
               if (txnDate < startDate || txnDate > endDate) continue;
               
-              // Only include spending (negative amounts / debits)
-              const amount = parseFloat(txn.amount);
-              if (amount >= 0) continue; // Skip credits/deposits
+              // Determine if this is a credit card account
+              const isCreditCard = account.accountType === 'credit' || account.accountType === 'card';
+              
+              // Parse raw amount from Teller
+              const rawAmount = parseFloat(txn.amount);
+              
+              // CRITICAL: Handle credit card vs bank account differently
+              // For BANK ACCOUNTS:
+              //   Negative amount = Money OUT (purchases, spending) - THIS IS SPENDING
+              //   Positive amount = Money IN (deposits, income) - Skip
+              // For CREDIT CARDS (Teller returns opposite sign):
+              //   Positive amount = Charges/Purchases (debt INCREASE) - THIS IS SPENDING
+              //   Negative amount = Payments/Refunds (debt DECREASE) - Skip
+              
+              let isSpending: boolean;
+              let spendAmount: number;
+              
+              if (isCreditCard) {
+                // Credit card: positive amounts are purchases (spending)
+                isSpending = rawAmount > 0;
+                spendAmount = Math.abs(rawAmount);
+              } else {
+                // Bank account: negative amounts are spending
+                isSpending = rawAmount < 0;
+                spendAmount = Math.abs(rawAmount);
+              }
+              
+              // Skip non-spending transactions
+              if (!isSpending) continue;
               
               // Get category from Teller - category is in details.category
               const rawCategory = txn.details?.category || txn.category || 'general';
@@ -1774,7 +1802,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
                 continue;
               }
               
-              const spendAmount = Math.abs(amount);
               totalSpending += spendAmount;
               
               // Create transaction record
