@@ -473,6 +473,7 @@ export default function Analytics() {
                               width={95}
                               tickLine={false}
                               tick={{ fill: '#9CA3AF' }}
+                              interval={0}
                             />
                             <Tooltip
                               content={({ active, payload }) => {
