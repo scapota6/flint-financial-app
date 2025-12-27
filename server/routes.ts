@@ -2849,6 +2849,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Mount blog routes (public read, admin write)
   const blogRouter = await import('./routes/blog');
   app.use('/api/blog', blogRouter.default);
+
+  // Mount object storage routes for file uploads
+  const { registerObjectStorageRoutes } = await import('./replit_integrations/object_storage');
+  registerObjectStorageRoutes(app);
   
   // Mount Whop payment routes
   const whopRouter = await import('./routes/whop');

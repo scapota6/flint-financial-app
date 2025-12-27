@@ -174,13 +174,9 @@ export default function BlogPost() {
               </div>
 
               {post.tags && post.tags.length > 0 && (
-                <div className="flex items-center gap-2 mt-4">
-                  <Tag className="h-4 w-4 text-gray-400" />
-                  {post.tags.map((tag) => (
-                    <span key={tag} className="bg-blue-500/20 text-blue-300 px-3 py-1 rounded-full text-sm">
-                      {tag}
-                    </span>
-                  ))}
+                <div className="flex items-center gap-2 mt-4 text-sm text-gray-400">
+                  <Tag className="h-4 w-4" />
+                  <span>{post.tags.join(' · ')}</span>
                 </div>
               )}
             </header>

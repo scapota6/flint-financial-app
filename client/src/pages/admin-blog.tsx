@@ -4,12 +4,13 @@
  * Only accessible to admin users
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { queryClient, apiRequest } from '@/lib/queryClient';
 import { useAuth } from '@/hooks/useAuth';
 import { useLocation } from 'wouter';
 import { useToast } from '@/hooks/use-toast';
+import { useUpload } from '@/hooks/use-upload';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -46,7 +47,9 @@ import {
   Trash2, 
   Eye, 
   FileText,
-  ArrowLeft
+  ArrowLeft,
+  Upload,
+  ImageIcon
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { Link } from 'wouter';
@@ -96,6 +99,32 @@ export default function AdminBlog() {
     status: 'draft' as 'draft' | 'published',
     tags: '',
   });
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  
+  const { uploadFile, isUploading } = useUpload({
+    onSuccess: (response) => {
+      setFormData(prev => ({ ...prev, heroImage: response.objectPath }));
+      toast({ title: 'Image uploaded', description: 'Your hero image has been uploaded.' });
+    },
+    onError: (error) => {
+      toast({ 
+        title: 'Upload failed', 
+        description: error.message || 'Failed to upload image', 
+        variant: 'destructive' 
+      });
+    },
+  });
+
+  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (!file.type.startsWith('image/')) {
+        toast({ title: 'Invalid file', description: 'Please select an image file.', variant: 'destructive' });
+        return;
+      }
+      await uploadFile(file);
+    }
+  };
 
   const { data: posts, isLoading: postsLoading } = useQuery<BlogPost[]>({
     queryKey: ['/api/blog/admin/posts'],
@@ -421,15 +450,50 @@ export default function AdminBlog() {
               </div>
 
               <div>
-                <Label htmlFor="heroImage" className="text-gray-300">Hero Image URL</Label>
-                <Input
-                  id="heroImage"
-                  value={formData.heroImage}
-                  onChange={(e) => setFormData({ ...formData, heroImage: e.target.value })}
-                  className="bg-slate-800 border-slate-600"
-                  placeholder="https://example.com/image.jpg"
-                  data-testid="input-hero-image"
-                />
+                <Label htmlFor="heroImage" className="text-gray-300">Hero Image</Label>
+                <div className="flex gap-2">
+                  <Input
+                    id="heroImage"
+                    value={formData.heroImage}
+                    onChange={(e) => setFormData({ ...formData, heroImage: e.target.value })}
+                    className="bg-slate-800 border-slate-600 flex-1"
+                    placeholder="URL or upload an image"
+                    data-testid="input-hero-image"
+                  />
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    className="hidden"
+                    accept="image/*"
+                    onChange={handleFileSelect}
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={isUploading}
+                    className="border-slate-600 hover:bg-slate-700"
+                    data-testid="button-upload-image"
+                  >
+                    {isUploading ? (
+                      <div className="animate-spin w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full" />
+                    ) : (
+                      <Upload className="h-4 w-4" />
+                    )}
+                  </Button>
+                </div>
+                {formData.heroImage && (
+                  <div className="mt-2 relative">
+                    <img 
+                      src={formData.heroImage.startsWith('/objects/') ? formData.heroImage : formData.heroImage} 
+                      alt="Hero preview" 
+                      className="w-full h-32 object-cover rounded border border-slate-600"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).style.display = 'none';
+                      }}
+                    />
+                  </div>
+                )}
               </div>
 
               <div>
