@@ -122,16 +122,23 @@ router.post('/admin/posts', requireAuth, isAdmin(), async (req: any, res) => {
   try {
     const userId = req.user.claims.sub;
     
+    console.log('[Blog Create] Received body:', JSON.stringify(req.body, null, 2));
+    console.log('[Blog Create] Status from body:', req.body.status);
+    
     const validatedData = insertBlogPostSchema.parse({
       ...req.body,
       authorId: userId,
       publishedAt: req.body.status === 'published' ? new Date() : null,
     });
+    
+    console.log('[Blog Create] Validated data status:', validatedData.status);
 
     const [newPost] = await db
       .insert(blogPosts)
       .values(validatedData)
       .returning();
+    
+    console.log('[Blog Create] Created post with status:', newPost.status);
 
     res.status(201).json(newPost);
   } catch (error: any) {
@@ -151,8 +158,13 @@ router.patch('/admin/posts/:id', requireAuth, isAdmin(), async (req: any, res) =
   try {
     const id = parseInt(req.params.id);
     
+    console.log('[Blog Update] Received body:', JSON.stringify(req.body, null, 2));
+    console.log('[Blog Update] Status from body:', req.body.status);
+    
     // Validate input
     const validatedInput = updateBlogPostSchema.parse(req.body);
+    
+    console.log('[Blog Update] Validated status:', validatedInput.status);
     
     // Get existing post
     const [existingPost] = await db
@@ -163,6 +175,8 @@ router.patch('/admin/posts/:id', requireAuth, isAdmin(), async (req: any, res) =
     if (!existingPost) {
       return res.status(404).json({ error: 'Blog post not found' });
     }
+    
+    console.log('[Blog Update] Existing post status:', existingPost.status);
 
     // Build update data with only validated fields
     const updateData: any = {
@@ -174,6 +188,8 @@ router.patch('/admin/posts/:id', requireAuth, isAdmin(), async (req: any, res) =
     if (validatedInput.status === 'published' && existingPost.status === 'draft') {
       updateData.publishedAt = new Date();
     }
+    
+    console.log('[Blog Update] Final update data status:', updateData.status);
 
     const [updatedPost] = await db
       .update(blogPosts)
