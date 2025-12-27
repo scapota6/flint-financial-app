@@ -1653,6 +1653,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         'office': 'Office Supplies',
         'phone': 'Phone & Mobile',
         'service': 'Services',
+        'services': 'Services',
+        'professional': 'Professional Services',
+        'personal_care': 'Personal Care',
+        'subscription': 'Subscriptions',
+        'subscriptions': 'Subscriptions',
         'shopping': 'Shopping',
         'software': 'Software & Subscriptions',
         'sport': 'Sports & Fitness',
@@ -1660,6 +1665,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         'transport': 'Transportation',
         'transportation': 'Transportation',
         'utilities': 'Utilities',
+        'bills': 'Bills & Utilities',
+        'bills_and_utilities': 'Bills & Utilities',
       };
 
       // Parse query parameters
@@ -1796,6 +1803,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
               // Get user-friendly display name from mapping
               const displayName = CATEGORY_DISPLAY_NAMES[normalizedKey] || 
                 (rawCategory.charAt(0).toUpperCase() + rawCategory.slice(1).toLowerCase().replace(/[_-]/g, ' '));
+              
+              // Debug: log unmapped categories
+              if (!CATEGORY_DISPLAY_NAMES[normalizedKey]) {
+                console.log(`[Analytics Debug] Unmapped category: raw="${rawCategory}", normalized="${normalizedKey}", display="${displayName}", amount=${spendAmount}`);
+              }
               
               // Skip excluded categories (transfers, income, investments only)
               if (excludedPatterns.some(exc => normalizedKey.includes(exc))) {
