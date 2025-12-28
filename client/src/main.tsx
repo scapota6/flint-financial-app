@@ -13,29 +13,45 @@ const posthogOptions = {
   capture_pageview: true,
   capture_pageleave: true,
   autocapture: false, // Disable to prevent conflicts with MetaMask SDK cyclic structures
+  disable_session_recording: true, // Disable session recording to prevent cyclic structure errors
+  disable_scroll_properties: true, // Disable scroll tracking
+  sanitize_properties: (properties: Record<string, unknown>) => {
+    // Remove any properties that might contain cyclic structures
+    const sanitized: Record<string, unknown> = {};
+    for (const key in properties) {
+      try {
+        JSON.stringify(properties[key]);
+        sanitized[key] = properties[key];
+      } catch {
+        // Skip properties that can't be serialized
+        sanitized[key] = '[Circular]';
+      }
+    }
+    return sanitized;
+  },
 };
 
-// Render app with error boundary, PostHog provider, and MetaMask provider
+// Render app with error boundary, MetaMask provider outside PostHog to prevent cyclic serialization
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <PostHogProvider 
-      apiKey={import.meta.env.VITE_PUBLIC_POSTHOG_KEY || 'phc_ucEZRx85Wj0m5hW2b8BEpf0C9GfwoFzWCXs1R2tUyyJ'} 
-      options={posthogOptions}
+    <MetaMaskProvider
+      sdkOptions={{
+        dappMetadata: {
+          name: "Flint",
+          url: window.location.href,
+        },
+        infuraAPIKey: import.meta.env.VITE_INFURA_API_KEY,
+        enableAnalytics: false,
+      }}
     >
-      <MetaMaskProvider
-        sdkOptions={{
-          dappMetadata: {
-            name: "Flint",
-            url: window.location.href,
-          },
-          infuraAPIKey: import.meta.env.VITE_INFURA_API_KEY,
-          enableAnalytics: false,
-        }}
+      <PostHogProvider 
+        apiKey={import.meta.env.VITE_PUBLIC_POSTHOG_KEY || 'phc_ucEZRx85Wj0m5hW2b8BEpf0C9GfwoFzWCXs1R2tUyyJ'} 
+        options={posthogOptions}
       >
         <ErrorBoundary>
           <App />
         </ErrorBoundary>
-      </MetaMaskProvider>
-    </PostHogProvider>
+      </PostHogProvider>
+    </MetaMaskProvider>
   </StrictMode>
 );
