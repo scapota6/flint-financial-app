@@ -5,7 +5,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "wouter";
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
 import { format } from 'date-fns';
 import { Calendar, ArrowRight, Tag } from "lucide-react";
 import { BeamsBackground } from "@/components/ui/beams-background";

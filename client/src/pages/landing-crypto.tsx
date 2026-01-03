@@ -24,7 +24,7 @@ import { Link } from "wouter";
 import flintLogo from "@assets/flint-logo.png";
 import { LandingHeader } from "@/components/layout/landing-header";
 import { EmbeddedCheckoutModal } from "@/components/EmbeddedCheckoutModal";
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
 
 const useIsMobile = () => {
   const [isMobile, setIsMobile] = useState(false);

@@ -6,7 +6,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
 import forbesLogo from '@assets/forbes-logo-white_1760732850878.png';
 import wsjLogo from '@assets/12450_65f1b42317bb1_3142_1760732860674.png';
 import entrepreneurLogo from '@assets/images_1760732961328.png';
