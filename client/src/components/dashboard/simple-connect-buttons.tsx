@@ -251,11 +251,16 @@ export default function SimpleConnectButtons({ accounts, userTier, isAdmin }: Si
                 
                 const saveData = await saveResponse.json();
                 
-                // Refresh data - invalidate all dashboard-related queries
-                queryClient.invalidateQueries({ queryKey: ['dashboard'] });
-                queryClient.invalidateQueries({ queryKey: ['/api/accounts'] });
-                queryClient.invalidateQueries({ queryKey: ['/api/banks'] });
-                queryClient.invalidateQueries({ queryKey: ['/api/dashboard'] });
+                // Force refresh data - invalidate and immediately refetch all dashboard-related queries
+                await Promise.all([
+                  queryClient.invalidateQueries({ queryKey: ['dashboard'] }),
+                  queryClient.invalidateQueries({ queryKey: ['/api/accounts'] }),
+                  queryClient.invalidateQueries({ queryKey: ['/api/banks'] }),
+                  queryClient.invalidateQueries({ queryKey: ['/api/dashboard'] }),
+                ]);
+                
+                // Force refetch active queries to ensure UI updates immediately
+                await queryClient.refetchQueries({ type: 'active' });
                 
                 resolve({ success: true });
               } catch (error) {
