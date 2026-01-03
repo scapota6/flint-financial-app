@@ -15,6 +15,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { getInstitutionLogo } from "@/lib/bank-logos";
 import { useToast } from "@/hooks/use-toast";
 import ConnectionLimitAlert from "@/components/dashboard/connection-limit-alert";
+import { getCsrfToken } from "@/lib/csrf";
 
 interface BrokerageAccount {
   id: string;
@@ -153,23 +154,39 @@ export default function Accounts() {
     setDisconnecting(accountId);
     try {
       const endpoint = type === 'brokerage' ? `/api/accounts/disconnect` : `/api/banks/disconnect`;
+      const csrfToken = await getCsrfToken();
       const response = await fetch(endpoint, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': csrfToken
+        },
         credentials: 'include',
         body: JSON.stringify({ accountId })
       });
       
       if (response.ok) {
+        toast({
+          title: "Account disconnected",
+          description: "The account has been successfully removed.",
+        });
         // Reload the page to refresh accounts
         window.location.reload();
       } else {
         const error = await response.json();
-        alert(`Failed to disconnect account: ${error.message || 'Unknown error'}`);
+        toast({
+          title: "Failed to disconnect",
+          description: error.message || 'Unknown error',
+          variant: "destructive"
+        });
       }
     } catch (error) {
       console.error('Error disconnecting account:', error);
-      alert('Failed to disconnect account. Please try again.');
+      toast({
+        title: "Error",
+        description: 'Failed to disconnect account. Please try again.',
+        variant: "destructive"
+      });
     } finally {
       setDisconnecting(null);
     }

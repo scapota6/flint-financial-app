@@ -804,4 +804,64 @@ router.get("/brokerages", requireAuth, async (req: any, res) => {
   }
 });
 
+/**
+ * POST /api/banks/disconnect
+ * Disconnects a bank/card account
+ */
+router.post("/banks/disconnect", requireAuth, async (req: any, res) => {
+  try {
+    const userId = req.user.claims.sub;
+    const { accountId } = req.body;
+    
+    if (!accountId) {
+      return res.status(400).json({ message: "accountId is required" });
+    }
+    
+    logger.info("Bank disconnect request", {
+      userId,
+      metadata: { accountId }
+    });
+    
+    // Get the account to verify ownership
+    const account = await storage.getConnectedAccount(Number(accountId));
+    if (!account) {
+      return res.status(404).json({ message: "Account not found" });
+    }
+    
+    if (account.userId !== userId) {
+      return res.status(403).json({ message: "Not authorized to disconnect this account" });
+    }
+    
+    // Delete the account from database
+    await storage.deleteConnectedAccount(userId, account.provider, account.externalAccountId);
+    
+    // Log the activity
+    try {
+      await storage.createActivityLog({
+        userId,
+        action: 'account_disconnected',
+        description: `Disconnected ${account.institutionName} account`,
+        metadata: { provider: account.provider, accountId, accountType: account.accountType }
+      });
+    } catch (logError) {
+      // Don't fail the disconnect if activity log fails
+      logger.warn("Failed to log disconnect activity", { error: logError });
+    }
+    
+    logger.info("Bank account disconnected successfully", {
+      userId,
+      metadata: { accountId, institutionName: account.institutionName }
+    });
+    
+    res.json({ success: true, message: "Account disconnected successfully" });
+    
+  } catch (error: any) {
+    logger.error("Error disconnecting bank account", { error });
+    res.status(500).json({ 
+      message: "Failed to disconnect account",
+      error: error instanceof Error ? error.message : "Unknown error"
+    });
+  }
+});
+
 export default router;
