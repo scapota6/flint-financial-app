@@ -262,6 +262,11 @@ export default function SimpleConnectButtons({ accounts, userTier, isAdmin }: Si
                 // Force refetch active queries to ensure UI updates immediately
                 await queryClient.refetchQueries({ type: 'active' });
                 
+                // Hard refresh the page after short delay to ensure new accounts are visible
+                setTimeout(() => {
+                  window.location.reload();
+                }, 500);
+                
                 resolve({ success: true });
               } catch (error) {
                 console.error('🏦 Error saving account:', error);
