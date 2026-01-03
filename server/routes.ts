@@ -691,9 +691,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
               displayBalance,
               accountType
             };
-          } else if (accountResponse.status === 401 || accountResponse.status === 403) {
-            // Account access expired - mark for reconnection but DON'T include in totals
-            console.log(`[Dashboard] Teller account ${account.id} access expired, excluding from totals`);
+          } else if (accountResponse.status === 401 || accountResponse.status === 403 || accountResponse.status === 404) {
+            // Account access expired or not found - mark for reconnection but DON'T include in totals
+            console.log(`[Dashboard] Teller account ${account.id} access issue (${accountResponse.status}), excluding from totals`);
             
             const storedBalance = parseFloat(account.balance) || 0;
             
