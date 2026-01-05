@@ -396,7 +396,11 @@ function Landing() {
                           target.style.display = 'none';
                           const parent = target.parentElement;
                           if (parent) {
-                            parent.innerHTML = `<div class="text-xs text-gray-400 font-semibold text-center">${institution.name.substring(0, 3).toUpperCase()}</div>`;
+                            parent.textContent = '';
+                            const fallback = document.createElement('div');
+                            fallback.className = 'text-xs text-gray-400 font-semibold text-center';
+                            fallback.textContent = institution.name.substring(0, 3).toUpperCase();
+                            parent.appendChild(fallback);
                           }
                         }}
                       />
@@ -419,7 +423,11 @@ function Landing() {
                           target.style.display = 'none';
                           const parent = target.parentElement;
                           if (parent) {
-                            parent.innerHTML = `<div class="text-xs text-gray-400 font-semibold text-center">${institution.name.substring(0, 3).toUpperCase()}</div>`;
+                            parent.textContent = '';
+                            const fallback = document.createElement('div');
+                            fallback.className = 'text-xs text-gray-400 font-semibold text-center';
+                            fallback.textContent = institution.name.substring(0, 3).toUpperCase();
+                            parent.appendChild(fallback);
                           }
                         }}
                       />
@@ -442,7 +450,11 @@ function Landing() {
                           target.style.display = 'none';
                           const parent = target.parentElement;
                           if (parent) {
-                            parent.innerHTML = `<div class="text-xs text-gray-400 font-semibold text-center">${institution.name.substring(0, 3).toUpperCase()}</div>`;
+                            parent.textContent = '';
+                            const fallback = document.createElement('div');
+                            fallback.className = 'text-xs text-gray-400 font-semibold text-center';
+                            fallback.textContent = institution.name.substring(0, 3).toUpperCase();
+                            parent.appendChild(fallback);
                           }
                         }}
                       />
