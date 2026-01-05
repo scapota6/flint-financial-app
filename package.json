@@ -127,6 +127,7 @@
     "react-ts-tradingview-widgets": "^1.2.8",
     "recharts": "^2.15.4",
     "resend": "^6.1.2",
+    "semver": "^7.7.3",
     "snaptrade-typescript-sdk": "^9.0.125",
     "speakeasy": "^2.0.0",
     "stripe": "^18.5.0",
