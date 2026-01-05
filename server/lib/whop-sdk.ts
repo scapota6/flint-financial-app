@@ -37,10 +37,3 @@ export async function getWhopUser(userId: string) {
     throw error;
   }
 }
-
-
-logger.info('Whop SDK initialized', {
-  metadata: {
-    hasApiKey: !!whopApiKey
-  }
-});
