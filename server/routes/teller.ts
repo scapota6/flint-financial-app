@@ -298,8 +298,6 @@ router.post("/callback", requireAuth, async (req: any, res) => {
     const userId = req.user.claims.sub;
     const { accessToken, enrollment_id, institution } = req.body;
     
-    console.log('[Teller Mobile Callback] User:', userId, 'has accessToken:', !!accessToken);
-    
     if (!accessToken) {
       return res.status(400).json({ 
         message: "Access token is required",
