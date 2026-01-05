@@ -1712,7 +1712,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       console.log(`[Analytics] Found ${bankAccounts.length} Teller accounts for user ${userId}`);
       console.log(`[Analytics] Accounts breakdown:`, bankAccounts.map(a => ({ name: a.accountName, type: a.accountType })));
-      console.log(`[Analytics] Teller access token: ${tellerAccessToken ? 'FOUND' : 'NOT FOUND'}`);
       
       if (!tellerAccessToken && bankAccounts.length > 0) {
         console.log(`[Analytics] WARNING: No access token available for ${bankAccounts.length} Teller accounts`);
