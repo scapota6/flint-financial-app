@@ -92,8 +92,6 @@ router.post("/save-account", requireAuth, async (req: any, res) => {
     const userId = req.user.claims.sub;
     const { accessToken, enrollmentId, institution } = req.body;
     
-    console.log('[DEBUG] Extracted values:', { userId, accessToken: accessToken ? 'EXISTS' : 'MISSING', enrollmentId, institution });
-    
     if (!accessToken) {
       console.log('[DEBUG] Missing accessToken, returning 400');
       return res.status(400).json({ 
