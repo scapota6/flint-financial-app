@@ -3165,7 +3165,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
               paymentCapabilities: paymentCapabilities
             };
             
-            console.log('[Credit Card Info Created]', creditCardInfo);
           }
           
           // Return comprehensive Teller Account data
