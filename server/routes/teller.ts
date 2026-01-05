@@ -138,8 +138,6 @@ router.post("/save-account", requireAuth, async (req: any, res) => {
       accessToken: accessToken,
       institutionName: institution
     });
-    logger.info("Teller enrollment saved/updated", { userId, metadata: { enrollmentId: actualEnrollmentId } });
-    
     // Get user and calculate limits using proper connection counting
     const user = await storage.getUser(userId);
     const currentConnections = await getConnectionCount(userId);
