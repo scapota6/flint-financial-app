@@ -1706,7 +1706,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       let tellerAccessToken: string | null = null;
       try {
         tellerAccessToken = await getTellerAccessToken(userId);
-        console.log(`[Analytics] Teller access token fetch successful: ${tellerAccessToken ? 'FOUND' : 'NOT FOUND'}`);
       } catch (tokenError) {
         console.error('[Analytics] Error fetching Teller access token:', tokenError);
         // Continue without token - will use account.accessToken fallback
