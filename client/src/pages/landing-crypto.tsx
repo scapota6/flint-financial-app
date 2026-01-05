@@ -235,7 +235,10 @@ export default function LandingCrypto() {
                         e.currentTarget.style.display = 'none';
                         const parent = e.currentTarget.parentElement;
                         if (parent) {
-                          parent.innerHTML = `<span class="text-sm text-gray-300 font-medium">${inst.name}</span>`;
+                          const span = document.createElement('span');
+                          span.className = 'text-sm text-gray-300 font-medium';
+                          span.textContent = inst.name;
+                          parent.appendChild(span);
                         }
                       }}
                     />
