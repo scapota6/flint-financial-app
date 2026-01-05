@@ -577,7 +577,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     let bankBalance = 0;
 
     console.log('[Dashboard] Teller accounts found:', tellerAccounts.length);
-    console.log('[Dashboard] Fallback access token:', fallbackAccessToken ? 'FOUND' : 'NOT FOUND');
 
     if (tellerAccounts.length === 0) {
       return { enrichedAccounts, totalBalance, bankBalance };
