@@ -58,6 +58,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Progress } from "@/components/ui/progress";
+import TransactionTimeline from "@/components/ui/transaction-timeline";
 
 interface Transaction {
   id: string;
@@ -1300,48 +1301,12 @@ export default function Analytics() {
               {formatCurrency(selectedCategory?.amount || 0)}
             </DialogDescription>
           </DialogHeader>
-          <div className="flex-1 overflow-y-auto space-y-2 py-4">
-            <AnimatePresence>
-              {selectedCategory?.transactions?.length === 0 ? (
-                <p className="text-gray-400 text-sm text-center py-8">
-                  No transactions in this category
-                </p>
-              ) : (
-                selectedCategory?.transactions?.map((transaction, index) => (
-                  <motion.div
-                    key={transaction.id}
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.03 }}
-                    className="p-3 rounded-lg bg-black"
-                    data-testid={`transaction-${transaction.id}`}
-                  >
-                    <div className="flex items-start justify-between gap-4">
-                      <div className="flex-1 min-w-0">
-                        <p className="font-medium text-white truncate">
-                          {transaction.merchant}
-                        </p>
-                        <p className="text-sm text-gray-400 truncate">
-                          {transaction.description}
-                        </p>
-                        <div className="flex items-center gap-2 mt-1">
-                          <span className="text-xs text-gray-500">
-                            {formatDate(transaction.date)}
-                          </span>
-                          <span className="text-xs text-gray-600">•</span>
-                          <span className="text-xs text-gray-500 truncate">
-                            {transaction.accountName}
-                          </span>
-                        </div>
-                      </div>
-                      <p className="text-sm font-semibold text-red-400 whitespace-nowrap">
-                        -{formatCurrency(Math.abs(transaction.amount))}
-                      </p>
-                    </div>
-                  </motion.div>
-                ))
-              )}
-            </AnimatePresence>
+          <div className="flex-1 overflow-y-auto py-4">
+            <TransactionTimeline
+              transactions={selectedCategory?.transactions || []}
+              formatCurrency={formatCurrency}
+              formatDate={formatDate}
+            />
           </div>
           <div className="pt-2 border-t border-gray-800">
             <Button
