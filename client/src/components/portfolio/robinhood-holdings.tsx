@@ -346,7 +346,7 @@ const RobinhoodHoldings = memo(function RobinhoodHoldings({
 
   if (isLoading) {
     return (
-      <div className="bg-black min-h-[400px] rounded-xl p-4 sm:p-6" data-testid="holdings-loading">
+      <div className="bg-white/5 backdrop-blur-sm border border-white/10 min-h-[400px] rounded-xl p-4 sm:p-6" data-testid="holdings-loading">
         <div className="space-y-4">
           {[1, 2, 3, 4, 5].map(i => (
             <div key={i} className="animate-pulse flex items-center justify-between py-4">
@@ -365,7 +365,7 @@ const RobinhoodHoldings = memo(function RobinhoodHoldings({
 
   if (error) {
     return (
-      <div className="bg-black min-h-[200px] rounded-xl p-6 flex items-center justify-center" data-testid="holdings-error">
+      <div className="bg-white/5 backdrop-blur-sm border border-white/10 min-h-[200px] rounded-xl p-6 flex items-center justify-center" data-testid="holdings-error">
         <div className="text-center text-gray-400">
           <p className="text-lg mb-2">Unable to load holdings</p>
           <p className="text-sm">Please check your brokerage connections</p>
@@ -376,7 +376,7 @@ const RobinhoodHoldings = memo(function RobinhoodHoldings({
 
   if (holdings.length === 0) {
     return (
-      <div className="bg-black min-h-[200px] rounded-xl p-6 flex items-center justify-center" data-testid="holdings-empty">
+      <div className="bg-white/5 backdrop-blur-sm border border-white/10 min-h-[200px] rounded-xl p-6 flex items-center justify-center" data-testid="holdings-empty">
         <div className="text-center text-gray-400">
           <p className="text-lg mb-2">No holdings yet</p>
           <p className="text-sm">Connect your brokerage accounts to view your portfolio</p>
@@ -386,7 +386,7 @@ const RobinhoodHoldings = memo(function RobinhoodHoldings({
   }
 
   return (
-    <div className="bg-black rounded-xl p-4 sm:p-6" data-testid="robinhood-holdings">
+    <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-4 sm:p-6" data-testid="robinhood-holdings">
       {/* Portfolio Summary with Total P&L */}
       <PortfolioSummary holdings={holdings} />
       

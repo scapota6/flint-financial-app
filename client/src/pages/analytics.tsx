@@ -398,14 +398,14 @@ export default function Analytics() {
           </div>
 
           {isSpendingLoading || isDashboardLoading ? (
-            <div className="bg-black rounded-xl p-6">
+            <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-6">
               <Skeleton className="h-6 w-48 mb-4" />
               <div className="h-80 flex items-center justify-center">
                 <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
               </div>
             </div>
           ) : isError ? (
-            <div className="bg-black rounded-xl p-6">
+            <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-6">
               <div className="text-center py-12">
                 <AlertCircle className="w-12 h-12 mx-auto mb-4 text-red-500" />
                 <h3 className="text-lg font-medium mb-2">Failed to load data</h3>
@@ -421,7 +421,7 @@ export default function Analytics() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3, delay: 0.1 }}
               >
-                <div className="bg-black rounded-xl p-4 sm:p-6 mb-6">
+                <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-4 sm:p-6 mb-6">
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-3">
                       <h2 className="text-xl font-semibold text-white">
@@ -534,7 +534,7 @@ export default function Analytics() {
                     {(categoriesExpanded ? chartData : chartData.slice(0, 2)).map((category, index) => (
                       <div
                         key={category.name}
-                        className="bg-black rounded-xl p-3 sm:p-4 cursor-pointer transition-all hover:bg-gray-900"
+                        className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-3 sm:p-4 cursor-pointer transition-all hover:bg-white/10"
                         onClick={() => handleBarClick(category)}
                         data-testid={`card-category-${category.name.toLowerCase().replace(/\s+/g, "-")}`}
                       >
@@ -617,7 +617,7 @@ export default function Analytics() {
                 <Skeleton className="h-24 bg-gray-800" />
               </div>
             ) : goals.length === 0 ? (
-              <div className="bg-black rounded-xl p-8 text-center">
+              <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-8 text-center">
                 <Target className="w-12 h-12 mx-auto mb-4 text-gray-600" />
                 <h3 className="text-lg font-medium mb-2">No goals yet</h3>
                 <p className="text-gray-400 text-sm mb-4">
@@ -693,7 +693,7 @@ export default function Analytics() {
                       key={goal.id}
                       initial={{ opacity: 0, x: -10 }}
                       animate={{ opacity: 1, x: 0 }}
-                      className="bg-black rounded-xl p-4"
+                      className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-4"
                       data-testid={`goal-card-${goal.id}`}
                     >
                       <div className="flex items-start justify-between mb-3">
@@ -906,7 +906,7 @@ export default function Analytics() {
                       </div>
 
                       {selectedCard && (
-                        <div className="p-4 bg-black rounded-lg">
+                        <div className="p-4 bg-white/5 border border-white/10 rounded-lg">
                           <div className="flex items-center justify-between">
                             <div>
                               <p className="text-sm text-gray-400">Current Balance to Pay Off</p>
@@ -979,7 +979,7 @@ export default function Analytics() {
 
                       {selectedAccount && (
                         <>
-                          <div className="p-4 bg-black rounded-lg">
+                          <div className="p-4 bg-white/5 border border-white/10 rounded-lg">
                             <div className="flex items-center justify-between">
                               <div>
                                 <p className="text-sm text-gray-400">Current Balance (Starting Point)</p>

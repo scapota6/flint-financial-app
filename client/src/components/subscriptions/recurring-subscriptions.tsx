@@ -145,7 +145,7 @@ export default function RecurringSubscriptions() {
 
   if (isLoading) {
     return (
-      <div className="bg-black rounded-xl p-4 sm:p-6" data-testid="subscriptions-loading">
+      <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-4 sm:p-6" data-testid="subscriptions-loading">
         <div className="space-y-4">
           {[1, 2, 3, 4, 5].map(i => (
             <div key={i} className="animate-pulse flex items-center justify-between py-4">
@@ -169,7 +169,7 @@ export default function RecurringSubscriptions() {
 
   if (error) {
     return (
-      <div className="bg-black rounded-xl p-6 min-h-[200px] flex items-center justify-center" data-testid="subscriptions-error">
+      <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-6 min-h-[200px] flex items-center justify-center" data-testid="subscriptions-error">
         <div className="text-center text-gray-400">
           <AlertTriangle className="h-12 w-12 mx-auto mb-4 opacity-50" />
           <p className="text-lg mb-2">Unable to load subscriptions</p>
@@ -180,7 +180,7 @@ export default function RecurringSubscriptions() {
   }
 
   return (
-    <div className="bg-black rounded-xl p-4 sm:p-6" data-testid="recurring-subscriptions">
+    <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-4 sm:p-6" data-testid="recurring-subscriptions">
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-xl sm:text-2xl font-bold text-white">Recurring Subscriptions</h2>
