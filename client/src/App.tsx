@@ -90,9 +90,17 @@ function Router() {
 
   return (
     <>
+      {isAuthenticated && (
+        <div
+          className="fixed inset-0 z-0"
+          style={{
+            background: "radial-gradient(125% 125% at 50% 10%, #0a0a0a 40%, #1e3a5f 100%)",
+          }}
+        />
+      )}
       {isAuthenticated && <UpgradeBanner />}
       {isAuthenticated && <ActivityTimeoutModal />}
-      <div className={isAuthenticated ? "authenticated-content px-4 relative pt-20" : ""}>
+      <div className={isAuthenticated ? "authenticated-content px-4 relative pt-20 z-10" : ""}>
         {isAuthenticated && <FloatingHeader />}
         <AnimatePresence mode="wait">
           <Suspense fallback={<PageLoader />}>
