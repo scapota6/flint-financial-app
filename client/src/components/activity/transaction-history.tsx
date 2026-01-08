@@ -18,6 +18,7 @@ import {
   Filter
 } from 'lucide-react';
 import { apiRequest } from '@/lib/queryClient';
+import { getMerchantLogo } from '@/lib/merchant-logos';
 import { Skeleton } from '@/components/ui/skeleton';
 import { format } from 'date-fns';
 
@@ -82,7 +83,7 @@ export default function TransactionHistory() {
 
   if (isLoading) {
     return (
-      <Card className="bg-gray-900 border-gray-800">
+      <Card className="bg-white/5 backdrop-blur-sm border border-white/10">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Receipt className="h-5 w-5" />
@@ -92,7 +93,7 @@ export default function TransactionHistory() {
         <CardContent>
           <div className="space-y-4">
             {[1, 2, 3].map((i) => (
-              <Skeleton key={i} className="h-20 bg-gray-800" />
+              <Skeleton key={i} className="h-20 bg-white/5" />
             ))}
           </div>
         </CardContent>
@@ -102,7 +103,7 @@ export default function TransactionHistory() {
 
   if (error) {
     return (
-      <Card className="bg-gray-900 border-gray-800">
+      <Card className="bg-white/5 backdrop-blur-sm border border-white/10">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Receipt className="h-5 w-5" />
@@ -135,7 +136,7 @@ export default function TransactionHistory() {
   };
 
   return (
-    <Card className="bg-gray-900 border-gray-800">
+    <Card className="bg-white/5 backdrop-blur-sm border border-white/10">
       <CardHeader>
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center gap-2">
@@ -153,10 +154,10 @@ export default function TransactionHistory() {
           <div>
             <Label className="text-xs text-gray-400">Account</Label>
             <Select value={filterAccount} onValueChange={setFilterAccount}>
-              <SelectTrigger className="bg-gray-800 border-gray-700">
+              <SelectTrigger className="bg-white/5 border-white/10">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent className="bg-gray-800 border-gray-700">
+              <SelectContent className="bg-gray-900 border-white/10">
                 <SelectItem value="all">All Accounts</SelectItem>
                 {uniqueAccounts.map((account) => {
                   const [id, name] = account.split(':');
@@ -173,10 +174,10 @@ export default function TransactionHistory() {
           <div>
             <Label className="text-xs text-gray-400">Type</Label>
             <Select value={filterType} onValueChange={setFilterType}>
-              <SelectTrigger className="bg-gray-800 border-gray-700">
+              <SelectTrigger className="bg-white/5 border-white/10">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent className="bg-gray-800 border-gray-700">
+              <SelectContent className="bg-gray-900 border-white/10">
                 <SelectItem value="all">All Types</SelectItem>
                 <SelectItem value="bank">Bank Transactions</SelectItem>
                 <SelectItem value="trade">Trades</SelectItem>
@@ -192,7 +193,7 @@ export default function TransactionHistory() {
               type="date"
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
-              className="bg-gray-800 border-gray-700"
+              className="bg-white/5 border-white/10"
             />
           </div>
 
@@ -202,7 +203,7 @@ export default function TransactionHistory() {
               type="date"
               value={endDate}
               onChange={(e) => setEndDate(e.target.value)}
-              className="bg-gray-800 border-gray-700"
+              className="bg-white/5 border-white/10"
             />
           </div>
         </div>
@@ -219,15 +220,20 @@ export default function TransactionHistory() {
               <div key={date}>
                 <h3 className="text-sm font-medium text-gray-400 mb-3">{date}</h3>
                 <div className="space-y-2">
-                  {dayTransactions.map((transaction) => (
+                  {dayTransactions.map((transaction) => {
+                      const logoData = getMerchantLogo(transaction.description || transaction.merchant || '', transaction.accountName);
+                      
+                      return (
                     <div
                       key={transaction.id}
-                      className="bg-gray-800 rounded-lg p-4 hover:bg-gray-750 transition-colors"
+                      className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg p-4 hover:bg-white/10 transition-colors"
                     >
                       <div className="flex items-start justify-between">
                         <div className="flex items-start gap-3">
-                          <div className="mt-1">
-                            {getTransactionIcon(transaction)}
+                          <div className={`w-10 h-10 rounded-lg overflow-hidden flex items-center justify-center flex-shrink-0 ${logoData.bgClass}`}>
+                            <div className="h-6 w-6 flex items-center justify-center [&>img]:h-full [&>img]:w-full [&>img]:object-contain [&>svg]:h-6 [&>svg]:w-6">
+                              {logoData.logo}
+                            </div>
                           </div>
                           <div>
                             <div className="font-medium">
@@ -278,7 +284,8 @@ export default function TransactionHistory() {
                         </div>
                       </div>
                     </div>
-                  ))}
+                      );
+                  })}
                 </div>
               </div>
             ))}

@@ -22,6 +22,7 @@ import {
   AlertTriangle,
   CheckCircle
 } from "lucide-react";
+import { getMerchantLogo } from "@/lib/merchant-logos";
 
 interface BankAccountModalProps {
   account: any;
@@ -139,7 +140,7 @@ export function BankAccountModal({ account, isOpen, onClose }: BankAccountModalP
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="bg-gray-900 border-gray-700 max-w-3xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="bg-gray-900/95 backdrop-blur-xl border-white/10 max-w-3xl max-h-[90vh] overflow-y-auto">
         <DialogHeader className="border-b border-gray-700 pb-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -218,14 +219,14 @@ export function BankAccountModal({ account, isOpen, onClose }: BankAccountModalP
         </DialogHeader>
 
         <Tabs defaultValue="transactions" className="mt-6">
-          <TabsList className="grid w-full grid-cols-3 bg-gray-800">
+          <TabsList className="grid w-full grid-cols-3 bg-white/5 border border-white/10">
             <TabsTrigger value="transactions">Recent Transactions</TabsTrigger>
             <TabsTrigger value="details">Account Details</TabsTrigger>
             <TabsTrigger value="settings">Settings</TabsTrigger>
           </TabsList>
 
           <TabsContent value="transactions" className="space-y-4">
-            <Card className="bg-gray-800/50 border-gray-700">
+            <Card className="bg-white/5 backdrop-blur-sm border border-white/10">
               <CardHeader>
                 <CardTitle className="text-white flex items-center gap-2">
                   <Activity className="h-5 w-5 text-blue-400" />
@@ -249,29 +250,36 @@ export function BankAccountModal({ account, isOpen, onClose }: BankAccountModalP
                   </div>
                 ) : (
                   <div className="space-y-3 max-h-[400px] overflow-y-auto">
-                    {displayTransactions.slice(0, 5).map((transaction) => (
-                      <div key={transaction.id} className="flex items-center gap-3 p-3 rounded-lg bg-gray-700/30 hover:bg-gray-700/50 transition-colors">
-                        <div className="p-2 rounded-full bg-gray-600/50">
-                          {getTransactionIcon(transaction.type)}
-                        </div>
-                        <div className="flex-1">
-                          <p className="text-white font-medium text-sm">{transaction.description}</p>
-                          <div className="flex items-center gap-2 text-xs text-gray-400">
-                            <Calendar className="h-3 w-3" />
-                            {new Date(transaction.date).toLocaleDateString()}
-                            <Badge variant="outline" className="text-xs py-0 px-1">
-                              {transaction.type}
-                            </Badge>
+                    {displayTransactions.slice(0, 5).map((transaction) => {
+                      const institutionName = account.institution?.name || account.name || '';
+                      const logoData = getMerchantLogo(transaction.description, institutionName);
+                      
+                      return (
+                        <div key={transaction.id} className="flex items-center gap-3 p-3 rounded-lg bg-white/5 backdrop-blur-sm border border-white/10 hover:bg-white/10 transition-colors">
+                          <div className={`w-10 h-10 rounded-lg overflow-hidden flex items-center justify-center flex-shrink-0 ${logoData.bgClass}`}>
+                            <div className="h-6 w-6 flex items-center justify-center [&>img]:h-full [&>img]:w-full [&>img]:object-contain [&>svg]:h-6 [&>svg]:w-6">
+                              {logoData.logo}
+                            </div>
+                          </div>
+                          <div className="flex-1">
+                            <p className="text-white font-medium text-sm">{transaction.description}</p>
+                            <div className="flex items-center gap-2 text-xs text-gray-400">
+                              <Calendar className="h-3 w-3" />
+                              {new Date(transaction.date).toLocaleDateString()}
+                              <Badge variant="outline" className="text-xs py-0 px-1">
+                                {transaction.type}
+                              </Badge>
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <p className={`font-medium ${getTransactionColor(transaction.amount)}`}>
+                              {transaction.amount >= 0 ? '+' : ''}${Math.abs(transaction.amount).toFixed(2)}
+                            </p>
+                            <p className="text-xs text-gray-400">{transaction.status}</p>
                           </div>
                         </div>
-                        <div className="text-right">
-                          <p className={`font-medium ${getTransactionColor(transaction.amount)}`}>
-                            {transaction.amount >= 0 ? '+' : ''}${Math.abs(transaction.amount).toFixed(2)}
-                          </p>
-                          <p className="text-xs text-gray-400">{transaction.status}</p>
-                        </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 )}
                 
@@ -287,7 +295,7 @@ export function BankAccountModal({ account, isOpen, onClose }: BankAccountModalP
           </TabsContent>
 
           <TabsContent value="details" className="space-y-4">
-            <Card className="bg-gray-800/50 border-gray-700">
+            <Card className="bg-white/5 backdrop-blur-sm border border-white/10">
               <CardHeader>
                 <CardTitle className="text-white flex items-center gap-2">
                   <CreditCard className="h-5 w-5 text-blue-400" />
@@ -329,12 +337,12 @@ export function BankAccountModal({ account, isOpen, onClose }: BankAccountModalP
           </TabsContent>
 
           <TabsContent value="settings" className="space-y-4">
-            <Card className="bg-gray-800/50 border-gray-700">
+            <Card className="bg-white/5 backdrop-blur-sm border border-white/10">
               <CardHeader>
                 <CardTitle className="text-white">Account Settings</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="flex items-center justify-between p-4 rounded-lg bg-gray-700/30">
+                <div className="flex items-center justify-between p-4 rounded-lg bg-white/5 border border-white/10">
                   <div>
                     <p className="text-white font-medium">Auto-sync Transactions</p>
                     <p className="text-sm text-gray-400">Automatically fetch new transactions every hour</p>
@@ -342,7 +350,7 @@ export function BankAccountModal({ account, isOpen, onClose }: BankAccountModalP
                   <Badge variant="outline" className="text-green-400 border-green-400">Enabled</Badge>
                 </div>
                 
-                <div className="flex items-center justify-between p-4 rounded-lg bg-gray-700/30">
+                <div className="flex items-center justify-between p-4 rounded-lg bg-white/5 border border-white/10">
                   <div>
                     <p className="text-white font-medium">Balance Notifications</p>
                     <p className="text-sm text-gray-400">Get notified of low balance or large transactions</p>

@@ -49,6 +49,7 @@ import {
 } from "@/lib/metamask";
 import OrderPreviewDialog from './OrderPreviewDialog';
 import OrderStatusDialog from './OrderStatusDialog';
+import { getMerchantLogo } from '@/lib/merchant-logos';
 
 // Utility function to safely extract symbol from SnapTrade symbol objects
 const extractSymbol = (symbolObj: any): string => {
@@ -1788,26 +1789,37 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
                       <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white font-bold text-sm mr-3">🏪</div>
                       Recent Transactions
                     </h3>
-                    <div className="max-h-[300px] overflow-y-auto space-y-1">
-                      {data.transactions.slice(0, 10).map((txn: any, index: number) => (
-                        <div key={txn.id || index} className="flex items-center justify-between py-2 px-1 border-b border-gray-200/10 dark:border-gray-700/30 last:border-0">
-                          <div className="flex-1 min-w-0 mr-3">
-                            <div className="font-medium text-gray-900 dark:text-white text-sm">
-                              {txn.description || txn.merchant || 'Unknown'}
+                    <div className="max-h-[300px] overflow-y-auto space-y-2">
+                      {data.transactions.slice(0, 10).map((txn: any, index: number) => {
+                        const merchantName = txn.description || txn.merchant || '';
+                        const institutionName = data.accountOverview?.institution?.name || data.institution?.name || '';
+                        const logoData = getMerchantLogo(merchantName, institutionName);
+                        
+                        return (
+                          <div key={txn.id || index} className="flex items-center gap-3 p-3 rounded-lg bg-white/5 backdrop-blur-sm border border-white/10 hover:bg-white/10 transition-colors">
+                            <div className={`w-10 h-10 rounded-lg overflow-hidden flex items-center justify-center flex-shrink-0 ${logoData.bgClass}`}>
+                              <div className="h-6 w-6 flex items-center justify-center [&>img]:h-full [&>img]:w-full [&>img]:object-contain [&>svg]:h-6 [&>svg]:w-6">
+                                {logoData.logo}
+                              </div>
                             </div>
-                            <div className="text-xs text-gray-500 dark:text-gray-400">
-                              {txn.date ? new Date(txn.date).toLocaleDateString() : 'N/A'}
+                            <div className="flex-1 min-w-0">
+                              <div className="font-medium text-gray-900 dark:text-white text-sm truncate">
+                                {txn.description || txn.merchant || 'Unknown'}
+                              </div>
+                              <div className="text-xs text-gray-500 dark:text-gray-400">
+                                {txn.date ? new Date(txn.date).toLocaleDateString() : 'N/A'}
+                              </div>
+                            </div>
+                            <div className={`font-bold text-sm whitespace-nowrap ${
+                              (txn.amount || 0) < 0 
+                                ? 'text-red-600 dark:text-red-400' 
+                                : 'text-green-600 dark:text-green-400'
+                            }`}>
+                              {fmtMoney(Math.abs(txn.amount || 0))}
                             </div>
                           </div>
-                          <div className={`font-bold text-sm whitespace-nowrap ${
-                            (txn.amount || 0) < 0 
-                              ? 'text-red-600 dark:text-red-400' 
-                              : 'text-green-600 dark:text-green-400'
-                          }`}>
-                            {fmtMoney(Math.abs(txn.amount || 0))}
-                          </div>
-                        </div>
-                      ))}
+                        );
+                      })}
                     </div>
                   </section>
                 )}
