@@ -2859,6 +2859,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   const blogRouter = await import('./routes/blog');
   app.use('/api/blog', blogRouter.default);
 
+  // Mount babylovegrowth.ai SEO routes (articles, backlinks, GEO audit, webhooks)
+  const babylovegrowthRouter = await import('./routes/babylovegrowth');
+  app.use('/api/babylovegrowth', babylovegrowthRouter.default);
+
   // Mount object storage routes for file uploads
   const { registerObjectStorageRoutes } = await import('./replit_integrations/object_storage');
   registerObjectStorageRoutes(app);
