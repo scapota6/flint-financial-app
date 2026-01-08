@@ -236,74 +236,82 @@ export default function UnifiedDashboard() {
       {/* Overview - Pie Chart */}
       {selectedView === 'overview' && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className="bg-black rounded-xl p-4">
+          <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-4">
             <h3 className="text-lg font-semibold text-white mb-4">Asset Allocation</h3>
             {typeBreakdown.length > 0 ? (
-              <div className="chart-container chart-glow relative overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 via-green-500/5 to-cyan-500/10 rounded-lg blur-2xl animate-pulse"></div>
-                <div className="floating-element absolute top-0 left-0 w-24 h-24 bg-blue-500/20 rounded-full blur-3xl"></div>
-                <div className="floating-element absolute bottom-0 right-0 w-20 h-20 bg-green-500/20 rounded-full blur-2xl" style={{animationDelay: '2s'}}></div>
-                <div className="floating-element absolute top-1/2 right-1/4 w-16 h-16 bg-cyan-500/15 rounded-full blur-2xl" style={{animationDelay: '1s'}}></div>
-                <ResponsiveContainer width="100%" height={300}>
+              <div className="relative">
+                <ResponsiveContainer width="100%" height={280}>
                   <PieChart>
                     <defs>
-                      <radialGradient id="bankingGradient3D" cx="30%" cy="30%">
+                      <linearGradient id="bankingGradientModern" x1="0%" y1="0%" x2="100%" y2="100%">
                         <stop offset="0%" stopColor="#34d399" stopOpacity={1}/>
-                        <stop offset="50%" stopColor="#10b981" stopOpacity={1}/>
-                        <stop offset="100%" stopColor="#047857" stopOpacity={0.9}/>
-                      </radialGradient>
-                      <radialGradient id="investmentGradient3D" cx="30%" cy="30%">
+                        <stop offset="100%" stopColor="#059669" stopOpacity={1}/>
+                      </linearGradient>
+                      <linearGradient id="investmentGradientModern" x1="0%" y1="0%" x2="100%" y2="100%">
                         <stop offset="0%" stopColor="#60a5fa" stopOpacity={1}/>
-                        <stop offset="50%" stopColor="#0A84FF" stopOpacity={1}/>
-                        <stop offset="100%" stopColor="#1d4ed8" stopOpacity={0.9}/>
-                      </radialGradient>
-                      <radialGradient id="cryptoGradient3D" cx="30%" cy="30%">
+                        <stop offset="100%" stopColor="#2563eb" stopOpacity={1}/>
+                      </linearGradient>
+                      <linearGradient id="cryptoGradientModern" x1="0%" y1="0%" x2="100%" y2="100%">
                         <stop offset="0%" stopColor="#fbbf24" stopOpacity={1}/>
-                        <stop offset="50%" stopColor="#f59e0b" stopOpacity={1}/>
-                        <stop offset="100%" stopColor="#d97706" stopOpacity={0.9}/>
-                      </radialGradient>
-                      <radialGradient id="debtGradient3D" cx="30%" cy="30%">
+                        <stop offset="100%" stopColor="#d97706" stopOpacity={1}/>
+                      </linearGradient>
+                      <linearGradient id="debtGradientModern" x1="0%" y1="0%" x2="100%" y2="100%">
                         <stop offset="0%" stopColor="#f87171" stopOpacity={1}/>
-                        <stop offset="50%" stopColor="#ef4444" stopOpacity={1}/>
-                        <stop offset="100%" stopColor="#dc2626" stopOpacity={0.9}/>
-                      </radialGradient>
+                        <stop offset="100%" stopColor="#dc2626" stopOpacity={1}/>
+                      </linearGradient>
                     </defs>
                     <Pie
                       data={typeBreakdown}
                       cx="50%"
-                      cy="47%"
-                      innerRadius={65}
-                      outerRadius={120}
-                      paddingAngle={6}
+                      cy="50%"
+                      innerRadius={70}
+                      outerRadius={100}
+                      paddingAngle={3}
                       dataKey="value"
                       animationBegin={0}
-                      animationDuration={1200}
+                      animationDuration={800}
                       animationEasing="ease-out"
                       startAngle={90}
                       endAngle={450}
+                      cornerRadius={4}
                     >
                       {typeBreakdown.map((entry, index) => (
                         <Cell 
                           key={`cell-${index}`} 
                           fill={
-                            entry.name === 'Banking' ? 'url(#bankingGradient3D)' :
-                            entry.name === 'Debt' ? 'url(#debtGradient3D)' :
-                            entry.name === 'Investments' ? 'url(#investmentGradient3D)' :
-                            'url(#cryptoGradient3D)'
+                            entry.name === 'Banking' ? 'url(#bankingGradientModern)' :
+                            entry.name === 'Debt' ? 'url(#debtGradientModern)' :
+                            entry.name === 'Investments' ? 'url(#investmentGradientModern)' :
+                            'url(#cryptoGradientModern)'
                           }
-                          stroke="rgba(255,255,255,0.2)"
-                          strokeWidth={3}
-                          style={{
-                            filter: 'drop-shadow(0 8px 16px rgba(0,0,0,0.3)) drop-shadow(0 0 20px rgba(10, 132, 255, 0.3))',
-                            cursor: 'pointer'
-                          }}
+                          stroke="transparent"
+                          strokeWidth={0}
                         />
                       ))}
                     </Pie>
-                    <Tooltip formatter={(value) => formatCurrency(value as number)} />
-                    <Legend />
+                    <Tooltip 
+                      formatter={(value) => formatCurrency(value as number)}
+                      contentStyle={{
+                        backgroundColor: 'rgba(17, 24, 39, 0.95)',
+                        border: '1px solid rgba(255, 255, 255, 0.1)',
+                        borderRadius: '8px',
+                        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)'
+                      }}
+                      labelStyle={{ color: '#fff' }}
+                    />
                   </PieChart>
                 </ResponsiveContainer>
+                <div className="flex flex-wrap justify-center gap-4 mt-2">
+                  {typeBreakdown.map((entry, index) => (
+                    <div key={index} className="flex items-center gap-2">
+                      <div 
+                        className="w-3 h-3 rounded-full"
+                        style={{ backgroundColor: entry.color }}
+                      />
+                      <span className="text-sm text-gray-300">{entry.name}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
             ) : (
               <div className="h-[300px] flex items-center justify-center">
@@ -315,7 +323,7 @@ export default function UnifiedDashboard() {
             )}
           </div>
 
-          <div className="bg-black rounded-xl p-4">
+          <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-4">
             <h3 className="text-lg font-semibold text-white mb-4">Account Types</h3>
             <div className="space-y-4">
               {typeBreakdown.length > 0 ? (
@@ -361,7 +369,7 @@ export default function UnifiedDashboard() {
             return (
               <div 
                 key={account.id} 
-                className="bg-black rounded-xl p-4 flex items-center justify-between cursor-pointer hover:bg-gray-900/50 transition-colors"
+                className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-4 flex items-center justify-between cursor-pointer hover:bg-white/10 transition-colors"
                 onClick={() => setSelectedAccountId(account.id)}
               >
                 <div className="flex items-center gap-3 flex-1">
@@ -395,7 +403,7 @@ export default function UnifiedDashboard() {
           })}
           
           {connectedAccounts.length === 0 && (
-            <div className="bg-black rounded-xl p-6 text-center">
+            <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-6 text-center">
               <div className="text-gray-400 mb-2">No accounts connected</div>
               <div className="text-gray-500 text-sm">Connect your bank and brokerage accounts to see your portfolio</div>
             </div>
