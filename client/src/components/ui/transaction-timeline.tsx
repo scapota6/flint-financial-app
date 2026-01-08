@@ -1,7 +1,8 @@
 import * as React from "react";
 import { motion } from "framer-motion";
-import { CreditCard, Store, Calendar } from "lucide-react";
+import { CreditCard, Calendar } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { getMerchantLogo } from "@/lib/merchant-logos";
 
 export interface TransactionItem {
   id: string | number;
@@ -10,6 +11,7 @@ export interface TransactionItem {
   date: string;
   amount: number;
   accountName: string;
+  provider?: string;
 }
 
 interface TransactionTimelineProps {
@@ -58,7 +60,10 @@ const TransactionTimeline = ({
       animate="visible"
       variants={containerVariants}
     >
-      {transactions.map((transaction) => (
+      {transactions.map((transaction) => {
+        const merchantLogoData = getMerchantLogo(transaction.merchant, transaction.provider);
+        
+        return (
         <motion.li
           key={transaction.id}
           className="mb-6 ml-6"
@@ -66,12 +71,17 @@ const TransactionTimeline = ({
           data-testid={`transaction-${transaction.id}`}
         >
           <span
-            className="absolute -left-3 flex h-6 w-6 items-center justify-center rounded-full bg-gray-800 ring-4 ring-gray-900"
+            className={cn(
+              "absolute -left-3 flex h-8 w-8 items-center justify-center rounded-full ring-4 ring-gray-900 overflow-hidden",
+              merchantLogoData.bgClass
+            )}
           >
-            <Store className="h-3 w-3 text-blue-400" />
+            <div className="h-5 w-5 flex items-center justify-center [&>img]:h-full [&>img]:w-full [&>img]:object-contain [&>svg]:h-5 [&>svg]:w-5">
+              {merchantLogoData.logo}
+            </div>
           </span>
 
-          <div className="rounded-lg bg-gray-800/50 border border-gray-700/50 p-3 backdrop-blur-sm hover:bg-gray-800/70 transition-colors">
+          <div className="rounded-lg bg-white/5 backdrop-blur-sm border border-white/10 p-3 hover:bg-white/10 transition-colors">
             <div className="flex items-start justify-between gap-3">
               <div className="flex-1 min-w-0">
                 <h3 className="font-medium text-white truncate">
@@ -103,7 +113,8 @@ const TransactionTimeline = ({
             </div>
           </div>
         </motion.li>
-      ))}
+        );
+      })}
     </motion.ol>
   );
 };
