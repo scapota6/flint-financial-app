@@ -185,6 +185,10 @@ const MERCHANT_TO_DOMAIN: Record<string, string> = {
   'best buy': 'bestbuy.com',
   'zappos': 'zappos.com',
   
+  // Financial Institutions (check before airlines to avoid "american" conflicts)
+  'american express': 'americanexpress.com',
+  'amex': 'americanexpress.com',
+  
   // Transportation
   'uber': 'uber.com',
   'lyft': 'lyft.com',
@@ -346,6 +350,7 @@ export function getMerchantLogo(merchantName: string, accountProvider?: string) 
   const lowerMerchant = cleanedMerchant;
   
   // Check if this is a generic banking transaction (deposit, check, transfer, etc.)
+  // Note: "cash deposit" and "cash withdrawal" should trigger bank fallback, not Cash App
   const isGenericBanking = lowerMerchant.includes('deposit') ||
                           lowerMerchant.includes('check #') ||
                           lowerMerchant.includes('check#') ||
@@ -355,41 +360,47 @@ export function getMerchantLogo(merchantName: string, accountProvider?: string) 
                           lowerMerchant.includes('fee') ||
                           lowerMerchant.includes('insufficient') ||
                           lowerMerchant.includes('external atm') ||
-                          lowerMerchant.includes('cash');
+                          (lowerMerchant.includes('cash') && !lowerMerchant.includes('cash app'));
   
-  // Find domain by checking if merchant name includes key (exact substring match)
+  // For generic banking transactions (deposits, withdrawals, etc.), 
+  // skip merchant lookup and use bank logo directly
   let domain: string | undefined;
   let matchedKey: string | undefined;
-  for (const [key, value] of Object.entries(MERCHANT_TO_DOMAIN)) {
-    if (lowerMerchant.includes(key)) {
-      domain = value;
-      matchedKey = key;
-      break;
-    }
-  }
   
-  // If no exact match, try word-based partial matching
-  if (!domain) {
-    const words = lowerMerchant.split(' ').filter(w => w.length > 2); // Only words longer than 2 chars
-    for (const word of words) {
-      for (const [key, value] of Object.entries(MERCHANT_TO_DOMAIN)) {
-        // Check if the word matches the key or contains the key
-        if (word === key || word.includes(key) || (key.length > 3 && key.includes(word))) {
-          domain = value;
-          matchedKey = key;
-          break;
-        }
-      }
-      if (domain) break;
-    }
-  }
-  
-  // If generic banking transaction and no specific merchant match, try to use bank logo
-  if (isGenericBanking && !domain && accountProvider) {
+  if (isGenericBanking && accountProvider) {
+    // For generic banking, prioritize the bank/institution logo
     const bankDomain = getBankDomain(accountProvider);
     if (bankDomain) {
       domain = bankDomain;
       matchedKey = accountProvider.toLowerCase();
+    }
+  }
+  
+  // Only look up merchant domain if not a generic banking transaction or no bank found
+  if (!domain) {
+    // Find domain by checking if merchant name includes key (exact substring match)
+    for (const [key, value] of Object.entries(MERCHANT_TO_DOMAIN)) {
+      if (lowerMerchant.includes(key)) {
+        domain = value;
+        matchedKey = key;
+        break;
+      }
+    }
+    
+    // If no exact match, try word-based partial matching
+    if (!domain) {
+      const words = lowerMerchant.split(' ').filter(w => w.length > 2); // Only words longer than 2 chars
+      for (const word of words) {
+        for (const [key, value] of Object.entries(MERCHANT_TO_DOMAIN)) {
+          // Check if the word matches the key or contains the key
+          if (word === key || word.includes(key) || (key.length > 3 && key.includes(word))) {
+            domain = value;
+            matchedKey = key;
+            break;
+          }
+        }
+        if (domain) break;
+      }
     }
   }
   

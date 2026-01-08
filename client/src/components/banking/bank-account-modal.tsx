@@ -257,7 +257,7 @@ export function BankAccountModal({ account, isOpen, onClose }: BankAccountModalP
                       return (
                         <div key={transaction.id} className="flex items-center gap-3 p-3 rounded-lg bg-white/5 backdrop-blur-sm border border-white/10 hover:bg-white/10 transition-colors">
                           <div className={`w-10 h-10 rounded-lg overflow-hidden flex items-center justify-center flex-shrink-0 ${logoData.bgClass}`}>
-                            <div className="h-6 w-6 flex items-center justify-center [&>img]:h-full [&>img]:w-full [&>img]:object-contain [&>svg]:h-6 [&>svg]:w-6">
+                            <div className="h-full w-full flex items-center justify-center [&>img]:h-full [&>img]:w-full [&>img]:object-cover [&>svg]:h-6 [&>svg]:w-6">
                               {logoData.logo}
                             </div>
                           </div>

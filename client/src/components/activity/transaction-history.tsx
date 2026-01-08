@@ -231,7 +231,7 @@ export default function TransactionHistory() {
                       <div className="flex items-start justify-between">
                         <div className="flex items-start gap-3">
                           <div className={`w-10 h-10 rounded-lg overflow-hidden flex items-center justify-center flex-shrink-0 ${logoData.bgClass}`}>
-                            <div className="h-6 w-6 flex items-center justify-center [&>img]:h-full [&>img]:w-full [&>img]:object-contain [&>svg]:h-6 [&>svg]:w-6">
+                            <div className="h-full w-full flex items-center justify-center [&>img]:h-full [&>img]:w-full [&>img]:object-cover [&>svg]:h-6 [&>svg]:w-6">
                               {logoData.logo}
                             </div>
                           </div>

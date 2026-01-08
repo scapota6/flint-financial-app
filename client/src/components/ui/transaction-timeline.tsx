@@ -76,7 +76,7 @@ const TransactionTimeline = ({
               merchantLogoData.bgClass
             )}
           >
-            <div className="h-5 w-5 flex items-center justify-center [&>img]:h-full [&>img]:w-full [&>img]:object-contain [&>svg]:h-5 [&>svg]:w-5">
+            <div className="h-full w-full flex items-center justify-center [&>img]:h-full [&>img]:w-full [&>img]:object-cover [&>svg]:h-5 [&>svg]:w-5">
               {merchantLogoData.logo}
             </div>
           </span>
