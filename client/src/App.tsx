@@ -51,6 +51,7 @@ const Monitoring = lazy(() => import("@/pages/Monitoring"));
 const TellerCallback = lazy(() => import("@/pages/TellerCallback"));
 const AdminDashboard = lazy(() => import("@/pages/admin"));
 const AdminBlog = lazy(() => import("@/pages/admin-blog"));
+const AdminSeo = lazy(() => import("@/pages/admin-seo"));
 const Analytics = lazy(() => import("@/pages/analytics"));
 const TermsOfService = lazy(() => import("@/pages/tos"));
 const PrivacyPolicy = lazy(() => import("@/pages/privacy-policy"));
@@ -195,6 +196,7 @@ function Router() {
                 <Route path="/teller/callback" component={TellerCallback} />
                 <Route path="/admin" component={AdminDashboard} />
                 <Route path="/admin/blog" component={AdminBlog} />
+                <Route path="/admin/seo" component={AdminSeo} />
                 <Route path="/tos" component={TermsOfService} />
                 <Route path="/privacy-policy" component={PrivacyPolicy} />
                 <Route path="/blog" component={Blog} />
