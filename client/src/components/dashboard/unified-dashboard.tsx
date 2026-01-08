@@ -274,6 +274,7 @@ export default function UnifiedDashboard() {
                       startAngle={90}
                       endAngle={450}
                       cornerRadius={4}
+                      minAngle={15}
                     >
                       {typeBreakdown.map((entry, index) => (
                         <Cell 
