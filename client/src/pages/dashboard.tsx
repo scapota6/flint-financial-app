@@ -130,7 +130,7 @@ export default function Dashboard() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-black text-white">
+      <div className="min-h-screen text-white">
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pb-20 md:pb-6">
           {/* Dashboard Header Skeleton */}
           <div className="mb-8" data-testid="skeleton-dashboard-header-0">
@@ -239,7 +239,7 @@ export default function Dashboard() {
 
   if (isError) {
     return (
-      <div className="min-h-screen bg-black text-white">
+      <div className="min-h-screen text-white">
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pb-20 md:pb-6">
           <div className="text-center py-12">
             <h2 className="apple-h2 mb-4">Error Loading Dashboard</h2>
@@ -251,7 +251,7 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="min-h-screen text-white">
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pb-20 md:pb-6">
         {/* Dashboard Header */}
         <div className="mb-8">

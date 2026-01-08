@@ -120,7 +120,7 @@ export default function Transfers() {
 
   if (accountsLoading || transfersLoading) {
     return (
-      <PageTransition className="min-h-screen bg-[#121212] text-white">
+      <PageTransition className="min-h-screen text-white">
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pb-20 md:pb-6 pt-20">
           <div className="animate-pulse">
             <div className="h-8 bg-gray-800 rounded w-1/4 mb-6"></div>
@@ -136,7 +136,7 @@ export default function Transfers() {
   }
 
   return (
-    <PageTransition className="min-h-screen bg-[#121212] text-white">
+    <PageTransition className="min-h-screen text-white">
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pb-20 md:pb-6 pt-20">
         <div className="mb-8">
           <h1 className="text-4xl font-bold mb-2 font-mono">

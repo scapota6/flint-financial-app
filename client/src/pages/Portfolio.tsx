@@ -149,7 +149,7 @@ export default function Portfolio() {
   // Initial loading state - only on first load
   if (isPageLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900/20 to-slate-900">
+      <div className="min-h-screen">
         <div className="container mx-auto px-4 pt-24 pb-12 max-w-7xl">
           <div className="animate-pulse space-y-6">
             <div className="h-10 bg-slate-800/50 rounded w-1/3"></div>
@@ -182,7 +182,7 @@ export default function Portfolio() {
   // Empty state when no accounts are connected
   if (isEmptyState) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900/20 to-slate-900 flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center">
         <div className="container mx-auto px-4 max-w-2xl">
           <div className="text-center">
             <div className="w-20 h-20 mx-auto mb-8 rounded-full bg-gradient-to-r from-blue-500/20 to-cyan-500/20 flex items-center justify-center">
@@ -283,7 +283,7 @@ export default function Portfolio() {
       })) || []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900/20 to-slate-900">
+    <div className="min-h-screen">
       <div className="container mx-auto px-4 pt-24 pb-12 max-w-7xl">
         {/* Header */}
         <div className="mb-8">

@@ -198,7 +198,7 @@ export default function Accounts() {
   const hasNoAccounts = !isLoading && brokerageAccounts.length === 0 && bankAccounts.length === 0;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900/20 to-slate-900">
+    <div className="min-h-screen">
       <div className="container mx-auto px-4 pt-24 pb-12 max-w-7xl">
         <div className="mb-8">
           <h1 className="h1 bg-gradient-to-r from-white via-cyan-200 to-blue-400 bg-clip-text text-transparent">

@@ -152,7 +152,7 @@ export function StockDetailPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-black text-white flex items-center justify-center">
+      <div className="min-h-screen text-white flex items-center justify-center">
         <div className="animate-spin w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full" />
       </div>
     );
@@ -160,7 +160,7 @@ export function StockDetailPage() {
 
   if (error || !stockData) {
     return (
-      <div className="min-h-screen bg-black text-white p-8">
+      <div className="min-h-screen text-white p-8">
         <Alert variant="destructive" className="bg-red-900/20 border-red-900/50">
           <AlertDescription>{error || "Stock not found"}</AlertDescription>
         </Alert>
@@ -177,7 +177,7 @@ export function StockDetailPage() {
   const currentTime = new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
 
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="min-h-screen text-white">
       {/* Header */}
       <div className="border-b border-slate-800 bg-slate-900/40 backdrop-blur-xl sticky top-16 z-10">
         <div className="container mx-auto px-4 py-4">
