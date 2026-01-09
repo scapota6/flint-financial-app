@@ -1,42 +1,19 @@
 /**
- * Flint New Landing Page - Optimized for Conversion
- * Route: /new (testing), will replace / after validation
- * Focus: Simple messaging, clear CTAs, interactive demos
+ * Flint Landing Page - Clean, Intentional Design
+ * Route: /new
+ * Typography: Inter Bold 48px (h1), Inter SemiBold 32px (h2), Inter Regular 18px (body)
+ * Design: Solid dark background, subtle borders, no abstract gradients or glowing effects
  */
 
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Button } from "@/components/ui/button";
-import { RainbowButton } from "@/components/ui/rainbow-button";
 import { FloatingHeader } from "@/components/ui/floating-header";
-import { AnimatedHero } from "@/components/ui/animated-hero";
 import { Input } from "@/components/ui/input";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { BeamsBackground } from "@/components/ui/beams-background";
-import { GlowingEffect } from "@/components/ui/glowing-effect";
-
-// Hook to detect mobile/touch devices for performance optimization
-const useIsMobile = () => {
-  const [isMobile, setIsMobile] = useState(false);
-  
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(
-        window.matchMedia('(max-width: 768px)').matches ||
-        'ontouchstart' in window ||
-        navigator.maxTouchPoints > 0
-      );
-    };
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
-  
-  return isMobile;
-};
 import { 
   Shield, 
   Lock, 
@@ -391,9 +368,6 @@ function formatCurrency(value: number): string {
 }
 
 export default function LandingNew() {
-  // Mobile detection for performance - disables heavy animations on mobile
-  const isMobile = useIsMobile();
-  
   // Email capture states
   const [heroEmail, setHeroEmail] = useState('');
   const [heroEmailSubmitted, setHeroEmailSubmitted] = useState(false);
@@ -643,7 +617,7 @@ export default function LandingNew() {
   };
 
   return (
-    <BeamsBackground className="min-h-screen text-white overflow-x-hidden">
+    <div className="min-h-screen bg-[#0a0a0a] text-white overflow-x-hidden">
       <Helmet>
         <title>Flint - Free Financial Dashboard | Track All Your Money</title>
         <meta name="description" content="Flint is a free personal finance app that shows all your bank accounts, investments, and credit cards in one dashboard. Track your net worth, monitor spending, find hidden fees, and reach your financial goals. Connect 10,000+ banks, brokerages, and crypto wallets securely." />
@@ -654,21 +628,45 @@ export default function LandingNew() {
         <link rel="canonical" href="https://flint-investing.com/" />
       </Helmet>
 
-      {/* Floating Header */}
+      {/* Header */}
       <div className="px-4 pt-2">
         <FloatingHeader variant="landing" onSignupClick={scrollToSignup} />
       </div>
-      <main className="relative z-10 pt-20">
-        {/* Hero Section with Animated Text */}
-        <AnimatedHero onGetStartedClick={scrollToSignup} />
+      
+      <main className="relative pt-20">
+        {/* Hero Section - Clean, Centered */}
+        <section className="min-h-[70vh] flex flex-col items-center justify-center px-4 sm:px-6 text-center">
+          <h1 className="text-4xl sm:text-5xl md:text-[48px] font-bold leading-tight tracking-tight max-w-3xl mx-auto mb-6">
+            All your money.<br />One dashboard.
+          </h1>
+          <p className="text-lg sm:text-xl text-gray-400 max-w-xl mx-auto mb-8 leading-relaxed">
+            Connect your bank accounts, investments, and crypto. Track spending, find hidden fees, and grow your net worth.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button 
+              onClick={scrollToSignup}
+              className="bg-blue-600 hover:bg-blue-700 text-white text-lg px-8 py-6 h-auto font-semibold"
+              data-testid="hero-cta-primary"
+            >
+              Get Started Free
+            </Button>
+            <Button 
+              variant="outline"
+              onClick={() => document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' })}
+              className="border-gray-600 text-white hover:bg-gray-800 text-lg px-8 py-6 h-auto"
+              data-testid="hero-cta-secondary"
+            >
+              See Features
+            </Button>
+          </div>
+          <p className="text-sm text-gray-500 mt-6">No credit card required. Free for up to 4 accounts.</p>
+        </section>
         
-        {/* Interactive Demo Dashboard */}
-        <section className="section -mt-8">
-          <div className="container">
-            <div className="max-w-4xl mx-auto">
-              <div className="aspect-video rounded-lg sm:rounded-xl overflow-hidden border border-white/10 w-full">
-                <img src={dashboardPreview} alt="Flint Dashboard" className="w-full h-full object-cover" />
-              </div>
+        {/* Dashboard Preview */}
+        <section className="py-16 px-4 sm:px-6">
+          <div className="max-w-4xl mx-auto">
+            <div className="aspect-video rounded-xl overflow-hidden border border-gray-800 shadow-2xl">
+              <img src={dashboardPreview} alt="Flint Dashboard showing connected bank accounts, investments, and spending insights" className="w-full h-full object-cover" />
             </div>
           </div>
         </section>
@@ -739,7 +737,7 @@ export default function LandingNew() {
 
             <div className="grid md:grid-cols-3 gap-3 md:gap-6 mb-6 md:mb-8">
               <div className="relative h-full rounded-xl border border-white/10 p-1.5 md:p-2">
-                <GlowingEffect spread={40} glow={true} disabled={isMobile} proximity={64} inactiveZone={0.01} borderWidth={1} />
+
                 <div className="bg-white/10 border-blue-400/30 rounded-lg p-4 md:p-6 h-full">
                   <span className="text-3xl md:text-5xl block mb-1 md:mb-2">🎟️</span>
                   <h3 className="apple-h3 text-lg md:text-xl">5 Winners</h3>
@@ -748,7 +746,7 @@ export default function LandingNew() {
               </div>
 
               <div className="relative h-full rounded-xl border border-yellow-400/30 p-1.5 md:p-2">
-                <GlowingEffect spread={40} glow={true} disabled={isMobile} proximity={64} inactiveZone={0.01} borderWidth={1} variant="default" />
+
                 <div className="bg-gradient-to-br from-yellow-600/20 to-orange-600/20 border-yellow-400/40 rounded-lg p-4 md:p-6 md:transform md:scale-105 h-full">
                   <span className="text-3xl md:text-5xl block mb-1 md:mb-2">🏆</span>
                   <h3 className="apple-h3 text-lg md:text-xl">1 Grand Prize</h3>
@@ -757,7 +755,7 @@ export default function LandingNew() {
               </div>
 
               <div className="relative h-full rounded-xl border border-white/10 p-1.5 md:p-2">
-                <GlowingEffect spread={40} glow={true} disabled={isMobile} proximity={64} inactiveZone={0.01} borderWidth={1} />
+
                 <div className="bg-white/10 border-blue-400/30 rounded-lg p-4 md:p-6 h-full">
                   <span className="text-3xl md:text-5xl block mb-1 md:mb-2">📈</span>
                   <h3 className="apple-h3 text-lg md:text-xl">Boost Odds</h3>
@@ -792,7 +790,7 @@ export default function LandingNew() {
             <div className="grid md:grid-cols-3 gap-3 md:gap-6">
               {/* Cut Hidden Fees */}
               <div className="relative h-full rounded-xl border border-white/10 p-1.5 md:p-2">
-                <GlowingEffect spread={40} glow={true} disabled={isMobile} proximity={64} inactiveZone={0.01} borderWidth={1} />
+
                 <div className="bg-white/5 rounded-lg p-4 md:p-6 text-center h-full">
                   <DollarSign className="h-5 w-5 md:h-7 md:w-7 text-blue-400 mx-auto mb-2 md:mb-4" />
                   <h3 className="text-base md:text-lg font-semibold mb-1 md:mb-2">Cut Hidden Fees</h3>
@@ -804,7 +802,7 @@ export default function LandingNew() {
 
               {/* Grow Net Worth */}
               <div className="relative h-full rounded-xl border border-white/10 p-1.5 md:p-2">
-                <GlowingEffect spread={40} glow={true} disabled={isMobile} proximity={64} inactiveZone={0.01} borderWidth={1} />
+
                 <div className="bg-white/5 rounded-lg p-4 md:p-6 text-center h-full">
                   <TrendingUp className="h-5 w-5 md:h-7 md:w-7 text-green-400 mx-auto mb-2 md:mb-4" />
                   <h3 className="text-base md:text-lg font-semibold mb-1 md:mb-2">Grow Net Worth</h3>
@@ -816,7 +814,7 @@ export default function LandingNew() {
 
               {/* Stay in Control */}
               <div className="relative h-full rounded-xl border border-white/10 p-1.5 md:p-2">
-                <GlowingEffect spread={40} glow={true} disabled={isMobile} proximity={64} inactiveZone={0.01} borderWidth={1} />
+
                 <div className="bg-white/5 rounded-lg p-4 md:p-6 text-center h-full">
                   <Shield className="h-5 w-5 md:h-7 md:w-7 text-blue-400 mx-auto mb-2 md:mb-4" />
                   <h3 className="text-base md:text-lg font-semibold mb-1 md:mb-2">Stay in Control</h3>
@@ -909,7 +907,7 @@ export default function LandingNew() {
             <div className="grid md:grid-cols-3 gap-3 md:gap-6">
               {/* Testimonial 1 */}
               <div className="relative h-full rounded-xl border border-white/10 p-1.5 md:p-2">
-                <GlowingEffect spread={40} glow={true} disabled={isMobile} proximity={64} inactiveZone={0.01} borderWidth={1} />
+
                 <div className="bg-white/5 border-white/10 p-4 md:p-6 h-full">
                   <div className="space-y-3 md:space-y-4">
                     <div className="flex gap-1">
@@ -935,7 +933,7 @@ export default function LandingNew() {
 
               {/* Testimonial 2 */}
               <div className="relative h-full rounded-xl border border-white/10 p-1.5 md:p-2">
-                <GlowingEffect spread={40} glow={true} disabled={isMobile} proximity={64} inactiveZone={0.01} borderWidth={1} />
+
                 <div className="bg-white/5 border-white/10 p-4 md:p-6 h-full">
                   <div className="space-y-3 md:space-y-4">
                     <div className="flex gap-1">
@@ -961,7 +959,7 @@ export default function LandingNew() {
 
               {/* Testimonial 3 */}
               <div className="relative h-full rounded-xl border border-white/10 p-1.5 md:p-2">
-                <GlowingEffect spread={40} glow={true} disabled={isMobile} proximity={64} inactiveZone={0.01} borderWidth={1} />
+
                 <div className="bg-white/5 border-white/10 p-4 md:p-6 h-full">
                   <div className="space-y-3 md:space-y-4">
                     <div className="flex gap-1">
@@ -998,7 +996,7 @@ export default function LandingNew() {
 
             <div className="grid md:grid-cols-3 gap-3 md:gap-8">
               <div className="relative h-full rounded-xl border border-white/10 p-1.5 md:p-2">
-                <GlowingEffect spread={40} glow={true} disabled={isMobile} proximity={64} inactiveZone={0.01} borderWidth={1} />
+
                 <div className="bg-white/5 border-white/10 rounded-lg p-4 md:p-8 hover:bg-white/10 transition-colors h-full">
                   <Wallet className="h-5 w-5 md:h-7 md:w-7 text-blue-400 mb-2 md:mb-4" />
                   <h3 className="apple-h3 text-base md:text-xl">All Your Money</h3>
@@ -1009,7 +1007,7 @@ export default function LandingNew() {
               </div>
 
               <div className="relative h-full rounded-xl border border-white/10 p-1.5 md:p-2">
-                <GlowingEffect spread={40} glow={true} disabled={isMobile} proximity={64} inactiveZone={0.01} borderWidth={1} />
+
                 <div className="bg-white/5 border-white/10 rounded-lg p-4 md:p-8 hover:bg-white/10 transition-colors h-full">
                   <span className="text-2xl md:text-3xl mb-2 md:mb-4 block">🔁</span>
                   <h3 className="apple-h3 text-base md:text-xl">Trade & Transfer</h3>
@@ -1020,7 +1018,7 @@ export default function LandingNew() {
               </div>
 
               <div className="relative h-full rounded-xl border border-white/10 p-1.5 md:p-2">
-                <GlowingEffect spread={40} glow={true} disabled={isMobile} proximity={64} inactiveZone={0.01} borderWidth={1} />
+
                 <div className="bg-white/5 border-white/10 rounded-lg p-4 md:p-8 hover:bg-white/10 transition-colors h-full">
                   <TrendingUp className="h-5 w-5 md:h-7 md:w-7 text-blue-400 mb-2 md:mb-4" />
                   <h3 className="apple-h3 text-base md:text-xl">Grow Wealth</h3>
@@ -1334,13 +1332,13 @@ export default function LandingNew() {
                 Switch Sample Data
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
-              <RainbowButton 
+              <Button 
                 onClick={scrollToSignup}
-                className="text-lg px-6"
+                className="bg-blue-600 hover:bg-blue-700 text-white text-lg px-8 py-3 h-auto font-semibold"
                 data-testid="button-demo-signup"
               >
                 Get Started Free
-              </RainbowButton>
+              </Button>
             </div>
           </div>
         </section>
@@ -1351,13 +1349,13 @@ export default function LandingNew() {
             <h3 className="text-3xl font-bold mb-3">Ready to see your full picture?</h3>
             <p className="text-xl text-gray-300 mb-6">Join 3,285+ people taking control of their money</p>
             
-            <RainbowButton 
+            <Button 
               onClick={scrollToSignup}
-              className="text-lg px-12 h-14"
+              className="bg-blue-600 hover:bg-blue-700 text-white text-lg px-12 py-4 h-auto font-semibold"
               data-testid="button-cta-after-demo"
             >
               Get Started Free
-            </RainbowButton>
+            </Button>
           </div>
         </section>
 
@@ -1612,7 +1610,7 @@ export default function LandingNew() {
             <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 max-w-6xl mx-auto">
               {/* Free Plan */}
               <div className="relative h-full rounded-xl border border-white/10 p-1.5 md:p-2">
-                <GlowingEffect spread={40} glow={true} disabled={isMobile} proximity={64} inactiveZone={0.01} borderWidth={1} />
+
                 <div className="card flex flex-col h-full !p-4 md:!p-6">
                   <div className="mb-4 md:mb-6">
                     <h3 className="text-lg md:text-xl">Free</h3>
@@ -1638,19 +1636,19 @@ export default function LandingNew() {
                     </li>
                   </ul>
 
-                  <RainbowButton 
+                  <Button 
                     onClick={scrollToSignup}
-                    className="w-full"
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold"
                     data-testid="button-free-plan"
                   >
                     Start Free
-                  </RainbowButton>
+                  </Button>
                 </div>
               </div>
 
               {/* Basic Plan */}
               <div className="relative h-full rounded-xl border border-blue-400/30 p-1.5 md:p-2">
-                <GlowingEffect spread={40} glow={true} disabled={isMobile} proximity={64} inactiveZone={0.01} borderWidth={1} variant="default" />
+
                 <div className="panel relative overflow-hidden h-full !p-4 md:!p-6">
                   <div className="absolute top-3 right-3 md:top-4 md:right-4">
                     <span className="bg-blue-500 text-white text-xs md:text-sm font-semibold px-2 py-1 rounded-lg">
@@ -1691,23 +1689,23 @@ export default function LandingNew() {
                     </li>
                   </ul>
 
-                  <RainbowButton
+                  <Button
                     onClick={() => {
                       setCheckoutTier('basic');
                       setCheckoutBillingPeriod(isAnnual ? 'yearly' : 'monthly');
                       setCheckoutModalOpen(true);
                     }}
-                    className="w-full"
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold"
                     data-testid="button-basic-plan"
                   >
                     Get Basic
-                  </RainbowButton>
+                  </Button>
                 </div>
               </div>
 
               {/* Pro Plan */}
               <div className="relative h-full rounded-xl border border-white/10 p-1.5 md:p-2">
-                <GlowingEffect spread={40} glow={true} disabled={isMobile} proximity={64} inactiveZone={0.01} borderWidth={1} />
+
                 <div className="card h-full !p-4 md:!p-6">
                   <div className="mb-4 md:mb-6">
                     <h3 className="text-lg md:text-xl">Pro</h3>
@@ -1746,17 +1744,17 @@ export default function LandingNew() {
                     </li>
                   </ul>
 
-                  <RainbowButton
+                  <Button
                     onClick={() => {
                       setCheckoutTier('pro');
                       setCheckoutBillingPeriod(isAnnual ? 'yearly' : 'monthly');
                       setCheckoutModalOpen(true);
                     }}
-                    className="w-full"
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold"
                     data-testid="button-pro-plan"
                   >
                     Get Pro
-                  </RainbowButton>
+                  </Button>
                 </div>
               </div>
             </div>
@@ -1777,13 +1775,13 @@ export default function LandingNew() {
             <h2 className="apple-h2">Start managing your money better today</h2>
             <p className="apple-body text-gray-300">Free forever. No credit card needed.</p>
             
-            <RainbowButton 
+            <Button 
               onClick={scrollToSignup}
               className="h-14 px-12 rounded-xl text-lg"
               data-testid="button-cta-after-pricing"
             >
               Get Started Free
-            </RainbowButton>
+            </Button>
           </div>
         </section>
 
@@ -2387,6 +2385,6 @@ export default function LandingNew() {
           )}
         </DialogContent>
       </Dialog>
-    </BeamsBackground>
+    </div>
   );
 }
