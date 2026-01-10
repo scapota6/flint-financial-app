@@ -13,13 +13,10 @@ import {
   RefreshCw
 } from 'lucide-react';
 import { 
-  SiCapitalone,
   SiChase,
   SiAmericanexpress,
   SiBankofamerica,
   SiWellsfargo,
-  SiCitibank,
-  SiUsbank,
   SiRobinhood,
   SiCoinbase
 } from 'react-icons/si';
@@ -42,11 +39,12 @@ interface AccountCardProps {
     holdings?: number;
     cash?: number;
     buyingPower?: number;
-    // Percentage and credit-specific fields
     percentOfTotal?: number;
     availableCredit?: number | null;
     amountSpent?: number | null;
     needsReconnection?: boolean;
+    externalAccountId?: string;
+    balanceVerified?: boolean;
   };
 }
 
@@ -81,7 +79,7 @@ export default function AccountCard({ account }: AccountCardProps) {
     
     // Bank-specific logos
     if (institution.includes('capitalone') || institution.includes('capital one')) {
-      return <SiCapitalone className="h-3 w-3 text-red-500" />;
+      return <DollarSign className="h-3 w-3 text-red-500" />;
     }
     if (institution.includes('chase')) {
       return <SiChase className="h-3 w-3 text-blue-600" />;
@@ -96,10 +94,10 @@ export default function AccountCard({ account }: AccountCardProps) {
       return <SiWellsfargo className="h-3 w-3 text-yellow-600" />;
     }
     if (institution.includes('citi')) {
-      return <SiCitibank className="h-3 w-3 text-blue-600" />;
+      return <Building2 className="h-3 w-3 text-blue-600" />;
     }
     if (institution.includes('us bank')) {
-      return <SiUsbank className="h-3 w-3 text-blue-700" />;
+      return <Building2 className="h-3 w-3 text-blue-700" />;
     }
     if (institution.includes('robinhood')) {
       return <SiRobinhood className="h-3 w-3 text-green-500" />;

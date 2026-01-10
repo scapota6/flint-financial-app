@@ -189,6 +189,7 @@ router.post("/save-account", requireAuth, async (req: any, res) => {
     const rejectedCount = newAccounts.length - accountsToSave.length;
     
     // Store each account in database with better naming
+    // Fetch real balances from Teller balances API for each account
     for (const account of accountsToSave) {
       const institutionName = institution || account.institution?.name || 'Unknown Bank';
       const lastFour = account.last_four || account.mask || '';
@@ -203,17 +204,56 @@ router.post("/save-account", requireAuth, async (req: any, res) => {
         accountName = `${institutionName} - ${accountName}`;
       }
       
-      // For credit cards, use ledger balance (debt amount), for bank accounts use available
-      const balanceValue = account.type === 'credit' 
-        ? (account.balance?.ledger || 0)
-        : (account.balance?.available || 0);
+      // Fetch real balance from Teller balances API (not from account object which may be stale)
+      let balanceValue = 0;
+      try {
+        console.log(`[Teller] Fetching balance for account ${account.id}...`);
+        const balanceResponse = await resilientTellerFetch(
+          `${getTellerBaseUrl()}/accounts/${account.id}/balances`,
+          {
+            method: 'GET',
+            headers: {
+              'Authorization': authHeader,
+              'Accept': 'application/json'
+            }
+          },
+          'SaveAccount-FetchBalances'
+        );
+        
+        if (balanceResponse.ok) {
+          const balanceData = await balanceResponse.json();
+          console.log(`[Teller] Balance API response for ${account.id}:`, JSON.stringify(balanceData));
+          
+          // For credit cards, use ledger balance (debt amount) - this is what you owe
+          // For bank accounts, use available balance
+          if (account.type === 'credit') {
+            // Credit cards: ledger is the current balance (debt)
+            balanceValue = parseFloat(balanceData.ledger || balanceData.current || '0');
+          } else {
+            // Bank accounts: use available, fallback to current
+            balanceValue = parseFloat(balanceData.available || balanceData.current || balanceData.ledger || '0');
+          }
+          console.log(`[Teller] Extracted balance for ${account.id} (${account.type}): ${balanceValue}`);
+        } else {
+          console.warn(`[Teller] Failed to fetch balance for ${account.id}: ${balanceResponse.status}`);
+          // Fall back to account object balance if API fails
+          balanceValue = account.type === 'credit' 
+            ? parseFloat(account.balance?.ledger || '0')
+            : parseFloat(account.balance?.available || '0');
+        }
+      } catch (balanceErr) {
+        console.error(`[Teller] Error fetching balance for ${account.id}:`, balanceErr);
+        // Fall back to account object balance on error
+        balanceValue = account.type === 'credit' 
+          ? parseFloat(account.balance?.ledger || '0')
+          : parseFloat(account.balance?.available || '0');
+      }
       
       // Safely convert balance to decimal with 2 decimal places, handling edge cases
       let formattedBalance = '0.00';
       try {
-        const numBalance = Number(balanceValue);
-        if (isFinite(numBalance)) {
-          formattedBalance = numBalance.toFixed(2);
+        if (isFinite(balanceValue)) {
+          formattedBalance = balanceValue.toFixed(2);
         } else {
           console.warn(`[Teller] Invalid balance value for account ${account.id}: ${balanceValue}, using 0.00`);
         }
