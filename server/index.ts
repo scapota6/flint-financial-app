@@ -14,10 +14,45 @@ import watchlistRouter from "./routes/watchlist";
 import quotesRouter from "./routes/quotes";
 import { errorLoggerMiddleware } from "./middleware/error-logger";
 
+function validateRequiredEnvVars(): void {
+  const requiredVars = [
+    'DATABASE_URL',
+    'SESSION_SECRET',
+  ];
+  
+  const missingVars = requiredVars.filter(varName => !process.env[varName]);
+  
+  if (missingVars.length > 0) {
+    console.error('[Startup] Missing required environment variables:', missingVars.join(', '));
+    console.error('[Startup] Please ensure all required secrets are configured in production.');
+    throw new Error(`Missing required environment variables: ${missingVars.join(', ')}`);
+  }
+  
+  console.log('[Startup] All required environment variables are present');
+}
+
+async function validateDatabaseConnection(): Promise<void> {
+  try {
+    const { db } = await import('./db');
+    const { sql } = await import('drizzle-orm');
+    await db.execute(sql`SELECT 1`);
+    console.log('[Startup] Database connection verified successfully');
+  } catch (error: any) {
+    console.error('[Startup] Database connection failed:', error.message);
+    throw new Error(`Database connection failed: ${error.message}`);
+  }
+}
+
 const app = express();
 
 (async () => {
   try {
+    console.log('[Startup] Beginning server initialization...');
+    console.log('[Startup] NODE_ENV:', process.env.NODE_ENV);
+    console.log('[Startup] Port:', process.env.PORT || '5000');
+    
+    validateRequiredEnvVars();
+    await validateDatabaseConnection();
   // 1) HTTP Compression with gzip/deflate support (must be early in middleware stack)
   // Note: Brotli is supported natively by Node.js v10.16+ via zlib module but requires
   // custom middleware implementation. For production use, consider nginx/CDN-level Brotli.
