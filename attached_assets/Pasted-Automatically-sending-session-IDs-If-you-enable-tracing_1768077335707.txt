@@ -1,0 +1,67 @@
+Automatically sending session IDs
+If you enable tracing headers within the JavaScript SDK, the session ID will be sent on every request. You can enable tracing headers by adding the __add_tracing_headers option to your posthog.init call:
+
+TypeScript
+
+
+posthog.init('phc_ucEZRx85Wj0m5hW2b8BEpf0C9GfwoFzWCXs1R2tUyyJ', {
+    __add_tracing_headers: ['your-backend-domain.com'] 
+})
+If you are using the Python SDK with Django, you can add the middleware integration which correctly extracts the session ID and adds it to every captured event.
+
+Passing Session IDs from client-side code into server-side events
+Get the session ID from posthog-js with posthog.get_session_id() and send it to your server with custom code. Then, you can set the session ID on the server-side event with posthog.capture({ ..., '$session_id': session_id }).
+
+Here's an example of how you might do this:
+
+JavaScript
+
+
+// Client side code
+
+// Get the session ID
+const posthog_session_id = posthog.get_session_id()
+
+// Make a request to your server. This is just an example, you should replace this with your own code.
+fetch('https://your-api.example.com/purchase', {
+    method: 'POST',
+    body: '[your request body]', // replace with your own request body
+    headers: {
+        'Content-Type': 'application/json',
+        'X-POSTHOG-SESSION-ID': posthog_session_id // include the posthog session ID in a header
+    }
+})
+JavaScript
+
+
+// Server side code
+
+// This is an example route handler using Express, the actual implementation will depend on your server framework and programming language
+app.post('/purchase', (req, res) => {
+    const { posthog_distinct_id } = handleUserAuthentication(req) // replace with your own user authentication logic
+    const posthog_session_id = req.header('X-POSTHOG-SESSION-ID') // get the session ID from the header
+
+    // Handle the purchase
+    handlePurchase(req.body) // replace with your own business logic
+
+    // Send a custom event, including the session ID
+    posthog.capture({
+        distinct_id: posthog_distinct_id,
+        event: 'Purchase Succeeded',
+        properties: {
+            '$session_id': posthog_session_id
+        }
+    })
+
+    res.send('OK')
+})
+Custom session IDs
+Custom session IDs must meet the following requirements:
+
+Must be consistent across events in the same session
+Must not be reused by a different user or session
+Must be a valid UUIDv7
+The timestamp part of the UUIDv7 must be equal to or before the timestamp of the first event in the session
+The timestamp part of the UUIDv7 plus 24 hours must be after the timestamp of the last event in the session
+Any events with session IDs that do not meet these requirements are not included in session aggregations.
+
