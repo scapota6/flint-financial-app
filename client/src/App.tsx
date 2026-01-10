@@ -1,4 +1,4 @@
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useEffect } from "react";
 import { Switch, Route } from "wouter";
 import { AnimatePresence } from "framer-motion";
 import { queryClient } from "./lib/queryClient";
@@ -11,6 +11,7 @@ import { ActivityTimeoutModal } from "@/components/ActivityTimeoutModal";
 import { FloatingHeader } from "@/components/ui/floating-header";
 import { UpgradeBanner } from "@/components/ui/upgrade-banner";
 import { useAuth } from "@/hooks/useAuth";
+import { initializeAnalytics } from "@/lib/analytics";
 
 // Eagerly load critical email-linked pages to prevent blank page on first load
 import PasswordSetup from "@/pages/password-setup";
@@ -227,6 +228,11 @@ function Router() {
 }
 
 function App() {
+  // Initialize analytics on app mount - captures UTM params, referrer, and tracks landing
+  useEffect(() => {
+    initializeAnalytics();
+  }, []);
+
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
