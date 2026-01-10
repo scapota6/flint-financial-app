@@ -16,6 +16,7 @@ const posthogOptions = {
   autocapture: false, // Disable to prevent conflicts with MetaMask SDK cyclic structures
   disable_session_recording: true, // Disable session recording to prevent cyclic structure errors
   disable_scroll_properties: true, // Disable scroll tracking
+  __add_tracing_headers: ['flint-investing.com', 'flint-investing.replit.app'], // Enable session ID tracing for server-side correlation
   sanitize_properties: (properties: Record<string, unknown>) => {
     // Remove any properties that might contain cyclic structures
     const sanitized: Record<string, unknown> = {};

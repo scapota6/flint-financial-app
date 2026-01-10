@@ -366,6 +366,50 @@ export function trackPaymentCompleted(planName: string, planPrice: number, payme
   });
 }
 
+// ============================================
+// SESSION ID UTILITIES
+// For server-side event correlation
+// ============================================
+
+// Get the current PostHog session ID for server-side tracking
+export function getSessionId(): string | null {
+  if (typeof window === 'undefined' || !window.posthog) return null;
+  
+  try {
+    return window.posthog.get_session_id?.() || null;
+  } catch {
+    return null;
+  }
+}
+
+// Get the current PostHog distinct ID
+export function getDistinctId(): string | null {
+  if (typeof window === 'undefined' || !window.posthog) return null;
+  
+  try {
+    return window.posthog.get_distinct_id?.() || null;
+  } catch {
+    return null;
+  }
+}
+
+// Helper to add PostHog session tracking headers to fetch requests
+export function getPostHogHeaders(): Record<string, string> {
+  const headers: Record<string, string> = {};
+  
+  const sessionId = getSessionId();
+  if (sessionId) {
+    headers['X-POSTHOG-SESSION-ID'] = sessionId;
+  }
+  
+  const distinctId = getDistinctId();
+  if (distinctId) {
+    headers['X-POSTHOG-DISTINCT-ID'] = distinctId;
+  }
+  
+  return headers;
+}
+
 // Declare global type for PostHog
 declare global {
   interface Window {
