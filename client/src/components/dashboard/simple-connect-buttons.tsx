@@ -251,7 +251,7 @@ export default function SimpleConnectButtons({ accounts, userTier, isAdmin }: Si
                 
                 const saveData = await saveResponse.json();
                 
-                // Force refresh data - invalidate and immediately refetch all dashboard-related queries
+                // Invalidate queries first
                 await Promise.all([
                   queryClient.invalidateQueries({ queryKey: ['dashboard'] }),
                   queryClient.invalidateQueries({ queryKey: ['/api/accounts'] }),
@@ -259,13 +259,11 @@ export default function SimpleConnectButtons({ accounts, userTier, isAdmin }: Si
                   queryClient.invalidateQueries({ queryKey: ['/api/dashboard'] }),
                 ]);
                 
-                // Force refetch active queries to ensure UI updates immediately
+                // Wait for refetch to complete before resolving
                 await queryClient.refetchQueries({ type: 'active' });
                 
-                // Hard refresh the page after short delay to ensure new accounts are visible
-                setTimeout(() => {
-                  window.location.reload();
-                }, 500);
+                // Small delay to allow UI to render, then resolve (no hard refresh needed)
+                await new Promise(r => setTimeout(r, 200));
                 
                 resolve({ success: true });
               } catch (error) {
