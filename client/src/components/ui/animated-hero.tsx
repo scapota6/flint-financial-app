@@ -31,7 +31,7 @@ const AnimatedHero = memo(function AnimatedHeroInner({ onGetStartedClick }: Anim
         <div className="flex gap-8 py-12 lg:py-20 items-center justify-center flex-col">
           <div className="flex gap-4 flex-col">
             <h1 className="text-4xl sm:text-5xl md:text-7xl max-w-4xl tracking-tighter text-center font-regular">
-              <span className="text-white">All your money,</span>
+              <span className="text-white">All your money apps,</span>
               <span className="relative flex w-full justify-center overflow-hidden text-center md:pb-4 md:pt-1" style={{ transform: "translateZ(0)" }}>
                 &nbsp;
                 {titles.map((title, index) => (
