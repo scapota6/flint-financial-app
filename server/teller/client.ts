@@ -17,13 +17,12 @@ export function isTellerSandboxUser(email?: string | null): boolean {
 
 /**
  * Get the Teller API base URL
- * Returns sandbox URL for designated test users, production URL otherwise.
+ * Note: Teller uses the same API URL for all environments (sandbox, development, production).
+ * The environment is determined by the tokens used, not the API URL.
  */
 export function getTellerBaseUrl(userEmail?: string): string {
-  if (isTellerSandboxUser(userEmail)) {
-    console.log('[Teller] Using SANDBOX environment for user:', userEmail);
-    return 'https://sandbox.teller.io';
-  }
+  // Teller uses the same API URL for all environments
+  // Environment is controlled by the access tokens obtained during Teller Connect
   return 'https://api.teller.io';
 }
 

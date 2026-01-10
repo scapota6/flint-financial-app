@@ -146,6 +146,17 @@ router.get("/accounts/:accountId/details", async (req: any, res) => {
         });
         
         if (account.type === 'credit' || account.subtype === 'credit_card') {
+          // Debug: Log raw balances from API
+          console.log('[Credit Card Debug] Raw balances from Teller API:', {
+            accountId: externalId,
+            balancesObject: balances,
+            accountBalanceObject: (account as any).balance,
+            balancesLedger: balances?.ledger,
+            balancesAvailable: balances?.available,
+            accountLedger: (account as any).balance?.ledger,
+            accountAvailable: (account as any).balance?.available
+          });
+          
           // Use fetched balances first, fallback to account balances
           // For credit cards: ledger = balance owed, available = remaining credit
           const ledgerBalance = balances?.ledger ?? (account as any).balance?.ledger ?? null;
