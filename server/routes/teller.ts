@@ -55,7 +55,7 @@ router.post("/connect-init", requireAuth, async (req: any, res) => {
       ? 'sandbox' 
       : (process.env.TELLER_ENVIRONMENT || 'development');
     
-    logger.info("Teller Connect initialized", { 
+    console.log('[Teller Connect] Initialized', { 
       userId,
       environment,
       isSandboxUser: isTellerSandboxUser(userEmail)
