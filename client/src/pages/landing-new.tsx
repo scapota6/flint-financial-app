@@ -55,7 +55,8 @@ import {
   ChevronDown,
   ChevronLeft,
   ChevronRight,
-  Eye
+  Eye,
+  CheckCircle
 } from "lucide-react";
 import { Link } from "wouter";
 import flintLogo from "@assets/flint-logo.png";
@@ -812,7 +813,7 @@ export default function LandingNew() {
                 onSubmit={(e) => {
                   handleHeroEmailSubmit(e);
                   if (heroEmail) {
-                    setSignupEmail(heroEmail);
+                    setSignupData(prev => ({ ...prev, email: heroEmail }));
                   }
                   scrollToSignup();
                 }}
