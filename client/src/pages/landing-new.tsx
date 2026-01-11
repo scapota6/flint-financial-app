@@ -873,7 +873,7 @@ export default function LandingNew() {
                 </button>
               </form>
             )}
-            <p className="text-sm text-gray-500">Join 3,000+ people managing their money better. No credit card required.</p>
+            <p className="text-sm text-gray-500">Join 10k+ people managing their money better. No credit card required.</p>
           </div>
           <div className="flex justify-around md:block mt-8 md:mt-0 md:flex-1">
             <img src={dashboardPreview} alt="Flint Dashboard" className="rounded-lg shadow-2xl" />
