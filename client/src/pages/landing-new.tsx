@@ -702,6 +702,19 @@ export default function LandingNew() {
           <span className="text-xl font-semibold text-gray-900">Flint</span>
         </div>
         <ul className="items-center hidden md:flex font-medium">
+          <li className="mx-4 relative group">
+            <button className="flex items-center gap-1 hover:underline underline-offset-4">
+              Use Cases <ChevronDown className="h-4 w-4" />
+            </button>
+            <div className="absolute top-full left-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+              <div className="py-2">
+                <Link href="/use-cases/personal" className="block px-4 py-2 text-gray-700 hover:bg-gray-50 hover:text-gray-900">Personal Finance</Link>
+                <Link href="/use-cases/founders" className="block px-4 py-2 text-gray-700 hover:bg-gray-50 hover:text-gray-900">For Founders</Link>
+                <Link href="/use-cases/advisors" className="block px-4 py-2 text-gray-700 hover:bg-gray-50 hover:text-gray-900">Financial Advisors</Link>
+                <Link href="/use-cases/families" className="block px-4 py-2 text-gray-700 hover:bg-gray-50 hover:text-gray-900">Families</Link>
+              </div>
+            </div>
+          </li>
           <li className="mx-4">
             <button onClick={() => scrollToSection('howitworks')} className="hover:underline underline-offset-4">How it works</button>
           </li>
@@ -749,6 +762,15 @@ export default function LandingNew() {
             aria-label="Mobile navigation menu"
           >
             <ul className="flex flex-col gap-4 font-medium mb-6">
+              <li>
+                <p className="text-sm text-gray-500 mb-2">Use Cases</p>
+                <div className="pl-3 space-y-2 mb-4">
+                  <Link href="/use-cases/personal" className="block py-1 text-gray-700 hover:text-gray-900" onClick={() => setMobileMenuOpen(false)}>Personal Finance</Link>
+                  <Link href="/use-cases/founders" className="block py-1 text-gray-700 hover:text-gray-900" onClick={() => setMobileMenuOpen(false)}>For Founders</Link>
+                  <Link href="/use-cases/advisors" className="block py-1 text-gray-700 hover:text-gray-900" onClick={() => setMobileMenuOpen(false)}>Financial Advisors</Link>
+                  <Link href="/use-cases/families" className="block py-1 text-gray-700 hover:text-gray-900" onClick={() => setMobileMenuOpen(false)}>Families</Link>
+                </div>
+              </li>
               <li>
                 <button 
                   onClick={() => { scrollToSection('howitworks'); setMobileMenuOpen(false); }} 
@@ -855,9 +877,9 @@ export default function LandingNew() {
           </div>
         </section>
 
-        {/* How It Works - Black Section */}
-        <section id="howitworks" className="bg-black text-white lg:px-48 md:px-12 px-4 py-20 flex flex-col items-center">
-          <h2 className="font-serif text-3xl mb-12 text-center">
+        {/* How It Works - Cream Section */}
+        <section id="howitworks" className="bg-[#F4F2ED] lg:px-48 md:px-12 px-4 py-20 flex flex-col items-center">
+          <h2 className="font-serif text-3xl mb-12 text-center text-black">
             <span className="relative inline-block px-4">
               How it works
               <span className="absolute bottom-0 left-0 w-full h-1 bg-yellow-400"></span>
@@ -865,29 +887,29 @@ export default function LandingNew() {
           </h2>
           <div className="flex flex-col md:flex-row w-full max-w-4xl">
             <div className="flex-1 mx-4 flex flex-col items-center my-6 text-center">
-              <div className="border-2 border-white rounded-full bg-[#F4F2ED] text-black h-14 w-14 flex justify-center items-center mb-4 text-xl font-bold">
+              <div className="border-2 border-gray-800 rounded-full bg-gray-900 text-white h-14 w-14 flex justify-center items-center mb-4 text-xl font-bold">
                 1
               </div>
-              <h3 className="font-semibold text-xl mb-2">Connect</h3>
-              <p className="text-gray-300">
+              <h3 className="font-semibold text-xl mb-2 text-gray-900">Connect</h3>
+              <p className="text-gray-600">
                 Securely link your bank accounts, credit cards, investments, and crypto wallets.
               </p>
             </div>
             <div className="flex-1 mx-4 flex flex-col items-center my-6 text-center">
-              <div className="border-2 border-white rounded-full bg-[#F4F2ED] text-black h-14 w-14 flex justify-center items-center mb-4 text-xl font-bold">
+              <div className="border-2 border-gray-800 rounded-full bg-gray-900 text-white h-14 w-14 flex justify-center items-center mb-4 text-xl font-bold">
                 2
               </div>
-              <h3 className="font-semibold text-xl mb-2">Track</h3>
-              <p className="text-gray-300">
+              <h3 className="font-semibold text-xl mb-2 text-gray-900">Track</h3>
+              <p className="text-gray-600">
                 See all your money in one dashboard. Track spending, net worth, and goals.
               </p>
             </div>
             <div className="flex-1 mx-4 flex flex-col items-center my-6 text-center">
-              <div className="border-2 border-white rounded-full bg-[#F4F2ED] text-black h-14 w-14 flex justify-center items-center mb-4 text-xl font-bold">
+              <div className="border-2 border-gray-800 rounded-full bg-gray-900 text-white h-14 w-14 flex justify-center items-center mb-4 text-xl font-bold">
                 3
               </div>
-              <h3 className="font-semibold text-xl mb-2">Grow</h3>
-              <p className="text-gray-300">
+              <h3 className="font-semibold text-xl mb-2 text-gray-900">Grow</h3>
+              <p className="text-gray-600">
                 Find hidden fees, optimize spending, and make smarter money decisions.
               </p>
             </div>
@@ -946,102 +968,113 @@ export default function LandingNew() {
           </div>
         </section>
 
-        {/* Launch Giveaway Section - Template Style */}
-        <section className="py-20 bg-[#F4F2ED]">
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="mb-12">
-              <p className="text-sm font-semibold text-[#E76F51] uppercase tracking-wide mb-3">Limited Time</p>
-              <h2 className="text-3xl font-bold text-gray-900 mb-4">Launch Giveaway</h2>
-              <p className="text-gray-600">Join now — help us hit 10,000 users and win big</p>
-            </div>
 
-            <div className="grid md:grid-cols-3 gap-8 mb-12">
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">5 Winners</h3>
-                <p className="text-gray-600">Get 1 year of Flint Pro</p>
-              </div>
+        {/* Features Section - Narrative Style */}
+        <section className="lg:px-48 md:px-12 px-4 py-20 bg-[#F4F2ED]" id="features">
+          <div className="max-w-5xl mx-auto">
+            <h2 className="font-serif text-3xl mb-4 text-center text-black">
+              <span className="relative inline-block px-4">
+                Why Flint
+                <span className="absolute bottom-0 left-0 w-full h-1 bg-yellow-400"></span>
+              </span>
+            </h2>
+            <p className="text-center text-gray-600 mb-16 max-w-2xl mx-auto">
+              Stop juggling multiple apps. See your complete financial picture in one place.
+            </p>
 
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Grand Prize</h3>
-                <p className="text-[#E76F51] font-medium">Flint Pro for Life</p>
+            {/* Feature 1 - Left aligned */}
+            <div className="flex flex-col md:flex-row items-center gap-8 mb-20">
+              <div className="md:w-1/2">
+                <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100">
+                  <div className="flex items-center gap-4 mb-4">
+                    <div className="h-12 w-12 rounded-xl bg-green-100 flex items-center justify-center">
+                      <DollarSign className="h-6 w-6 text-green-600" />
+                    </div>
+                    <span className="text-3xl font-bold text-green-600">$3,200</span>
+                  </div>
+                  <p className="text-sm text-gray-500">Average saved per year by identifying hidden fees</p>
+                </div>
               </div>
-
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Boost Your Odds</h3>
-                <p className="text-gray-600">Refer friends or upgrade</p>
-              </div>
-            </div>
-
-            <div className="max-w-md">
-              <div className="flex items-center justify-between mb-2">
-                <p className="text-sm text-gray-500">Progress to 10,000 users</p>
-                <p className="text-sm font-medium text-gray-900">3,285 / 10,000</p>
-              </div>
-              <div className="w-full bg-gray-200 h-2 overflow-hidden">
-                <div 
-                  className="h-full bg-[#1a56db] transition-all duration-500" 
-                  style={{ width: '33%' }}
-                  data-testid="launch-giveaway-progress"
-                />
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Features Section - Template Style */}
-        <section className="lg:px-48 md:px-12 px-4 py-20 flex flex-col items-center bg-[#F4F2ED]" id="features">
-          <h2 className="font-serif text-3xl mb-12 text-center">
-            <span className="relative inline-block px-4">
-              Features
-              <span className="absolute bottom-0 left-0 w-full h-1 bg-yellow-400"></span>
-            </span>
-          </h2>
-          <div className="md:grid md:grid-cols-2 gap-8 max-w-4xl">
-            <div className="flex items-start my-6 mr-10">
-              <div className="h-8 w-8 mr-4 flex-shrink-0 text-yellow-500">
-                <DollarSign className="h-7 w-7" />
-              </div>
-              <div>
-                <h3 className="font-semibold text-xl mb-2">Cut Hidden Fees</h3>
-                <p className="text-gray-600">
-                  We find and alert you to unnecessary bank charges so you keep more of your money.
+              <div className="md:w-1/2">
+                <h3 className="text-2xl font-bold text-gray-900 mb-3">Find money you're losing</h3>
+                <p className="text-gray-600 mb-4">
+                  Our users discover an average of $267/month in forgotten subscriptions, unnecessary bank fees, and duplicate charges. Flint automatically flags these so you can cancel or dispute them.
                 </p>
+                <ul className="space-y-2">
+                  <li className="flex items-center gap-2 text-gray-700">
+                    <Check className="h-5 w-5 text-green-500" /> Subscription tracking
+                  </li>
+                  <li className="flex items-center gap-2 text-gray-700">
+                    <Check className="h-5 w-5 text-green-500" /> Fee detection alerts
+                  </li>
+                  <li className="flex items-center gap-2 text-gray-700">
+                    <Check className="h-5 w-5 text-green-500" /> Spending insights
+                  </li>
+                </ul>
               </div>
             </div>
 
-            <div className="flex items-start my-6 mr-10">
-              <div className="h-8 w-8 mr-4 flex-shrink-0 text-yellow-500">
-                <TrendingUp className="h-7 w-7" />
+            {/* Feature 2 - Right aligned */}
+            <div className="flex flex-col md:flex-row-reverse items-center gap-8 mb-20">
+              <div className="md:w-1/2">
+                <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100">
+                  <div className="flex items-center gap-4 mb-4">
+                    <div className="h-12 w-12 rounded-xl bg-blue-100 flex items-center justify-center">
+                      <Wallet className="h-6 w-6 text-blue-600" />
+                    </div>
+                    <span className="text-3xl font-bold text-blue-600">12+</span>
+                  </div>
+                  <p className="text-sm text-gray-500">Account types supported in one dashboard</p>
+                </div>
               </div>
-              <div>
-                <h3 className="font-semibold text-xl mb-2">Grow Net Worth</h3>
-                <p className="text-gray-600">
-                  See the big picture and make smarter money moves with all your accounts in one place.
+              <div className="md:w-1/2">
+                <h3 className="text-2xl font-bold text-gray-900 mb-3">All your accounts, one view</h3>
+                <p className="text-gray-600 mb-4">
+                  Connect checking, savings, credit cards, investments, crypto, and more. Finally see your true net worth without logging into 8 different apps.
                 </p>
+                <ul className="space-y-2">
+                  <li className="flex items-center gap-2 text-gray-700">
+                    <Check className="h-5 w-5 text-blue-500" /> Banks & credit unions
+                  </li>
+                  <li className="flex items-center gap-2 text-gray-700">
+                    <Check className="h-5 w-5 text-blue-500" /> Brokerage accounts
+                  </li>
+                  <li className="flex items-center gap-2 text-gray-700">
+                    <Check className="h-5 w-5 text-blue-500" /> Crypto wallets
+                  </li>
+                </ul>
               </div>
             </div>
 
-            <div className="flex items-start my-6 mr-10">
-              <div className="h-8 w-8 mr-4 flex-shrink-0 text-yellow-500">
-                <Wallet className="h-7 w-7" />
+            {/* Feature 3 - Left aligned */}
+            <div className="flex flex-col md:flex-row items-center gap-8">
+              <div className="md:w-1/2">
+                <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100">
+                  <div className="flex items-center gap-4 mb-4">
+                    <div className="h-12 w-12 rounded-xl bg-purple-100 flex items-center justify-center">
+                      <Shield className="h-6 w-6 text-purple-600" />
+                    </div>
+                    <span className="text-3xl font-bold text-purple-600">256-bit</span>
+                  </div>
+                  <p className="text-sm text-gray-500">AES encryption — same security as major banks</p>
+                </div>
               </div>
-              <div>
-                <h3 className="font-semibold text-xl mb-2">All Your Money</h3>
-                <p className="text-gray-600">
-                  See your bank accounts, credit cards, stocks, and crypto all together in one dashboard.
+              <div className="md:w-1/2">
+                <h3 className="text-2xl font-bold text-gray-900 mb-3">Security you can trust</h3>
+                <p className="text-gray-600 mb-4">
+                  We use read-only connections — we can never move your money. Your credentials are encrypted with bank-grade security and never stored on our servers.
                 </p>
-              </div>
-            </div>
-
-            <div className="flex items-start my-6 mr-10">
-              <div className="h-8 w-8 mr-4 flex-shrink-0 text-yellow-500">
-                <Shield className="h-7 w-7" />
-              </div>
-              <div>
-                <h3 className="font-semibold text-xl mb-2">Bank-Level Security</h3>
-                <p className="text-gray-600">
-                  Your data is encrypted and protected with the same security banks use.
-                </p>
+                <ul className="space-y-2">
+                  <li className="flex items-center gap-2 text-gray-700">
+                    <Check className="h-5 w-5 text-purple-500" /> Read-only access
+                  </li>
+                  <li className="flex items-center gap-2 text-gray-700">
+                    <Check className="h-5 w-5 text-purple-500" /> SOC 2 compliant partners
+                  </li>
+                  <li className="flex items-center gap-2 text-gray-700">
+                    <Check className="h-5 w-5 text-purple-500" /> No credential storage
+                  </li>
+                </ul>
               </div>
             </div>
           </div>
