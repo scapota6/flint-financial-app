@@ -442,6 +442,14 @@ export default function LandingNew() {
     signupRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, []);
 
+  // Scroll to section by id
+  const scrollToSection = useCallback((sectionId: string) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, []);
+
   // Scroll tracking for popup and sticky nav
   useEffect(() => {
     let hasShownPopup = false;
@@ -643,7 +651,7 @@ export default function LandingNew() {
   };
 
   return (
-    <BeamsBackground className="min-h-screen text-white overflow-x-hidden">
+    <div className="min-h-screen bg-[#FAFBFC] text-gray-900 overflow-x-hidden">
       <Helmet>
         <title>Flint - Free Financial Dashboard | Track All Your Money</title>
         <meta name="description" content="Flint is a free personal finance app that shows all your bank accounts, investments, and credit cards in one dashboard. Track your net worth, monitor spending, find hidden fees, and reach your financial goals. Connect 10,000+ banks, brokerages, and crypto wallets securely." />
@@ -654,45 +662,107 @@ export default function LandingNew() {
         <link rel="canonical" href="https://flint-investing.com/" />
       </Helmet>
 
-      {/* Floating Header */}
-      <div className="px-4 pt-2">
-        <FloatingHeader variant="landing" onSignupClick={scrollToSignup} />
-      </div>
-      <main className="relative z-10 pt-20">
-        {/* Hero Section with Animated Text */}
-        <AnimatedHero onGetStartedClick={scrollToSignup} />
-        
-        {/* Interactive Demo Dashboard */}
-        <section className="section -mt-8">
-          <div className="container">
-            <div className="max-w-4xl mx-auto">
-              <div className="aspect-video rounded-lg sm:rounded-xl overflow-hidden border border-white/10 w-full">
-                <img src={dashboardPreview} alt="Flint Dashboard" className="w-full h-full object-cover" />
+      {/* Clean Header */}
+      <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            <div className="flex items-center gap-2">
+              <img src={flintLogo} alt="Flint" className="h-8 w-8" />
+              <span className="text-xl font-bold text-gray-900">Flint</span>
+            </div>
+            <nav className="hidden md:flex items-center gap-8">
+              <button onClick={() => scrollToSection('features')} className="text-gray-600 hover:text-gray-900 transition-colors">Features</button>
+              <button onClick={() => scrollToSection('pricing')} className="text-gray-600 hover:text-gray-900 transition-colors">Pricing</button>
+              <button onClick={() => scrollToSection('faq')} className="text-gray-600 hover:text-gray-900 transition-colors">FAQ</button>
+            </nav>
+            <div className="flex items-center gap-4">
+              <Link href="/login" className="text-gray-600 hover:text-gray-900 transition-colors">Sign In</Link>
+              <Button onClick={scrollToSignup} className="bg-[#1a56db] hover:bg-[#1e40af] text-white rounded-full px-6">
+                Get Started
+              </Button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <main className="relative z-10 pt-24">
+        {/* Hero Section - Light Theme with Email CTA */}
+        <section className="py-16 md:py-24">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="grid lg:grid-cols-2 gap-12 items-center">
+              <div className="space-y-8">
+                <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-gray-900 leading-tight">
+                  All your money apps,{' '}
+                  <span className="text-[#1a56db]">simple</span>
+                </h1>
+                <p className="text-xl text-gray-600 max-w-lg">
+                  Track all your bank, card, stock, and crypto accounts — in one place. Free forever, no card needed.
+                </p>
+                <div className="space-y-4">
+                  <div className="flex flex-col sm:flex-row gap-3 max-w-md">
+                    <Input
+                      type="email"
+                      placeholder="Enter your email"
+                      value={heroEmail}
+                      onChange={(e) => setHeroEmail(e.target.value)}
+                      className="flex-1 h-12 bg-white border-gray-300 text-gray-900 placeholder:text-gray-400 rounded-lg"
+                    />
+                    <Button 
+                      onClick={() => {
+                        if (heroEmail) {
+                          setSignupEmail(heroEmail);
+                          scrollToSignup();
+                        } else {
+                          scrollToSignup();
+                        }
+                      }}
+                      className="h-12 px-8 bg-[#1a56db] hover:bg-[#1e40af] text-white rounded-lg font-semibold"
+                    >
+                      Get Started <ArrowRight className="ml-2 h-4 w-4" />
+                    </Button>
+                  </div>
+                  <p className="text-sm text-gray-500">Try for free. No credit card required.</p>
+                </div>
+                {/* Trust Logos */}
+                <div className="pt-8 border-t border-gray-200">
+                  <p className="text-sm text-gray-500 mb-4">Trusted by users featured in</p>
+                  <div className="flex items-center gap-8 opacity-60">
+                    <span className="text-lg font-semibold text-gray-400">Forbes</span>
+                    <span className="text-lg font-semibold text-gray-400">Bloomberg</span>
+                    <span className="text-lg font-semibold text-gray-400">WSJ</span>
+                    <span className="text-lg font-semibold text-gray-400">TechCrunch</span>
+                  </div>
+                </div>
+              </div>
+              <div className="relative">
+                <div className="bg-white rounded-2xl shadow-2xl border border-gray-200 overflow-hidden">
+                  <img src={dashboardPreview} alt="Flint Dashboard" className="w-full h-auto" />
+                </div>
               </div>
             </div>
           </div>
         </section>
 
-        {/* Money Goals Section - Moved below hero */}
-        <section className="apple-section">
-          <div className="apple-container">
+        {/* Money Goals Section */}
+        <section className="py-16 bg-gray-50">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="max-w-md mx-auto">
               {!goalsSubmitted ? (
-                <div className="p-4 md:p-8 bg-white/5 border border-white/10 rounded-xl space-y-4 md:space-y-6 text-center">
-                  <h3 className="apple-h3">What's your #1 money goal?</h3>
-                  <p className="apple-caption text-gray-300">Get a personalized tip when you join</p>
+                <div className="p-6 md:p-8 bg-white border border-gray-200 rounded-xl shadow-sm space-y-4 md:space-y-6 text-center">
+                  <h3 className="text-xl font-bold text-gray-900">What's your #1 money goal?</h3>
+                  <p className="text-sm text-gray-500">Get a personalized tip when you join</p>
                     
-                    <div className="space-y-2">
+                    <div className="space-y-2 text-left">
                       {['Build savings', 'Track spending', 'Cancel bad subscriptions', 'All of the above'].map((goal) => (
                         <label key={goal} className="flex items-center gap-3 cursor-pointer group">
                           <input
                             type="checkbox"
                             checked={selectedGoals.includes(goal)}
                             onChange={() => toggleGoal(goal)}
-                            className="w-5 h-5 rounded border-white/20 bg-white/10 text-blue-600 focus:ring-blue-500"
+                            className="w-5 h-5 rounded border-gray-300 bg-white text-[#1a56db] focus:ring-[#1a56db]"
                             data-testid={`checkbox-goal-${goal.toLowerCase().replace(/ /g, '-')}`}
                           />
-                          <span className="text-sm text-gray-300 group-hover:text-white transition-colors">{goal}</span>
+                          <span className="text-sm text-gray-600 group-hover:text-gray-900 transition-colors">{goal}</span>
                         </label>
                       ))}
                     </div>
@@ -703,13 +773,13 @@ export default function LandingNew() {
                         placeholder="Your email"
                         value={goalsEmail}
                         onChange={(e) => setGoalsEmail(e.target.value)}
-                        className="bg-white/10 border-white/20 text-white placeholder:text-gray-400"
+                        className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-400"
                         data-testid="input-goals-email"
                         required
                       />
                       <Button 
                         type="submit" 
-                        className="w-full bg-blue-600 hover:bg-blue-700"
+                        className="w-full bg-[#1a56db] hover:bg-[#1e40af] text-white"
                         disabled={selectedGoals.length === 0}
                         data-testid="button-goals-submit"
                       >
@@ -718,140 +788,125 @@ export default function LandingNew() {
                     </form>
                   </div>
                 ) : (
-                  <div className="p-6 bg-green-500/10 border border-green-500/20 rounded-lg">
-                    <Check className="h-6 w-6 text-green-400 mb-2" />
-                    <p className="text-green-400 font-medium">Thanks! Check your email for your personalized tip!</p>
+                  <div className="p-6 bg-green-50 border border-green-200 rounded-lg text-center">
+                    <Check className="h-6 w-6 text-green-600 mx-auto mb-2" />
+                    <p className="text-green-700 font-medium">Thanks! Check your email for your personalized tip!</p>
                   </div>
                 )}
             </div>
           </div>
         </section>
 
-        {/* Launch Giveaway Section - Single Accent Gradient Allowed */}
-        <section className="apple-section">
-          <div className="apple-container text-center">
-            <h2 className="apple-h2">
-              🚀 Flint Launch Giveaway
+        {/* Launch Giveaway Section */}
+        <section className="py-16 bg-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+              Flint Launch Giveaway
             </h2>
-            <p className="apple-body mx-auto text-gray-200">
+            <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
               Join now — help us hit our first 10,000 users and win big
             </p>
 
-            <div className="grid md:grid-cols-3 gap-3 md:gap-6 mb-6 md:mb-8">
-              <div className="relative h-full rounded-xl border border-white/10 p-1.5 md:p-2">
-                <GlowingEffect spread={40} glow={true} disabled={isMobile} proximity={64} inactiveZone={0.01} borderWidth={1} />
-                <div className="bg-white/10 border-blue-400/30 rounded-lg p-4 md:p-6 h-full">
-                  <span className="text-3xl md:text-5xl block mb-1 md:mb-2">🎟️</span>
-                  <h3 className="apple-h3 text-lg md:text-xl">5 Winners</h3>
-                  <p className="apple-body text-gray-300 text-sm md:text-base">Get 1 year of Flint Pro</p>
-                </div>
+            <div className="grid md:grid-cols-3 gap-6 mb-8">
+              <div className="bg-gray-50 border border-gray-200 rounded-xl p-6 shadow-sm">
+                <span className="text-4xl block mb-3">🎟️</span>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">5 Winners</h3>
+                <p className="text-gray-600">Get 1 year of Flint Pro</p>
               </div>
 
-              <div className="relative h-full rounded-xl border border-yellow-400/30 p-1.5 md:p-2">
-                <GlowingEffect spread={40} glow={true} disabled={isMobile} proximity={64} inactiveZone={0.01} borderWidth={1} variant="default" />
-                <div className="bg-gradient-to-br from-yellow-600/20 to-orange-600/20 border-yellow-400/40 rounded-lg p-4 md:p-6 md:transform md:scale-105 h-full">
-                  <span className="text-3xl md:text-5xl block mb-1 md:mb-2">🏆</span>
-                  <h3 className="apple-h3 text-lg md:text-xl">1 Grand Prize</h3>
-                  <p className="apple-body text-yellow-200 font-semibold text-sm md:text-base">Flint Pro for Life</p>
-                </div>
+              <div className="bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200 rounded-xl p-6 shadow-sm transform md:scale-105">
+                <span className="text-4xl block mb-3">🏆</span>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">1 Grand Prize</h3>
+                <p className="text-amber-700 font-semibold">Flint Pro for Life</p>
               </div>
 
-              <div className="relative h-full rounded-xl border border-white/10 p-1.5 md:p-2">
-                <GlowingEffect spread={40} glow={true} disabled={isMobile} proximity={64} inactiveZone={0.01} borderWidth={1} />
-                <div className="bg-white/10 border-blue-400/30 rounded-lg p-4 md:p-6 h-full">
-                  <span className="text-3xl md:text-5xl block mb-1 md:mb-2">📈</span>
-                  <h3 className="apple-h3 text-lg md:text-xl">Boost Odds</h3>
-                  <p className="apple-body text-gray-300 text-sm md:text-base">Refer friends or upgrade</p>
-                </div>
+              <div className="bg-gray-50 border border-gray-200 rounded-xl p-6 shadow-sm">
+                <span className="text-4xl block mb-3">📈</span>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">Boost Odds</h3>
+                <p className="text-gray-600">Refer friends or upgrade</p>
               </div>
             </div>
 
-            <div className="mb-6">
+            <div className="max-w-md mx-auto mb-6">
               <div className="flex items-center justify-between mb-2">
-                <p className="apple-caption text-gray-300 font-medium">Progress to 10,000 users</p>
-                <p className="apple-caption font-bold text-white">3,285 / 10,000</p>
+                <p className="text-sm text-gray-500 font-medium">Progress to 10,000 users</p>
+                <p className="text-sm font-bold text-gray-900">3,285 / 10,000</p>
               </div>
-              <div className="w-full bg-white/10 rounded-xl h-4 overflow-hidden border border-white/20">
+              <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
                 <div 
-                  className="h-full bg-blue-600 rounded-xl transition-all duration-500" 
+                  className="h-full bg-[#1a56db] rounded-full transition-all duration-500" 
                   style={{ width: '33%' }}
                   data-testid="launch-giveaway-progress"
                 />
               </div>
             </div>
 
-            <p className="apple-body text-blue-300 font-medium">
-              🔔 Winners announced when we hit 10,000
+            <p className="text-[#1a56db] font-medium">
+              Winners announced when we hit 10,000
             </p>
           </div>
         </section>
 
         {/* Value Proposition Cards */}
-        <section className="section">
-          <div className="container">
-            <div className="grid md:grid-cols-3 gap-3 md:gap-6">
-              {/* Cut Hidden Fees */}
-              <div className="relative h-full rounded-xl border border-white/10 p-1.5 md:p-2">
-                <GlowingEffect spread={40} glow={true} disabled={isMobile} proximity={64} inactiveZone={0.01} borderWidth={1} />
-                <div className="bg-white/5 rounded-lg p-4 md:p-6 text-center h-full">
-                  <DollarSign className="h-5 w-5 md:h-7 md:w-7 text-blue-400 mx-auto mb-2 md:mb-4" />
-                  <h3 className="text-base md:text-lg font-semibold mb-1 md:mb-2">Cut Hidden Fees</h3>
-                  <p className="text-sm md:text-base text-gray-300">
-                    We find and alert you to unnecessary bank charges
-                  </p>
+        <section className="py-16 bg-gray-50" id="features">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="grid md:grid-cols-3 gap-6">
+              <div className="bg-white rounded-xl border border-gray-200 p-6 text-center shadow-sm hover:shadow-md transition-shadow">
+                <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mx-auto mb-4">
+                  <DollarSign className="h-6 w-6 text-[#1a56db]" />
                 </div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">Cut Hidden Fees</h3>
+                <p className="text-gray-600">
+                  We find and alert you to unnecessary bank charges
+                </p>
               </div>
 
-              {/* Grow Net Worth */}
-              <div className="relative h-full rounded-xl border border-white/10 p-1.5 md:p-2">
-                <GlowingEffect spread={40} glow={true} disabled={isMobile} proximity={64} inactiveZone={0.01} borderWidth={1} />
-                <div className="bg-white/5 rounded-lg p-4 md:p-6 text-center h-full">
-                  <TrendingUp className="h-5 w-5 md:h-7 md:w-7 text-green-400 mx-auto mb-2 md:mb-4" />
-                  <h3 className="text-base md:text-lg font-semibold mb-1 md:mb-2">Grow Net Worth</h3>
-                  <p className="text-sm md:text-base text-gray-300">
-                    See the big picture and make smarter money moves
-                  </p>
+              <div className="bg-white rounded-xl border border-gray-200 p-6 text-center shadow-sm hover:shadow-md transition-shadow">
+                <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mx-auto mb-4">
+                  <TrendingUp className="h-6 w-6 text-green-600" />
                 </div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">Grow Net Worth</h3>
+                <p className="text-gray-600">
+                  See the big picture and make smarter money moves
+                </p>
               </div>
 
-              {/* Stay in Control */}
-              <div className="relative h-full rounded-xl border border-white/10 p-1.5 md:p-2">
-                <GlowingEffect spread={40} glow={true} disabled={isMobile} proximity={64} inactiveZone={0.01} borderWidth={1} />
-                <div className="bg-white/5 rounded-lg p-4 md:p-6 text-center h-full">
-                  <Shield className="h-5 w-5 md:h-7 md:w-7 text-blue-400 mx-auto mb-2 md:mb-4" />
-                  <h3 className="text-base md:text-lg font-semibold mb-1 md:mb-2">Stay in Control</h3>
-                  <p className="text-sm md:text-base text-gray-300">
-                    Personalized budgets that work with you, not against you
-                  </p>
+              <div className="bg-white rounded-xl border border-gray-200 p-6 text-center shadow-sm hover:shadow-md transition-shadow">
+                <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mx-auto mb-4">
+                  <Shield className="h-6 w-6 text-[#1a56db]" />
                 </div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">Stay in Control</h3>
+                <p className="text-gray-600">
+                  Personalized budgets that work with you, not against you
+                </p>
               </div>
             </div>
           </div>
         </section>
 
         {/* Trust & Partners Section */}
-        <section className="apple-section">
-          <div className="apple-container">
+        <section className="py-16 bg-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12">
-              <h2 className="apple-h2">Our Partners</h2>
-              <p className="apple-caption text-gray-400">Connect to 100+ trusted financial institutions</p>
+              <h2 className="text-3xl font-bold text-gray-900 mb-4">Our Partners</h2>
+              <p className="text-gray-500">Connect to 100+ trusted financial institutions</p>
             </div>
 
-            {/* Scrolling logos with Brandfetch */}
+            {/* Scrolling logos */}
             <div className="relative overflow-hidden mb-12">
               <div className="flex gap-8 animate-[scroll_40s_linear_infinite]">
                 {[...INSTITUTIONS, ...INSTITUTIONS].map((inst, idx) => (
-                  <div key={idx} className="flex-shrink-0 w-40 h-20 bg-white/5 rounded-lg flex items-center justify-center border border-white/10 p-4">
+                  <div key={idx} className="flex-shrink-0 w-40 h-20 bg-gray-50 rounded-lg flex items-center justify-center border border-gray-200 p-4">
                     <img 
                       src={`https://cdn.brandfetch.io/${inst.domain}`}
                       alt={inst.name}
-                      className="max-h-12 max-w-full object-contain filter brightness-0 invert opacity-70 hover:opacity-100 transition-opacity"
+                      className="max-h-12 max-w-full object-contain grayscale opacity-70 hover:opacity-100 hover:grayscale-0 transition-all"
                       onError={(e) => {
                         e.currentTarget.style.display = 'none';
                         const parent = e.currentTarget.parentElement;
                         if (parent) {
                           const span = document.createElement('span');
-                          span.className = 'text-sm text-gray-300 font-medium';
+                          span.className = 'text-sm text-gray-500 font-medium';
                           span.textContent = inst.name;
                           parent.appendChild(span);
                         }
@@ -863,26 +918,32 @@ export default function LandingNew() {
             </div>
 
             {/* Trust badges */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6 max-w-4xl mx-auto">
-              <div className="flex items-center gap-2 md:gap-3 justify-center">
-                <Shield className="h-5 w-5 md:h-6 md:w-6 text-blue-400" />
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-4xl mx-auto">
+              <div className="flex items-center gap-3 justify-center">
+                <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                  <Shield className="h-5 w-5 text-[#1a56db]" />
+                </div>
                 <div>
-                  <p className="font-semibold text-sm md:text-base">3,000+ people</p>
-                  <p className="text-xs md:text-sm text-gray-400">Use Flint every day</p>
+                  <p className="font-semibold text-gray-900">3,000+ people</p>
+                  <p className="text-sm text-gray-500">Use Flint every day</p>
                 </div>
               </div>
-              <div className="flex items-center gap-2 md:gap-3 justify-center">
-                <Lock className="h-5 w-5 md:h-6 md:w-6 text-blue-400" />
+              <div className="flex items-center gap-3 justify-center">
+                <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                  <Lock className="h-5 w-5 text-[#1a56db]" />
+                </div>
                 <div>
-                  <p className="font-semibold text-sm md:text-base">Super safe</p>
-                  <p className="text-xs md:text-sm text-gray-400">Same security as banks</p>
+                  <p className="font-semibold text-gray-900">Super safe</p>
+                  <p className="text-sm text-gray-500">Same security as banks</p>
                 </div>
               </div>
-              <div className="flex items-center gap-2 md:gap-3 justify-center">
-                <Shield className="h-5 w-5 md:h-6 md:w-6 text-blue-400" />
+              <div className="flex items-center gap-3 justify-center">
+                <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                  <Check className="h-5 w-5 text-green-600" />
+                </div>
                 <div>
-                  <p className="font-semibold text-sm md:text-base">Free to start</p>
-                  <p className="text-xs md:text-sm text-gray-400">No credit card needed</p>
+                  <p className="font-semibold text-gray-900">Free to start</p>
+                  <p className="text-sm text-gray-500">No credit card needed</p>
                 </div>
               </div>
             </div>
@@ -890,96 +951,87 @@ export default function LandingNew() {
         </section>
 
         {/* Social Proof Section */}
-        <section className="apple-section">
-          <div className="apple-container">
-            <div className="text-center mb-16">
-              <h2 className="apple-h2 mb-8">Loved by Early Adopters</h2>
-              <div className="inline-block bg-blue-600/10 border border-blue-400/30 rounded-xl p-4 md:p-6 mb-4 md:mb-6">
-                <p className="apple-caption text-blue-400 font-semibold mb-3">🔥 LAUNCH POOL FILLING FAST</p>
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="flex-1 h-3 bg-white/10 rounded-xl overflow-hidden">
-                    <div className="h-full bg-blue-600 rounded-xl" style={{ width: '33%' }} data-testid="progress-bar-fill"></div>
+        <section className="py-16 bg-gray-50">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold text-gray-900 mb-6">Loved by Early Adopters</h2>
+              <div className="inline-block bg-blue-50 border border-blue-200 rounded-xl p-6 mb-6">
+                <p className="text-sm text-[#1a56db] font-semibold mb-3">LAUNCH POOL FILLING FAST</p>
+                <div className="flex items-center gap-3 mb-3 max-w-xs mx-auto">
+                  <div className="flex-1 h-3 bg-gray-200 rounded-full overflow-hidden">
+                    <div className="h-full bg-[#1a56db] rounded-full" style={{ width: '33%' }} data-testid="progress-bar-fill"></div>
                   </div>
                 </div>
-                <p className="apple-h3 text-white">3,285 / 10,000 early spots claimed!</p>
+                <p className="text-xl font-bold text-gray-900">3,285 / 10,000 early spots claimed!</p>
               </div>
             </div>
 
             {/* Testimonials */}
-            <div className="grid md:grid-cols-3 gap-3 md:gap-6">
+            <div className="grid md:grid-cols-3 gap-6">
               {/* Testimonial 1 */}
-              <div className="relative h-full rounded-xl border border-white/10 p-1.5 md:p-2">
-                <GlowingEffect spread={40} glow={true} disabled={isMobile} proximity={64} inactiveZone={0.01} borderWidth={1} />
-                <div className="bg-white/5 border-white/10 p-4 md:p-6 h-full">
-                  <div className="space-y-3 md:space-y-4">
-                    <div className="flex gap-1">
-                      {[...Array(5)].map((_, i) => (
-                        <span key={i} className="text-yellow-400 text-sm md:text-base">★</span>
-                      ))}
+              <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+                <div className="space-y-4">
+                  <div className="flex gap-1">
+                    {[...Array(5)].map((_, i) => (
+                      <span key={i} className="text-yellow-400">★</span>
+                    ))}
+                  </div>
+                  <p className="text-gray-600 italic">
+                    "Finally, I can see all my accounts in one place. Found $400 in fees I didn't know I was paying!"
+                  </p>
+                  <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center text-[#1a56db] font-semibold">
+                      JM
                     </div>
-                    <p className="text-gray-300 italic text-sm md:text-base">
-                      "Finally, I can see all my accounts in one place. Found $400 in fees I didn't know I was paying!"
-                    </p>
-                    <div className="flex items-center gap-2 md:gap-3">
-                      <div className="h-8 w-8 md:h-10 md:w-10 rounded-full bg-blue-600/20 flex items-center justify-center text-blue-400 font-semibold text-sm md:text-base">
-                        JM
-                      </div>
-                      <div>
-                        <p className="font-semibold text-white text-sm md:text-base">Jessica M.</p>
-                        <p className="text-xs md:text-sm text-gray-400">Early Adopter</p>
-                      </div>
+                    <div>
+                      <p className="font-semibold text-gray-900">Jessica M.</p>
+                      <p className="text-sm text-gray-500">Early Adopter</p>
                     </div>
                   </div>
                 </div>
               </div>
 
               {/* Testimonial 2 */}
-              <div className="relative h-full rounded-xl border border-white/10 p-1.5 md:p-2">
-                <GlowingEffect spread={40} glow={true} disabled={isMobile} proximity={64} inactiveZone={0.01} borderWidth={1} />
-                <div className="bg-white/5 border-white/10 p-4 md:p-6 h-full">
-                  <div className="space-y-3 md:space-y-4">
-                    <div className="flex gap-1">
-                      {[...Array(5)].map((_, i) => (
-                        <span key={i} className="text-yellow-400 text-sm md:text-base">★</span>
-                      ))}
+              <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+                <div className="space-y-4">
+                  <div className="flex gap-1">
+                    {[...Array(5)].map((_, i) => (
+                      <span key={i} className="text-yellow-400">★</span>
+                    ))}
+                  </div>
+                  <p className="text-gray-600 italic">
+                    "Super easy to use. I connected 8 accounts in under 5 minutes. The alerts are game-changing."
+                  </p>
+                  <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-full bg-green-100 flex items-center justify-center text-green-600 font-semibold">
+                      DR
                     </div>
-                    <p className="text-gray-300 italic text-sm md:text-base">
-                      "Super easy to use. I connected 8 accounts in under 5 minutes. The alerts are game-changing."
-                    </p>
-                    <div className="flex items-center gap-2 md:gap-3">
-                      <div className="h-8 w-8 md:h-10 md:w-10 rounded-full bg-green-600/20 flex items-center justify-center text-green-400 font-semibold text-sm md:text-base">
-                        DR
-                      </div>
-                      <div>
-                        <p className="font-semibold text-white text-sm md:text-base">David R.</p>
-                        <p className="text-xs md:text-sm text-gray-400">Pro User</p>
-                      </div>
+                    <div>
+                      <p className="font-semibold text-gray-900">David R.</p>
+                      <p className="text-sm text-gray-500">Pro User</p>
                     </div>
                   </div>
                 </div>
               </div>
 
               {/* Testimonial 3 */}
-              <div className="relative h-full rounded-xl border border-white/10 p-1.5 md:p-2">
-                <GlowingEffect spread={40} glow={true} disabled={isMobile} proximity={64} inactiveZone={0.01} borderWidth={1} />
-                <div className="bg-white/5 border-white/10 p-4 md:p-6 h-full">
-                  <div className="space-y-3 md:space-y-4">
-                    <div className="flex gap-1">
-                      {[...Array(5)].map((_, i) => (
-                        <span key={i} className="text-yellow-400 text-sm md:text-base">★</span>
-                      ))}
+              <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+                <div className="space-y-4">
+                  <div className="flex gap-1">
+                    {[...Array(5)].map((_, i) => (
+                      <span key={i} className="text-yellow-400">★</span>
+                    ))}
+                  </div>
+                  <p className="text-gray-600 italic">
+                    "Clean design, works perfectly. Helps me track crypto and stocks without jumping between apps."
+                  </p>
+                  <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 font-semibold">
+                      SK
                     </div>
-                    <p className="text-gray-300 italic text-sm md:text-base">
-                      "Clean design, works perfectly. Helps me track crypto and stocks without jumping between apps."
-                    </p>
-                    <div className="flex items-center gap-2 md:gap-3">
-                      <div className="h-8 w-8 md:h-10 md:w-10 rounded-full bg-blue-600/20 flex items-center justify-center text-blue-400 font-semibold text-sm md:text-base">
-                        SK
-                      </div>
-                      <div>
-                        <p className="font-semibold text-white text-sm md:text-base">Sarah K.</p>
-                        <p className="text-xs md:text-sm text-gray-400">Investor</p>
-                      </div>
+                    <div>
+                      <p className="font-semibold text-gray-900">Sarah K.</p>
+                      <p className="text-sm text-gray-500">Investor</p>
                     </div>
                   </div>
                 </div>
@@ -989,56 +1041,53 @@ export default function LandingNew() {
         </section>
 
         {/* Features Section */}
-        <section id="features" className="apple-section">
-          <div className="apple-container">
-            <div className="text-center mb-16">
-              <h2 className="apple-h2">What You Get</h2>
-              <p className="apple-caption text-gray-300">Simple. Fast. Free to try.</p>
+        <section className="py-16 bg-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold text-gray-900 mb-4">What You Get</h2>
+              <p className="text-gray-500">Simple. Fast. Free to try.</p>
             </div>
 
-            <div className="grid md:grid-cols-3 gap-3 md:gap-8">
-              <div className="relative h-full rounded-xl border border-white/10 p-1.5 md:p-2">
-                <GlowingEffect spread={40} glow={true} disabled={isMobile} proximity={64} inactiveZone={0.01} borderWidth={1} />
-                <div className="bg-white/5 border-white/10 rounded-lg p-4 md:p-8 hover:bg-white/10 transition-colors h-full">
-                  <Wallet className="h-5 w-5 md:h-7 md:w-7 text-blue-400 mb-2 md:mb-4" />
-                  <h3 className="apple-h3 text-base md:text-xl">All Your Money</h3>
-                  <p className="apple-body text-gray-300 text-sm md:text-base">
-                    See your bank, cards, stocks, and crypto together
-                  </p>
+            <div className="grid md:grid-cols-3 gap-8">
+              <div className="bg-gray-50 rounded-xl border border-gray-200 p-8 hover:shadow-md transition-shadow">
+                <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mb-4">
+                  <Wallet className="h-6 w-6 text-[#1a56db]" />
                 </div>
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">All Your Money</h3>
+                <p className="text-gray-600">
+                  See your bank, cards, stocks, and crypto together
+                </p>
               </div>
 
-              <div className="relative h-full rounded-xl border border-white/10 p-1.5 md:p-2">
-                <GlowingEffect spread={40} glow={true} disabled={isMobile} proximity={64} inactiveZone={0.01} borderWidth={1} />
-                <div className="bg-white/5 border-white/10 rounded-lg p-4 md:p-8 hover:bg-white/10 transition-colors h-full">
-                  <span className="text-2xl md:text-3xl mb-2 md:mb-4 block">🔁</span>
-                  <h3 className="apple-h3 text-base md:text-xl">Trade & Transfer</h3>
-                  <p className="apple-body text-gray-300 text-sm md:text-base">
-                    Move money and buy stocks directly from Flint
-                  </p>
+              <div className="bg-gray-50 rounded-xl border border-gray-200 p-8 hover:shadow-md transition-shadow">
+                <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mb-4">
+                  <span className="text-2xl">🔁</span>
                 </div>
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">Trade & Transfer</h3>
+                <p className="text-gray-600">
+                  Move money and buy stocks directly from Flint
+                </p>
               </div>
 
-              <div className="relative h-full rounded-xl border border-white/10 p-1.5 md:p-2">
-                <GlowingEffect spread={40} glow={true} disabled={isMobile} proximity={64} inactiveZone={0.01} borderWidth={1} />
-                <div className="bg-white/5 border-white/10 rounded-lg p-4 md:p-8 hover:bg-white/10 transition-colors h-full">
-                  <TrendingUp className="h-5 w-5 md:h-7 md:w-7 text-blue-400 mb-2 md:mb-4" />
-                  <h3 className="apple-h3 text-base md:text-xl">Grow Wealth</h3>
-                  <p className="apple-body text-gray-300 text-sm md:text-base">
-                    Track investments and optimize your portfolio
-                  </p>
+              <div className="bg-gray-50 rounded-xl border border-gray-200 p-8 hover:shadow-md transition-shadow">
+                <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mb-4">
+                  <TrendingUp className="h-6 w-6 text-[#1a56db]" />
                 </div>
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">Grow Wealth</h3>
+                <p className="text-gray-600">
+                  Track investments and optimize your portfolio
+                </p>
               </div>
             </div>
           </div>
         </section>
 
         {/* Interactive Demo Section */}
-        <section className="apple-section">
-          <div className="apple-container max-w-5xl">
-            <div className="text-center mb-8 sm:mb-12 px-4">
-              <h2 className="apple-h2">See How It Works</h2>
-              <p className="apple-caption text-gray-300">Limited demo — create account to unlock full features</p>
+        <section className="py-16 bg-gray-50">
+          <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-8 sm:mb-12">
+              <h2 className="text-3xl font-bold text-gray-900 mb-4">See How It Works</h2>
+              <p className="text-gray-500">Limited demo — create account to unlock full features</p>
             </div>
 
             {/* Full dashboard mock matching actual dashboard */}
@@ -1330,62 +1379,62 @@ export default function LandingNew() {
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center mt-8">
-              <Button type="button" onClick={switchDemoData} size="lg" variant="outline" className="border-white/20 text-white hover:bg-white/10 text-lg px-6" data-testid="button-demo-switch">
+              <Button type="button" onClick={switchDemoData} size="lg" variant="outline" className="border-gray-300 text-gray-700 hover:bg-gray-100 text-lg px-6" data-testid="button-demo-switch">
                 Switch Sample Data
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
-              <RainbowButton 
+              <Button 
                 onClick={scrollToSignup}
-                className="text-lg px-6"
+                className="text-lg px-6 bg-[#1a56db] hover:bg-[#1e40af] text-white"
                 data-testid="button-demo-signup"
               >
                 Get Started Free
-              </RainbowButton>
+              </Button>
             </div>
           </div>
         </section>
 
         {/* CTA After Demo */}
-        <section className="py-16">
+        <section className="py-16 bg-white">
           <div className="max-w-2xl mx-auto px-4 sm:px-6 text-center">
-            <h3 className="text-3xl font-bold mb-3">Ready to see your full picture?</h3>
-            <p className="text-xl text-gray-300 mb-6">Join 3,285+ people taking control of their money</p>
+            <h3 className="text-3xl font-bold text-gray-900 mb-3">Ready to see your full picture?</h3>
+            <p className="text-xl text-gray-500 mb-6">Join 3,285+ people taking control of their money</p>
             
-            <RainbowButton 
+            <Button 
               onClick={scrollToSignup}
-              className="text-lg px-12 h-14"
+              className="text-lg px-12 h-14 bg-[#1a56db] hover:bg-[#1e40af] text-white"
               data-testid="button-cta-after-demo"
             >
               Get Started Free
-            </RainbowButton>
+            </Button>
           </div>
         </section>
 
         {/* Signup Section */}
-        <section ref={signupRef} className="py-20 lg:py-32">
+        <section ref={signupRef} className="py-20 lg:py-32 bg-gray-50">
           <div className="max-w-md mx-auto px-4 sm:px-6">
             {/* Progress bar */}
-            <div className="mb-8 p-4 bg-blue-600/10 border border-blue-600/20 rounded-lg">
+            <div className="mb-8 p-4 bg-blue-50 border border-blue-200 rounded-lg">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-semibold text-blue-400">Launch Pool</span>
-                <span className="text-sm text-gray-300">3,285 / 10,000 users</span>
+                <span className="text-sm font-semibold text-[#1a56db]">Launch Pool</span>
+                <span className="text-sm text-gray-600">3,285 / 10,000 users</span>
               </div>
-              <div className="w-full bg-white/10 rounded-full h-2 mb-1">
-                <div className="bg-blue-500 h-2 rounded-full" style={{ width: '33%' }}></div>
+              <div className="w-full bg-gray-200 rounded-full h-2 mb-1">
+                <div className="bg-[#1a56db] h-2 rounded-full" style={{ width: '33%' }}></div>
               </div>
-              <p className="text-xs text-gray-400 flex items-center gap-1">
-                <Check className="h-3 w-3 text-green-400" />
+              <p className="text-xs text-gray-500 flex items-center gap-1">
+                <Check className="h-3 w-3 text-green-500" />
                 3,285 early spots claimed
               </p>
             </div>
 
             <div className="text-center mb-8">
-              <h2 className="text-4xl font-bold mb-4">Start Free Today</h2>
-              <p className="text-gray-300">No credit card needed. Connect up to 4 accounts free.</p>
+              <h2 className="text-4xl font-bold text-gray-900 mb-4">Start Free Today</h2>
+              <p className="text-gray-500">No credit card needed. Connect up to 4 accounts free.</p>
             </div>
 
             {!signupSuccess ? (
-              <div>
+              <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
                 <form onSubmit={handleSignupSubmit} action="#" className="space-y-4">
                   <div>
                     <Input
@@ -1393,7 +1442,7 @@ export default function LandingNew() {
                       placeholder="Full Name"
                       value={signupData.name}
                       onChange={(e) => setSignupData({ ...signupData, name: e.target.value })}
-                      className="bg-white/10 border-white/20 text-white placeholder:text-gray-400"
+                      className="bg-gray-50 border-gray-300 text-gray-900 placeholder:text-gray-400"
                       required
                       data-testid="input-signup-name"
                     />
@@ -1404,7 +1453,7 @@ export default function LandingNew() {
                       placeholder="Email"
                       value={signupData.email}
                       onChange={(e) => setSignupData({ ...signupData, email: e.target.value })}
-                      className="bg-white/10 border-white/20 text-white placeholder:text-gray-400"
+                      className="bg-gray-50 border-gray-300 text-gray-900 placeholder:text-gray-400"
                       required
                       data-testid="input-signup-email"
                     />
@@ -1417,15 +1466,15 @@ export default function LandingNew() {
                       onChange={(e) => setSignupData({ ...signupData, password: e.target.value })}
                       onFocus={() => setPasswordFocused(true)}
                       onBlur={() => setPasswordFocused(false)}
-                      className="bg-white/10 border-white/20 text-white placeholder:text-gray-400"
+                      className="bg-gray-50 border-gray-300 text-gray-900 placeholder:text-gray-400"
                       required
                       data-testid="input-signup-password"
                     />
                     
                     {/* Password Requirements - show when focused or invalid */}
                     {(passwordFocused || (signupData.password && !isPasswordValid)) && (
-                      <div className="mt-2 p-3 bg-white/5 border border-white/10 rounded-lg text-sm space-y-1">
-                        <p className="text-gray-400 font-semibold mb-2">Password must have:</p>
+                      <div className="mt-2 p-3 bg-gray-50 border border-gray-200 rounded-lg text-sm space-y-1">
+                        <p className="text-gray-600 font-semibold mb-2">Password must have:</p>
                         <div className="space-y-1">
                           <div className="flex items-center gap-2">
                             {passwordRequirements.length ? (
@@ -1483,11 +1532,11 @@ export default function LandingNew() {
                   </div>
 
                   {signupError && (
-                    <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-sm">
+                    <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm">
                       {signupError}
                       {signupError.includes('already exists') && (
                         <div className="mt-2">
-                          <Link href="/login" className="text-blue-400 hover:underline font-semibold">
+                          <Link href="/login" className="text-[#1a56db] hover:underline font-semibold">
                             Go to login →
                           </Link>
                         </div>
@@ -1497,7 +1546,7 @@ export default function LandingNew() {
 
                   <Button 
                     type="submit" 
-                    className="w-full bg-blue-600 hover:bg-blue-700 h-12" 
+                    className="w-full bg-[#1a56db] hover:bg-[#1e40af] text-white h-12" 
                     disabled={signupLoading}
                     data-testid="button-signup-submit"
                   >
@@ -1507,74 +1556,74 @@ export default function LandingNew() {
 
                 <div className="relative my-6">
                   <div className="absolute inset-0 flex items-center">
-                    <div className="w-full border-t border-white/20"></div>
+                    <div className="w-full border-t border-gray-200"></div>
                   </div>
                   <div className="relative flex justify-center text-sm">
-                    <span className="px-2 bg-black text-gray-400">Or continue with</span>
+                    <span className="px-2 bg-white text-gray-500">Or continue with</span>
                   </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
-                  <Button type="button" variant="outline" className="border-white/20 text-white hover:bg-white/10">
+                  <Button type="button" variant="outline" className="border-gray-300 text-gray-700 hover:bg-gray-50">
                     Google
                   </Button>
-                  <Button type="button" variant="outline" className="border-white/20 text-white hover:bg-white/10">
+                  <Button type="button" variant="outline" className="border-gray-300 text-gray-700 hover:bg-gray-50">
                     Apple
                   </Button>
                 </div>
 
-                <p className="text-sm text-gray-400 text-center mt-4">
+                <p className="text-sm text-gray-500 text-center mt-4">
                   No credit card required. You can connect up to 4 accounts on the Free plan.
                 </p>
 
                 {/* Referral Unlocks */}
-                <div className="mt-6 p-6 bg-gradient-to-br from-blue-600/10 to-blue-800/10 border border-blue-600/20 rounded-lg">
-                  <h4 className="text-lg font-bold mb-4">🔄 Invite & Unlock</h4>
+                <div className="mt-6 p-6 bg-blue-50 border border-blue-200 rounded-lg">
+                  <h4 className="text-lg font-bold text-gray-900 mb-4">🔄 Invite & Unlock</h4>
                   <div className="space-y-3 text-sm">
                     <div className="flex items-center gap-3">
-                      <div className="h-8 w-8 rounded-full bg-blue-600/20 flex items-center justify-center flex-shrink-0">
-                        <span className="text-blue-400 font-bold">3</span>
+                      <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
+                        <span className="text-[#1a56db] font-bold">3</span>
                       </div>
-                      <p className="text-gray-300"><span className="font-semibold text-white">Refer 3</span> = Unlock unlimited accounts for 1 month</p>
+                      <p className="text-gray-600"><span className="font-semibold text-gray-900">Refer 3</span> = Unlock unlimited accounts for 1 month</p>
                     </div>
                     <div className="flex items-center gap-3">
-                      <div className="h-8 w-8 rounded-full bg-blue-600/20 flex items-center justify-center flex-shrink-0">
-                        <span className="text-blue-400 font-bold">5</span>
+                      <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
+                        <span className="text-[#1a56db] font-bold">5</span>
                       </div>
-                      <p className="text-gray-300"><span className="font-semibold text-white">Refer 5</span> = Get 1 free month of Flint Pro</p>
+                      <p className="text-gray-600"><span className="font-semibold text-gray-900">Refer 5</span> = Get 1 free month of Flint Pro</p>
                     </div>
                     <div className="flex items-center gap-3">
-                      <div className="h-8 w-8 rounded-full bg-yellow-600/20 flex items-center justify-center flex-shrink-0">
-                        <span className="text-yellow-400 font-bold">10</span>
+                      <div className="h-8 w-8 rounded-full bg-amber-100 flex items-center justify-center flex-shrink-0">
+                        <span className="text-amber-600 font-bold">10</span>
                       </div>
-                      <p className="text-gray-300"><span className="font-semibold text-white">Refer 10</span> = 5x entries in the Lifetime Giveaway</p>
+                      <p className="text-gray-600"><span className="font-semibold text-gray-900">Refer 10</span> = 5x entries in the Lifetime Giveaway</p>
                     </div>
                   </div>
                 </div>
               </div>
             ) : (
-              <div className="p-8 bg-green-500/10 border border-green-500/20 rounded-lg text-center space-y-4">
-                <Check className="h-16 w-16 text-green-400 mx-auto" />
-                <h3 className="text-2xl font-bold">Account Created!</h3>
-                <p className="text-gray-300">Redirecting you to login...</p>
+              <div className="p-8 bg-green-50 border border-green-200 rounded-lg text-center space-y-4">
+                <Check className="h-16 w-16 text-green-500 mx-auto" />
+                <h3 className="text-2xl font-bold text-gray-900">Account Created!</h3>
+                <p className="text-gray-500">Redirecting you to login...</p>
                 
                 <div className="mt-6 space-y-4">
                   {/* Waitlist Position */}
-                  <div className="p-6 bg-white/5 border border-white/10 rounded-lg">
-                    <p className="text-sm text-gray-400 mb-1">Your Waitlist Position</p>
-                    <p className="text-4xl font-bold text-blue-400">#3,285</p>
-                    <p className="text-xs text-gray-400 mt-2">Skip spots by referring friends</p>
+                  <div className="p-6 bg-white border border-gray-200 rounded-lg">
+                    <p className="text-sm text-gray-500 mb-1">Your Waitlist Position</p>
+                    <p className="text-4xl font-bold text-[#1a56db]">#3,285</p>
+                    <p className="text-xs text-gray-500 mt-2">Skip spots by referring friends</p>
                   </div>
 
                   {/* Referral Preview */}
-                  <div className="p-6 bg-gradient-to-br from-blue-600/10 to-blue-800/10 border border-blue-600/20 rounded-lg space-y-3">
-                    <p className="text-sm font-semibold text-white">🔄 Invite & Unlock Rewards</p>
-                    <div className="space-y-2 text-xs text-gray-300">
+                  <div className="p-6 bg-blue-50 border border-blue-200 rounded-lg space-y-3">
+                    <p className="text-sm font-semibold text-gray-900">🔄 Invite & Unlock Rewards</p>
+                    <div className="space-y-2 text-xs text-gray-600">
                       <p>• Refer 3 = Unlimited accounts for 1 month</p>
                       <p>• Refer 5 = 1 free month of Pro</p>
                       <p>• Refer 10 = 5x giveaway entries</p>
                     </div>
-                    <p className="text-sm text-blue-400 font-medium pt-2">Get your unique referral link after you log in!</p>
+                    <p className="text-sm text-[#1a56db] font-medium pt-2">Get your unique referral link after you log in!</p>
                   </div>
                 </div>
               </div>
@@ -1583,188 +1632,180 @@ export default function LandingNew() {
         </section>
 
         {/* Pricing Section */}
-        <section id="pricing" className="section bg-white/5 border-y border-white/10">
-          <div className="container">
-            <div className="text-center mb-8 sm:mb-12">
-              <h2>Pick Your Plan</h2>
-              <p className="text-sm text-gray-300">Start free. Upgrade for advanced features.</p>
+        <section id="pricing" className="py-16 bg-gray-50">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold text-gray-900 mb-4">Pick Your Plan</h2>
+              <p className="text-gray-500">Start free. Upgrade for advanced features.</p>
               
               {/* Monthly/Annual Toggle */}
-              <div className="tabs inline-flex mt-4">
+              <div className="inline-flex mt-6 bg-gray-200 rounded-lg p-1">
                 <button
                   onClick={() => setIsAnnual(false)}
-                  className={`tab ${!isAnnual ? 'active' : ''}`}
+                  className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${!isAnnual ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-600 hover:text-gray-900'}`}
                   data-testid="toggle-monthly"
                 >
                   Monthly
                 </button>
                 <button
                   onClick={() => setIsAnnual(true)}
-                  className={`tab ${isAnnual ? 'active' : ''}`}
+                  className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${isAnnual ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-600 hover:text-gray-900'}`}
                   data-testid="toggle-annual"
                 >
                   Annual
-                  <span className="ml-2 text-green-400">Save 17%</span>
+                  <span className="ml-2 text-green-600">Save 17%</span>
                 </button>
               </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 max-w-6xl mx-auto">
+            <div className="grid md:grid-cols-3 gap-6 max-w-6xl mx-auto">
               {/* Free Plan */}
-              <div className="relative h-full rounded-xl border border-white/10 p-1.5 md:p-2">
-                <GlowingEffect spread={40} glow={true} disabled={isMobile} proximity={64} inactiveZone={0.01} borderWidth={1} />
-                <div className="card flex flex-col h-full !p-4 md:!p-6">
-                  <div className="mb-4 md:mb-6">
-                    <h3 className="text-lg md:text-xl">Free</h3>
-                    <div className="flex items-baseline gap-2 mb-2 md:mb-3">
-                      <span className="text-3xl md:text-4xl font-bold">$0</span>
-                      <span className="text-xs md:text-sm text-gray-400">forever</span>
-                    </div>
-                    <p className="text-xs md:text-sm text-gray-300">Try it out</p>
+              <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm flex flex-col">
+                <div className="mb-6">
+                  <h3 className="text-xl font-semibold text-gray-900">Free</h3>
+                  <div className="flex items-baseline gap-2 my-3">
+                    <span className="text-4xl font-bold text-gray-900">$0</span>
+                    <span className="text-sm text-gray-500">forever</span>
                   </div>
-
-                  <ul className="space-y-2 mb-6 md:mb-8">
-                    <li className="flex items-start gap-2">
-                      <Check className="h-5 w-5 text-green-400 flex-shrink-0 mt-0.5" />
-                      <span className="text-sm">4 accounts</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <Check className="h-5 w-5 text-green-400 flex-shrink-0 mt-0.5" />
-                      <span className="text-sm">See all your money</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <Check className="h-5 w-5 text-green-400 flex-shrink-0 mt-0.5" />
-                      <span className="text-sm">Real-time updates</span>
-                    </li>
-                  </ul>
-
-                  <RainbowButton 
-                    onClick={scrollToSignup}
-                    className="w-full"
-                    data-testid="button-free-plan"
-                  >
-                    Start Free
-                  </RainbowButton>
+                  <p className="text-sm text-gray-500">Try it out</p>
                 </div>
+
+                <ul className="space-y-3 mb-8 flex-1">
+                  <li className="flex items-start gap-2">
+                    <Check className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
+                    <span className="text-sm text-gray-600">4 accounts</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
+                    <span className="text-sm text-gray-600">See all your money</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
+                    <span className="text-sm text-gray-600">Real-time updates</span>
+                  </li>
+                </ul>
+
+                <Button 
+                  onClick={scrollToSignup}
+                  variant="outline"
+                  className="w-full border-gray-300 text-gray-700 hover:bg-gray-50"
+                  data-testid="button-free-plan"
+                >
+                  Start Free
+                </Button>
               </div>
 
-              {/* Basic Plan */}
-              <div className="relative h-full rounded-xl border border-blue-400/30 p-1.5 md:p-2">
-                <GlowingEffect spread={40} glow={true} disabled={isMobile} proximity={64} inactiveZone={0.01} borderWidth={1} variant="default" />
-                <div className="panel relative overflow-hidden h-full !p-4 md:!p-6">
-                  <div className="absolute top-3 right-3 md:top-4 md:right-4">
-                    <span className="bg-blue-500 text-white text-xs md:text-sm font-semibold px-2 py-1 rounded-lg">
-                      Most Popular
-                    </span>
-                  </div>
-
-                  <div className="mb-4 md:mb-6">
-                    <h3 className="text-lg md:text-xl">Basic</h3>
-                    <div className="flex items-baseline gap-2 mb-2">
-                      <span className="text-3xl md:text-4xl font-bold">${isAnnual ? '199' : '19.99'}</span>
-                      <span className="text-xs md:text-sm text-gray-400">{isAnnual ? '/year' : '/month'}</span>
-                    </div>
-                    {isAnnual && <p className="text-xs md:text-sm text-green-400 mb-1">$199/year - 2 months free!</p>}
-                    <p className="text-xs md:text-sm text-gray-300">For active users</p>
-                  </div>
-
-                  <ul className="space-y-2 mb-6 md:mb-8">
-                    <li className="flex items-start gap-2">
-                      <Check className="h-5 w-5 text-blue-400 flex-shrink-0 mt-0.5" />
-                      <span className="text-sm font-semibold">Unlimited accounts</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <Check className="h-5 w-5 text-blue-400 flex-shrink-0 mt-0.5" />
-                      <span className="text-sm">Everything in Free</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <Check className="h-5 w-5 text-blue-400 flex-shrink-0 mt-0.5" />
-                      <span className="text-sm">Recurring subscriptions</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <Check className="h-5 w-5 text-blue-400 flex-shrink-0 mt-0.5" />
-                      <span className="text-sm">Spending analyzer</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <Check className="h-5 w-5 text-blue-400 flex-shrink-0 mt-0.5" />
-                      <span className="text-sm">Goal tracking</span>
-                    </li>
-                  </ul>
-
-                  <RainbowButton
-                    onClick={() => {
-                      setCheckoutTier('basic');
-                      setCheckoutBillingPeriod(isAnnual ? 'yearly' : 'monthly');
-                      setCheckoutModalOpen(true);
-                    }}
-                    className="w-full"
-                    data-testid="button-basic-plan"
-                  >
-                    Get Basic
-                  </RainbowButton>
+              {/* Basic Plan - Most Popular */}
+              <div className="bg-[#1a56db] rounded-xl p-6 shadow-lg flex flex-col relative">
+                <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                  <span className="bg-amber-400 text-amber-900 text-xs font-semibold px-3 py-1 rounded-full">
+                    Most Popular
+                  </span>
                 </div>
+
+                <div className="mb-6">
+                  <h3 className="text-xl font-semibold text-white">Basic</h3>
+                  <div className="flex items-baseline gap-2 my-3">
+                    <span className="text-4xl font-bold text-white">${isAnnual ? '199' : '19.99'}</span>
+                    <span className="text-sm text-blue-200">{isAnnual ? '/year' : '/month'}</span>
+                  </div>
+                  {isAnnual && <p className="text-sm text-green-300">$199/year - 2 months free!</p>}
+                  <p className="text-sm text-blue-200">For active users</p>
+                </div>
+
+                <ul className="space-y-3 mb-8 flex-1">
+                  <li className="flex items-start gap-2">
+                    <Check className="h-5 w-5 text-green-300 flex-shrink-0 mt-0.5" />
+                    <span className="text-sm text-white font-semibold">Unlimited accounts</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="h-5 w-5 text-green-300 flex-shrink-0 mt-0.5" />
+                    <span className="text-sm text-blue-100">Everything in Free</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="h-5 w-5 text-green-300 flex-shrink-0 mt-0.5" />
+                    <span className="text-sm text-blue-100">Recurring subscriptions</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="h-5 w-5 text-green-300 flex-shrink-0 mt-0.5" />
+                    <span className="text-sm text-blue-100">Spending analyzer</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="h-5 w-5 text-green-300 flex-shrink-0 mt-0.5" />
+                    <span className="text-sm text-blue-100">Goal tracking</span>
+                  </li>
+                </ul>
+
+                <Button
+                  onClick={() => {
+                    setCheckoutTier('basic');
+                    setCheckoutBillingPeriod(isAnnual ? 'yearly' : 'monthly');
+                    setCheckoutModalOpen(true);
+                  }}
+                  className="w-full bg-white text-[#1a56db] hover:bg-blue-50"
+                  data-testid="button-basic-plan"
+                >
+                  Get Basic
+                </Button>
               </div>
 
               {/* Pro Plan */}
-              <div className="relative h-full rounded-xl border border-white/10 p-1.5 md:p-2">
-                <GlowingEffect spread={40} glow={true} disabled={isMobile} proximity={64} inactiveZone={0.01} borderWidth={1} />
-                <div className="card h-full !p-4 md:!p-6">
-                  <div className="mb-4 md:mb-6">
-                    <h3 className="text-lg md:text-xl">Pro</h3>
-                    <div className="flex items-baseline gap-2 mb-2">
-                      <span className="text-3xl md:text-4xl font-bold">${isAnnual ? '399' : '39.99'}</span>
-                      <span className="text-xs md:text-sm text-gray-400">{isAnnual ? '/year' : '/month'}</span>
-                    </div>
-                    {isAnnual && <p className="text-xs md:text-sm text-green-400 mb-1">$399/year - 2 months free!</p>}
-                    <p className="text-xs md:text-sm text-gray-300">For power users</p>
+              <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm flex flex-col">
+                <div className="mb-6">
+                  <h3 className="text-xl font-semibold text-gray-900">Pro</h3>
+                  <div className="flex items-baseline gap-2 my-3">
+                    <span className="text-4xl font-bold text-gray-900">${isAnnual ? '399' : '39.99'}</span>
+                    <span className="text-sm text-gray-500">{isAnnual ? '/year' : '/month'}</span>
                   </div>
-
-                  <ul className="space-y-2 mb-6 md:mb-8">
-                    <li className="flex items-start gap-2">
-                      <Check className="h-5 w-5 text-blue-400 flex-shrink-0 mt-0.5" />
-                      <span className="apple-caption font-semibold">Unlimited accounts</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <Check className="h-5 w-5 text-blue-400 flex-shrink-0 mt-0.5" />
-                      <span className="apple-caption">Everything in Basic</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <Check className="h-5 w-5 text-blue-400 flex-shrink-0 mt-0.5" />
-                      <span className="apple-caption font-semibold">Trading</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <Check className="h-5 w-5 text-blue-400 flex-shrink-0 mt-0.5" />
-                      <span className="apple-caption font-semibold">Transfers <span className="text-gray-500 font-normal">(coming soon)</span></span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <Check className="h-5 w-5 text-blue-400 flex-shrink-0 mt-0.5" />
-                      <span className="apple-caption">Priority support</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <Check className="h-5 w-5 text-blue-400 flex-shrink-0 mt-0.5" />
-                      <span className="apple-caption">Download reports</span>
-                    </li>
-                  </ul>
-
-                  <RainbowButton
-                    onClick={() => {
-                      setCheckoutTier('pro');
-                      setCheckoutBillingPeriod(isAnnual ? 'yearly' : 'monthly');
-                      setCheckoutModalOpen(true);
-                    }}
-                    className="w-full"
-                    data-testid="button-pro-plan"
-                  >
-                    Get Pro
-                  </RainbowButton>
+                  {isAnnual && <p className="text-sm text-green-600">$399/year - 2 months free!</p>}
+                  <p className="text-sm text-gray-500">For power users</p>
                 </div>
+
+                <ul className="space-y-3 mb-8 flex-1">
+                  <li className="flex items-start gap-2">
+                    <Check className="h-5 w-5 text-[#1a56db] flex-shrink-0 mt-0.5" />
+                    <span className="text-sm text-gray-900 font-semibold">Unlimited accounts</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="h-5 w-5 text-[#1a56db] flex-shrink-0 mt-0.5" />
+                    <span className="text-sm text-gray-600">Everything in Basic</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="h-5 w-5 text-[#1a56db] flex-shrink-0 mt-0.5" />
+                    <span className="text-sm text-gray-900 font-semibold">Trading</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="h-5 w-5 text-[#1a56db] flex-shrink-0 mt-0.5" />
+                    <span className="text-sm text-gray-900 font-semibold">Transfers <span className="text-gray-400 font-normal">(coming soon)</span></span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="h-5 w-5 text-[#1a56db] flex-shrink-0 mt-0.5" />
+                    <span className="text-sm text-gray-600">Priority support</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="h-5 w-5 text-[#1a56db] flex-shrink-0 mt-0.5" />
+                    <span className="text-sm text-gray-600">Download reports</span>
+                  </li>
+                </ul>
+
+                <Button
+                  onClick={() => {
+                    setCheckoutTier('pro');
+                    setCheckoutBillingPeriod(isAnnual ? 'yearly' : 'monthly');
+                    setCheckoutModalOpen(true);
+                  }}
+                  className="w-full bg-[#1a56db] hover:bg-[#1e40af] text-white"
+                  data-testid="button-pro-plan"
+                >
+                  Get Pro
+                </Button>
               </div>
             </div>
 
             {/* Guarantee */}
             <div className="text-center mt-8">
-              <p className="text-gray-400 text-sm">
-                <Shield className="h-4 w-4 inline mr-2 text-green-400" />
+              <p className="text-gray-500 text-sm">
+                <Shield className="h-4 w-4 inline mr-2 text-green-500" />
                 Cancel anytime. No risk.
               </p>
             </div>
@@ -1772,70 +1813,70 @@ export default function LandingNew() {
         </section>
 
         {/* CTA After Pricing */}
-        <section className="apple-section">
-          <div className="apple-container max-w-2xl text-center">
-            <h2 className="apple-h2">Start managing your money better today</h2>
-            <p className="apple-body text-gray-300">Free forever. No credit card needed.</p>
+        <section className="py-16 bg-white">
+          <div className="max-w-2xl mx-auto px-4 text-center">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">Start managing your money better today</h2>
+            <p className="text-gray-500 mb-8">Free forever. No credit card needed.</p>
             
-            <RainbowButton 
+            <Button 
               onClick={scrollToSignup}
-              className="h-14 px-12 rounded-xl text-lg"
+              className="h-14 px-12 rounded-xl text-lg bg-[#1a56db] hover:bg-[#1e40af] text-white"
               data-testid="button-cta-after-pricing"
             >
               Get Started Free
-            </RainbowButton>
+            </Button>
           </div>
         </section>
 
         {/* FAQ Section */}
-        <section id="faq" className="apple-section">
-          <div className="apple-container max-w-3xl">
-            <div className="text-center mb-8 sm:mb-12 px-4">
-              <h2 className="apple-h2">Questions?</h2>
+        <section id="faq" className="py-16 bg-gray-50">
+          <div className="max-w-3xl mx-auto px-4">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold text-gray-900">Questions?</h2>
             </div>
 
-            <Accordion type="single" collapsible className="space-y-3 sm:space-y-4 px-4 sm:px-0">
-              <AccordionItem value="security" className="bg-white/5 border border-white/10 rounded-lg px-4 sm:px-6">
-                <AccordionTrigger className="text-left hover:no-underline">
+            <Accordion type="single" collapsible className="space-y-4">
+              <AccordionItem value="security" className="bg-white border border-gray-200 rounded-lg px-6">
+                <AccordionTrigger className="text-left hover:no-underline text-gray-900">
                   Is my money safe?
                 </AccordionTrigger>
-                <AccordionContent className="text-gray-300">
+                <AccordionContent className="text-gray-600">
                   Yes! We use bank-level security to keep everything secure and private.
                 </AccordionContent>
               </AccordionItem>
 
-              <AccordionItem value="accounts" className="bg-white/5 border border-white/10 rounded-lg px-4 sm:px-6">
-                <AccordionTrigger className="text-left hover:no-underline text-sm sm:text-base">
+              <AccordionItem value="accounts" className="bg-white border border-gray-200 rounded-lg px-6">
+                <AccordionTrigger className="text-left hover:no-underline text-gray-900">
                   How many accounts are free?
                 </AccordionTrigger>
-                <AccordionContent className="text-gray-300 text-sm">
+                <AccordionContent className="text-gray-600">
                   You can connect 4 accounts for free. This means banks, cards, stocks, or crypto.
                 </AccordionContent>
               </AccordionItem>
 
-              <AccordionItem value="cancel" className="bg-white/5 border border-white/10 rounded-lg px-4 sm:px-6">
-                <AccordionTrigger className="text-left hover:no-underline">
+              <AccordionItem value="cancel" className="bg-white border border-gray-200 rounded-lg px-6">
+                <AccordionTrigger className="text-left hover:no-underline text-gray-900">
                   Can I cancel?
                 </AccordionTrigger>
-                <AccordionContent className="text-gray-300">
+                <AccordionContent className="text-gray-600">
                   Yes. You can stop paying anytime. No long contracts.
                 </AccordionContent>
               </AccordionItem>
 
-              <AccordionItem value="revenue" className="bg-white/5 border border-white/10 rounded-lg px-4 sm:px-6">
-                <AccordionTrigger className="text-left hover:no-underline">
+              <AccordionItem value="revenue" className="bg-white border border-gray-200 rounded-lg px-6">
+                <AccordionTrigger className="text-left hover:no-underline text-gray-900">
                   How do you make money?
                 </AccordionTrigger>
-                <AccordionContent className="text-gray-300">
+                <AccordionContent className="text-gray-600">
                   We make money when people pay for Pro. We never sell your info.
                 </AccordionContent>
               </AccordionItem>
 
-              <AccordionItem value="upgrade" className="bg-white/5 border border-white/10 rounded-lg px-4 sm:px-6">
-                <AccordionTrigger className="text-left hover:no-underline">
+              <AccordionItem value="upgrade" className="bg-white border border-gray-200 rounded-lg px-6">
+                <AccordionTrigger className="text-left hover:no-underline text-gray-900">
                   Why go Pro?
                 </AccordionTrigger>
-                <AccordionContent className="text-gray-300">
+                <AccordionContent className="text-gray-600">
                   Go Pro if you want more than 4 accounts, better charts, or fast help. Free works great for most people!
                 </AccordionContent>
               </AccordionItem>
@@ -1844,48 +1885,48 @@ export default function LandingNew() {
         </section>
 
         {/* Footer */}
-        <footer className="border-t border-white/10 bg-white/5 py-12">
+        <footer className="border-t border-gray-200 bg-white py-12">
           <div className="max-w-7xl mx-auto px-4 sm:px-6">
             <div className="grid md:grid-cols-4 gap-8">
               <div className="space-y-4">
                 <div className="flex items-center gap-3">
                   <img src={flintLogo} alt="Flint" className="h-8 w-auto" />
-                  <span className="text-xl font-semibold">Flint</span>
+                  <span className="text-xl font-semibold text-gray-900">Flint</span>
                 </div>
-                <p className="text-sm text-gray-400">
+                <p className="text-sm text-gray-500">
                   Connect all your financial accounts in one secure platform.
                 </p>
               </div>
 
               <div className="space-y-3">
-                <h4 className="text-white font-semibold text-sm">Product</h4>
-                <div className="flex flex-col gap-2 text-sm text-gray-400">
-                  <Link href="/banking" className="hover:text-white transition-colors">Bank Account Tracker</Link>
-                  <Link href="/investing" className="hover:text-white transition-colors">Stock Portfolio Tracker</Link>
-                  <Link href="/crypto" className="hover:text-white transition-colors">Crypto Portfolio Tracker</Link>
-                  <Link href="/blog" className="hover:text-white transition-colors">Blog</Link>
+                <h4 className="text-gray-900 font-semibold text-sm">Product</h4>
+                <div className="flex flex-col gap-2 text-sm text-gray-500">
+                  <Link href="/banking" className="hover:text-gray-900 transition-colors">Bank Account Tracker</Link>
+                  <Link href="/investing" className="hover:text-gray-900 transition-colors">Stock Portfolio Tracker</Link>
+                  <Link href="/crypto" className="hover:text-gray-900 transition-colors">Crypto Portfolio Tracker</Link>
+                  <Link href="/blog" className="hover:text-gray-900 transition-colors">Blog</Link>
                 </div>
               </div>
               
               <div className="space-y-3">
-                <h4 className="text-white font-semibold text-sm">Account</h4>
-                <div className="flex flex-col gap-2 text-sm text-gray-400">
-                  <Link href="/login" className="hover:text-white transition-colors">Log In</Link>
-                  <Link href="/reset-password" className="hover:text-white transition-colors">Reset Password</Link>
+                <h4 className="text-gray-900 font-semibold text-sm">Account</h4>
+                <div className="flex flex-col gap-2 text-sm text-gray-500">
+                  <Link href="/login" className="hover:text-gray-900 transition-colors">Log In</Link>
+                  <Link href="/reset-password" className="hover:text-gray-900 transition-colors">Reset Password</Link>
                 </div>
               </div>
 
               <div className="space-y-3">
-                <h4 className="text-white font-semibold text-sm">Legal</h4>
-                <div className="flex flex-col gap-2 text-sm text-gray-400">
-                  <Link href="/tos" className="hover:text-white transition-colors">Terms of Service</Link>
-                  <Link href="/privacy-policy" className="hover:text-white transition-colors">Privacy Policy</Link>
-                  <a href="mailto:support@flint-investing.com" className="text-blue-400 hover:text-blue-300 transition-colors">support@flint-investing.com</a>
+                <h4 className="text-gray-900 font-semibold text-sm">Legal</h4>
+                <div className="flex flex-col gap-2 text-sm text-gray-500">
+                  <Link href="/tos" className="hover:text-gray-900 transition-colors">Terms of Service</Link>
+                  <Link href="/privacy-policy" className="hover:text-gray-900 transition-colors">Privacy Policy</Link>
+                  <a href="mailto:support@flint-investing.com" className="text-[#1a56db] hover:text-[#1e40af] transition-colors">support@flint-investing.com</a>
                 </div>
               </div>
             </div>
 
-            <div className="mt-8 pt-8 border-t border-white/10 text-center text-sm text-gray-400">
+            <div className="mt-8 pt-8 border-t border-gray-200 text-center text-sm text-gray-500">
               <p>&copy; 2025 Flint Tech Inc. All rights reserved. Flint is not a broker or bank.</p>
             </div>
           </div>
@@ -1931,17 +1972,17 @@ export default function LandingNew() {
       }} />
       {/* Scroll Popup */}
       {showScrollPopup && !scrollPopupSubmitted && (
-        <div className="fixed bottom-4 right-4 max-w-[90vw] sm:max-w-sm bg-black border border-white/20 rounded-lg p-4 md:p-6 shadow-2xl z-50 animate-[fadeInUp_0.3s_ease-out]">
+        <div className="fixed bottom-4 right-4 max-w-[90vw] sm:max-w-sm bg-white border border-gray-200 rounded-lg p-4 md:p-6 shadow-xl z-50 animate-[fadeInUp_0.3s_ease-out]">
           <button 
             onClick={() => setShowScrollPopup(false)} 
-            className="absolute top-2 right-2 text-gray-400 hover:text-white"
+            className="absolute top-2 right-2 text-gray-400 hover:text-gray-600"
             data-testid="button-close-scroll-popup"
           >
             <X className="h-4 w-4" />
           </button>
           
-          <h3 className="text-lg font-semibold mb-2">Stay in the loop!</h3>
-          <p className="text-sm text-gray-300 mb-4">Enter your email for updates and beta invites.</p>
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">Stay in the loop!</h3>
+          <p className="text-sm text-gray-500 mb-4">Enter your email for updates and beta invites.</p>
           
           <form onSubmit={handleScrollPopupSubmit} className="flex gap-2">
             <Input
@@ -1949,19 +1990,19 @@ export default function LandingNew() {
               placeholder="Your email"
               value={scrollPopupEmail}
               onChange={(e) => setScrollPopupEmail(e.target.value)}
-              className="bg-white/10 border-white/20 text-white placeholder:text-gray-400"
+              className="bg-gray-50 border-gray-300 text-gray-900 placeholder:text-gray-400"
               data-testid="input-scroll-popup-email"
             />
-            <Button type="submit" className="bg-blue-600 hover:bg-blue-700">
+            <Button type="submit" className="bg-[#1a56db] hover:bg-[#1e40af] text-white">
               Subscribe
             </Button>
           </form>
         </div>
       )}
       {showScrollPopup && scrollPopupSubmitted && (
-        <div className="fixed bottom-4 right-4 max-w-[90vw] sm:max-w-sm bg-green-500/10 border border-green-500/20 rounded-lg p-4 md:p-6 shadow-2xl z-50">
-          <Check className="h-6 w-6 text-green-400 mb-2" />
-          <p className="text-green-400">Thanks for subscribing!</p>
+        <div className="fixed bottom-4 right-4 max-w-[90vw] sm:max-w-sm bg-green-50 border border-green-200 rounded-lg p-4 md:p-6 shadow-xl z-50">
+          <Check className="h-6 w-6 text-green-500 mb-2" />
+          <p className="text-green-600">Thanks for subscribing!</p>
         </div>
       )}
       {/* Stripe Checkout Modal */}
@@ -2387,6 +2428,6 @@ export default function LandingNew() {
           )}
         </DialogContent>
       </Dialog>
-    </BeamsBackground>
+    </div>
   );
 }
