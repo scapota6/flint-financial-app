@@ -82,13 +82,13 @@ const PrivacyPolicy = lazy(() => import("@/pages/privacy-policy"));
 
 // Loading fallback component with branding to prevent blank page appearance
 const PageLoader = () => (
-  <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+  <div className="min-h-screen flex items-center justify-center bg-[#F4F2ED]">
     <div className="text-center space-y-4">
-      <div className="text-4xl font-bold bg-gradient-to-r from-blue-400 to-blue-600 bg-clip-text text-transparent mb-4">
+      <div className="text-4xl font-bold text-gray-900 mb-4">
         Flint
       </div>
-      <div className="animate-spin w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full mx-auto" />
-      <p className="text-gray-400 text-sm mt-4">Loading...</p>
+      <div className="animate-spin w-10 h-10 border-4 border-gray-900 border-t-transparent rounded-full mx-auto" />
+      <p className="text-gray-600 text-sm mt-4">Loading...</p>
     </div>
   </div>
 );
@@ -116,10 +116,7 @@ function Router() {
     <>
       {isAuthenticated && (
         <div
-          className="fixed inset-0 z-0"
-          style={{
-            background: "radial-gradient(125% 125% at 50% 10%, #0a0a0a 40%, #1e3a5f 100%)",
-          }}
+          className="fixed inset-0 z-0 bg-[#F4F2ED]"
         />
       )}
       {isAuthenticated && <UpgradeBanner />}
