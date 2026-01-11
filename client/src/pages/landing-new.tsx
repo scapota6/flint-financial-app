@@ -969,159 +969,57 @@ export default function LandingNew() {
         </section>
 
 
-        {/* Features Section - Narrative Style */}
-        <section className="lg:px-48 md:px-12 px-4 py-20 bg-[#F4F2ED]" id="features">
-          <div className="max-w-5xl mx-auto">
-            <h2 className="font-serif text-3xl mb-4 text-center text-black">
-              <span className="relative inline-block px-4">
-                Why Flint
-                <span className="absolute bottom-0 left-0 w-full h-1 bg-yellow-400"></span>
-              </span>
-            </h2>
-            <p className="text-center text-gray-600 mb-16 max-w-2xl mx-auto">
-              Stop juggling multiple apps. See your complete financial picture in one place.
-            </p>
-
-            {/* Feature 1 - Left aligned */}
-            <div className="flex flex-col md:flex-row items-center gap-8 mb-20">
-              <div className="md:w-1/2">
-                <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100">
-                  <div className="flex items-center gap-4 mb-4">
-                    <div className="h-12 w-12 rounded-xl bg-green-100 flex items-center justify-center">
-                      <DollarSign className="h-6 w-6 text-green-600" />
-                    </div>
-                    <span className="text-3xl font-bold text-green-600">$3,200</span>
-                  </div>
-                  <p className="text-sm text-gray-500">Average saved per year by identifying hidden fees</p>
-                </div>
-              </div>
-              <div className="md:w-1/2">
-                <h3 className="text-2xl font-bold text-gray-900 mb-3">Find money you're losing</h3>
-                <p className="text-gray-600 mb-4">
-                  Our users discover an average of $267/month in forgotten subscriptions, unnecessary bank fees, and duplicate charges. Flint automatically flags these so you can cancel or dispute them.
+        {/* Features Section - Template Style */}
+        <section className="lg:px-48 md:px-12 px-4 py-20 flex flex-col items-center bg-[#F4F2ED]" id="features">
+          <h2 className="font-serif text-3xl mb-12 text-center">
+            <span className="relative inline-block px-4">
+              Features
+              <span className="absolute bottom-0 left-0 w-full h-1 bg-yellow-400"></span>
+            </span>
+          </h2>
+          <div className="md:grid md:grid-cols-2 gap-8 max-w-4xl">
+            <div className="flex items-start my-6 mr-10">
+              <DollarSign className="h-7 w-7 mr-4 flex-shrink-0 text-yellow-500" />
+              <div>
+                <h3 className="font-semibold text-2xl mb-2">Cut Hidden Fees</h3>
+                <p className="text-gray-600">
+                  We find and alert you to unnecessary bank charges so you keep more of your money.
                 </p>
-                <ul className="space-y-2">
-                  <li className="flex items-center gap-2 text-gray-700">
-                    <Check className="h-5 w-5 text-green-500" /> Subscription tracking
-                  </li>
-                  <li className="flex items-center gap-2 text-gray-700">
-                    <Check className="h-5 w-5 text-green-500" /> Fee detection alerts
-                  </li>
-                  <li className="flex items-center gap-2 text-gray-700">
-                    <Check className="h-5 w-5 text-green-500" /> Spending insights
-                  </li>
-                </ul>
               </div>
             </div>
 
-            {/* Feature 2 - Right aligned */}
-            <div className="flex flex-col md:flex-row-reverse items-center gap-8 mb-20">
-              <div className="md:w-1/2">
-                <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100">
-                  <div className="flex items-center gap-4 mb-4">
-                    <div className="h-12 w-12 rounded-xl bg-blue-100 flex items-center justify-center">
-                      <Wallet className="h-6 w-6 text-blue-600" />
-                    </div>
-                    <span className="text-3xl font-bold text-blue-600">12+</span>
-                  </div>
-                  <p className="text-sm text-gray-500">Account types supported in one dashboard</p>
-                </div>
-              </div>
-              <div className="md:w-1/2">
-                <h3 className="text-2xl font-bold text-gray-900 mb-3">All your accounts, one view</h3>
-                <p className="text-gray-600 mb-4">
-                  Connect checking, savings, credit cards, investments, crypto, and more. Finally see your true net worth without logging into 8 different apps.
+            <div className="flex items-start my-6 mr-10">
+              <TrendingUp className="h-7 w-7 mr-4 flex-shrink-0 text-yellow-500" />
+              <div>
+                <h3 className="font-semibold text-2xl mb-2">Grow Net Worth</h3>
+                <p className="text-gray-600">
+                  See the big picture and make smarter money moves with all your accounts in one place.
                 </p>
-                <ul className="space-y-2">
-                  <li className="flex items-center gap-2 text-gray-700">
-                    <Check className="h-5 w-5 text-blue-500" /> Banks & credit unions
-                  </li>
-                  <li className="flex items-center gap-2 text-gray-700">
-                    <Check className="h-5 w-5 text-blue-500" /> Brokerage accounts
-                  </li>
-                  <li className="flex items-center gap-2 text-gray-700">
-                    <Check className="h-5 w-5 text-blue-500" /> Crypto wallets
-                  </li>
-                </ul>
               </div>
             </div>
 
-            {/* Feature 3 - Left aligned */}
-            <div className="flex flex-col md:flex-row items-center gap-8">
-              <div className="md:w-1/2">
-                <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100">
-                  <div className="flex items-center gap-4 mb-4">
-                    <div className="h-12 w-12 rounded-xl bg-purple-100 flex items-center justify-center">
-                      <Shield className="h-6 w-6 text-purple-600" />
-                    </div>
-                    <span className="text-3xl font-bold text-purple-600">256-bit</span>
-                  </div>
-                  <p className="text-sm text-gray-500">AES encryption — same security as major banks</p>
-                </div>
-              </div>
-              <div className="md:w-1/2">
-                <h3 className="text-2xl font-bold text-gray-900 mb-3">Security you can trust</h3>
-                <p className="text-gray-600 mb-4">
-                  We use read-only connections — we can never move your money. Your credentials are encrypted with bank-grade security and never stored on our servers.
+            <div className="flex items-start my-6 mr-10">
+              <Wallet className="h-7 w-7 mr-4 flex-shrink-0 text-yellow-500" />
+              <div>
+                <h3 className="font-semibold text-2xl mb-2">All Your Money</h3>
+                <p className="text-gray-600">
+                  See your bank accounts, credit cards, stocks, and crypto all together in one dashboard.
                 </p>
-                <ul className="space-y-2">
-                  <li className="flex items-center gap-2 text-gray-700">
-                    <Check className="h-5 w-5 text-purple-500" /> Read-only access
-                  </li>
-                  <li className="flex items-center gap-2 text-gray-700">
-                    <Check className="h-5 w-5 text-purple-500" /> SOC 2 compliant partners
-                  </li>
-                  <li className="flex items-center gap-2 text-gray-700">
-                    <Check className="h-5 w-5 text-purple-500" /> No credential storage
-                  </li>
-                </ul>
+              </div>
+            </div>
+
+            <div className="flex items-start my-6 mr-10">
+              <Shield className="h-7 w-7 mr-4 flex-shrink-0 text-yellow-500" />
+              <div>
+                <h3 className="font-semibold text-2xl mb-2">Bank-Level Security</h3>
+                <p className="text-gray-600">
+                  Your data is encrypted and protected with the same security banks use.
+                </p>
               </div>
             </div>
           </div>
         </section>
 
-        {/* Trust & Partners Section - Template Style */}
-        <section className="py-16 bg-[#F4F2ED]">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-            <p className="text-center text-sm text-gray-500 mb-8">Connect to 100+ trusted financial institutions</p>
-
-            {/* Scrolling logos - simpler */}
-            <div className="relative overflow-hidden mb-12">
-              <div className="flex gap-12 animate-[scroll_40s_linear_infinite] items-center justify-center">
-                {[...INSTITUTIONS, ...INSTITUTIONS].map((inst, idx) => (
-                  <div key={idx} className="flex-shrink-0">
-                    <img 
-                      src={`https://cdn.brandfetch.io/${inst.domain}`}
-                      alt={inst.name}
-                      className="h-8 object-contain grayscale opacity-50 hover:opacity-100 hover:grayscale-0 transition-all"
-                      onError={(e) => {
-                        e.currentTarget.style.display = 'none';
-                      }}
-                    />
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Trust stats - simple text */}
-            <div className="flex flex-wrap justify-center gap-8 text-center">
-              <div>
-                <p className="text-2xl font-bold text-gray-900">3,000+</p>
-                <p className="text-sm text-gray-500">Active users</p>
-              </div>
-              <div className="w-px bg-gray-200 hidden sm:block"></div>
-              <div>
-                <p className="text-2xl font-bold text-gray-900">Bank-level</p>
-                <p className="text-sm text-gray-500">Security</p>
-              </div>
-              <div className="w-px bg-gray-200 hidden sm:block"></div>
-              <div>
-                <p className="text-2xl font-bold text-gray-900">Free</p>
-                <p className="text-sm text-gray-500">No credit card</p>
-              </div>
-            </div>
-          </div>
-        </section>
 
         {/* Social Proof Section - Template Style */}
         <section className="lg:px-48 md:px-12 px-4 py-20 flex flex-col items-center bg-[#F4F2ED]">
