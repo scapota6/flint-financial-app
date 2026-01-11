@@ -421,6 +421,23 @@ export default function LandingNew() {
 
   // Sticky nav
   const [showStickyNav, setShowStickyNav] = useState(false);
+  
+  // Mobile menu state
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  // Handle ESC key for mobile menu
+  useEffect(() => {
+    const handleEscKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && mobileMenuOpen) {
+        setMobileMenuOpen(false);
+      }
+    };
+    
+    if (mobileMenuOpen) {
+      document.addEventListener('keydown', handleEscKey);
+      return () => document.removeEventListener('keydown', handleEscKey);
+    }
+  }, [mobileMenuOpen]);
 
   // Money goals state
   const [selectedGoals, setSelectedGoals] = useState<string[]>([]);
@@ -651,7 +668,7 @@ export default function LandingNew() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FAFBFC] text-gray-900 overflow-x-hidden">
+    <div className="min-h-screen bg-[#F4F2ED] text-gray-900 overflow-x-hidden font-sans">
       <Helmet>
         <title>Flint - Free Financial Dashboard | Track All Your Money</title>
         <meta name="description" content="Flint is a free personal finance app that shows all your bank accounts, investments, and credit cards in one dashboard. Track your net worth, monitor spending, find hidden fees, and reach your financial goals. Connect 10,000+ banks, brokerages, and crypto wallets securely." />
@@ -660,91 +677,210 @@ export default function LandingNew() {
         <meta property="og:description" content="See all your money in one place. Connect banks, investments, and crypto. Track spending and reach your goals." />
         <meta property="og:type" content="website" />
         <link rel="canonical" href="https://flint-investing.com/" />
+        <link href="https://fonts.googleapis.com/css2?family=PT+Serif:wght@400;700&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
       </Helmet>
 
-      {/* Clean Header */}
-      <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-2">
-              <img src={flintLogo} alt="Flint" className="h-8 w-8" />
-              <span className="text-xl font-bold text-gray-900">Flint</span>
-            </div>
-            <nav className="hidden md:flex items-center gap-8">
-              <button onClick={() => scrollToSection('features')} className="text-gray-600 hover:text-gray-900 transition-colors">Features</button>
-              <button onClick={() => scrollToSection('pricing')} className="text-gray-600 hover:text-gray-900 transition-colors">Pricing</button>
-              <button onClick={() => scrollToSection('faq')} className="text-gray-600 hover:text-gray-900 transition-colors">FAQ</button>
-            </nav>
-            <div className="flex items-center gap-4">
-              <Link href="/login" className="text-gray-600 hover:text-gray-900 transition-colors">Sign In</Link>
-              <Button onClick={scrollToSignup} className="bg-[#1a56db] hover:bg-[#1e40af] text-white rounded-full px-6">
-                Get Started
-              </Button>
+      {/* Navigation - Template Style */}
+      <nav className="fixed flex justify-between items-center py-4 md:py-6 w-full lg:px-48 md:px-12 px-4 bg-[#F4F2ED] z-50">
+        <div className="flex items-center gap-2">
+          <img src={flintLogo} alt="Flint" className="h-6" />
+          <span className="text-xl font-semibold text-gray-900">Flint</span>
+        </div>
+        <ul className="items-center hidden md:flex font-medium">
+          <li className="mx-4">
+            <button onClick={() => scrollToSection('howitworks')} className="hover:underline underline-offset-4">How it works</button>
+          </li>
+          <li className="mx-4">
+            <button onClick={() => scrollToSection('features')} className="hover:underline underline-offset-4">Features</button>
+          </li>
+          <li className="mx-4">
+            <button onClick={() => scrollToSection('pricing')} className="hover:underline underline-offset-4">Pricing</button>
+          </li>
+        </ul>
+        <div className="hidden md:flex items-center gap-4">
+          <Link href="/login" className="hover:underline underline-offset-4">Login</Link>
+          <button onClick={scrollToSignup} className="py-2 px-6 text-white bg-black rounded-full font-medium">
+            Signup
+          </button>
+        </div>
+        {/* Mobile Menu Toggle */}
+        <button 
+          className="md:hidden p-2"
+          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
+          aria-expanded={mobileMenuOpen}
+          aria-controls="mobile-menu"
+        >
+          {mobileMenuOpen ? (
+            <X className="h-6 w-6" />
+          ) : (
+            <ChevronDown className="h-6 w-6" />
+          )}
+        </button>
+      </nav>
+      
+      {/* Mobile Navigation Menu with Backdrop */}
+      {mobileMenuOpen && (
+        <>
+          <div 
+            className="fixed inset-0 bg-black/20 z-30 md:hidden"
+            onClick={() => setMobileMenuOpen(false)}
+            aria-hidden="true"
+          />
+          <div 
+            className="fixed top-16 left-0 right-0 bg-[#F4F2ED] z-40 px-4 py-6 shadow-lg md:hidden animate-[fadeInDown_0.2s_ease-out]"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Mobile navigation menu"
+          >
+            <ul className="flex flex-col gap-4 font-medium mb-6">
+              <li>
+                <button 
+                  onClick={() => { scrollToSection('howitworks'); setMobileMenuOpen(false); }} 
+                  className="w-full text-left py-2 hover:underline underline-offset-4"
+                >
+                  How it works
+                </button>
+              </li>
+              <li>
+                <button 
+                  onClick={() => { scrollToSection('features'); setMobileMenuOpen(false); }} 
+                  className="w-full text-left py-2 hover:underline underline-offset-4"
+                >
+                  Features
+                </button>
+              </li>
+              <li>
+                <button 
+                  onClick={() => { scrollToSection('pricing'); setMobileMenuOpen(false); }} 
+                  className="w-full text-left py-2 hover:underline underline-offset-4"
+                >
+                  Pricing
+                </button>
+              </li>
+              <li>
+                <button 
+                  onClick={() => { scrollToSection('faq'); setMobileMenuOpen(false); }} 
+                  className="w-full text-left py-2 hover:underline underline-offset-4"
+                >
+                  FAQ
+                </button>
+              </li>
+            </ul>
+            <div className="flex gap-4 pt-4 border-t border-gray-200">
+              <Link href="/login" className="py-2 px-4 text-center font-medium flex-1">Login</Link>
+              <button 
+                onClick={() => { scrollToSignup(); setMobileMenuOpen(false); }} 
+                className="py-2 px-4 text-white bg-black rounded-full font-medium flex-1"
+              >
+                Signup
+              </button>
             </div>
           </div>
-        </div>
-      </header>
+        </>
+      )}
 
-      <main className="relative z-10 pt-24">
-        {/* Hero Section - Light Theme with Email CTA */}
-        <section className="py-16 md:py-24">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid lg:grid-cols-2 gap-12 items-center">
-              <div className="space-y-8">
-                <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-gray-900 leading-tight">
-                  All your money apps,{' '}
-                  <span className="text-[#1a56db]">simple</span>
-                </h1>
-                <p className="text-xl text-gray-600 max-w-lg">
-                  Track all your bank, card, stock, and crypto accounts — in one place. Free forever, no card needed.
-                </p>
-                <div className="space-y-4">
-                  <div className="flex flex-col sm:flex-row gap-3 max-w-md">
-                    <Input
-                      type="email"
-                      placeholder="Enter your email"
-                      value={heroEmail}
-                      onChange={(e) => setHeroEmail(e.target.value)}
-                      className="flex-1 h-12 bg-white border-gray-300 text-gray-900 placeholder:text-gray-400 rounded-lg"
-                    />
-                    <Button 
-                      onClick={() => {
-                        if (heroEmail) {
-                          setSignupEmail(heroEmail);
-                          scrollToSignup();
-                        } else {
-                          scrollToSignup();
-                        }
-                      }}
-                      className="h-12 px-8 bg-[#1a56db] hover:bg-[#1e40af] text-white rounded-lg font-semibold"
-                    >
-                      Get Started <ArrowRight className="ml-2 h-4 w-4" />
-                    </Button>
-                  </div>
-                  <p className="text-sm text-gray-500">Try for free. No credit card required.</p>
+      <main className="relative z-10">
+        {/* Hero Section - Template Style */}
+        <section className="pt-24 md:mt-0 md:min-h-screen flex flex-col justify-center text-center md:text-left md:flex-row md:justify-between md:items-center lg:px-48 md:px-12 px-4 bg-[#F4F2ED]">
+          <div className="md:flex-1 md:mr-10 py-12">
+            <h1 className="font-serif text-4xl sm:text-5xl font-bold mb-7 leading-tight">
+              All your money apps,{' '}
+              <span className="relative inline-block">
+                <span className="relative z-10">in one place</span>
+                <span className="absolute bottom-1 left-0 w-full h-3 bg-yellow-300 -z-0 opacity-60"></span>
+              </span>
+            </h1>
+            <p className="text-lg text-gray-600 mb-7 max-w-lg">
+              Track all your bank, card, stock, and crypto accounts — free forever, no credit card needed.
+            </p>
+            {heroEmailSubmitted ? (
+              <div className="flex flex-col gap-3 max-w-md mb-4">
+                <div className="flex items-center gap-2 text-green-600">
+                  <CheckCircle className="h-5 w-5" />
+                  <span className="font-medium">Thanks! Scroll down to complete signup.</span>
                 </div>
-                {/* Trust Logos */}
-                <div className="pt-8 border-t border-gray-200">
-                  <p className="text-sm text-gray-500 mb-4">Trusted by users featured in</p>
-                  <div className="flex items-center gap-8 opacity-60">
-                    <span className="text-lg font-semibold text-gray-400">Forbes</span>
-                    <span className="text-lg font-semibold text-gray-400">Bloomberg</span>
-                    <span className="text-lg font-semibold text-gray-400">WSJ</span>
-                    <span className="text-lg font-semibold text-gray-400">TechCrunch</span>
-                  </div>
-                </div>
+                <button 
+                  onClick={scrollToSignup}
+                  className="h-12 px-6 bg-black text-white rounded-lg font-medium flex items-center justify-center gap-2"
+                >
+                  Complete Signup <ArrowRight className="h-4 w-4" />
+                </button>
               </div>
-              <div className="relative">
-                <div className="bg-white rounded-2xl shadow-2xl border border-gray-200 overflow-hidden">
-                  <img src={dashboardPreview} alt="Flint Dashboard" className="w-full h-auto" />
-                </div>
+            ) : (
+              <form 
+                onSubmit={(e) => {
+                  handleHeroEmailSubmit(e);
+                  if (heroEmail) {
+                    setSignupEmail(heroEmail);
+                  }
+                  scrollToSignup();
+                }}
+                className="flex flex-col sm:flex-row gap-3 max-w-md mb-4"
+              >
+                <Input
+                  type="email"
+                  placeholder="Enter your email"
+                  value={heroEmail}
+                  onChange={(e) => setHeroEmail(e.target.value)}
+                  className="flex-1 h-12 bg-white border-gray-300 text-gray-900 placeholder:text-gray-400 rounded-lg"
+                />
+                <button 
+                  type="submit"
+                  className="h-12 px-6 bg-black text-white rounded-lg font-medium flex items-center justify-center gap-2"
+                >
+                  Get Started <ArrowRight className="h-4 w-4" />
+                </button>
+              </form>
+            )}
+            <p className="text-sm text-gray-500">Join 3,000+ people managing their money better. No credit card required.</p>
+          </div>
+          <div className="flex justify-around md:block mt-8 md:mt-0 md:flex-1">
+            <img src={dashboardPreview} alt="Flint Dashboard" className="rounded-lg shadow-2xl" />
+          </div>
+        </section>
+
+        {/* How It Works - Black Section */}
+        <section id="howitworks" className="bg-black text-white lg:px-48 md:px-12 px-4 py-20 flex flex-col items-center">
+          <h2 className="font-serif text-3xl mb-12 text-center">
+            <span className="relative inline-block px-4">
+              How it works
+              <span className="absolute bottom-0 left-0 w-full h-1 bg-yellow-400"></span>
+            </span>
+          </h2>
+          <div className="flex flex-col md:flex-row w-full max-w-4xl">
+            <div className="flex-1 mx-4 flex flex-col items-center my-6 text-center">
+              <div className="border-2 border-white rounded-full bg-[#F4F2ED] text-black h-14 w-14 flex justify-center items-center mb-4 text-xl font-bold">
+                1
               </div>
+              <h3 className="font-semibold text-xl mb-2">Connect</h3>
+              <p className="text-gray-300">
+                Securely link your bank accounts, credit cards, investments, and crypto wallets.
+              </p>
+            </div>
+            <div className="flex-1 mx-4 flex flex-col items-center my-6 text-center">
+              <div className="border-2 border-white rounded-full bg-[#F4F2ED] text-black h-14 w-14 flex justify-center items-center mb-4 text-xl font-bold">
+                2
+              </div>
+              <h3 className="font-semibold text-xl mb-2">Track</h3>
+              <p className="text-gray-300">
+                See all your money in one dashboard. Track spending, net worth, and goals.
+              </p>
+            </div>
+            <div className="flex-1 mx-4 flex flex-col items-center my-6 text-center">
+              <div className="border-2 border-white rounded-full bg-[#F4F2ED] text-black h-14 w-14 flex justify-center items-center mb-4 text-xl font-bold">
+                3
+              </div>
+              <h3 className="font-semibold text-xl mb-2">Grow</h3>
+              <p className="text-gray-300">
+                Find hidden fees, optimize spending, and make smarter money decisions.
+              </p>
             </div>
           </div>
         </section>
 
-        {/* Money Goals Section - Clean */}
-        <section className="py-20 bg-white border-b border-gray-100">
+        {/* Money Goals Section - Template Style */}
+        <section className="py-20 bg-[#F4F2ED]">
           <div className="max-w-xl mx-auto px-4 sm:px-6 lg:px-8">
             {!goalsSubmitted ? (
               <div className="text-center">
@@ -795,8 +931,8 @@ export default function LandingNew() {
           </div>
         </section>
 
-        {/* Launch Giveaway Section - Clean */}
-        <section className="py-20 bg-[#FAFBFC] border-y border-gray-100">
+        {/* Launch Giveaway Section - Template Style */}
+        <section className="py-20 bg-[#F4F2ED]">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="mb-12">
               <p className="text-sm font-semibold text-[#E76F51] uppercase tracking-wide mb-3">Limited Time</p>
@@ -837,39 +973,67 @@ export default function LandingNew() {
           </div>
         </section>
 
-        {/* Value Propositions - Clean Monarch Style */}
-        <section className="py-20 bg-white" id="features">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid md:grid-cols-3 gap-12">
+        {/* Features Section - Template Style */}
+        <section className="lg:px-48 md:px-12 px-4 py-20 flex flex-col items-center bg-[#F4F2ED]" id="features">
+          <h2 className="font-serif text-3xl mb-12 text-center">
+            <span className="relative inline-block px-4">
+              Features
+              <span className="absolute bottom-0 left-0 w-full h-1 bg-yellow-400"></span>
+            </span>
+          </h2>
+          <div className="md:grid md:grid-cols-2 gap-8 max-w-4xl">
+            <div className="flex items-start my-6 mr-10">
+              <div className="h-8 w-8 mr-4 flex-shrink-0 text-yellow-500">
+                <DollarSign className="h-7 w-7" />
+              </div>
               <div>
-                <p className="text-sm font-semibold text-[#E76F51] uppercase tracking-wide mb-3">Save Money</p>
-                <h3 className="text-xl font-semibold text-gray-900 mb-3">Cut Hidden Fees</h3>
-                <p className="text-gray-600 leading-relaxed">
+                <h3 className="font-semibold text-xl mb-2">Cut Hidden Fees</h3>
+                <p className="text-gray-600">
                   We find and alert you to unnecessary bank charges so you keep more of your money.
                 </p>
               </div>
+            </div>
 
+            <div className="flex items-start my-6 mr-10">
+              <div className="h-8 w-8 mr-4 flex-shrink-0 text-yellow-500">
+                <TrendingUp className="h-7 w-7" />
+              </div>
               <div>
-                <p className="text-sm font-semibold text-[#2A9D8F] uppercase tracking-wide mb-3">Grow Wealth</p>
-                <h3 className="text-xl font-semibold text-gray-900 mb-3">Grow Net Worth</h3>
-                <p className="text-gray-600 leading-relaxed">
+                <h3 className="font-semibold text-xl mb-2">Grow Net Worth</h3>
+                <p className="text-gray-600">
                   See the big picture and make smarter money moves with all your accounts in one place.
                 </p>
               </div>
+            </div>
 
+            <div className="flex items-start my-6 mr-10">
+              <div className="h-8 w-8 mr-4 flex-shrink-0 text-yellow-500">
+                <Wallet className="h-7 w-7" />
+              </div>
               <div>
-                <p className="text-sm font-semibold text-[#1a56db] uppercase tracking-wide mb-3">Stay Organized</p>
-                <h3 className="text-xl font-semibold text-gray-900 mb-3">Stay in Control</h3>
-                <p className="text-gray-600 leading-relaxed">
-                  Personalized budgets that work with you, not against you.
+                <h3 className="font-semibold text-xl mb-2">All Your Money</h3>
+                <p className="text-gray-600">
+                  See your bank accounts, credit cards, stocks, and crypto all together in one dashboard.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-start my-6 mr-10">
+              <div className="h-8 w-8 mr-4 flex-shrink-0 text-yellow-500">
+                <Shield className="h-7 w-7" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-xl mb-2">Bank-Level Security</h3>
+                <p className="text-gray-600">
+                  Your data is encrypted and protected with the same security banks use.
                 </p>
               </div>
             </div>
           </div>
         </section>
 
-        {/* Trust & Partners Section - Clean Style */}
-        <section className="py-16 bg-[#FAFBFC] border-y border-gray-100">
+        {/* Trust & Partners Section - Template Style */}
+        <section className="py-16 bg-[#F4F2ED]">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
             <p className="text-center text-sm text-gray-500 mb-8">Connect to 100+ trusted financial institutions</p>
 
@@ -911,78 +1075,44 @@ export default function LandingNew() {
           </div>
         </section>
 
-        {/* Social Proof Section - Clean */}
-        <section className="py-20 bg-white">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="mb-16">
-              <p className="text-sm font-semibold text-[#E76F51] uppercase tracking-wide mb-3">Testimonials</p>
-              <h2 className="text-3xl font-bold text-gray-900">Loved by Early Adopters</h2>
+        {/* Social Proof Section - Template Style */}
+        <section className="lg:px-48 md:px-12 px-4 py-20 flex flex-col items-center bg-[#F4F2ED]">
+          <h2 className="font-serif text-3xl mb-12 text-center">
+            <span className="relative inline-block px-4">
+              Testimonials
+              <span className="absolute bottom-0 left-0 w-full h-1 bg-yellow-400"></span>
+            </span>
+          </h2>
+
+          <div className="grid md:grid-cols-3 gap-8 max-w-5xl">
+            <div className="bg-[#F4F2ED] shadow-xl rounded-2xl p-6">
+              <p className="text-gray-700 text-lg leading-relaxed mb-4">
+                "Finally, I can see all my accounts in one place. Found $400 in fees I didn't know I was paying!"
+              </p>
+              <p className="text-sm text-gray-900 font-medium">Jessica M.</p>
+              <p className="text-sm text-gray-500">Early Adopter</p>
             </div>
 
-            {/* Testimonials - Simple quotes */}
-            <div className="grid md:grid-cols-3 gap-12">
-              <div className="border-l-2 border-gray-200 pl-6">
-                <p className="text-gray-700 text-lg leading-relaxed mb-4">
-                  "Finally, I can see all my accounts in one place. Found $400 in fees I didn't know I was paying!"
-                </p>
-                <p className="text-sm text-gray-900 font-medium">Jessica M.</p>
-                <p className="text-sm text-gray-500">Early Adopter</p>
-              </div>
-
-              <div className="border-l-2 border-gray-200 pl-6">
-                <p className="text-gray-700 text-lg leading-relaxed mb-4">
-                  "Super easy to use. I connected 8 accounts in under 5 minutes. The alerts are game-changing."
-                </p>
-                <p className="text-sm text-gray-900 font-medium">David R.</p>
-                <p className="text-sm text-gray-500">Pro User</p>
-              </div>
-
-              <div className="border-l-2 border-gray-200 pl-6">
-                <p className="text-gray-700 text-lg leading-relaxed mb-4">
-                  "Clean design, works perfectly. Helps me track crypto and stocks without jumping between apps."
-                </p>
-                <p className="text-sm text-gray-900 font-medium">Sarah K.</p>
-                <p className="text-sm text-gray-500">Investor</p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Features Section - Clean Monarch Style */}
-        <section className="py-20 bg-[#FAFBFC]">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="mb-16">
-              <p className="text-sm font-semibold text-[#1a56db] uppercase tracking-wide mb-3">Features</p>
-              <h2 className="text-3xl font-bold text-gray-900">What You Get</h2>
+            <div className="bg-[#F4F2ED] shadow-xl rounded-2xl p-6">
+              <p className="text-gray-700 text-lg leading-relaxed mb-4">
+                "Super easy to use. I connected 8 accounts in under 5 minutes. The alerts are game-changing."
+              </p>
+              <p className="text-sm text-gray-900 font-medium">David R.</p>
+              <p className="text-sm text-gray-500">Pro User</p>
             </div>
 
-            <div className="grid md:grid-cols-3 gap-12">
-              <div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-3">All Your Money</h3>
-                <p className="text-gray-600 leading-relaxed">
-                  See your bank accounts, credit cards, stocks, and crypto all together in one dashboard.
-                </p>
-              </div>
-
-              <div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-3">Trade & Transfer</h3>
-                <p className="text-gray-600 leading-relaxed">
-                  Move money between accounts and buy stocks directly from Flint.
-                </p>
-              </div>
-
-              <div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-3">Grow Wealth</h3>
-                <p className="text-gray-600 leading-relaxed">
-                  Track your investments and optimize your portfolio for long-term growth.
-                </p>
-              </div>
+            <div className="bg-[#F4F2ED] shadow-xl rounded-2xl p-6">
+              <p className="text-gray-700 text-lg leading-relaxed mb-4">
+                "Clean design, works perfectly. Helps me track crypto and stocks without jumping between apps."
+              </p>
+              <p className="text-sm text-gray-900 font-medium">Sarah K.</p>
+              <p className="text-sm text-gray-500">Investor</p>
             </div>
           </div>
         </section>
 
-        {/* Interactive Demo Section */}
-        <section className="py-20 bg-white">
+        {/* Interactive Demo Section - Template Style */}
+        <section className="py-20 bg-[#F4F2ED]">
           <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="mb-12">
               <p className="text-sm font-semibold text-[#1a56db] uppercase tracking-wide mb-3">Demo</p>
@@ -1294,24 +1424,24 @@ export default function LandingNew() {
           </div>
         </section>
 
-        {/* CTA After Demo - Simple */}
-        <section className="py-16 bg-white border-b border-gray-100">
-          <div className="max-w-2xl mx-auto px-4 sm:px-6">
-            <h3 className="text-2xl font-bold text-gray-900 mb-3">Ready to see your full picture?</h3>
+        {/* CTA After Demo - Template Style */}
+        <section className="py-16 bg-[#F4F2ED]">
+          <div className="max-w-2xl mx-auto px-4 sm:px-6 text-center">
+            <h3 className="font-serif text-2xl font-bold text-gray-900 mb-3">Ready to see your full picture?</h3>
             <p className="text-gray-600 mb-6">Join 3,285+ people taking control of their money</p>
             
-            <Button 
+            <button 
               onClick={scrollToSignup}
-              className="h-12 px-8 bg-[#1a56db] hover:bg-[#1e40af] text-white"
+              className="bg-black px-8 py-4 rounded-lg text-white font-medium text-lg hover:bg-gray-800 transition-colors"
               data-testid="button-cta-after-demo"
             >
               Get Started Free
-            </Button>
+            </button>
           </div>
         </section>
 
-        {/* Signup Section - Clean */}
-        <section ref={signupRef} className="py-20 lg:py-32 bg-white">
+        {/* Signup Section - Template Style */}
+        <section ref={signupRef} className="py-20 lg:py-32 bg-[#F4F2ED]">
           <div className="max-w-md mx-auto px-4 sm:px-6">
             <div className="mb-12">
               <p className="text-sm font-semibold text-[#E76F51] uppercase tracking-wide mb-3">Join Now</p>
@@ -1482,221 +1612,234 @@ export default function LandingNew() {
           </div>
         </section>
 
-        {/* Pricing Section - Clean */}
-        <section id="pricing" className="py-20 bg-[#FAFBFC]">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="mb-16">
-              <p className="text-sm font-semibold text-[#1a56db] uppercase tracking-wide mb-3">Pricing</p>
-              <h2 className="text-3xl font-bold text-gray-900 mb-4">Pick Your Plan</h2>
-              <p className="text-gray-600">Start free. Upgrade for advanced features.</p>
-              
-              {/* Monthly/Annual Toggle */}
-              <div className="flex gap-4 mt-6">
-                <button
-                  onClick={() => setIsAnnual(false)}
-                  className={`text-sm font-medium transition-colors ${!isAnnual ? 'text-gray-900 underline underline-offset-4' : 'text-gray-500 hover:text-gray-900'}`}
-                  data-testid="toggle-monthly"
-                >
-                  Monthly
-                </button>
-                <button
-                  onClick={() => setIsAnnual(true)}
-                  className={`text-sm font-medium transition-colors ${isAnnual ? 'text-gray-900 underline underline-offset-4' : 'text-gray-500 hover:text-gray-900'}`}
-                  data-testid="toggle-annual"
-                >
-                  Annual <span className="text-green-600">(Save 17%)</span>
-                </button>
-              </div>
-            </div>
-
-            <div className="grid md:grid-cols-3 gap-8">
-              {/* Free Plan */}
-              <div className="flex flex-col">
-                <div className="mb-6">
-                  <h3 className="text-xl font-semibold text-gray-900">Free</h3>
-                  <div className="flex items-baseline gap-2 my-3">
-                    <span className="text-3xl font-bold text-gray-900">$0</span>
-                    <span className="text-sm text-gray-500">forever</span>
-                  </div>
-                  <p className="text-sm text-gray-500">Try it out</p>
-                </div>
-
-                <ul className="space-y-3 mb-8 flex-1">
-                  <li className="flex items-start gap-2">
-                    <Check className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
-                    <span className="text-sm text-gray-600">4 accounts</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <Check className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
-                    <span className="text-sm text-gray-600">See all your money</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <Check className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
-                    <span className="text-sm text-gray-600">Real-time updates</span>
-                  </li>
-                </ul>
-
-                <Button 
-                  onClick={scrollToSignup}
-                  variant="outline"
-                  className="w-full border-gray-300 text-gray-700 hover:bg-gray-50"
-                  data-testid="button-free-plan"
-                >
-                  Start Free
-                </Button>
-              </div>
-
-              {/* Basic Plan - Most Popular */}
-              <div className="flex flex-col border-l-2 border-[#1a56db] pl-6">
-                <div className="mb-6">
-                  <div className="flex items-center gap-2 mb-1">
-                    <h3 className="text-xl font-semibold text-gray-900">Basic</h3>
-                    <span className="text-xs font-medium text-[#1a56db]">Popular</span>
-                  </div>
-                  <div className="flex items-baseline gap-2 my-3">
-                    <span className="text-3xl font-bold text-gray-900">${isAnnual ? '199' : '19.99'}</span>
-                    <span className="text-sm text-gray-500">{isAnnual ? '/year' : '/month'}</span>
-                  </div>
-                  {isAnnual && <p className="text-sm text-green-600">2 months free</p>}
-                  <p className="text-sm text-gray-500">For active users</p>
-                </div>
-
-                <ul className="space-y-2 mb-8 flex-1 text-sm text-gray-600">
-                  <li>Unlimited accounts</li>
-                  <li>Everything in Free</li>
-                  <li>Recurring subscriptions</li>
-                  <li>Spending analyzer</li>
-                  <li>Goal tracking</li>
-                </ul>
-
-                <Button
-                  onClick={() => {
-                    setCheckoutTier('basic');
-                    setCheckoutBillingPeriod(isAnnual ? 'yearly' : 'monthly');
-                    setCheckoutModalOpen(true);
-                  }}
-                  className="w-full bg-[#1a56db] hover:bg-[#1e40af] text-white"
-                  data-testid="button-basic-plan"
-                >
-                  Get Basic
-                </Button>
-              </div>
-
-              {/* Pro Plan */}
-              <div className="flex flex-col">
-                <div className="mb-6">
-                  <h3 className="text-xl font-semibold text-gray-900">Pro</h3>
-                  <div className="flex items-baseline gap-2 my-3">
-                    <span className="text-3xl font-bold text-gray-900">${isAnnual ? '399' : '39.99'}</span>
-                    <span className="text-sm text-gray-500">{isAnnual ? '/year' : '/month'}</span>
-                  </div>
-                  {isAnnual && <p className="text-sm text-green-600">2 months free</p>}
-                  <p className="text-sm text-gray-500">For power users</p>
-                </div>
-
-                <ul className="space-y-2 mb-8 flex-1 text-sm text-gray-600">
-                  <li>Unlimited accounts</li>
-                  <li>Everything in Basic</li>
-                  <li className="font-medium text-gray-900">Trading</li>
-                  <li className="font-medium text-gray-900">Transfers <span className="text-gray-400 font-normal">(coming soon)</span></li>
-                  <li>Priority support</li>
-                </ul>
-
-                <Button
-                  onClick={() => {
-                    setCheckoutTier('pro');
-                    setCheckoutBillingPeriod(isAnnual ? 'yearly' : 'monthly');
-                    setCheckoutModalOpen(true);
-                  }}
-                  className="w-full bg-[#1a56db] hover:bg-[#1e40af] text-white"
-                  data-testid="button-pro-plan"
-                >
-                  Get Pro
-                </Button>
-              </div>
-            </div>
-
-            {/* Guarantee - Simple */}
-            <p className="text-sm text-gray-500 mt-12">Cancel anytime. No risk.</p>
-          </div>
-        </section>
-
-        {/* CTA After Pricing - Simple */}
-        <section className="py-20 bg-white border-t border-gray-100">
-          <div className="max-w-2xl mx-auto px-4">
-            <p className="text-sm font-semibold text-[#E76F51] uppercase tracking-wide mb-3">Get Started</p>
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Start managing your money better today</h2>
-            <p className="text-gray-600 mb-8">Free forever. No credit card needed.</p>
-            
-            <Button 
-              onClick={scrollToSignup}
-              className="h-12 px-8 bg-[#1a56db] hover:bg-[#1e40af] text-white"
-              data-testid="button-cta-after-pricing"
+        {/* Pricing Section - Template Style with Shadow Cards */}
+        <section id="pricing" className="lg:px-48 md:px-12 px-4 py-20 flex flex-col items-center bg-[#F4F2ED]">
+          <h2 className="font-serif text-3xl mb-4 text-center">
+            <span className="relative inline-block px-4">
+              Pricing
+              <span className="absolute bottom-0 left-0 w-full h-1 bg-yellow-400"></span>
+            </span>
+          </h2>
+          
+          {/* Monthly/Annual Toggle */}
+          <div className="flex gap-6 mt-4 mb-12">
+            <button
+              onClick={() => setIsAnnual(false)}
+              className={`text-sm font-medium transition-colors ${!isAnnual ? 'text-gray-900 underline underline-offset-4' : 'text-gray-500 hover:text-gray-900'}`}
+              data-testid="toggle-monthly"
             >
-              Get Started Free
-            </Button>
+              Monthly
+            </button>
+            <button
+              onClick={() => setIsAnnual(true)}
+              className={`text-sm font-medium transition-colors ${isAnnual ? 'text-gray-900 underline underline-offset-4' : 'text-gray-500 hover:text-gray-900'}`}
+              data-testid="toggle-annual"
+            >
+              Annual <span className="text-green-600">(Save 17%)</span>
+            </button>
           </div>
-        </section>
 
-        {/* FAQ Section - Clean */}
-        <section id="faq" className="py-20 bg-[#FAFBFC]">
-          <div className="max-w-3xl mx-auto px-4">
-            <div className="mb-12">
-              <p className="text-sm font-semibold text-[#1a56db] uppercase tracking-wide mb-3">FAQ</p>
-              <h2 className="text-3xl font-bold text-gray-900">Questions?</h2>
+          <div className="flex w-full flex-col md:flex-row max-w-5xl">
+            {/* Free Plan - Staggered down */}
+            <div className="flex-1 flex flex-col mx-4 shadow-2xl relative bg-[#F4F2ED] rounded-2xl py-6 px-8 my-8 md:top-16">
+              <h3 className="font-serif font-normal text-2xl mb-4">Free</h3>
+              <div className="font-bold text-2xl mb-4">
+                $0
+                <span className="font-normal text-base"> / forever</span>
+              </div>
+
+              <div className="flex items-center mb-2">
+                <Check className="h-4 w-4 mr-2 text-green-600" />
+                <p>4 accounts</p>
+              </div>
+              <div className="flex items-center mb-2">
+                <Check className="h-4 w-4 mr-2 text-green-600" />
+                <p>See all your money</p>
+              </div>
+              <div className="flex items-center mb-2">
+                <Check className="h-4 w-4 mr-2 text-green-600" />
+                <p>Real-time updates</p>
+              </div>
+
+              <button 
+                onClick={scrollToSignup}
+                className="border-2 border-solid border-black rounded-xl text-lg py-3 mt-6 hover:bg-black hover:text-white transition-colors"
+                data-testid="button-free-plan"
+              >
+                Start Free
+              </button>
             </div>
 
-            <Accordion type="single" collapsible className="space-y-0">
-              <AccordionItem value="security" className="border-b border-gray-200 py-1">
-                <AccordionTrigger className="text-left hover:no-underline text-gray-900 py-4">
-                  Is my money safe?
-                </AccordionTrigger>
-                <AccordionContent className="text-gray-600 pb-4">
-                  Yes! We use bank-level security to keep everything secure and private.
-                </AccordionContent>
-              </AccordionItem>
+            {/* Basic Plan - Popular, elevated */}
+            <div className="flex-1 flex flex-col mx-4 shadow-2xl relative bg-[#F4F2ED] rounded-2xl py-6 px-8 my-8 md:top-0">
+              <div className="flex items-center gap-2 mb-2">
+                <h3 className="font-serif font-normal text-2xl">Basic</h3>
+                <span className="text-xs font-medium bg-yellow-300 px-2 py-1 rounded">Popular</span>
+              </div>
+              <div className="font-bold text-2xl mb-4">
+                ${isAnnual ? '199' : '19.99'}
+                <span className="font-normal text-base"> {isAnnual ? '/ year' : '/ month'}</span>
+              </div>
+              {isAnnual && <p className="text-sm text-green-600 mb-2">2 months free</p>}
 
-              <AccordionItem value="accounts" className="border-b border-gray-200 py-1">
-                <AccordionTrigger className="text-left hover:no-underline text-gray-900 py-4">
-                  How many accounts are free?
-                </AccordionTrigger>
-                <AccordionContent className="text-gray-600 pb-4">
-                  You can connect 4 accounts for free. This means banks, cards, stocks, or crypto.
-                </AccordionContent>
-              </AccordionItem>
+              <div className="flex items-center mb-2">
+                <Check className="h-4 w-4 mr-2 text-green-600" />
+                <p>Unlimited accounts</p>
+              </div>
+              <div className="flex items-center mb-2">
+                <Check className="h-4 w-4 mr-2 text-green-600" />
+                <p>Everything in Free</p>
+              </div>
+              <div className="flex items-center mb-2">
+                <Check className="h-4 w-4 mr-2 text-green-600" />
+                <p>Recurring subscriptions</p>
+              </div>
+              <div className="flex items-center mb-2">
+                <Check className="h-4 w-4 mr-2 text-green-600" />
+                <p>Spending analyzer</p>
+              </div>
+              <div className="flex items-center mb-2">
+                <Check className="h-4 w-4 mr-2 text-green-600" />
+                <p>Goal tracking</p>
+              </div>
 
-              <AccordionItem value="cancel" className="border-b border-gray-200 py-1">
-                <AccordionTrigger className="text-left hover:no-underline text-gray-900 py-4">
-                  Can I cancel?
-                </AccordionTrigger>
-                <AccordionContent className="text-gray-600 pb-4">
-                  Yes. You can stop paying anytime. No long contracts.
-                </AccordionContent>
-              </AccordionItem>
+              <button
+                onClick={() => {
+                  setCheckoutTier('basic');
+                  setCheckoutBillingPeriod(isAnnual ? 'yearly' : 'monthly');
+                  setCheckoutModalOpen(true);
+                }}
+                className="bg-black text-white rounded-xl text-lg py-3 mt-6 hover:bg-gray-800 transition-colors"
+                data-testid="button-basic-plan"
+              >
+                Get Basic
+              </button>
+            </div>
 
-              <AccordionItem value="revenue" className="border-b border-gray-200 py-1">
-                <AccordionTrigger className="text-left hover:no-underline text-gray-900 py-4">
-                  How do you make money?
-                </AccordionTrigger>
-                <AccordionContent className="text-gray-600 pb-4">
-                  We make money when people pay for Pro. We never sell your info.
-                </AccordionContent>
-              </AccordionItem>
+            {/* Pro Plan - Staggered down */}
+            <div className="flex-1 flex flex-col mx-4 shadow-2xl relative bg-[#F4F2ED] rounded-2xl py-6 px-8 my-8 md:top-16">
+              <h3 className="font-serif font-normal text-2xl mb-4">Pro</h3>
+              <div className="font-bold text-2xl mb-4">
+                ${isAnnual ? '399' : '39.99'}
+                <span className="font-normal text-base"> {isAnnual ? '/ year' : '/ month'}</span>
+              </div>
+              {isAnnual && <p className="text-sm text-green-600 mb-2">2 months free</p>}
 
-              <AccordionItem value="upgrade" className="border-b border-gray-200 py-1">
-                <AccordionTrigger className="text-left hover:no-underline text-gray-900 py-4">
-                  Why go Pro?
-                </AccordionTrigger>
-                <AccordionContent className="text-gray-600 pb-4">
-                  Go Pro if you want more than 4 accounts, better charts, or fast help. Free works great for most people!
-                </AccordionContent>
-              </AccordionItem>
-            </Accordion>
+              <div className="flex items-center mb-2">
+                <Check className="h-4 w-4 mr-2 text-green-600" />
+                <p>Unlimited accounts</p>
+              </div>
+              <div className="flex items-center mb-2">
+                <Check className="h-4 w-4 mr-2 text-green-600" />
+                <p>Everything in Basic</p>
+              </div>
+              <div className="flex items-center mb-2">
+                <Check className="h-4 w-4 mr-2 text-green-600" />
+                <p className="font-medium">Trading</p>
+              </div>
+              <div className="flex items-center mb-2">
+                <Check className="h-4 w-4 mr-2 text-green-600" />
+                <p className="font-medium">Transfers <span className="text-gray-400 font-normal text-sm">(coming soon)</span></p>
+              </div>
+              <div className="flex items-center mb-2">
+                <Check className="h-4 w-4 mr-2 text-green-600" />
+                <p>Priority support</p>
+              </div>
+
+              <button
+                onClick={() => {
+                  setCheckoutTier('pro');
+                  setCheckoutBillingPeriod(isAnnual ? 'yearly' : 'monthly');
+                  setCheckoutModalOpen(true);
+                }}
+                className="border-2 border-solid border-black rounded-xl text-lg py-3 mt-6 hover:bg-black hover:text-white transition-colors"
+                data-testid="button-pro-plan"
+              >
+                Get Pro
+              </button>
+            </div>
           </div>
         </section>
 
-        {/* Footer */}
-        <footer className="border-t border-gray-200 bg-white py-12">
+        {/* FAQ Section - Black Background Template Style */}
+        <section id="faq" className="lg:px-48 md:px-12 px-4 py-20 flex flex-col items-start bg-black text-white">
+          <h2 className="font-serif text-3xl mb-12 self-center">
+            <span className="relative inline-block px-4">
+              FAQ
+              <span className="absolute bottom-0 left-0 w-full h-1 bg-yellow-400"></span>
+            </span>
+          </h2>
+
+          <div className="w-full max-w-3xl mx-auto">
+            <div className="w-full py-4 border-b border-white/20">
+              <Accordion type="single" collapsible className="w-full">
+                <AccordionItem value="security" className="border-b border-white/20">
+                  <AccordionTrigger className="text-left hover:no-underline text-white py-4 font-medium">
+                    Is my money safe?
+                  </AccordionTrigger>
+                  <AccordionContent className="text-gray-300 pb-4">
+                    Yes! We use bank-level security to keep everything secure and private.
+                  </AccordionContent>
+                </AccordionItem>
+
+                <AccordionItem value="accounts" className="border-b border-white/20">
+                  <AccordionTrigger className="text-left hover:no-underline text-white py-4 font-medium">
+                    How many accounts are free?
+                  </AccordionTrigger>
+                  <AccordionContent className="text-gray-300 pb-4">
+                    You can connect 4 accounts for free. This means banks, cards, stocks, or crypto.
+                  </AccordionContent>
+                </AccordionItem>
+
+                <AccordionItem value="cancel" className="border-b border-white/20">
+                  <AccordionTrigger className="text-left hover:no-underline text-white py-4 font-medium">
+                    Can I cancel?
+                  </AccordionTrigger>
+                  <AccordionContent className="text-gray-300 pb-4">
+                    Yes. You can stop paying anytime. No long contracts.
+                  </AccordionContent>
+                </AccordionItem>
+
+                <AccordionItem value="revenue" className="border-b border-white/20">
+                  <AccordionTrigger className="text-left hover:no-underline text-white py-4 font-medium">
+                    How do you make money?
+                  </AccordionTrigger>
+                  <AccordionContent className="text-gray-300 pb-4">
+                    We make money when people pay for Pro. We never sell your info.
+                  </AccordionContent>
+                </AccordionItem>
+
+                <AccordionItem value="upgrade" className="border-b border-white/20">
+                  <AccordionTrigger className="text-left hover:no-underline text-white py-4 font-medium">
+                    Why go Pro?
+                  </AccordionTrigger>
+                  <AccordionContent className="text-gray-300 pb-4">
+                    Go Pro if you want more than 4 accounts, better charts, or fast help. Free works great for most people!
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
+            </div>
+          </div>
+        </section>
+
+        {/* CTA After FAQ - Template Style */}
+        <section className="lg:px-48 md:px-12 px-4 py-20 flex flex-col items-center bg-[#F4F2ED]">
+          <h2 className="font-serif text-3xl mb-4 text-center">
+            Start managing your money better today
+          </h2>
+          <p className="text-gray-600 mb-8 text-center">Free forever. No credit card needed.</p>
+          
+          <button 
+            onClick={scrollToSignup}
+            className="bg-black px-8 py-4 rounded-lg text-white font-medium text-lg hover:bg-gray-800 transition-colors"
+            data-testid="button-cta-after-pricing"
+          >
+            Get Started Free
+          </button>
+        </section>
+
+        {/* Footer - Template Style */}
+        <footer className="border-t border-gray-300 bg-[#F4F2ED] py-12">
           <div className="max-w-7xl mx-auto px-4 sm:px-6">
             <div className="grid md:grid-cols-4 gap-8">
               <div className="space-y-4">
@@ -1712,32 +1855,32 @@ export default function LandingNew() {
               <div className="space-y-3">
                 <h4 className="text-gray-900 font-semibold text-sm">Product</h4>
                 <div className="flex flex-col gap-2 text-sm text-gray-500">
-                  <Link href="/banking" className="hover:text-gray-900 transition-colors">Bank Account Tracker</Link>
-                  <Link href="/investing" className="hover:text-gray-900 transition-colors">Stock Portfolio Tracker</Link>
-                  <Link href="/crypto" className="hover:text-gray-900 transition-colors">Crypto Portfolio Tracker</Link>
-                  <Link href="/blog" className="hover:text-gray-900 transition-colors">Blog</Link>
+                  <Link href="/banking" className="hover:underline underline-offset-4">Bank Account Tracker</Link>
+                  <Link href="/investing" className="hover:underline underline-offset-4">Stock Portfolio Tracker</Link>
+                  <Link href="/crypto" className="hover:underline underline-offset-4">Crypto Portfolio Tracker</Link>
+                  <Link href="/blog" className="hover:underline underline-offset-4">Blog</Link>
                 </div>
               </div>
               
               <div className="space-y-3">
                 <h4 className="text-gray-900 font-semibold text-sm">Account</h4>
                 <div className="flex flex-col gap-2 text-sm text-gray-500">
-                  <Link href="/login" className="hover:text-gray-900 transition-colors">Log In</Link>
-                  <Link href="/reset-password" className="hover:text-gray-900 transition-colors">Reset Password</Link>
+                  <Link href="/login" className="hover:underline underline-offset-4">Log In</Link>
+                  <Link href="/reset-password" className="hover:underline underline-offset-4">Reset Password</Link>
                 </div>
               </div>
 
               <div className="space-y-3">
                 <h4 className="text-gray-900 font-semibold text-sm">Legal</h4>
                 <div className="flex flex-col gap-2 text-sm text-gray-500">
-                  <Link href="/tos" className="hover:text-gray-900 transition-colors">Terms of Service</Link>
-                  <Link href="/privacy-policy" className="hover:text-gray-900 transition-colors">Privacy Policy</Link>
-                  <a href="mailto:support@flint-investing.com" className="text-[#1a56db] hover:text-[#1e40af] transition-colors">support@flint-investing.com</a>
+                  <Link href="/tos" className="hover:underline underline-offset-4">Terms of Service</Link>
+                  <Link href="/privacy-policy" className="hover:underline underline-offset-4">Privacy Policy</Link>
+                  <a href="mailto:support@flint-investing.com" className="hover:underline underline-offset-4">support@flint-investing.com</a>
                 </div>
               </div>
             </div>
 
-            <div className="mt-8 pt-8 border-t border-gray-200 text-center text-sm text-gray-500">
+            <div className="mt-8 pt-8 border-t border-gray-300 text-center text-sm text-gray-500">
               <p>&copy; 2025 Flint Tech Inc. All rights reserved. Flint is not a broker or bank.</p>
             </div>
           </div>
