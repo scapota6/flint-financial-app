@@ -1,11 +1,11 @@
 /**
  * Theme Context Provider
- * Manages dark/light mode with localStorage persistence
+ * Cream theme is enforced - dark mode is disabled
  */
 
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import { createContext, useContext, useEffect, ReactNode } from 'react';
 
-type Theme = 'dark' | 'light';
+type Theme = 'light';
 
 interface ThemeContextType {
   theme: Theme;
@@ -16,44 +16,21 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [theme, setTheme] = useState<Theme>(() => {
-    // Check localStorage first
-    const savedTheme = localStorage.getItem('theme') as Theme | null;
-    if (savedTheme) return savedTheme;
-    
-    // Default to light theme for cream design
-    return 'light';
-  });
+  // Always use light theme for cream design
+  const theme: Theme = 'light';
 
   useEffect(() => {
-    // Update document class
+    // Force light mode - remove any dark class
     const root = document.documentElement;
-    if (theme === 'dark') {
-      root.classList.add('dark');
-    } else {
-      root.classList.remove('dark');
-    }
+    root.classList.remove('dark');
     
-    // Save to localStorage
-    localStorage.setItem('theme', theme);
-  }, [theme]);
-
-  // Listen for system theme changes
-  useEffect(() => {
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    const handleChange = (e: MediaQueryListEvent) => {
-      if (!localStorage.getItem('theme')) {
-        setTheme(e.matches ? 'dark' : 'light');
-      }
-    };
-
-    mediaQuery.addEventListener('change', handleChange);
-    return () => mediaQuery.removeEventListener('change', handleChange);
+    // Clear any saved dark mode preference
+    localStorage.setItem('theme', 'light');
   }, []);
 
-  const toggleTheme = () => {
-    setTheme(prevTheme => prevTheme === 'dark' ? 'light' : 'dark');
-  };
+  // Toggle and setTheme are no-ops - cream theme is enforced
+  const toggleTheme = () => {};
+  const setTheme = () => {};
 
   return (
     <ThemeContext.Provider value={{ theme, toggleTheme, setTheme }}>

@@ -566,7 +566,7 @@ export function AccountDetailsModal({ isOpen, onClose, accountId, accountName }:
             ) : orders.length > 0 ? (
               <div className="space-y-2">
                 {orders.map((order: any) => (
-                  <div key={order.id} className="p-4 rounded-lg bg-black/60" data-testid={`order-${order.id}`}>
+                  <div key={order.id} className="p-4 rounded-lg bg-gray-50" data-testid={`order-${order.id}`}>
                     <div className="flex justify-between items-start">
                       <div>
                         <div className="flex items-center gap-2">
@@ -617,7 +617,7 @@ export function AccountDetailsModal({ isOpen, onClose, accountId, accountName }:
             ) : activities.length > 0 ? (
               <div className="space-y-2">
                 {activities.map((activity: any) => (
-                  <div key={activity.id} className="p-4 rounded-lg bg-black/60" data-testid={`activity-${activity.id}`}>
+                  <div key={activity.id} className="p-4 rounded-lg bg-gray-50" data-testid={`activity-${activity.id}`}>
                     <div className="flex items-start gap-3">
                       {getActivityIcon(activity.type)}
                       <div className="flex-1">
@@ -651,8 +651,8 @@ export function AccountDetailsModal({ isOpen, onClose, accountId, accountName }:
 
           <TabsContent value="trade" className="space-y-6">
             {/* Symbol Search Section */}
-            <div className="p-4 rounded-lg bg-black/60 space-y-4">
-              <div className="flex items-center gap-2 font-semibold text-white">
+            <div className="p-4 rounded-lg bg-gray-50 space-y-4">
+              <div className="flex items-center gap-2 font-semibold text-gray-900">
                 <Search className="h-5 w-5 text-blue-400" />
                 Symbol Search
               </div>
@@ -662,7 +662,7 @@ export function AccountDetailsModal({ isOpen, onClose, accountId, accountName }:
                     value={symbolSearch}
                     onChange={(e) => setSymbolSearch(e.target.value.toUpperCase())}
                     onKeyPress={(e) => e.key === 'Enter' && handleSymbolSearch()}
-                    className="bg-slate-900/50 border-slate-600 text-white"
+                    className="bg-gray-50 border-gray-200 text-gray-900"
                     data-testid="input-symbol-search"
                   />
                   <Button 
@@ -680,19 +680,19 @@ export function AccountDetailsModal({ isOpen, onClose, accountId, accountName }:
 
                 {/* Search Results Dropdown */}
                 {showSearchResults && searchResults.length > 0 && (
-                  <div className="absolute z-50 mt-2 w-full max-w-2xl bg-slate-800 border border-slate-700 rounded-lg shadow-lg overflow-hidden">
+                  <div className="absolute z-50 mt-2 w-full max-w-2xl bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden">
                     {searchResults.slice(0, 10).map((result, idx) => (
                       <div
                         key={idx}
-                        className="p-3 hover:bg-slate-700 cursor-pointer border-b border-slate-700 last:border-b-0 transition-colors"
+                        className="p-3 hover:bg-gray-100 cursor-pointer border-b border-gray-200 last:border-b-0 transition-colors"
                         onClick={() => handleSymbolSelect(result.symbol)}
                         data-testid={`search-result-${result.symbol}`}
                       >
                         <div className="flex justify-between items-center">
                           <div>
-                            <span className="font-semibold text-white">{result.symbol}</span>
+                            <span className="font-semibold text-gray-900">{result.symbol}</span>
                             {result.exchange && (
-                              <span className="text-xs ml-2 text-slate-400">{result.exchange}</span>
+                              <span className="text-xs ml-2 text-gray-500">{result.exchange}</span>
                             )}
                           </div>
                           {result.securityType && (
@@ -701,7 +701,7 @@ export function AccountDetailsModal({ isOpen, onClose, accountId, accountName }:
                             </Badge>
                           )}
                         </div>
-                        <div className="text-sm text-slate-400 mt-1">{result.description}</div>
+                        <div className="text-sm text-gray-500 mt-1">{result.description}</div>
                       </div>
                     ))}
                   </div>
@@ -709,14 +709,14 @@ export function AccountDetailsModal({ isOpen, onClose, accountId, accountName }:
 
                 {/* Selected Symbol Display */}
                 {selectedSymbol && (
-                  <div className="p-4 bg-slate-900/50 rounded-lg border border-slate-600">
+                  <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
                     <div className="flex justify-between items-start">
                       <div>
-                        <div className="text-2xl font-bold text-white" data-testid="text-selected-symbol">
+                        <div className="text-2xl font-bold text-gray-900" data-testid="text-selected-symbol">
                           {selectedSymbol}
                         </div>
                         {quoteLoading && (
-                          <div className="text-sm text-slate-400 flex items-center gap-2 mt-1">
+                          <div className="text-sm text-gray-500 flex items-center gap-2 mt-1">
                             <Loader2 className="h-3 w-3 animate-spin" />
                             Loading quote...
                           </div>
@@ -724,7 +724,7 @@ export function AccountDetailsModal({ isOpen, onClose, accountId, accountName }:
                       </div>
                       {currentPrice !== null && (
                         <div className="text-right">
-                          <div className="text-2xl font-bold text-white" data-testid="text-current-price">
+                          <div className="text-2xl font-bold text-gray-900" data-testid="text-current-price">
                             ${currentPrice.toFixed(2)}
                           </div>
                           {priceChange !== null && (
@@ -735,7 +735,7 @@ export function AccountDetailsModal({ isOpen, onClose, accountId, accountName }:
                             </div>
                           )}
                           {bidPrice !== null && askPrice !== null && (
-                            <div className="text-xs text-slate-400 mt-1">
+                            <div className="text-xs text-gray-500 mt-1">
                               Bid: ${bidPrice.toFixed(2)} | Ask: ${askPrice.toFixed(2)}
                             </div>
                           )}
@@ -747,11 +747,11 @@ export function AccountDetailsModal({ isOpen, onClose, accountId, accountName }:
             </div>
 
             {/* Order Entry Form */}
-            <div className="p-4 rounded-lg bg-black/60 space-y-6">
-              <div className="font-semibold text-white">Order Entry</div>
+            <div className="p-4 rounded-lg bg-gray-50 space-y-6">
+              <div className="font-semibold text-gray-900">Order Entry</div>
                 {/* Buy/Sell Toggle */}
                 <div className="space-y-2">
-                  <Label className="text-slate-300">Side</Label>
+                  <Label className="text-gray-600">Side</Label>
                   <ToggleGroup 
                     type="single" 
                     value={orderSide} 
@@ -760,7 +760,7 @@ export function AccountDetailsModal({ isOpen, onClose, accountId, accountName }:
                   >
                     <ToggleGroupItem 
                       value="BUY" 
-                      className="flex-1 data-[state=on]:bg-green-600 data-[state=on]:text-white bg-slate-700 text-slate-300 hover:bg-slate-600 transition-all duration-200"
+                      className="flex-1 data-[state=on]:bg-green-600 data-[state=on]:text-white bg-gray-100 text-gray-600 hover:bg-gray-200 transition-all duration-200"
                       data-testid="button-buy"
                     >
                       <ArrowUpCircle className="h-4 w-4 mr-2" />
@@ -768,7 +768,7 @@ export function AccountDetailsModal({ isOpen, onClose, accountId, accountName }:
                     </ToggleGroupItem>
                     <ToggleGroupItem 
                       value="SELL" 
-                      className="flex-1 data-[state=on]:bg-red-600 data-[state=on]:text-white bg-slate-700 text-slate-300 hover:bg-slate-600 transition-all duration-200"
+                      className="flex-1 data-[state=on]:bg-red-600 data-[state=on]:text-white bg-gray-100 text-gray-600 hover:bg-gray-200 transition-all duration-200"
                       data-testid="button-sell"
                     >
                       <ArrowDownCircle className="h-4 w-4 mr-2" />
@@ -779,7 +779,7 @@ export function AccountDetailsModal({ isOpen, onClose, accountId, accountName }:
 
                 {/* Quantity Input */}
                 <div className="space-y-2">
-                  <Label htmlFor="quantity" className="text-slate-300">Quantity</Label>
+                  <Label htmlFor="quantity" className="text-gray-600">Quantity</Label>
                   <Input
                     id="quantity"
                     type="number"
@@ -788,7 +788,7 @@ export function AccountDetailsModal({ isOpen, onClose, accountId, accountName }:
                     step="1"
                     value={orderQuantity}
                     onChange={(e) => setOrderQuantity(e.target.value)}
-                    className="bg-slate-900/50 border-slate-600 text-white"
+                    className="bg-gray-50 border-gray-200 text-gray-900"
                     data-testid="input-quantity"
                   />
                   {validationErrors.quantity && (
@@ -798,7 +798,7 @@ export function AccountDetailsModal({ isOpen, onClose, accountId, accountName }:
 
                 {/* Order Type Toggle */}
                 <div className="space-y-2">
-                  <Label className="text-slate-300">Order Type</Label>
+                  <Label className="text-gray-600">Order Type</Label>
                   <ToggleGroup 
                     type="single" 
                     value={orderType} 
@@ -808,14 +808,14 @@ export function AccountDetailsModal({ isOpen, onClose, accountId, accountName }:
                   >
                     <ToggleGroupItem 
                       value="MARKET" 
-                      className="flex-1 data-[state=on]:bg-blue-600 data-[state=on]:text-white bg-slate-700 text-slate-300 hover:bg-slate-600 transition-all duration-200"
+                      className="flex-1 data-[state=on]:bg-blue-600 data-[state=on]:text-white bg-gray-100 text-gray-600 hover:bg-gray-200 transition-all duration-200"
                       data-testid="button-market"
                     >
                       MARKET
                     </ToggleGroupItem>
                     <ToggleGroupItem 
                       value="LIMIT" 
-                      className="flex-1 data-[state=on]:bg-blue-600 data-[state=on]:text-white bg-slate-700 text-slate-300 hover:bg-slate-600 transition-all duration-200"
+                      className="flex-1 data-[state=on]:bg-blue-600 data-[state=on]:text-white bg-gray-100 text-gray-600 hover:bg-gray-200 transition-all duration-200"
                       data-testid="button-limit"
                     >
                       LIMIT
@@ -826,7 +826,7 @@ export function AccountDetailsModal({ isOpen, onClose, accountId, accountName }:
                 {/* Limit Price Input (shown only for LIMIT orders) */}
                 {orderType === 'LIMIT' && (
                   <div className="space-y-2">
-                    <Label htmlFor="limitPrice" className="text-slate-300">Limit Price</Label>
+                    <Label htmlFor="limitPrice" className="text-gray-600">Limit Price</Label>
                     <Input
                       id="limitPrice"
                       type="number"
@@ -835,7 +835,7 @@ export function AccountDetailsModal({ isOpen, onClose, accountId, accountName }:
                       step="0.01"
                       value={limitPrice}
                       onChange={(e) => setLimitPrice(e.target.value)}
-                      className="bg-slate-900/50 border-slate-600 text-white"
+                      className="bg-gray-50 border-gray-200 text-gray-900"
                       data-testid="input-limit-price"
                     />
                     {validationErrors.limitPrice && (
@@ -846,7 +846,7 @@ export function AccountDetailsModal({ isOpen, onClose, accountId, accountName }:
 
                 {/* Time in Force Toggle */}
                 <div className="space-y-2">
-                  <Label className="text-slate-300">Time in Force</Label>
+                  <Label className="text-gray-600">Time in Force</Label>
                   <ToggleGroup 
                     type="single" 
                     value={timeInForce} 
@@ -856,14 +856,14 @@ export function AccountDetailsModal({ isOpen, onClose, accountId, accountName }:
                   >
                     <ToggleGroupItem 
                       value="DAY" 
-                      className="flex-1 data-[state=on]:bg-blue-600 data-[state=on]:text-white bg-slate-700 text-slate-300 hover:bg-slate-600 transition-all duration-200"
+                      className="flex-1 data-[state=on]:bg-blue-600 data-[state=on]:text-white bg-gray-100 text-gray-600 hover:bg-gray-200 transition-all duration-200"
                       data-testid="button-day"
                     >
                       DAY
                     </ToggleGroupItem>
                     <ToggleGroupItem 
                       value="GTC" 
-                      className="flex-1 data-[state=on]:bg-blue-600 data-[state=on]:text-white bg-slate-700 text-slate-300 hover:bg-slate-600 transition-all duration-200"
+                      className="flex-1 data-[state=on]:bg-blue-600 data-[state=on]:text-white bg-gray-100 text-gray-600 hover:bg-gray-200 transition-all duration-200"
                       data-testid="button-gtc"
                     >
                       GTC
@@ -893,67 +893,67 @@ export function AccountDetailsModal({ isOpen, onClose, accountId, accountName }:
 
         {/* Order Preview Modal */}
         <Dialog open={showPreviewModal} onOpenChange={setShowPreviewModal}>
-          <DialogContent className="bg-slate-800 border-slate-700 text-white" data-testid="modal-order-preview">
+          <DialogContent className="bg-white border-gray-200" data-testid="modal-order-preview">
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
                 <CheckCircle className="h-5 w-5 text-blue-400" />
                 Order Preview
               </DialogTitle>
-              <DialogDescription className="text-slate-400">
+              <DialogDescription className="text-gray-500">
                 Review your order details before confirming
               </DialogDescription>
             </DialogHeader>
 
             <div className="space-y-4 py-4">
               {/* Order Summary */}
-              <div className="p-4 bg-slate-900/50 rounded-lg border border-slate-700 space-y-3">
+              <div className="p-4 bg-gray-50 rounded-lg border border-gray-200 space-y-3">
                 <div className="flex justify-between items-center">
-                  <span className="text-slate-400">Symbol</span>
-                  <span className="font-semibold text-white">{selectedSymbol}</span>
+                  <span className="text-gray-500">Symbol</span>
+                  <span className="font-semibold text-gray-900">{selectedSymbol}</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-slate-400">Side</span>
+                  <span className="text-gray-500">Side</span>
                   <Badge variant={orderSide === 'BUY' ? 'default' : 'secondary'} className={orderSide === 'BUY' ? 'bg-green-600' : 'bg-red-600'}>
                     {orderSide}
                   </Badge>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-slate-400">Quantity</span>
-                  <span className="font-semibold text-white">{orderQuantity}</span>
+                  <span className="text-gray-500">Quantity</span>
+                  <span className="font-semibold text-gray-900">{orderQuantity}</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-slate-400">Order Type</span>
-                  <span className="font-semibold text-white">{orderType}</span>
+                  <span className="text-gray-500">Order Type</span>
+                  <span className="font-semibold text-gray-900">{orderType}</span>
                 </div>
                 {orderType === 'LIMIT' && (
                   <div className="flex justify-between items-center">
-                    <span className="text-slate-400">Limit Price</span>
-                    <span className="font-semibold text-white">${limitPrice}</span>
+                    <span className="text-gray-500">Limit Price</span>
+                    <span className="font-semibold text-gray-900">${limitPrice}</span>
                   </div>
                 )}
                 <div className="flex justify-between items-center">
-                  <span className="text-slate-400">Time in Force</span>
-                  <span className="font-semibold text-white">{timeInForce}</span>
+                  <span className="text-gray-500">Time in Force</span>
+                  <span className="font-semibold text-gray-900">{timeInForce}</span>
                 </div>
               </div>
 
               {/* Cost Breakdown */}
               {previewData?.impact && (
-                <div className="p-4 bg-slate-900/50 rounded-lg border border-slate-700 space-y-3">
-                  <div className="font-semibold text-white mb-2">Cost Breakdown</div>
+                <div className="p-4 bg-gray-50 rounded-lg border border-gray-200 space-y-3">
+                  <div className="font-semibold text-gray-900 mb-2">Cost Breakdown</div>
                   {previewData.impact.lines?.map((line: any, idx: number) => (
                     <div key={idx} className="flex justify-between items-center text-sm">
-                      <span className="text-slate-400">{line.label}</span>
-                      <span className="text-white">{line.value}</span>
+                      <span className="text-gray-500">{line.label}</span>
+                      <span className="text-gray-900">{line.value}</span>
                     </div>
                   ))}
                   {previewData.impact.estCost && (
-                    <div className="pt-3 mt-3 border-t border-slate-700">
+                    <div className="pt-3 mt-3 border-t border-gray-200">
                       <div className="flex justify-between items-center">
-                        <span className="font-semibold text-white">
+                        <span className="font-semibold text-gray-900">
                           {orderSide === 'BUY' ? 'Total Cost' : 'Total Proceeds'}
                         </span>
-                        <span className="font-bold text-white text-lg">
+                        <span className="font-bold text-gray-900 text-lg">
                           ${previewData.impact.estCost.amount?.toFixed(2) || '0.00'}
                         </span>
                       </div>
@@ -977,7 +977,7 @@ export function AccountDetailsModal({ isOpen, onClose, accountId, accountName }:
               <Button
                 variant="outline"
                 onClick={() => setShowPreviewModal(false)}
-                className="bg-slate-700 hover:bg-slate-600 text-white border-slate-600"
+                className="bg-gray-100 hover:bg-gray-200 text-gray-900 border-gray-200"
                 data-testid="button-cancel-order"
               >
                 Cancel
