@@ -63,7 +63,7 @@ import {
 } from "lucide-react";
 import { Link } from "wouter";
 import flintLogo from "@assets/flint-logo.png";
-import dashboardPreview from "@assets/dashboard-preview.png";
+import dashboardPreview from "@assets/dashboard-preview-new.png";
 import { EmbeddedCheckoutModal } from "@/components/EmbeddedCheckoutModal";
 
 // Type definitions for demo data
@@ -875,8 +875,14 @@ export default function LandingNew() {
             )}
             <p className="text-sm text-gray-500">Join 10k+ people managing their money better. No credit card required.</p>
           </div>
-          <div className="flex justify-around md:block mt-8 md:mt-0 md:flex-1">
-            <img src={dashboardPreview} alt="Flint Dashboard" className="rounded-lg shadow-2xl" />
+          <div className="flex justify-center md:block mt-8 md:mt-0 md:flex-1">
+            <div className="relative w-72 md:w-80 lg:w-96 mx-auto overflow-hidden rounded-3xl shadow-2xl border border-gray-200">
+              <img 
+                src={dashboardPreview} 
+                alt="Flint Dashboard" 
+                className="w-full h-auto object-cover object-top"
+              />
+            </div>
           </div>
         </section>
 
