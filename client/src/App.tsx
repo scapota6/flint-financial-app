@@ -108,8 +108,8 @@ function Router() {
             <Switch>
             {!isAuthenticated ? (
               <>
-                <Route path="/" component={LandingNew} />
-                <Route path="/landing" component={LandingNew} />
+                <Route path="/" component={LandingLegacy} />
+                <Route path="/landing" component={LandingLegacy} />
                 <Route path="/new" component={LandingNew} />
                 <Route path="/legacy" component={LandingLegacy} />
                 <Route path="/login" component={Login} />
