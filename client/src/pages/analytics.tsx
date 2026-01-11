@@ -98,7 +98,7 @@ interface FinancialGoal {
   name: string;
   targetAmount: number;
   currentAmount: number;
-  startingAmount: number | null; // Starting balance when savings goal was created
+  startingAmount: number | null;
   linkedAccountId: number | null;
   deadline: string | null;
   monthlyContribution: number | null;
@@ -118,14 +118,14 @@ interface GoalsResponse {
 }
 
 const CATEGORY_COLORS = [
-  "#3B82F6", // blue-500
-  "#8B5CF6", // violet-500
-  "#EC4899", // pink-500
-  "#10B981", // emerald-500
-  "#F59E0B", // amber-500
-  "#EF4444", // red-500
-  "#06B6D4", // cyan-500
-  "#84CC16", // lime-500
+  "#3B82F6",
+  "#8B5CF6",
+  "#EC4899",
+  "#10B981",
+  "#F59E0B",
+  "#EF4444",
+  "#06B6D4",
+  "#84CC16",
 ];
 
 function formatCurrency(amount: number): string {
@@ -159,14 +159,12 @@ export default function Analytics() {
     targetAmount: '',
     monthlyContribution: '',
     linkedAccountId: '',
-    startingAmount: '', // For savings goals - the starting balance when goal was created
+    startingAmount: '',
   });
   const [deletingGoalId, setDeletingGoalId] = useState<number | null>(null);
 
-  // Analytics is now available to all authenticated users
   const hasAccess = !!user;
 
-  // Check subscription tier for Basic features (Financial Goals)
   const { data: userData } = useQuery<{ subscriptionTier?: string }>({
     queryKey: ['/api/auth/user'],
     enabled: !!user,
@@ -220,7 +218,7 @@ export default function Analytics() {
         body: JSON.stringify({
           name: goalData.name,
           goalType: goalData.goalType,
-          targetAmount: goalData.targetAmount, // Keep as string for Drizzle numeric type
+          targetAmount: goalData.targetAmount,
           monthlyContribution: goalData.monthlyContribution || null,
           linkedAccountId: goalData.linkedAccountId ? parseInt(goalData.linkedAccountId) : null,
         }),
@@ -246,13 +244,8 @@ export default function Analytics() {
       return apiRequest(`/api/goals/${goalId}`, { method: 'DELETE' });
     },
     onMutate: async (goalId: number) => {
-      // Cancel outgoing refetches
       await queryClient.cancelQueries({ queryKey: ["/api/goals"] });
-      
-      // Snapshot previous value
       const previousGoals = queryClient.getQueryData<GoalsResponse>(["/api/goals"]);
-      
-      // Optimistically remove the goal
       queryClient.setQueryData<GoalsResponse>(["/api/goals"], (old) => {
         if (!old) return { goals: [] };
         return {
@@ -260,11 +253,9 @@ export default function Analytics() {
           goals: old.goals.filter((g) => g.id !== goalId),
         };
       });
-      
       return { previousGoals };
     },
     onError: (_err, _goalId, context) => {
-      // Rollback on error
       if (context?.previousGoals) {
         queryClient.setQueryData(["/api/goals"], context.previousGoals);
       }
@@ -312,37 +303,35 @@ export default function Analytics() {
       .sort((a, b) => b.amount - a.amount);
   }, [spendingData]);
 
-  // Show loading while auth is being checked
   if (isAuthLoading) {
     return (
-      <div className="min-h-screen text-white flex items-center justify-center">
+      <div className="min-h-screen bg-[#F4F2ED] text-gray-900 flex items-center justify-center">
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           className="text-center p-8"
         >
-          <div className="w-10 h-10 mx-auto mb-4 border-2 border-gray-600 border-t-white rounded-full animate-spin" />
-          <p className="text-gray-400">Loading...</p>
+          <div className="w-10 h-10 mx-auto mb-4 border-2 border-gray-300 border-t-gray-900 rounded-full animate-spin" />
+          <p className="text-gray-600">Loading...</p>
         </motion.div>
       </div>
     );
   }
 
-  // Only show access restricted if auth has finished loading and there's no user
   if (!hasAccess) {
     return (
-      <div className="min-h-screen text-white flex items-center justify-center">
+      <div className="min-h-screen bg-[#F4F2ED] text-gray-900 flex items-center justify-center">
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.3 }}
           className="text-center p-8"
         >
-          <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-gray-900/50 backdrop-blur-lg border border-gray-800 flex items-center justify-center">
+          <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-white border border-gray-200 flex items-center justify-center">
             <Lock className="w-10 h-10 text-gray-500" />
           </div>
           <h2 className="text-2xl font-semibold mb-2">Sign In Required</h2>
-          <p className="text-gray-400 max-w-md">
+          <p className="text-gray-600 max-w-md">
             Please sign in to access spending analytics.
           </p>
         </motion.div>
@@ -351,7 +340,7 @@ export default function Analytics() {
   }
 
   return (
-    <div className="min-h-screen text-white pb-20 md:pb-6">
+    <div className="min-h-screen bg-[#F4F2ED] text-gray-900 pb-20 md:pb-6">
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -362,15 +351,14 @@ export default function Analytics() {
             <h1 className="text-3xl font-semibold tracking-tight mb-2">
               Spending Analytics
             </h1>
-            <p className="text-gray-400">
+            <p className="text-gray-600">
               Track your expenses across all connected accounts
             </p>
           </div>
 
-          {/* Compact Filter Bar */}
           <div className="flex items-center justify-between gap-3 mb-6">
-            <div className="flex items-center gap-2 text-sm text-gray-400">
-              <span className="font-medium text-white" data-testid="text-selected-month">
+            <div className="flex items-center gap-2 text-sm text-gray-600">
+              <span className="font-medium text-gray-900" data-testid="text-selected-month">
                 {format(selectedMonth, "MMM yyyy")}
               </span>
               <span>•</span>
@@ -386,30 +374,30 @@ export default function Analytics() {
               variant="outline"
               size="sm"
               onClick={() => setIsFilterOpen(true)}
-              className="border-gray-700 hover:bg-gray-800 flex items-center gap-2"
+              className="border-gray-300 hover:bg-gray-50 flex items-center gap-2"
               data-testid="button-open-filters"
             >
               <Filter className="w-4 h-4" />
               <span className="hidden sm:inline">Filters</span>
               {(selectedAccountIds.length > 0 || viewMode !== "1") && (
-                <span className="w-2 h-2 rounded-full bg-blue-500" />
+                <span className="w-2 h-2 rounded-full bg-yellow-600" />
               )}
             </Button>
           </div>
 
           {isSpendingLoading || isDashboardLoading ? (
-            <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-6">
-              <Skeleton className="h-6 w-48 mb-4" />
+            <div className="bg-white border border-gray-200 rounded-lg p-6">
+              <Skeleton className="h-6 w-48 mb-4 bg-gray-200" />
               <div className="h-80 flex items-center justify-center">
-                <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
+                <Loader2 className="w-8 h-8 animate-spin text-yellow-600" />
               </div>
             </div>
           ) : isError ? (
-            <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-6">
+            <div className="bg-white border border-gray-200 rounded-lg p-6">
               <div className="text-center py-12">
                 <AlertCircle className="w-12 h-12 mx-auto mb-4 text-red-500" />
                 <h3 className="text-lg font-medium mb-2">Failed to load data</h3>
-                <p className="text-gray-400 text-sm">
+                <p className="text-gray-600 text-sm">
                   {error instanceof Error ? error.message : "Please try again later"}
                 </p>
               </div>
@@ -421,15 +409,15 @@ export default function Analytics() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3, delay: 0.1 }}
               >
-                <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-4 sm:p-6 mb-6">
+                <div className="bg-white border border-gray-200 rounded-lg p-4 sm:p-6 mb-6">
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-3">
-                      <h2 className="text-xl font-semibold text-white">
+                      <h2 className="text-xl font-semibold text-gray-900">
                         Spending by Category
                       </h2>
                       <button
                         onClick={() => setSpendingChartVisible(!spendingChartVisible)}
-                        className="p-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-gray-800 transition-colors"
+                        className="p-1.5 rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors"
                         title={spendingChartVisible ? "Hide chart" : "Show chart"}
                         data-testid="button-toggle-spending-chart"
                       >
@@ -437,8 +425,8 @@ export default function Analytics() {
                       </button>
                     </div>
                     <div className="text-right">
-                      <p className="text-sm text-gray-400">Total</p>
-                      <p className="text-xl sm:text-2xl font-bold text-white" data-testid="text-total-spending">
+                      <p className="text-sm text-gray-600">Total</p>
+                      <p className="text-xl sm:text-2xl font-bold text-gray-900" data-testid="text-total-spending">
                         {formatCurrency(spendingData?.totalSpending || 0)}
                       </p>
                     </div>
@@ -448,8 +436,8 @@ export default function Analytics() {
                     {chartData.length === 0 ? (
                       <div className="h-80 flex items-center justify-center">
                         <div className="text-center">
-                          <ShoppingBag className="w-12 h-12 mx-auto mb-4 text-gray-600" />
-                          <p className="text-gray-400">No spending data for this period</p>
+                          <ShoppingBag className="w-12 h-12 mx-auto mb-4 text-gray-400" />
+                          <p className="text-gray-600">No spending data for this period</p>
                         </div>
                       </div>
                     ) : (
@@ -473,7 +461,7 @@ export default function Analytics() {
                               fontSize={11}
                               width={95}
                               tickLine={false}
-                              tick={{ fill: '#9CA3AF' }}
+                              tick={{ fill: '#6B7280' }}
                               interval={0}
                             />
                             <Tooltip
@@ -481,14 +469,14 @@ export default function Analytics() {
                                 if (active && payload && payload.length) {
                                   const data = payload[0].payload as Category;
                                   return (
-                                    <div className="bg-gray-900/95 backdrop-blur-lg border border-gray-700 rounded-lg p-3 shadow-xl">
-                                      <p className="font-medium text-white">
+                                    <div className="bg-white border border-gray-200 rounded-lg p-3 shadow-lg">
+                                      <p className="font-medium text-gray-900">
                                         {data.name}
                                       </p>
-                                      <p className="text-blue-400 font-semibold">
+                                      <p className="text-yellow-600 font-semibold">
                                         {formatCurrency(data.amount)}
                                       </p>
-                                      <p className="text-xs text-gray-400 mt-1">
+                                      <p className="text-xs text-gray-600 mt-1">
                                         {data.transactions?.length || 0} transactions
                                       </p>
                                       <p className="text-xs text-gray-500 mt-1">
@@ -523,7 +511,6 @@ export default function Analytics() {
                 </div>
               </motion.div>
 
-              {/* Category cards - show top 2 by default, expand for more */}
               {spendingChartVisible && (
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
@@ -534,7 +521,7 @@ export default function Analytics() {
                     {(categoriesExpanded ? chartData : chartData.slice(0, 2)).map((category, index) => (
                       <div
                         key={category.name}
-                        className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-3 sm:p-4 cursor-pointer transition-all hover:bg-white/10"
+                        className="bg-white border border-gray-200 rounded-lg p-3 sm:p-4 cursor-pointer transition-all hover:bg-gray-50"
                         onClick={() => handleBarClick(category)}
                         data-testid={`card-category-${category.name.toLowerCase().replace(/\s+/g, "-")}`}
                       >
@@ -544,7 +531,7 @@ export default function Analytics() {
                             backgroundColor: CATEGORY_COLORS[index % CATEGORY_COLORS.length],
                           }}
                         />
-                        <p className="text-xs sm:text-sm text-gray-400 truncate">{category.name}</p>
+                        <p className="text-xs sm:text-sm text-gray-600 truncate">{category.name}</p>
                         <p className="text-base sm:text-lg font-semibold mt-1">
                           {formatCurrency(category.amount)}
                         </p>
@@ -557,7 +544,7 @@ export default function Analytics() {
                   {chartData.length > 2 && (
                     <button
                       onClick={() => setCategoriesExpanded(!categoriesExpanded)}
-                      className="mt-3 w-full flex items-center justify-center gap-2 py-2 text-sm text-gray-400 hover:text-white transition-colors"
+                      className="mt-3 w-full flex items-center justify-center gap-2 py-2 text-sm text-gray-600 hover:text-gray-900 transition-colors"
                       data-testid="button-toggle-categories"
                     >
                       {categoriesExpanded ? (
@@ -578,7 +565,6 @@ export default function Analytics() {
             </>
           )}
 
-          {/* Financial Goals Section */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -588,12 +574,12 @@ export default function Analytics() {
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
                 <h2 className="text-xl font-semibold flex items-center gap-2">
-                  <Target className="w-5 h-5 text-blue-400" />
+                  <Target className="w-5 h-5 text-yellow-600" />
                   Financial Goals
                 </h2>
                 <button
                   onClick={() => setGoalsVisible(!goalsVisible)}
-                  className="p-1.5 rounded-lg hover:bg-gray-800 transition-colors text-gray-400 hover:text-white"
+                  className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors text-gray-600 hover:text-gray-900"
                   title={goalsVisible ? "Hide goals" : "Show goals"}
                   data-testid="button-toggle-goals-visibility"
                 >
@@ -603,7 +589,7 @@ export default function Analytics() {
               <Button
                 size="sm"
                 onClick={() => setIsGoalModalOpen(true)}
-                className="bg-blue-600 hover:bg-blue-700"
+                className="bg-gray-900 hover:bg-gray-800"
                 data-testid="button-add-goal"
               >
                 <Plus className="w-4 h-4 mr-1" />
@@ -613,19 +599,19 @@ export default function Analytics() {
 
             {goalsVisible && (isGoalsLoading ? (
               <div className="space-y-4">
-                <Skeleton className="h-24 bg-gray-800" />
-                <Skeleton className="h-24 bg-gray-800" />
+                <Skeleton className="h-24 bg-gray-200" />
+                <Skeleton className="h-24 bg-gray-200" />
               </div>
             ) : goals.length === 0 ? (
-              <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-8 text-center">
-                <Target className="w-12 h-12 mx-auto mb-4 text-gray-600" />
+              <div className="bg-white border border-gray-200 rounded-lg p-8 text-center">
+                <Target className="w-12 h-12 mx-auto mb-4 text-gray-400" />
                 <h3 className="text-lg font-medium mb-2">No goals yet</h3>
-                <p className="text-gray-400 text-sm mb-4">
+                <p className="text-gray-600 text-sm mb-4">
                   Set financial goals to track your progress toward debt payoff, savings, or emergency fund
                 </p>
                 <Button
                   onClick={() => setIsGoalModalOpen(true)}
-                  className="bg-blue-600 hover:bg-blue-700"
+                  className="bg-gray-900 hover:bg-gray-800"
                   data-testid="button-create-first-goal"
                 >
                   <Plus className="w-4 h-4 mr-2" />
@@ -635,39 +621,29 @@ export default function Analytics() {
             ) : (
               <div className="space-y-4">
                 {goals.map((goal) => {
-                  // Calculate progress based on goal type
                   let progress = 0;
                   let remaining = 0;
                   let amountSaved = 0;
                   let currentBalance = 0;
-                  let debtAdded = 0; // For debt payoff: tracks if they added more debt
-                  const startingBalance = goal.startingAmount || goal.targetAmount; // Fallback to targetAmount for old goals
+                  let debtAdded = 0;
+                  const startingBalance = goal.startingAmount || goal.targetAmount;
 
                   if (goal.goalType === 'debt_payoff' && goal.linkedAccount) {
-                    // Debt payoff: track paid off vs new debt added since goal creation
                     currentBalance = Math.abs(goal.linkedAccount.balance || 0);
-                    
-                    // Calculate amount paid off (positive if balance decreased)
                     amountSaved = Math.max(0, startingBalance - currentBalance);
-                    
-                    // Calculate new debt added (positive if balance increased)
                     debtAdded = Math.max(0, currentBalance - startingBalance);
-                    
-                    // Progress based on original starting balance
                     progress = startingBalance > 0 
                       ? Math.min(100, Math.max(0, (amountSaved / startingBalance) * 100))
                       : 0;
                     remaining = currentBalance;
                   } else if ((goal.goalType === 'savings' || goal.goalType === 'emergency_fund') && goal.linkedAccount) {
-                    // Savings/Emergency fund with linked account: progress = current / target
                     currentBalance = goal.linkedAccount.balance || 0;
                     progress = goal.targetAmount > 0 
                       ? Math.min(100, Math.max(0, (currentBalance / goal.targetAmount) * 100))
                       : 0;
                     remaining = Math.max(0, goal.targetAmount - currentBalance);
-                    amountSaved = currentBalance; // For display purposes
+                    amountSaved = currentBalance;
                   } else {
-                    // Goals without linked accounts
                     progress = goal.targetAmount > 0 
                       ? Math.min(100, (goal.currentAmount / goal.targetAmount) * 100) 
                       : 0;
@@ -683,7 +659,6 @@ export default function Analytics() {
                     : goal.goalType === 'emergency_fund' ? 'bg-cyan-500' 
                     : 'bg-green-500';
 
-                  // Get institution logo for linked accounts, fallback to generic icons
                   const institutionLogoData = goal.linkedAccount?.accountName 
                     ? getInstitutionLogo(goal.linkedAccount.accountName)
                     : null;
@@ -693,12 +668,12 @@ export default function Analytics() {
                       key={goal.id}
                       initial={{ opacity: 0, x: -10 }}
                       animate={{ opacity: 1, x: 0 }}
-                      className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-4"
+                      className="bg-white border border-gray-200 rounded-lg p-4"
                       data-testid={`goal-card-${goal.id}`}
                     >
                       <div className="flex items-start justify-between mb-3">
                         <div className="flex items-center gap-3">
-                          <div className={`w-10 h-10 rounded-lg overflow-hidden flex items-center justify-center ${institutionLogoData?.bgClass || 'bg-gray-800'}`}>
+                          <div className={`w-10 h-10 rounded-lg overflow-hidden flex items-center justify-center ${institutionLogoData?.bgClass || 'bg-gray-100'}`}>
                             {institutionLogoData?.logo || (
                               goal.goalType === 'debt_payoff' ? <CreditCard className="w-5 h-5 text-red-400" /> 
                               : goal.goalType === 'emergency_fund' ? <Shield className="w-5 h-5 text-cyan-400" />
@@ -707,7 +682,7 @@ export default function Analytics() {
                           </div>
                           <div>
                             <h3 className="font-medium">{goal.name}</h3>
-                            <p className="text-xs text-gray-400 capitalize">
+                            <p className="text-xs text-gray-600 capitalize">
                               {goal.goalType.replace('_', ' ')}
                               {goal.linkedAccount && ` • ${goal.linkedAccount.accountName}`}
                             </p>
@@ -732,21 +707,21 @@ export default function Analytics() {
                       <div className="mb-2">
                         <div className="flex justify-between text-sm mb-1">
                           {goal.goalType === 'debt_payoff' ? (
-                            <span className="text-gray-400">
+                            <span className="text-gray-600">
                               {formatCurrency(amountSaved)} paid of {formatCurrency(startingBalance)}
                             </span>
                           ) : (goal.goalType === 'savings' || goal.goalType === 'emergency_fund') && goal.linkedAccount ? (
-                            <span className="text-gray-400">
+                            <span className="text-gray-600">
                               {formatCurrency(currentBalance)} of {formatCurrency(goal.targetAmount)}
                             </span>
                           ) : (
-                            <span className="text-gray-400">
+                            <span className="text-gray-600">
                               {formatCurrency(goal.currentAmount)} of {formatCurrency(goal.targetAmount)}
                             </span>
                           )}
                           <span className="font-medium">{progress.toFixed(0)}%</span>
                         </div>
-                        <div className="h-2 bg-gray-800 rounded-full overflow-hidden">
+                        <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
                           <div
                             className={`h-full ${progressColor} transition-all duration-500`}
                             style={{ width: `${progress}%` }}
@@ -761,12 +736,12 @@ export default function Analytics() {
                               {remaining > 0 ? `${formatCurrency(remaining)} remaining` : 'Paid off!'}
                             </span>
                             {debtAdded > 0 && (
-                              <span className="text-yellow-500">
+                              <span className="text-yellow-600">
                                 +{formatCurrency(debtAdded)} added
                               </span>
                             )}
                             {goal.createdAt && (
-                              <span className="text-gray-600">
+                              <span className="text-gray-500">
                                 since {format(new Date(goal.createdAt), 'MMM d')}
                               </span>
                             )}
@@ -801,22 +776,21 @@ export default function Analytics() {
         </motion.div>
       </main>
 
-      {/* Create Goal Modal */}
       <Dialog open={isGoalModalOpen} onOpenChange={setIsGoalModalOpen}>
-        <DialogContent className="bg-gray-900/95 backdrop-blur-lg border border-gray-800 max-w-md w-[95vw] sm:w-full">
+        <DialogContent className="bg-white border border-gray-200 max-w-md w-[95vw] sm:w-full">
           <DialogHeader>
-            <DialogTitle className="text-white flex items-center gap-2">
-              <Target className="w-5 h-5 text-blue-400" />
+            <DialogTitle className="text-gray-900 flex items-center gap-2">
+              <Target className="w-5 h-5 text-yellow-600" />
               Create Financial Goal
             </DialogTitle>
-            <DialogDescription className="text-gray-400">
+            <DialogDescription className="text-gray-600">
               Track your progress toward a financial objective
             </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4 py-2">
             <div>
-              <Label className="text-gray-300">Goal Type</Label>
+              <Label className="text-gray-700">Goal Type</Label>
               <Select
                 value={newGoal.goalType}
                 onValueChange={(v) => {
@@ -831,7 +805,7 @@ export default function Analytics() {
                   });
                 }}
               >
-                <SelectTrigger className="mt-1 bg-gray-800 border-gray-700" data-testid="select-goal-type">
+                <SelectTrigger className="mt-1 bg-white border-gray-300" data-testid="select-goal-type">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -864,15 +838,15 @@ export default function Analytics() {
                   const selectedCard = creditCards.find((a) => String(a.id) === newGoal.linkedAccountId);
                   
                   return creditCards.length === 0 ? (
-                    <div className="p-4 bg-yellow-900/20 border border-yellow-700/30 rounded-lg">
-                      <p className="text-sm text-yellow-400">
+                    <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                      <p className="text-sm text-yellow-700">
                         No credit cards connected. Connect a credit card account to track debt payoff.
                       </p>
                     </div>
                   ) : (
                     <>
                       <div>
-                        <Label className="text-gray-300">Select Credit Card</Label>
+                        <Label className="text-gray-700">Select Credit Card</Label>
                         <Select
                           value={newGoal.linkedAccountId || "none"}
                           onValueChange={(v) => {
@@ -886,7 +860,7 @@ export default function Analytics() {
                             });
                           }}
                         >
-                          <SelectTrigger className="mt-1 bg-gray-800 border-gray-700" data-testid="select-credit-card">
+                          <SelectTrigger className="mt-1 bg-white border-gray-300" data-testid="select-credit-card">
                             <SelectValue placeholder="Choose a credit card" />
                           </SelectTrigger>
                           <SelectContent>
@@ -906,15 +880,15 @@ export default function Analytics() {
                       </div>
 
                       {selectedCard && (
-                        <div className="p-4 bg-white/5 border border-white/10 rounded-lg">
+                        <div className="p-4 bg-white border border-gray-200 rounded-lg">
                           <div className="flex items-center justify-between">
                             <div>
-                              <p className="text-sm text-gray-400">Current Balance to Pay Off</p>
+                              <p className="text-sm text-gray-600">Current Balance to Pay Off</p>
                               <p className="text-2xl font-bold text-red-400">
                                 {formatCurrency(Math.abs(selectedCard.balance || 0))}
                               </p>
                             </div>
-                            <CreditCard className="w-8 h-8 text-gray-600" />
+                            <CreditCard className="w-8 h-8 text-gray-400" />
                           </div>
                           <p className="text-xs text-gray-500 mt-2">
                             Progress will update automatically as your balance decreases
@@ -936,15 +910,15 @@ export default function Analytics() {
                   const GoalIcon = isEmergencyFund ? Shield : PiggyBank;
                   
                   return bankAccounts.length === 0 ? (
-                    <div className="p-4 bg-yellow-900/20 border border-yellow-700/30 rounded-lg">
-                      <p className="text-sm text-yellow-400">
+                    <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                      <p className="text-sm text-yellow-700">
                         No bank accounts connected. Connect a savings or checking account to track your {goalLabel.toLowerCase()}.
                       </p>
                     </div>
                   ) : (
                     <>
                       <div>
-                        <Label className="text-gray-300">Select {isEmergencyFund ? 'Emergency Fund' : ''} Account</Label>
+                        <Label className="text-gray-700">Select {isEmergencyFund ? 'Emergency Fund' : ''} Account</Label>
                         <Select
                           value={newGoal.linkedAccountId || "none"}
                           onValueChange={(v) => {
@@ -958,7 +932,7 @@ export default function Analytics() {
                             });
                           }}
                         >
-                          <SelectTrigger className="mt-1 bg-gray-800 border-gray-700" data-testid="select-savings-account">
+                          <SelectTrigger className="mt-1 bg-white border-gray-300" data-testid="select-savings-account">
                             <SelectValue placeholder="Choose an account" />
                           </SelectTrigger>
                           <SelectContent>
@@ -979,15 +953,15 @@ export default function Analytics() {
 
                       {selectedAccount && (
                         <>
-                          <div className="p-4 bg-white/5 border border-white/10 rounded-lg">
+                          <div className="p-4 bg-white border border-gray-200 rounded-lg">
                             <div className="flex items-center justify-between">
                               <div>
-                                <p className="text-sm text-gray-400">Current Balance (Starting Point)</p>
+                                <p className="text-sm text-gray-600">Current Balance (Starting Point)</p>
                                 <p className={`text-2xl font-bold ${isEmergencyFund ? 'text-cyan-400' : 'text-green-400'}`}>
                                   {formatCurrency(currentBalance)}
                                 </p>
                               </div>
-                              <GoalIcon className="w-8 h-8 text-gray-600" />
+                              <GoalIcon className="w-8 h-8 text-gray-400" />
                             </div>
                             <p className="text-xs text-gray-500 mt-2">
                               Progress will track from this balance toward your goal
@@ -995,13 +969,13 @@ export default function Analytics() {
                           </div>
 
                           <div>
-                            <Label className="text-gray-300">End Goal Amount</Label>
+                            <Label className="text-gray-700">End Goal Amount</Label>
                             <Input
                               type="number"
                               value={newGoal.targetAmount}
                               onChange={(e) => setNewGoal({ ...newGoal, targetAmount: e.target.value })}
                               placeholder={String(Math.round(currentBalance * 2))}
-                              className="mt-1 bg-gray-800 border-gray-700"
+                              className="mt-1 bg-white border-gray-300"
                               data-testid="input-target-amount"
                             />
                             <p className="text-xs text-gray-500 mt-1">
@@ -1010,13 +984,13 @@ export default function Analytics() {
                           </div>
 
                           <div>
-                            <Label className="text-gray-300">Monthly Contribution (optional)</Label>
+                            <Label className="text-gray-700">Monthly Contribution (optional)</Label>
                             <Input
                               type="number"
                               value={newGoal.monthlyContribution}
                               onChange={(e) => setNewGoal({ ...newGoal, monthlyContribution: e.target.value })}
                               placeholder="500"
-                              className="mt-1 bg-gray-800 border-gray-700"
+                              className="mt-1 bg-white border-gray-300"
                               data-testid="input-monthly-contribution"
                             />
                             <p className="text-xs text-gray-500 mt-1">
@@ -1032,36 +1006,36 @@ export default function Analytics() {
             ) : (
               <>
                 <div>
-                  <Label className="text-gray-300">Goal Name</Label>
+                  <Label className="text-gray-700">Goal Name</Label>
                   <Input
                     value={newGoal.name}
                     onChange={(e) => setNewGoal({ ...newGoal, name: e.target.value })}
                     placeholder="e.g., Emergency savings fund"
-                    className="mt-1 bg-gray-800 border-gray-700"
+                    className="mt-1 bg-white border-gray-300"
                     data-testid="input-goal-name"
                   />
                 </div>
 
                 <div>
-                  <Label className="text-gray-300">Target Amount</Label>
+                  <Label className="text-gray-700">Target Amount</Label>
                   <Input
                     type="number"
                     value={newGoal.targetAmount}
                     onChange={(e) => setNewGoal({ ...newGoal, targetAmount: e.target.value })}
                     placeholder="10000"
-                    className="mt-1 bg-gray-800 border-gray-700"
+                    className="mt-1 bg-white border-gray-300"
                     data-testid="input-target-amount"
                   />
                 </div>
 
                 <div>
-                  <Label className="text-gray-300">Monthly Contribution (optional)</Label>
+                  <Label className="text-gray-700">Monthly Contribution (optional)</Label>
                   <Input
                     type="number"
                     value={newGoal.monthlyContribution}
                     onChange={(e) => setNewGoal({ ...newGoal, monthlyContribution: e.target.value })}
                     placeholder="500"
-                    className="mt-1 bg-gray-800 border-gray-700"
+                    className="mt-1 bg-white border-gray-300"
                     data-testid="input-monthly-contribution"
                   />
                   <p className="text-xs text-gray-500 mt-1">
@@ -1077,7 +1051,7 @@ export default function Analytics() {
               <Button
                 variant="outline"
                 onClick={() => setIsGoalModalOpen(false)}
-                className="flex-1 border-gray-700 hover:bg-gray-800"
+                className="flex-1 border-gray-300 hover:bg-gray-50"
                 data-testid="button-cancel-goal"
               >
                 Cancel
@@ -1092,7 +1066,7 @@ export default function Analytics() {
                   (newGoal.goalType === 'emergency_fund' && !newGoal.linkedAccountId) ||
                   createGoalMutation.isPending
                 }
-                className="flex-1 bg-blue-600 hover:bg-blue-700"
+                className="flex-1 bg-gray-900 hover:bg-gray-800"
                 data-testid="button-save-goal"
               >
                 {createGoalMutation.isPending ? (
@@ -1104,21 +1078,21 @@ export default function Analytics() {
             </div>
           ) : (
             <div className="pt-4 space-y-3" data-testid="basic-upgrade-goals">
-              <div className="p-4 bg-gradient-to-r from-blue-900/30 to-purple-900/30 border border-blue-500/30 rounded-lg">
+              <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
                 <div className="flex items-center gap-3 mb-2">
-                  <div className="p-2 bg-blue-600/20 rounded-full">
-                    <Crown className="h-5 w-5 text-blue-400" />
+                  <div className="p-2 bg-yellow-100 rounded-full">
+                    <Crown className="h-5 w-5 text-yellow-600" />
                   </div>
                   <div>
-                    <h4 className="font-medium text-white">Upgrade to Basic</h4>
-                    <p className="text-sm text-gray-400">Track your financial goals with Flint Basic</p>
+                    <h4 className="font-medium text-gray-900">Upgrade to Basic</h4>
+                    <p className="text-sm text-gray-600">Track your financial goals with Flint Basic</p>
                   </div>
                 </div>
                 <p className="text-xs text-gray-500 mb-3">
                   Set savings goals, track debt payoff, and monitor your emergency fund progress.
                 </p>
                 <Link href="/subscribe">
-                  <Button className="w-full bg-blue-600 hover:bg-blue-700" data-testid="button-upgrade-basic-goals">
+                  <Button className="w-full bg-gray-900 hover:bg-gray-800" data-testid="button-upgrade-basic-goals">
                     <Crown className="h-4 w-4 mr-2" />
                     Upgrade to Set Goals
                   </Button>
@@ -1127,7 +1101,7 @@ export default function Analytics() {
               <Button
                 variant="outline"
                 onClick={() => setIsGoalModalOpen(false)}
-                className="w-full border-gray-700 hover:bg-gray-800"
+                className="w-full border-gray-300 hover:bg-gray-50"
                 data-testid="button-cancel-goal"
               >
                 Cancel
@@ -1139,35 +1113,34 @@ export default function Analytics() {
 
       <Dialog open={isFilterOpen} onOpenChange={setIsFilterOpen}>
         <DialogContent 
-          className="bg-gray-900/95 backdrop-blur-lg border border-gray-800 max-w-md w-[95vw] sm:w-full"
+          className="bg-white border border-gray-200 max-w-md w-[95vw] sm:w-full"
           onPointerDownOutside={(e) => e.preventDefault()}
           onInteractOutside={(e) => e.preventDefault()}
         >
           <DialogHeader>
-            <DialogTitle className="text-white">Filters</DialogTitle>
-            <DialogDescription className="text-gray-400">
+            <DialogTitle className="text-gray-900">Filters</DialogTitle>
+            <DialogDescription className="text-gray-600">
               Customize your analytics view
             </DialogDescription>
           </DialogHeader>
           
           <div className="space-y-5 py-2">
-            {/* Month Selector */}
             <div>
-              <p className="text-sm font-medium text-gray-400 mb-2 flex items-center gap-2">
+              <p className="text-sm font-medium text-gray-600 mb-2 flex items-center gap-2">
                 <Calendar className="w-4 h-4" />
                 Month
               </p>
-              <div className="flex items-center justify-between bg-gray-800/50 rounded-lg p-2">
+              <div className="flex items-center justify-between bg-gray-50 rounded-lg p-2">
                 <Button
                   variant="ghost"
                   size="icon"
                   onClick={handlePrevMonth}
-                  className="hover:bg-gray-700 h-8 w-8"
+                  className="hover:bg-gray-200 h-8 w-8"
                   data-testid="button-prev-month"
                 >
                   <ChevronLeft className="w-4 h-4" />
                 </Button>
-                <span className="text-sm font-medium text-white" data-testid="text-filter-month">
+                <span className="text-sm font-medium text-gray-900" data-testid="text-filter-month">
                   {format(selectedMonth, "MMMM yyyy")}
                 </span>
                 <Button
@@ -1175,7 +1148,7 @@ export default function Analytics() {
                   size="icon"
                   onClick={handleNextMonth}
                   disabled={subMonths(selectedMonth, -1) > new Date()}
-                  className="hover:bg-gray-700 disabled:opacity-50 h-8 w-8"
+                  className="hover:bg-gray-200 disabled:opacity-50 h-8 w-8"
                   data-testid="button-next-month"
                 >
                   <ChevronRight className="w-4 h-4" />
@@ -1183,9 +1156,8 @@ export default function Analytics() {
               </div>
             </div>
 
-            {/* View Mode */}
             <div>
-              <p className="text-sm font-medium text-gray-400 mb-2 flex items-center gap-2">
+              <p className="text-sm font-medium text-gray-600 mb-2 flex items-center gap-2">
                 <TrendingUp className="w-4 h-4" />
                 Time Range
               </p>
@@ -1196,8 +1168,8 @@ export default function Analytics() {
                   onClick={() => setViewMode("1")}
                   className={`flex-1 ${
                     viewMode === "1"
-                      ? "bg-blue-600 hover:bg-blue-700"
-                      : "border-gray-700 hover:bg-gray-800"
+                      ? "bg-gray-900 hover:bg-gray-800"
+                      : "border-gray-300 hover:bg-gray-50"
                   }`}
                   data-testid="button-view-1-month"
                 >
@@ -1209,8 +1181,8 @@ export default function Analytics() {
                   onClick={() => setViewMode("3")}
                   className={`flex-1 ${
                     viewMode === "3"
-                      ? "bg-blue-600 hover:bg-blue-700"
-                      : "border-gray-700 hover:bg-gray-800"
+                      ? "bg-gray-900 hover:bg-gray-800"
+                      : "border-gray-300 hover:bg-gray-50"
                   }`}
                   data-testid="button-view-3-months"
                 >
@@ -1219,15 +1191,14 @@ export default function Analytics() {
               </div>
             </div>
 
-            {/* Account Filter */}
             <div>
-              <p className="text-sm font-medium text-gray-400 mb-2 flex items-center gap-2">
+              <p className="text-sm font-medium text-gray-600 mb-2 flex items-center gap-2">
                 <Filter className="w-4 h-4" />
                 Accounts
               </p>
               <div className="space-y-2 max-h-48 overflow-y-auto overscroll-contain">
                 {accounts.length === 0 ? (
-                  <p className="text-gray-400 text-sm text-center py-4">
+                  <p className="text-gray-600 text-sm text-center py-4">
                     No accounts connected
                   </p>
                 ) : (
@@ -1237,11 +1208,11 @@ export default function Analytics() {
                       <button
                         type="button"
                         key={account.id}
-                        className="flex items-center gap-3 p-3 rounded-lg bg-black cursor-pointer transition-colors w-full text-left hover:bg-gray-900"
+                        className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 cursor-pointer transition-colors w-full text-left hover:bg-gray-100"
                         data-testid={`filter-account-${account.id}`}
                         onClick={() => handleAccountToggle(account.id)}
                       >
-                        <div className={`w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0 ${isSelected ? 'bg-blue-600 border-blue-600' : 'border-gray-600'}`}>
+                        <div className={`w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0 ${isSelected ? 'bg-gray-900 border-gray-900' : 'border-gray-400'}`}>
                           {isSelected && (
                             <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
                               <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
@@ -1249,10 +1220,10 @@ export default function Analytics() {
                           )}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-white truncate">
+                          <p className="text-sm font-medium text-gray-900 truncate">
                             {account.accountName}
                           </p>
-                          <p className="text-xs text-gray-400 truncate">
+                          <p className="text-xs text-gray-600 truncate">
                             {account.institution || account.type}
                           </p>
                         </div>
@@ -1273,7 +1244,7 @@ export default function Analytics() {
                 setViewMode("1");
                 setSelectedMonth(startOfMonth(new Date()));
               }}
-              className="flex-1 border-gray-700 hover:bg-gray-800"
+              className="flex-1 border-gray-300 hover:bg-gray-50"
               data-testid="button-clear-filters"
             >
               Reset All
@@ -1281,7 +1252,7 @@ export default function Analytics() {
             <Button
               size="sm"
               onClick={() => setIsFilterOpen(false)}
-              className="flex-1 bg-blue-600 hover:bg-blue-700"
+              className="flex-1 bg-gray-900 hover:bg-gray-800"
               data-testid="button-apply-filters"
             >
               Apply
@@ -1291,12 +1262,12 @@ export default function Analytics() {
       </Dialog>
 
       <Dialog open={isDrilldownOpen} onOpenChange={setIsDrilldownOpen}>
-        <DialogContent className="bg-gray-900/95 backdrop-blur-lg border border-gray-800 max-w-lg max-h-[80vh] overflow-hidden flex flex-col">
+        <DialogContent className="bg-white border border-gray-200 max-w-lg max-h-[80vh] overflow-hidden flex flex-col">
           <DialogHeader>
-            <DialogTitle className="text-white flex items-center gap-2">
+            <DialogTitle className="text-gray-900 flex items-center gap-2">
               {selectedCategory?.name}
             </DialogTitle>
-            <DialogDescription className="text-gray-400">
+            <DialogDescription className="text-gray-600">
               {selectedCategory?.transactions?.length || 0} transactions totaling{" "}
               {formatCurrency(selectedCategory?.amount || 0)}
             </DialogDescription>
@@ -1308,10 +1279,10 @@ export default function Analytics() {
               formatDate={formatDate}
             />
           </div>
-          <div className="pt-2 border-t border-gray-800">
+          <div className="pt-2 border-t border-gray-200">
             <Button
               variant="outline"
-              className="w-full border-gray-700 hover:bg-gray-800"
+              className="w-full border-gray-300 hover:bg-gray-50"
               onClick={() => setIsDrilldownOpen(false)}
               data-testid="button-close-drilldown"
             >

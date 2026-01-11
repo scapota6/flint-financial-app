@@ -86,18 +86,18 @@ const CustomTooltip = ({ active, payload }: any) => {
   if (active && payload && payload.length) {
     const data = payload[0];
     return (
-      <div className="bg-slate-800/95 border border-slate-700 rounded-lg p-4 shadow-2xl backdrop-blur-sm">
+      <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
         <div className="flex items-center gap-2 mb-2">
           <div 
             className="w-3 h-3 rounded-full" 
             style={{ backgroundColor: data.fill || data.color }}
           ></div>
-          <p className="font-semibold text-white">{data.name}</p>
+          <p className="font-semibold text-gray-900">{data.name}</p>
         </div>
-        <p className="text-lg font-bold text-white mb-1">
+        <p className="text-lg font-bold text-gray-900 mb-1">
           {formatCurrency(Math.abs(data.value))}
         </p>
-        <p className="text-xs text-slate-400">
+        <p className="text-xs text-gray-600">
           {data.payload.percentage.toFixed(1)}% of total portfolio
         </p>
       </div>
@@ -149,16 +149,16 @@ export default function Portfolio() {
   // Initial loading state - only on first load
   if (isPageLoading) {
     return (
-      <div className="min-h-screen">
+      <div className="min-h-screen bg-[#F4F2ED]">
         <div className="container mx-auto px-4 pt-24 pb-12 max-w-7xl">
           <div className="animate-pulse space-y-6">
-            <div className="h-10 bg-slate-800/50 rounded w-1/3"></div>
+            <div className="h-10 bg-gray-200 rounded w-1/3"></div>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
               {[1, 2, 3, 4].map(i => (
-                <div key={i} className="h-32 bg-slate-800/50 rounded"></div>
+                <div key={i} className="h-32 bg-gray-200 rounded"></div>
               ))}
             </div>
-            <div className="h-96 bg-slate-800/50 rounded"></div>
+            <div className="h-96 bg-gray-200 rounded"></div>
           </div>
         </div>
       </div>
@@ -168,7 +168,7 @@ export default function Portfolio() {
   // Error state
   if (error) {
     return (
-      <div className="container mx-auto p-6">
+      <div className="container mx-auto p-6 bg-[#F4F2ED]">
         <Alert variant="destructive">
           <AlertCircle className="h-4 w-4" />
           <AlertDescription>
@@ -182,16 +182,16 @@ export default function Portfolio() {
   // Empty state when no accounts are connected
   if (isEmptyState) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen bg-[#F4F2ED] flex items-center justify-center">
         <div className="container mx-auto px-4 max-w-2xl">
           <div className="text-center">
-            <div className="w-20 h-20 mx-auto mb-8 rounded-full bg-gradient-to-r from-blue-500/20 to-cyan-500/20 flex items-center justify-center">
-              <AlertCircle className="h-10 w-10 text-blue-400" />
+            <div className="w-20 h-20 mx-auto mb-8 rounded-full bg-gray-100 flex items-center justify-center">
+              <AlertCircle className="h-10 w-10 text-gray-700" />
             </div>
-            <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-white via-cyan-200 to-blue-400 bg-clip-text text-transparent mb-4">
+            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
               No Portfolio Data
             </h1>
-            <p className="text-lg text-slate-300 mb-8 max-w-lg mx-auto">
+            <p className="text-lg text-gray-600 mb-8 max-w-lg mx-auto">
               Connect your investment accounts to see your portfolio performance and holdings.
             </p>
             <Link href="/dashboard#quick-connect-section">
@@ -204,9 +204,9 @@ export default function Portfolio() {
               </RainbowButton>
             </Link>
             {hasDisconnectedAccounts && (
-              <div className="mt-8 p-4 bg-orange-900/20 border border-orange-700 rounded-xl max-w-md mx-auto">
-                <AlertCircle className="h-5 w-5 text-orange-400 mx-auto mb-2" />
-                <p className="text-sm text-orange-200">
+              <div className="mt-8 p-4 bg-orange-50 border border-orange-200 rounded-lg max-w-md mx-auto">
+                <AlertCircle className="h-5 w-5 text-orange-500 mx-auto mb-2" />
+                <p className="text-sm text-orange-700">
                   Some previously connected accounts need to be reconnected to display your complete portfolio.
                 </p>
               </div>
@@ -283,16 +283,16 @@ export default function Portfolio() {
       })) || []);
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-[#F4F2ED]">
       <div className="container mx-auto px-4 pt-24 pb-12 max-w-7xl">
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="apple-h1 bg-gradient-to-r from-white via-cyan-200 to-blue-400 bg-clip-text text-transparent">
+              <h1 className="apple-h1 text-gray-900">
                 Portfolio Overview
               </h1>
-              <p className="apple-body text-slate-400 mt-2">
+              <p className="apple-body text-gray-600 mt-2">
                 Your complete financial picture across {totals.accountCount} connected accounts
               </p>
             </div>
@@ -301,9 +301,9 @@ export default function Portfolio() {
 
         {/* Data freshness indicator */}
         {summary?.metadata?.dataDelayed && (
-          <Alert className="mb-8 bg-slate-800/50 border-slate-700 backdrop-blur-sm rounded-xl">
-            <Info className="h-4 w-4 text-blue-400" />
-            <AlertDescription className="apple-caption text-slate-300">
+          <Alert className="mb-8 bg-white border-gray-200 rounded-lg shadow-sm">
+            <Info className="h-4 w-4 text-gray-700" />
+            <AlertDescription className="apple-caption text-gray-600">
               Some market data may be delayed. Last updated: {new Date(summary.metadata.lastUpdated).toLocaleTimeString()}
             </AlertDescription>
           </Alert>
@@ -311,26 +311,26 @@ export default function Portfolio() {
 
         {/* Key Metrics Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <Card className="bg-slate-800/50 border-slate-700 backdrop-blur-sm hover:bg-slate-800/70 transition-colors rounded-xl">
+          <Card className="bg-white border-gray-200 shadow-sm hover:shadow transition-shadow rounded-lg">
             <CardHeader className="pb-3">
-              <CardTitle className="apple-caption text-slate-400">
+              <CardTitle className="apple-caption text-gray-600">
                 Net Worth
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="apple-h2 text-white">
+              <div className="apple-h2 text-gray-900">
                 {formatCurrency(netWorth)}
               </div>
-              <div className={`flex items-center mt-2 apple-caption ${isPositive ? 'text-green-400' : 'text-red-400'}`}>
+              <div className={`flex items-center mt-2 apple-caption ${isPositive ? 'text-green-600' : 'text-red-600'}`}>
                 {isPositive ? <ArrowUpRight className="h-4 w-4 mr-1" /> : <ArrowDownRight className="h-4 w-4 mr-1" />}
                 <span>{formatPercent(dayPct)} today</span>
               </div>
             </CardContent>
         </Card>
 
-        <Card className="bg-slate-800/50 border-slate-700 backdrop-blur-sm hover:bg-slate-800/70 transition-colors rounded-xl">
+        <Card className="bg-white border-gray-200 shadow-sm hover:shadow transition-shadow rounded-lg">
           <CardHeader className="pb-3">
-            <CardTitle className="apple-caption text-slate-400">
+            <CardTitle className="apple-caption text-gray-600">
               <div className="flex items-center gap-2">
                 <Wallet className="h-4 w-4" />
                 Investable Assets
@@ -338,18 +338,18 @@ export default function Portfolio() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="apple-h2 text-white">
+            <div className="apple-h2 text-gray-900">
               {formatCurrency(investmentValue + cryptoValue)}
             </div>
-            <p className="apple-caption text-slate-400 mt-2">
+            <p className="apple-caption text-gray-600 mt-2">
               Stocks & Crypto
             </p>
           </CardContent>
         </Card>
 
-        <Card className="bg-slate-800/50 border-slate-700 backdrop-blur-sm hover:bg-slate-800/70 transition-colors rounded-xl">
+        <Card className="bg-white border-gray-200 shadow-sm hover:shadow transition-shadow rounded-lg">
           <CardHeader className="pb-3">
-            <CardTitle className="apple-caption text-slate-400">
+            <CardTitle className="apple-caption text-gray-600">
               <div className="flex items-center gap-2">
                 <DollarSign className="h-4 w-4" />
                 Cash & Bank
@@ -357,18 +357,18 @@ export default function Portfolio() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="apple-h2 text-white">
+            <div className="apple-h2 text-gray-900">
               {formatCurrency(bankBalance)}
             </div>
-            <p className="apple-caption text-slate-400 mt-2">
+            <p className="apple-caption text-gray-600 mt-2">
               Checking & Savings
             </p>
           </CardContent>
         </Card>
 
-        <Card className="bg-slate-800/50 border-slate-700 backdrop-blur-sm hover:bg-slate-800/70 transition-colors rounded-xl">
+        <Card className="bg-white border-gray-200 shadow-sm hover:shadow transition-shadow rounded-lg">
           <CardHeader className="pb-3">
-            <CardTitle className="apple-caption text-slate-400">
+            <CardTitle className="apple-caption text-gray-600">
               <div className="flex items-center gap-2">
                 <CreditCard className="h-4 w-4" />
                 Total Debt
@@ -376,10 +376,10 @@ export default function Portfolio() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="apple-h2 text-red-400">
+            <div className="apple-h2 text-red-600">
               {formatCurrency(debtBalance)}
             </div>
-            <p className="apple-caption text-slate-400 mt-2">
+            <p className="apple-caption text-gray-600 mt-2">
               Credit cards & loans
             </p>
           </CardContent>
@@ -389,34 +389,28 @@ export default function Portfolio() {
       {/* Charts Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Asset Mix Donut Chart */}
-        <Card className="bg-slate-800/50 border-slate-700 backdrop-blur-sm">
+        <Card className="bg-white border-gray-200 shadow-sm rounded-lg">
           <CardHeader>
-            <CardTitle className="text-white">Asset Allocation</CardTitle>
-            <CardDescription className="text-slate-400">
+            <CardTitle className="text-gray-900">Asset Allocation</CardTitle>
+            <CardDescription className="text-gray-600">
               Portfolio breakdown by asset class
             </CardDescription>
           </CardHeader>
           <CardContent>
             {chartData.length > 0 ? (
-              <div className="chart-container chart-glow relative overflow-hidden">
-                {/* Animated background effects */}
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 via-cyan-500/5 to-emerald-500/10 rounded-lg blur-2xl animate-pulse"></div>
-                <div className="floating-element absolute top-0 left-0 w-32 h-32 bg-blue-500/20 rounded-full blur-3xl"></div>
-                <div className="floating-element absolute bottom-0 right-0 w-24 h-24 bg-cyan-500/20 rounded-full blur-2xl" style={{animationDelay: '2s'}}></div>
-                <div className="floating-element absolute top-1/3 right-1/4 w-16 h-16 bg-emerald-500/15 rounded-full blur-2xl" style={{animationDelay: '1s'}}></div>
+              <div className="relative overflow-hidden">
                 <ResponsiveContainer width="100%" height={380}>
                   <PieChart>
                     <defs>
-                      {/* 3D Effect Gradients */}
                       <radialGradient id="stocksGrad3D" cx="30%" cy="30%">
                         <stop offset="0%" stopColor="#60a5fa" stopOpacity={1}/>
                         <stop offset="50%" stopColor="#0A84FF" stopOpacity={1}/>
                         <stop offset="100%" stopColor="#0070DD" stopOpacity={0.9}/>
                       </radialGradient>
                       <radialGradient id="cryptoGrad3D" cx="30%" cy="30%">
-                        <stop offset="0%" stopColor="#60a5fa" stopOpacity={1}/>
-                        <stop offset="50%" stopColor="#3b82f6" stopOpacity={1}/>
-                        <stop offset="100%" stopColor="#1e40af" stopOpacity={0.9}/>
+                        <stop offset="0%" stopColor="#fbbf24" stopOpacity={1}/>
+                        <stop offset="50%" stopColor="#f59e0b" stopOpacity={1}/>
+                        <stop offset="100%" stopColor="#d97706" stopOpacity={0.9}/>
                       </radialGradient>
                       <radialGradient id="cashGrad3D" cx="30%" cy="30%">
                         <stop offset="0%" stopColor="#34d399" stopOpacity={1}/>
@@ -428,14 +422,6 @@ export default function Portfolio() {
                         <stop offset="50%" stopColor="#ef4444" stopOpacity={1}/>
                         <stop offset="100%" stopColor="#b91c1c" stopOpacity={0.9}/>
                       </radialGradient>
-                      {/* Glow filters */}
-                      <filter id="pieGlow" x="-50%" y="-50%" width="200%" height="200%">
-                        <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
-                        <feMerge> 
-                          <feMergeNode in="coloredBlur"/>
-                          <feMergeNode in="SourceGraphic"/>
-                        </feMerge>
-                      </filter>
                     </defs>
                     <Pie
                       data={chartData}
@@ -458,10 +444,9 @@ export default function Portfolio() {
                                 entry.name === 'Crypto' ? 'url(#cryptoGrad3D)' :
                                 entry.name === 'Cash' ? 'url(#cashGrad3D)' :
                                 'url(#debtGrad3D)'}
-                          stroke="rgba(255,255,255,0.2)"
-                          strokeWidth={3}
+                          stroke="rgba(255,255,255,0.5)"
+                          strokeWidth={2}
                           style={{
-                            filter: 'drop-shadow(0 8px 16px rgba(0,0,0,0.3)) drop-shadow(0 0 20px rgba(10, 132, 255, 0.3))',
                             cursor: 'pointer'
                           }}
                         />
@@ -473,7 +458,7 @@ export default function Portfolio() {
                       height={50}
                       iconType="circle"
                       formatter={(value: string) => (
-                        <span className="text-sm text-slate-300 font-medium">{value}</span>
+                        <span className="text-sm text-gray-600 font-medium">{value}</span>
                       )}
                       wrapperStyle={{
                         paddingTop: '20px'
@@ -485,10 +470,10 @@ export default function Portfolio() {
             ) : (
               <div className="h-[350px] flex items-center justify-center">
                 <div className="text-center">
-                  <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-r from-blue-500/20 to-cyan-500/20 flex items-center justify-center">
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-500 to-cyan-500"></div>
+                  <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-100 flex items-center justify-center">
+                    <div className="w-8 h-8 rounded-full bg-gray-300"></div>
                   </div>
-                  <p className="text-slate-400">No portfolio data available</p>
+                  <p className="text-gray-600">No portfolio data available</p>
                 </div>
               </div>
             )}
@@ -496,12 +481,12 @@ export default function Portfolio() {
         </Card>
 
         {/* Performance Chart */}
-        <Card className="bg-slate-800/50 border-slate-700 backdrop-blur-sm">
+        <Card className="bg-white border-gray-200 shadow-sm rounded-lg">
           <CardHeader>
             <div className="flex justify-between items-center">
               <div>
-                <CardTitle className="text-white">Performance</CardTitle>
-                <CardDescription className="text-slate-400">
+                <CardTitle className="text-gray-900">Performance</CardTitle>
+                <CardDescription className="text-gray-600">
                   Portfolio value over time
                 </CardDescription>
               </div>
@@ -518,56 +503,33 @@ export default function Portfolio() {
           </CardHeader>
           <CardContent>
             {history?.dataPoints && history.dataPoints.length >= 2 ? (
-              <div className="chart-container chart-glow relative overflow-hidden">
-                {/* Dynamic background effects */}
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 via-transparent to-cyan-500/5 rounded-lg"></div>
-                <div className="floating-element absolute top-0 left-1/4 w-16 h-16 bg-gradient-to-br from-blue-400/30 to-transparent rounded-full blur-xl"></div>
-                <div className="floating-element absolute bottom-0 right-1/3 w-20 h-20 bg-gradient-to-tl from-cyan-400/25 to-transparent rounded-full blur-2xl" style={{animationDelay: '1.5s'}}></div>
-                <div className="floating-element absolute top-1/2 left-1/2 w-12 h-12 bg-gradient-to-r from-cyan-400/20 to-transparent rounded-full blur-xl" style={{animationDelay: '3s'}}></div>
+              <div className="relative overflow-hidden">
                 <ResponsiveContainer width="100%" height={380}>
                   <AreaChart data={history.dataPoints} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
                     <defs>
-                      {/* 3D Area Chart Gradients */}
                       <linearGradient id="areaGradient3D" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="#60a5fa" stopOpacity={0.6}/>
-                        <stop offset="25%" stopColor="#0A84FF" stopOpacity={0.4}/>
-                        <stop offset="75%" stopColor="#0070DD" stopOpacity={0.2}/>
-                        <stop offset="100%" stopColor="#0055AA" stopOpacity={0.05}/>
+                        <stop offset="0%" stopColor="#0A84FF" stopOpacity={0.3}/>
+                        <stop offset="50%" stopColor="#0A84FF" stopOpacity={0.15}/>
+                        <stop offset="100%" stopColor="#0A84FF" stopOpacity={0.02}/>
                       </linearGradient>
-                      {/* Enhanced glow effect */}
-                      <filter id="areaGlow" x="-20%" y="-20%" width="140%" height="140%">
-                        <feGaussianBlur stdDeviation="5" result="coloredBlur"/>
-                        <feOffset dx="0" dy="0" result="offsetBlur"/>
-                        <feFlood floodColor="#0A84FF" floodOpacity="0.3"/>
-                        <feComposite in2="offsetBlur" operator="in"/>
-                        <feMerge> 
-                          <feMergeNode/>
-                          <feMergeNode in="SourceGraphic"/>
-                        </feMerge>
-                      </filter>
-                      {/* Grid line effect */}
-                      <pattern id="gridPattern" patternUnits="userSpaceOnUse" width="40" height="40">
-                        <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(10, 132, 255, 0.05)" strokeWidth="1"/>
-                      </pattern>
                     </defs>
                     <CartesianGrid 
-                      strokeDasharray="8 4" 
-                      stroke="rgba(10, 132, 255, 0.15)" 
+                      strokeDasharray="3 3" 
+                      stroke="#e5e7eb" 
                       horizontal={true}
                       vertical={false}
-                      className="recharts-cartesian-grid-horizontal"
                     />
                     <XAxis 
                       dataKey="timestamp" 
                       tickFormatter={(value) => new Date(value).toLocaleDateString()}
-                      stroke="#64748b"
+                      stroke="#9ca3af"
                       fontSize={12}
                       tickLine={false}
                       axisLine={false}
                     />
                     <YAxis 
                       tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`}
-                      stroke="#64748b"
+                      stroke="#9ca3af"
                       fontSize={12}
                       tickLine={false}
                       axisLine={false}
@@ -577,24 +539,23 @@ export default function Portfolio() {
                       formatter={(value: any) => [formatCurrency(value), 'Portfolio Value']}
                       labelFormatter={(label) => new Date(label).toLocaleString()}
                       contentStyle={{
-                        backgroundColor: 'rgba(30, 41, 59, 0.95)',
-                        border: '1px solid rgba(148, 163, 184, 0.2)',
+                        backgroundColor: '#ffffff',
+                        border: '1px solid #e5e7eb',
                         borderRadius: '8px',
-                        color: '#f1f5f9',
-                        backdropFilter: 'blur(10px)'
+                        color: '#111827',
+                        boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
                       }}
                     />
                     <Area
                       type="monotone"
                       dataKey="value"
                       stroke="#0A84FF"
-                      strokeWidth={4}
+                      strokeWidth={2}
                       fill="url(#areaGradient3D)"
-                      filter="url(#areaGlow)"
                       animationDuration={1500}
                       animationEasing="ease-out"
                       dot={{ fill: '#0A84FF', stroke: '#fff', strokeWidth: 2, r: 0 }}
-                      activeDot={{ r: 8, fill: '#0A84FF', stroke: '#fff', strokeWidth: 3, filter: 'drop-shadow(0 0 10px rgba(10, 132, 255, 0.8))' }}
+                      activeDot={{ r: 6, fill: '#0A84FF', stroke: '#fff', strokeWidth: 2 }}
                     />
                   </AreaChart>
                 </ResponsiveContainer>
@@ -602,20 +563,20 @@ export default function Portfolio() {
             ) : historyLoading ? (
               <div className="h-[350px] flex items-center justify-center">
                 <div className="text-center">
-                  <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-r from-blue-500/20 to-cyan-500/20 flex items-center justify-center">
-                    <div className="w-2 h-8 bg-gradient-to-t from-blue-500 to-cyan-500 rounded-full animate-pulse"></div>
+                  <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-100 flex items-center justify-center">
+                    <div className="w-2 h-8 bg-gray-300 rounded-full animate-pulse"></div>
                   </div>
-                  <p className="text-slate-400">Loading performance data...</p>
+                  <p className="text-gray-600">Loading performance data...</p>
                 </div>
               </div>
             ) : (
               <div className="h-[350px] flex items-center justify-center">
                 <div className="text-center">
-                  <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-slate-700/50 flex items-center justify-center">
-                    <TrendingUp className="w-8 h-8 text-slate-500" />
+                  <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-100 flex items-center justify-center">
+                    <TrendingUp className="w-8 h-8 text-gray-400" />
                   </div>
-                  <p className="text-slate-400">Not enough data for chart</p>
-                  <p className="text-slate-500 text-sm mt-1">Performance history will appear as your portfolio updates</p>
+                  <p className="text-gray-600">Not enough data for chart</p>
+                  <p className="text-gray-500 text-sm mt-1">Performance history will appear as your portfolio updates</p>
                 </div>
               </div>
             )}

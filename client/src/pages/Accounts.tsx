@@ -198,13 +198,13 @@ export default function Accounts() {
   const hasNoAccounts = !isLoading && brokerageAccounts.length === 0 && bankAccounts.length === 0;
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-[#F4F2ED]">
       <div className="container mx-auto px-4 pt-24 pb-12 max-w-7xl">
         <div className="mb-8">
-          <h1 className="h1 bg-gradient-to-r from-white via-cyan-200 to-blue-400 bg-clip-text text-transparent">
+          <h1 className="h1 text-gray-900">
             Manage Accounts
           </h1>
-          <p className="text-slate-400 mt-2">
+          <p className="text-gray-600 mt-2">
             Disconnect accounts you no longer want connected
           </p>
         </div>
@@ -220,27 +220,27 @@ export default function Accounts() {
         )}
 
         {hasNoAccounts ? (
-          <Card className="border-dashed bg-slate-800/30 border-slate-700">
+          <Card className="border-dashed bg-white border-gray-200 rounded-lg">
             <CardContent className="flex flex-col items-center justify-center py-12">
-              <AlertCircle className="h-12 w-12 text-slate-400 mb-4" />
-              <h3 className="section-title mb-2 text-white">No Accounts Connected</h3>
-              <p className="text-slate-400 text-center">
+              <AlertCircle className="h-12 w-12 text-gray-600 mb-4" />
+              <h3 className="section-title mb-2 text-gray-900">No Accounts Connected</h3>
+              <p className="text-gray-600 text-center">
                 Go to the Portfolio page to view connected accounts
               </p>
             </CardContent>
           </Card>
         ) : (
           <Tabs defaultValue="brokerages" className="space-y-6">
-            <TabsList className="grid w-full grid-cols-2 bg-slate-800/50 border-slate-700">
+            <TabsList className="grid w-full grid-cols-2 bg-gray-100 border-gray-200">
               <TabsTrigger 
                 value="brokerages"
-                className="data-[state=active]:bg-blue-600/20 data-[state=active]:text-blue-200 data-[state=active]:border-blue-500/50 text-slate-300"
+                className="data-[state=active]:bg-white data-[state=active]:text-gray-900 data-[state=active]:shadow-sm text-gray-600"
               >
                 Brokerages ({brokerageAccounts.length})
               </TabsTrigger>
               <TabsTrigger 
                 value="banks"
-                className="data-[state=active]:bg-blue-600/20 data-[state=active]:text-blue-200 data-[state=active]:border-blue-500/50 text-slate-300"
+                className="data-[state=active]:bg-white data-[state=active]:text-gray-900 data-[state=active]:shadow-sm text-gray-600"
               >
                 Banks & Cards ({bankAccounts.length})
               </TabsTrigger>
@@ -250,31 +250,31 @@ export default function Accounts() {
               {isLoading ? (
                 <div className="space-y-4" data-testid="skeleton-brokerages-grid-0">
                   {[1, 2, 3].map((i) => (
-                    <Card key={i} className="bg-slate-800/50 border-slate-700" data-testid={`skeleton-brokerage-card-${i}`}>
+                    <Card key={i} className="bg-white border-gray-200 rounded-lg" data-testid={`skeleton-brokerage-card-${i}`}>
                       <CardHeader className="pb-3">
                         <div className="flex justify-between items-center">
                           <div className="flex items-center gap-3">
-                            <Skeleton className="h-12 w-12 rounded-lg" data-testid={`skeleton-brokerage-logo-${i}`} />
+                            <Skeleton className="h-12 w-12 rounded-lg bg-gray-200" data-testid={`skeleton-brokerage-logo-${i}`} />
                             <div>
-                              <Skeleton className="h-5 w-40 mb-2" data-testid={`skeleton-brokerage-name-${i}`} />
-                              <Skeleton className="h-4 w-32" data-testid={`skeleton-brokerage-details-${i}`} />
+                              <Skeleton className="h-5 w-40 mb-2 bg-gray-200" data-testid={`skeleton-brokerage-name-${i}`} />
+                              <Skeleton className="h-4 w-32 bg-gray-200" data-testid={`skeleton-brokerage-details-${i}`} />
                               <div className="flex items-center gap-2 mt-1">
-                                <Skeleton className="h-5 w-16" data-testid={`skeleton-brokerage-status-${i}`} />
-                                <Skeleton className="h-5 w-20" data-testid={`skeleton-brokerage-sync-${i}`} />
+                                <Skeleton className="h-5 w-16 bg-gray-200" data-testid={`skeleton-brokerage-status-${i}`} />
+                                <Skeleton className="h-5 w-20 bg-gray-200" data-testid={`skeleton-brokerage-sync-${i}`} />
                               </div>
                             </div>
                           </div>
-                          <Skeleton className="h-9 w-28" data-testid={`skeleton-brokerage-button-${i}`} />
+                          <Skeleton className="h-9 w-28 bg-gray-200" data-testid={`skeleton-brokerage-button-${i}`} />
                         </div>
                       </CardHeader>
                     </Card>
                   ))}
                 </div>
               ) : brokerageAccounts.length === 0 ? (
-                <Card className="border-dashed bg-slate-800/30 border-slate-700">
+                <Card className="border-dashed bg-white border-gray-200 rounded-lg">
                   <CardContent className="text-center py-8">
-                    <Building2 className="h-12 w-12 text-slate-400 mx-auto mb-4" />
-                    <p className="text-slate-400">No brokerage accounts connected</p>
+                    <Building2 className="h-12 w-12 text-gray-600 mx-auto mb-4" />
+                    <p className="text-gray-600">No brokerage accounts connected</p>
                   </CardContent>
                 </Card>
               ) : (
@@ -283,18 +283,18 @@ export default function Accounts() {
                     const { logo, bgClass, textClass } = getInstitutionLogo(account.name);
                     
                     return (
-                      <Card key={account.id} className="bg-slate-800/50 border-slate-700 backdrop-blur-sm hover:bg-slate-800/70 transition-colors">
+                      <Card key={account.id} className="bg-white border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
                         <CardHeader className="pb-3">
                           <div className="flex justify-between items-center">
                             <div className="flex items-center gap-3">
-                              <div className="w-3 h-3 rounded-lg bg-gray-800/60 border border-gray-700/50 flex items-center justify-center overflow-hidden hover:border-blue-500/50 transition-all duration-300">
+                              <div className="w-12 h-12 rounded-lg bg-gray-100 border border-gray-200 flex items-center justify-center overflow-hidden hover:border-gray-300 transition-all duration-300">
                                 {logo}
                               </div>
                               <div>
-                                <CardTitle className="text-lg text-white">
+                                <CardTitle className="text-lg text-gray-900">
                                   {account.institutionName}
                                 </CardTitle>
-                                <p className="text-sm text-slate-400">
+                                <p className="text-sm text-gray-600">
                                   {account.accountNumber} • {account.type}
                                 </p>
                                 <div className="flex items-center gap-2 mt-1">
@@ -302,7 +302,7 @@ export default function Accounts() {
                                     {account.status || 'open'}
                                   </Badge>
                                   {account.syncStatus.holdingsCompleted && (
-                                    <Badge variant="outline" className="text-xs text-green-400 border-green-400">
+                                    <Badge variant="outline" className="text-xs text-green-600 border-green-300">
                                       ✓ Synced
                                     </Badge>
                                   )}
@@ -315,7 +315,7 @@ export default function Accounts() {
                                 variant="outline"
                                 onClick={() => handleDisconnectAccount(account.id, 'brokerage')}
                                 disabled={disconnecting === account.id}
-                                className="text-red-400 border-red-500/50 hover:bg-red-500/20"
+                                className="text-gray-600 border-gray-300 hover:bg-gray-100 hover:text-gray-900"
                                 data-testid={`button-disconnect-${account.id}`}
                               >
                                 <Unlink className="h-4 w-4 mr-2" />
@@ -335,27 +335,27 @@ export default function Accounts() {
               {isLoading ? (
                 <div className="space-y-4" data-testid="skeleton-banks-grid-0">
                   {[1, 2, 3].map((i) => (
-                    <Card key={i} className="bg-slate-800/50 border-slate-700" data-testid={`skeleton-bank-card-${i}`}>
+                    <Card key={i} className="bg-white border-gray-200 rounded-lg" data-testid={`skeleton-bank-card-${i}`}>
                       <CardHeader className="pb-3">
                         <div className="flex justify-between items-center">
                           <div className="flex items-center gap-3">
-                            <Skeleton className="h-12 w-12 rounded-lg" data-testid={`skeleton-bank-logo-${i}`} />
+                            <Skeleton className="h-12 w-12 rounded-lg bg-gray-200" data-testid={`skeleton-bank-logo-${i}`} />
                             <div>
-                              <Skeleton className="h-5 w-40 mb-2" data-testid={`skeleton-bank-name-${i}`} />
-                              <Skeleton className="h-5 w-24" data-testid={`skeleton-bank-type-${i}`} />
+                              <Skeleton className="h-5 w-40 mb-2 bg-gray-200" data-testid={`skeleton-bank-name-${i}`} />
+                              <Skeleton className="h-5 w-24 bg-gray-200" data-testid={`skeleton-bank-type-${i}`} />
                             </div>
                           </div>
-                          <Skeleton className="h-9 w-28" data-testid={`skeleton-bank-button-${i}`} />
+                          <Skeleton className="h-9 w-28 bg-gray-200" data-testid={`skeleton-bank-button-${i}`} />
                         </div>
                       </CardHeader>
                     </Card>
                   ))}
                 </div>
               ) : bankAccounts.length === 0 ? (
-                <Card className="border-dashed bg-slate-800/30 border-slate-700">
+                <Card className="border-dashed bg-white border-gray-200 rounded-lg">
                   <CardContent className="text-center py-8">
-                    <CreditCard className="h-12 w-12 text-slate-400 mx-auto mb-4" />
-                    <p className="text-slate-400">No bank or card accounts connected</p>
+                    <CreditCard className="h-12 w-12 text-gray-600 mx-auto mb-4" />
+                    <p className="text-gray-600">No bank or card accounts connected</p>
                   </CardContent>
                 </Card>
               ) : (
@@ -364,15 +364,15 @@ export default function Accounts() {
                     const { logo, bgClass, textClass } = getInstitutionLogo(account.name);
                     
                     return (
-                      <Card key={account.id} className="bg-slate-800/50 border-slate-700 backdrop-blur-sm hover:bg-slate-800/70 transition-colors">
+                      <Card key={account.id} className="bg-white border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
                         <CardHeader className="pb-3">
                           <div className="flex justify-between items-center">
                             <div className="flex items-center gap-3">
-                              <div className="w-3 h-3 rounded-lg bg-gray-800/60 border border-gray-700/50 flex items-center justify-center overflow-hidden hover:border-blue-500/50 transition-all duration-300">
+                              <div className="w-12 h-12 rounded-lg bg-gray-100 border border-gray-200 flex items-center justify-center overflow-hidden hover:border-gray-300 transition-all duration-300">
                                 {logo}
                               </div>
                               <div>
-                                <CardTitle className="text-lg text-white">{account.name}</CardTitle>
+                                <CardTitle className="text-lg text-gray-900">{account.name}</CardTitle>
                                 <Badge variant="secondary" className="mt-1 text-xs">
                                   {account.type.charAt(0).toUpperCase() + account.type.slice(1)}
                                 </Badge>
@@ -384,7 +384,7 @@ export default function Accounts() {
                                 variant="outline"
                                 onClick={() => handleDisconnectAccount(account.id.toString(), 'bank')}
                                 disabled={disconnecting === account.id.toString()}
-                                className="text-red-400 border-red-500/50 hover:bg-red-500/20"
+                                className="text-gray-600 border-gray-300 hover:bg-gray-100 hover:text-gray-900"
                                 data-testid={`button-disconnect-${account.id}`}
                               >
                                 <Unlink className="h-4 w-4 mr-2" />

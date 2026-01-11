@@ -125,7 +125,7 @@ export default function Login() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#F4F2ED] p-4">
-      <Card className="w-full max-w-md bg-white border-gray-200 rounded-2xl shadow-xl">
+      <Card className="w-full max-w-md bg-white border-gray-200 rounded-lg shadow-sm">
         <CardHeader className="space-y-1">
           <div className="flex items-center justify-center mb-4">
             <img 
@@ -143,7 +143,7 @@ export default function Login() {
         </CardHeader>
         <CardContent className="space-y-6">
           {errorMessage && (
-            <Alert variant="destructive" className="bg-red-50 border-red-200 rounded-xl" data-testid="alert-error">
+            <Alert variant="destructive" className="bg-red-50 border-red-200 rounded" data-testid="alert-error">
               <AlertCircle className="h-4 w-4 text-red-600" />
               <AlertDescription className="text-sm text-red-700" data-testid="text-error-message">
                 {errorMessage}
@@ -154,7 +154,7 @@ export default function Login() {
                       size="sm"
                       onClick={handleResendVerification}
                       disabled={resendVerificationMutation.isPending}
-                      className="w-full bg-black hover:bg-gray-800 text-white border-black rounded-xl"
+                      className="w-full bg-gray-900 hover:bg-gray-800 text-white border-gray-900 rounded"
                       data-testid="button-resend-verification"
                     >
                       {resendVerificationMutation.isPending ? (
@@ -185,7 +185,7 @@ export default function Login() {
                         {...field}
                         type="email"
                         placeholder="Enter your email"
-                        className="bg-white border-gray-300 text-gray-900 rounded-xl focus:border-gray-500 focus:ring-gray-500"
+                        className="bg-white border-gray-300 text-gray-900 rounded focus:border-gray-500 focus:ring-gray-500"
                         data-testid="input-email"
                       />
                     </FormControl>
@@ -206,7 +206,7 @@ export default function Login() {
                           {...field}
                           type={showPassword ? "text" : "password"}
                           placeholder="Enter your password"
-                          className="bg-white border-gray-300 text-gray-900 pr-10 rounded-xl focus:border-gray-500 focus:ring-gray-500"
+                          className="bg-white border-gray-300 text-gray-900 pr-10 rounded focus:border-gray-500 focus:ring-gray-500"
                           data-testid="input-password"
                         />
                         <button
@@ -236,7 +236,7 @@ export default function Login() {
 
               <Button
                 type="submit"
-                className="w-full bg-black hover:bg-gray-800 text-white rounded-xl"
+                className="w-full bg-gray-900 hover:bg-gray-800 text-white rounded"
                 disabled={loginMutation.isPending}
                 data-testid="button-login"
               >

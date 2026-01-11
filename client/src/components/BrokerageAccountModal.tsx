@@ -143,14 +143,14 @@ export function BrokerageAccountModal({
   const renderHeader = () => (
     <div className="space-y-4">
       <div className="flex items-center gap-3">
-        <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
+        <div className="w-12 h-12 bg-gray-900 rounded-lg flex items-center justify-center">
           <span className="text-white font-bold text-sm">
             {accountDetails?.brokerage?.charAt(0).toUpperCase() || 'B'}
           </span>
         </div>
         <div>
-          <h3 className="text-xl font-bold text-white">{accountDetails?.brokerage || 'Brokerage'}</h3>
-          <p className="text-slate-400">
+          <h3 className="text-xl font-bold text-gray-900">{accountDetails?.brokerage || 'Brokerage'}</h3>
+          <p className="text-gray-600">
             {accountDetails?.number ? `****${accountDetails.number.slice(-4)}` : 'N/A'} • {accountDetails?.type || 'Investment'}
           </p>
         </div>
@@ -158,18 +158,18 @@ export function BrokerageAccountModal({
       
       <div className="grid grid-cols-2 gap-4 text-sm">
         <div>
-          <span className="text-slate-400">Account Name:</span>
-          <p className="font-medium text-white">{accountDetails?.name || accountName}</p>
+          <span className="text-gray-600">Account Name:</span>
+          <p className="font-medium text-gray-900">{accountDetails?.name || accountName}</p>
         </div>
         <div>
-          <span className="text-slate-400">Status:</span>
+          <span className="text-gray-600">Status:</span>
           <Badge variant={accountDetails?.status === 'open' ? 'default' : 'secondary'}>
             {accountDetails?.status || 'open'}
           </Badge>
         </div>
         <div>
-          <span className="text-slate-400">Base Currency:</span>
-          <p className="font-medium text-white">{accountDetails?.currency || 'USD'}</p>
+          <span className="text-gray-600">Base Currency:</span>
+          <p className="font-medium text-gray-900">{accountDetails?.currency || 'USD'}</p>
         </div>
       </div>
     </div>
@@ -178,8 +178,8 @@ export function BrokerageAccountModal({
   const renderBalances = () => (
     <div className="space-y-4">
       <div className="flex items-center gap-2 mb-3">
-        <DollarSign className="h-5 w-5 text-green-400" />
-        <h3 className="text-lg font-semibold text-white">Account Balances</h3>
+        <DollarSign className="h-5 w-5 text-green-600" />
+        <h3 className="text-lg font-semibold text-gray-900">Account Balances</h3>
       </div>
       
       {balancesLoading ? (
@@ -194,20 +194,20 @@ export function BrokerageAccountModal({
       ) : (
         <div className="grid grid-cols-3 gap-4">
           <div>
-            <span className="text-slate-400 text-sm">Cash Available</span>
-            <p className="font-bold text-xl text-green-400">
+            <span className="text-gray-600 text-sm">Cash Available</span>
+            <p className="font-bold text-xl text-green-600">
               {formatCurrency(balances?.cash, accountDetails?.currency)}
             </p>
           </div>
           <div>
-            <span className="text-slate-400 text-sm">Equity Value</span>
-            <p className="font-bold text-xl text-blue-400">
+            <span className="text-gray-600 text-sm">Equity Value</span>
+            <p className="font-bold text-xl text-blue-600">
               {formatCurrency(balances?.equity, accountDetails?.currency)}
             </p>
           </div>
           <div>
-            <span className="text-slate-400 text-sm">Buying Power</span>
-            <p className="font-bold text-xl text-blue-400">
+            <span className="text-gray-600 text-sm">Buying Power</span>
+            <p className="font-bold text-xl text-blue-600">
               {formatCurrency(balances?.buyingPower, accountDetails?.currency)}
             </p>
           </div>
@@ -222,8 +222,8 @@ export function BrokerageAccountModal({
     return (
       <div className="space-y-4">
         <div className="flex items-center gap-2 mb-3">
-          <TrendingUp className="h-5 w-5 text-blue-400" />
-          <h3 className="text-lg font-semibold text-white">Holdings</h3>
+          <TrendingUp className="h-5 w-5 text-blue-600" />
+          <h3 className="text-lg font-semibold text-gray-900">Holdings</h3>
         </div>
         
         {positionsLoading ? (
@@ -233,43 +233,43 @@ export function BrokerageAccountModal({
             ))}
           </div>
         ) : regularPositions.length === 0 ? (
-          <div className="text-center py-8 text-slate-400">
+          <div className="text-center py-8 text-gray-600">
             <TrendingUp className="h-12 w-12 mx-auto mb-2 opacity-50" />
             <p>No holdings in this account</p>
           </div>
         ) : (
-          <div className="border border-slate-700 rounded-lg overflow-hidden">
+          <div className="border border-gray-200 rounded-lg overflow-hidden">
             <Table>
               <TableHeader>
-                <TableRow className="border-slate-700">
-                  <TableHead className="text-slate-300">Symbol</TableHead>
-                  <TableHead className="text-slate-300">Quantity</TableHead>
-                  <TableHead className="text-slate-300">Avg Price</TableHead>
-                  <TableHead className="text-slate-300">Market Price</TableHead>
-                  <TableHead className="text-slate-300">Market Value</TableHead>
-                  <TableHead className="text-slate-300">Unrealized P/L</TableHead>
+                <TableRow className="border-gray-200">
+                  <TableHead className="text-gray-600">Symbol</TableHead>
+                  <TableHead className="text-gray-600">Quantity</TableHead>
+                  <TableHead className="text-gray-600">Avg Price</TableHead>
+                  <TableHead className="text-gray-600">Market Price</TableHead>
+                  <TableHead className="text-gray-600">Market Value</TableHead>
+                  <TableHead className="text-gray-600">Unrealized P/L</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {regularPositions.map((position: Position, index: number) => (
-                  <TableRow key={index} className="border-slate-700">
-                    <TableCell className="font-medium text-white">
+                  <TableRow key={index} className="border-gray-200">
+                    <TableCell className="font-medium text-gray-900">
                       {position.symbol}
                       {position.name && (
-                        <div className="text-xs text-slate-400">{position.name}</div>
+                        <div className="text-xs text-gray-600">{position.name}</div>
                       )}
                     </TableCell>
-                    <TableCell className="text-white">{position.quantity}</TableCell>
-                    <TableCell className="text-white">
+                    <TableCell className="text-gray-900">{position.quantity}</TableCell>
+                    <TableCell className="text-gray-900">
                       {formatCurrency(position.averagePrice, accountDetails?.currency)}
                     </TableCell>
-                    <TableCell className="text-white">
+                    <TableCell className="text-gray-900">
                       {formatCurrency(position.marketPrice, accountDetails?.currency)}
                     </TableCell>
-                    <TableCell className="text-white">
+                    <TableCell className="text-gray-900">
                       {formatCurrency(position.marketValue, accountDetails?.currency)}
                     </TableCell>
-                    <TableCell className={position.unrealizedPL >= 0 ? 'text-green-400' : 'text-red-400'}>
+                    <TableCell className={position.unrealizedPL >= 0 ? 'text-green-600' : 'text-red-600'}>
                       {position.unrealizedPL >= 0 ? '+' : ''}{formatCurrency(position.unrealizedPL, accountDetails?.currency)}
                     </TableCell>
                   </TableRow>
@@ -285,8 +285,8 @@ export function BrokerageAccountModal({
   const renderOrders = () => (
     <div className="space-y-4">
       <div className="flex items-center gap-2 mb-3">
-        <FileText className="h-5 w-5 text-orange-400" />
-        <h3 className="text-lg font-semibold text-white">Orders</h3>
+        <FileText className="h-5 w-5 text-orange-500" />
+        <h3 className="text-lg font-semibold text-gray-900">Orders</h3>
       </div>
       
       {ordersLoading ? (
@@ -296,38 +296,38 @@ export function BrokerageAccountModal({
           ))}
         </div>
       ) : !orders || orders.length === 0 ? (
-        <div className="text-center py-8 text-slate-400">
+        <div className="text-center py-8 text-gray-600">
           <FileText className="h-12 w-12 mx-auto mb-2 opacity-50" />
           <p>No orders found for this account</p>
         </div>
       ) : (
-        <div className="border border-slate-700 rounded-lg overflow-hidden">
+        <div className="border border-gray-200 rounded-lg overflow-hidden">
           <Table>
             <TableHeader>
-              <TableRow className="border-slate-700">
-                <TableHead className="text-slate-300">Symbol</TableHead>
-                <TableHead className="text-slate-300">Side</TableHead>
-                <TableHead className="text-slate-300">Quantity</TableHead>
-                <TableHead className="text-slate-300">Type</TableHead>
-                <TableHead className="text-slate-300">Price</TableHead>
-                <TableHead className="text-slate-300">Status</TableHead>
-                <TableHead className="text-slate-300">Date</TableHead>
+              <TableRow className="border-gray-200">
+                <TableHead className="text-gray-600">Symbol</TableHead>
+                <TableHead className="text-gray-600">Side</TableHead>
+                <TableHead className="text-gray-600">Quantity</TableHead>
+                <TableHead className="text-gray-600">Type</TableHead>
+                <TableHead className="text-gray-600">Price</TableHead>
+                <TableHead className="text-gray-600">Status</TableHead>
+                <TableHead className="text-gray-600">Date</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {orders.map((order: Order) => (
-                <TableRow key={order.id} className="border-slate-700">
-                  <TableCell className="font-medium text-white">{order.symbol}</TableCell>
+                <TableRow key={order.id} className="border-gray-200">
+                  <TableCell className="font-medium text-gray-900">{order.symbol}</TableCell>
                   <TableCell>
                     <Badge variant={order.side === 'buy' ? 'default' : 'destructive'} className="text-xs">
                       {order.side.toUpperCase()}
                     </Badge>
                   </TableCell>
-                  <TableCell className="text-white">
+                  <TableCell className="text-gray-900">
                     {order.filledQuantity ? `${order.filledQuantity}/${order.quantity}` : order.quantity}
                   </TableCell>
-                  <TableCell className="text-white">{order.orderType}</TableCell>
-                  <TableCell className="text-white">
+                  <TableCell className="text-gray-900">{order.orderType}</TableCell>
+                  <TableCell className="text-gray-900">
                     {order.price ? formatCurrency(order.price, accountDetails?.currency) : 'Market'}
                   </TableCell>
                   <TableCell>
@@ -335,7 +335,7 @@ export function BrokerageAccountModal({
                       {order.status}
                     </Badge>
                   </TableCell>
-                  <TableCell className="text-slate-400 text-xs">
+                  <TableCell className="text-gray-600 text-xs">
                     {formatDate(order.createdAt)}
                   </TableCell>
                 </TableRow>
@@ -350,8 +350,8 @@ export function BrokerageAccountModal({
   const renderActivity = () => (
     <div className="space-y-4">
       <div className="flex items-center gap-2 mb-3">
-        <Activity className="h-5 w-5 text-yellow-400" />
-        <h3 className="text-lg font-semibold text-white">Activity</h3>
+        <Activity className="h-5 w-5 text-yellow-500" />
+        <h3 className="text-lg font-semibold text-gray-900">Activity</h3>
       </div>
       
       {activitiesLoading ? (
@@ -361,40 +361,40 @@ export function BrokerageAccountModal({
           ))}
         </div>
       ) : !activities || activities.length === 0 ? (
-        <div className="text-center py-8 text-slate-400">
+        <div className="text-center py-8 text-gray-600">
           <Activity className="h-12 w-12 mx-auto mb-2 opacity-50" />
           <p>No recent activity for this account</p>
         </div>
       ) : (
-        <div className="border border-slate-700 rounded-lg overflow-hidden">
+        <div className="border border-gray-200 rounded-lg overflow-hidden">
           <Table>
             <TableHeader>
-              <TableRow className="border-slate-700">
-                <TableHead className="text-slate-300">Type</TableHead>
-                <TableHead className="text-slate-300">Description</TableHead>
-                <TableHead className="text-slate-300">Symbol</TableHead>
-                <TableHead className="text-slate-300">Amount</TableHead>
-                <TableHead className="text-slate-300">Date</TableHead>
+              <TableRow className="border-gray-200">
+                <TableHead className="text-gray-600">Type</TableHead>
+                <TableHead className="text-gray-600">Description</TableHead>
+                <TableHead className="text-gray-600">Symbol</TableHead>
+                <TableHead className="text-gray-600">Amount</TableHead>
+                <TableHead className="text-gray-600">Date</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {activities.map((activity: Activity) => (
-                <TableRow key={activity.id} className="border-slate-700">
+                <TableRow key={activity.id} className="border-gray-200">
                   <TableCell>
                     <Badge variant="outline" className="text-xs">
                       {activity.type}
                     </Badge>
                   </TableCell>
-                  <TableCell className="text-white max-w-48 truncate">
+                  <TableCell className="text-gray-900 max-w-48 truncate">
                     {activity.description}
                   </TableCell>
-                  <TableCell className="text-white">
+                  <TableCell className="text-gray-900">
                     {activity.symbol || '-'}
                   </TableCell>
-                  <TableCell className="text-white">
+                  <TableCell className="text-gray-900">
                     {activity.amount ? formatCurrency(activity.amount, accountDetails?.currency) : '-'}
                   </TableCell>
-                  <TableCell className="text-slate-400 text-xs">
+                  <TableCell className="text-gray-600 text-xs">
                     {formatDate(activity.timestamp)}
                   </TableCell>
                 </TableRow>
@@ -412,8 +412,8 @@ export function BrokerageAccountModal({
     return (
       <div className="space-y-4">
         <div className="flex items-center gap-2 mb-3">
-          <MoreHorizontal className="h-5 w-5 text-cyan-400" />
-          <h3 className="text-lg font-semibold text-white">Options Positions</h3>
+          <MoreHorizontal className="h-5 w-5 text-cyan-500" />
+          <h3 className="text-lg font-semibold text-gray-900">Options Positions</h3>
         </div>
         
         {positionsLoading ? (
@@ -423,36 +423,36 @@ export function BrokerageAccountModal({
             ))}
           </div>
         ) : optionPositions.length === 0 ? (
-          <div className="text-center py-8 text-slate-400">
+          <div className="text-center py-8 text-gray-600">
             <MoreHorizontal className="h-12 w-12 mx-auto mb-2 opacity-50" />
             <p>No options positions in this account</p>
           </div>
         ) : (
-          <div className="border border-slate-700 rounded-lg overflow-hidden">
+          <div className="border border-gray-200 rounded-lg overflow-hidden">
             <Table>
               <TableHeader>
-                <TableRow className="border-slate-700">
-                  <TableHead className="text-slate-300">Symbol</TableHead>
-                  <TableHead className="text-slate-300">Quantity</TableHead>
-                  <TableHead className="text-slate-300">Avg Price</TableHead>
-                  <TableHead className="text-slate-300">Market Value</TableHead>
-                  <TableHead className="text-slate-300">Unrealized P/L</TableHead>
+                <TableRow className="border-gray-200">
+                  <TableHead className="text-gray-600">Symbol</TableHead>
+                  <TableHead className="text-gray-600">Quantity</TableHead>
+                  <TableHead className="text-gray-600">Avg Price</TableHead>
+                  <TableHead className="text-gray-600">Market Value</TableHead>
+                  <TableHead className="text-gray-600">Unrealized P/L</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {optionPositions.map((position: Position, index: number) => (
-                  <TableRow key={index} className="border-slate-700">
-                    <TableCell className="font-medium text-white">
+                  <TableRow key={index} className="border-gray-200">
+                    <TableCell className="font-medium text-gray-900">
                       {position.symbol}
                     </TableCell>
-                    <TableCell className="text-white">{position.quantity}</TableCell>
-                    <TableCell className="text-white">
+                    <TableCell className="text-gray-900">{position.quantity}</TableCell>
+                    <TableCell className="text-gray-900">
                       {formatCurrency(position.averagePrice, accountDetails?.currency)}
                     </TableCell>
-                    <TableCell className="text-white">
+                    <TableCell className="text-gray-900">
                       {formatCurrency(position.marketValue, accountDetails?.currency)}
                     </TableCell>
-                    <TableCell className={position.unrealizedPL >= 0 ? 'text-green-400' : 'text-red-400'}>
+                    <TableCell className={position.unrealizedPL >= 0 ? 'text-green-600' : 'text-red-600'}>
                       {position.unrealizedPL >= 0 ? '+' : ''}{formatCurrency(position.unrealizedPL, accountDetails?.currency)}
                     </TableCell>
                   </TableRow>
@@ -467,11 +467,11 @@ export function BrokerageAccountModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-6xl h-[90vh] bg-slate-900 border-slate-700 text-white overflow-hidden">
-        <DialogHeader className="border-b border-slate-700 pb-4">
+      <DialogContent className="max-w-6xl h-[90vh] bg-[#F4F2ED] border-gray-200 text-gray-900 overflow-hidden">
+        <DialogHeader className="border-b border-gray-200 pb-4">
           <div className="flex items-center justify-between">
             <DialogTitle className="text-2xl font-bold">Account Details</DialogTitle>
-            <Button variant="ghost" size="sm" onClick={onClose} className="text-slate-400 hover:text-white">
+            <Button variant="ghost" size="sm" onClick={onClose} className="text-gray-600 hover:text-gray-900">
               <X className="h-4 w-4" />
             </Button>
           </div>
@@ -494,16 +494,16 @@ export function BrokerageAccountModal({
               renderHeader()
             )}
             
-            <Separator className="bg-slate-700" />
+            <Separator className="bg-gray-200" />
             
             {/* Tabs Section */}
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-              <TabsList className="grid w-full grid-cols-5 bg-slate-800/50">
-                <TabsTrigger value="overview" className="data-[state=active]:bg-blue-600/20">Overview</TabsTrigger>
-                <TabsTrigger value="holdings" className="data-[state=active]:bg-blue-600/20">Holdings</TabsTrigger>
-                <TabsTrigger value="orders" className="data-[state=active]:bg-blue-600/20">Orders</TabsTrigger>
-                <TabsTrigger value="activity" className="data-[state=active]:bg-blue-600/20">Activity</TabsTrigger>
-                <TabsTrigger value="options" className="data-[state=active]:bg-blue-600/20">Options</TabsTrigger>
+              <TabsList className="grid w-full grid-cols-5 bg-white">
+                <TabsTrigger value="overview" className="data-[state=active]:bg-gray-100">Overview</TabsTrigger>
+                <TabsTrigger value="holdings" className="data-[state=active]:bg-gray-100">Holdings</TabsTrigger>
+                <TabsTrigger value="orders" className="data-[state=active]:bg-gray-100">Orders</TabsTrigger>
+                <TabsTrigger value="activity" className="data-[state=active]:bg-gray-100">Activity</TabsTrigger>
+                <TabsTrigger value="options" className="data-[state=active]:bg-gray-100">Options</TabsTrigger>
               </TabsList>
               
               <TabsContent value="overview" className="space-y-6 mt-6">

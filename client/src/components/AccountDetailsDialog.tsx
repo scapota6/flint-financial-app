@@ -198,33 +198,33 @@ const getActivityIcon = (type: string) => {
 // Helper components and utilities
 function Info({ label, value, className = '' }: any) {
   return (
-    <div className={`rounded-lg bg-gray-50 border border-gray-200 dark:bg-black/60 dark:border-gray-700 p-4 ${className}`}>
-      <div className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">{label}</div>
-      <div className="font-semibold text-gray-900 dark:text-white mt-1">{value ?? '—'}</div>
+    <div className={`rounded-lg bg-gray-50 border border-gray-200 p-4 ${className}`}>
+      <div className="text-xs font-medium text-gray-500 uppercase tracking-wide">{label}</div>
+      <div className="font-semibold text-gray-900 mt-1">{value ?? '—'}</div>
     </div>
   );
 }
 
 function Card({ title, children }: any) {
   return (
-    <div className="rounded-lg bg-gray-50 border border-gray-200 dark:bg-black/60 dark:border-gray-700 p-4">
-      <div className="mb-3 font-semibold text-gray-900 dark:text-white">{title}</div>
+    <div className="rounded-lg bg-gray-50 border border-gray-200 p-4">
+      <div className="mb-3 font-semibold text-gray-900">{title}</div>
       {children}
     </div>
   );
 }
 
 function List({ items, empty, render }: any) {
-  if (!items || items.length === 0) return <div className="text-gray-500 dark:text-gray-400 text-sm p-3 italic">{empty}</div>;
-  return <div className="space-y-3">{items.map((x: any, i: number) => <div key={i} className="p-3 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-750 transition-colors duration-200">{render(x)}</div>)}</div>;
+  if (!items || items.length === 0) return <div className="text-gray-500 text-sm p-3 italic">{empty}</div>;
+  return <div className="space-y-3">{items.map((x: any, i: number) => <div key={i} className="p-3 rounded-lg bg-white border border-gray-200 hover:bg-gray-50 transition-colors duration-200">{render(x)}</div>)}</div>;
 }
 
 function Th({ children, className = '' }: any) { 
-  return <th className={`text-left px-4 py-3 text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wide ${className}`}>{children}</th>; 
+  return <th className={`text-left px-4 py-3 text-xs font-semibold text-gray-700 uppercase tracking-wide ${className}`}>{children}</th>; 
 }
 
 function Td({ children, className = '', ...rest }: any) { 
-  return <td className={`px-4 py-3 text-gray-800 dark:text-gray-200 transition-colors duration-150 ${className}`} {...rest}>{children}</td>; 
+  return <td className={`px-4 py-3 text-gray-700 transition-colors duration-150 ${className}`} {...rest}>{children}</td>; 
 }
 
 function TdRight({ children, className = '', ...rest }: any) { 
@@ -825,16 +825,16 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-      <div className="w-full max-w-6xl max-h-[95vh] rounded-xl bg-gradient-to-br from-white via-white to-blue-50 dark:from-gray-900 dark:via-gray-900 dark:to-blue-950/20 border border-blue-100 dark:border-blue-800/30 shadow-2xl shadow-blue-500/10 overflow-hidden">
-        <div className="flex items-center justify-between p-6 border-b border-blue-100 dark:border-blue-800/30 bg-gradient-to-r from-blue-50 to-blue-50 dark:from-blue-950/30 dark:to-blue-950/30">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+      <div className="w-full max-w-6xl max-h-[95vh] rounded-lg bg-[#F4F2ED] border border-gray-200 shadow-2xl overflow-hidden">
+        <div className="flex items-center justify-between p-6 border-b border-gray-200 bg-white">
           <div>
-            <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-600 bg-clip-text text-transparent">Account Details</h2>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">Real-time account information and holdings</p>
+            <h2 className="text-2xl font-bold text-gray-900">Account Details</h2>
+            <p className="text-sm text-gray-600 mt-1">Real-time account information and holdings</p>
           </div>
           <button 
             onClick={onClose} 
-            className="rounded-xl border border-blue-200 dark:border-blue-700 bg-white/80 dark:bg-gray-800/80 px-4 py-2 hover:bg-blue-50 dark:hover:bg-blue-900/30 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-200 shadow-sm hover:shadow-md backdrop-blur-sm"
+            className="rounded-lg border border-gray-200 bg-white px-4 py-2 hover:bg-gray-50 text-gray-700 hover:text-gray-900 transition-all duration-200 shadow-sm hover:shadow-md"
           >
             <X className="h-5 w-5" />
           </button>
@@ -843,10 +843,10 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
         {isLoading && (
           <div className="flex items-center justify-center p-12">
             <div className="relative">
-              <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-200 dark:border-blue-800"></div>
-              <div className="animate-spin rounded-full h-12 w-12 border-4 border-t-blue-600 absolute top-0 left-0"></div>
+              <div className="animate-spin rounded-full h-12 w-12 border-4 border-gray-200"></div>
+              <div className="animate-spin rounded-full h-12 w-12 border-4 border-t-gray-900 absolute top-0 left-0"></div>
             </div>
-            <span className="ml-4 text-gray-600 dark:text-gray-400 font-medium">
+            <span className="ml-4 text-gray-600 font-medium">
               {isSnapTradeAccount ? 'Loading account details...' : 'Loading account details...'}
             </span>
           </div>
@@ -854,30 +854,30 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
         
         {/* SnapTrade Section-Specific Loading and Error States */}
         {isSnapTradeAccount && data && (
-          <div className="p-6 max-h-[calc(95vh-140px)] overflow-y-auto space-y-6">
+          <div className="p-6 max-h-[calc(95vh-140px)] overflow-y-auto space-y-6 bg-[#F4F2ED]">
             {/* Account Header with skeleton */}
             <section>
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center">
-                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-blue-500 flex items-center justify-center text-white font-bold text-sm mr-3">1</div>
+              <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                <div className="w-8 h-8 rounded-lg bg-gray-900 flex items-center justify-center text-white font-bold text-sm mr-3">1</div>
                 Account Information
               </h3>
               
               {snapTradeQueries.details.isLoading ? (
                 <div className="animate-pulse">
                   <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                    <div className="h-20 bg-gray-200 dark:bg-gray-700 rounded-xl"></div>
-                    <div className="h-20 bg-gray-200 dark:bg-gray-700 rounded-xl"></div>
-                    <div className="h-20 bg-gray-200 dark:bg-gray-700 rounded-xl"></div>
-                    <div className="h-20 bg-gray-200 dark:bg-gray-700 rounded-xl"></div>
+                    <div className="h-20 bg-gray-200 rounded-lg"></div>
+                    <div className="h-20 bg-gray-200 rounded-lg"></div>
+                    <div className="h-20 bg-gray-200 rounded-lg"></div>
+                    <div className="h-20 bg-gray-200 rounded-lg"></div>
                   </div>
                 </div>
               ) : snapTradeQueries.details.isError ? (
-                <div className="p-4 bg-red-50 dark:bg-red-900/20 rounded-lg border border-red-200 dark:border-red-800">
+                <div className="p-4 bg-red-50 rounded-lg border border-red-200">
                   <div className="flex items-center gap-3">
-                    <AlertCircle className="h-5 w-5 text-red-600 dark:text-red-400" />
+                    <AlertCircle className="h-5 w-5 text-red-600" />
                     <div>
-                      <h4 className="font-semibold text-red-800 dark:text-red-200">Account Details Error</h4>
-                      <p className="text-sm text-red-600 dark:text-red-300 mt-1">
+                      <h4 className="font-semibold text-red-800">Account Details Error</h4>
+                      <p className="text-sm text-red-600 mt-1">
                         {(snapTradeQueries.details.error as any)?.message || 'Failed to load account details'}
                       </p>
                     </div>
@@ -895,26 +895,26 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
 
             {/* Balances Section with skeleton */}
             <section>
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center">
-                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center text-white font-bold text-sm mr-3">2</div>
+              <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                <div className="w-8 h-8 rounded-lg bg-green-600 flex items-center justify-center text-white font-bold text-sm mr-3">2</div>
                 Balances
               </h3>
               
               {snapTradeQueries.balances.isLoading ? (
                 <div className="animate-pulse">
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div className="h-20 bg-gray-200 dark:bg-gray-700 rounded-xl"></div>
-                    <div className="h-20 bg-gray-200 dark:bg-gray-700 rounded-xl"></div>
-                    <div className="h-20 bg-gray-200 dark:bg-gray-700 rounded-xl"></div>
+                    <div className="h-20 bg-gray-200 rounded-lg"></div>
+                    <div className="h-20 bg-gray-200 rounded-lg"></div>
+                    <div className="h-20 bg-gray-200 rounded-lg"></div>
                   </div>
                 </div>
               ) : snapTradeQueries.balances.isError ? (
-                <div className="p-4 bg-red-50 dark:bg-red-900/20 rounded-lg border border-red-200 dark:border-red-800">
+                <div className="p-4 bg-red-50 rounded-lg border border-red-200">
                   <div className="flex items-center gap-3">
-                    <AlertCircle className="h-5 w-5 text-red-600 dark:text-red-400" />
+                    <AlertCircle className="h-5 w-5 text-red-600" />
                     <div>
-                      <h4 className="font-semibold text-red-800 dark:text-red-200">Balance Information Error</h4>
-                      <p className="text-sm text-red-600 dark:text-red-300 mt-1">
+                      <h4 className="font-semibold text-red-800">Balance Information Error</h4>
+                      <p className="text-sm text-red-600 mt-1">
                         {(snapTradeQueries.balances.error as any)?.message || 'Failed to load balance information'}
                       </p>
                     </div>
@@ -931,67 +931,67 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
 
             {/* Holdings Section with skeleton */}
             <section>
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center">
-                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center text-white font-bold text-sm mr-3">📊</div>
+              <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                <div className="w-8 h-8 rounded-lg bg-yellow-600 flex items-center justify-center text-white font-bold text-sm mr-3">📊</div>
                 Holdings & Positions
               </h3>
               
               {snapTradeQueries.positions.isLoading ? (
                 <div className="animate-pulse space-y-3">
-                  <div className="h-16 bg-gray-200 dark:bg-gray-700 rounded-lg"></div>
-                  <div className="h-16 bg-gray-200 dark:bg-gray-700 rounded-lg"></div>
-                  <div className="h-16 bg-gray-200 dark:bg-gray-700 rounded-lg"></div>
+                  <div className="h-16 bg-gray-200 rounded-lg"></div>
+                  <div className="h-16 bg-gray-200 rounded-lg"></div>
+                  <div className="h-16 bg-gray-200 rounded-lg"></div>
                 </div>
               ) : snapTradeQueries.positions.isError ? (
-                <div className="p-4 bg-red-50 dark:bg-red-900/20 rounded-lg border border-red-200 dark:border-red-800">
+                <div className="p-4 bg-red-50 rounded-lg border border-red-200">
                   <div className="flex items-center gap-3">
-                    <AlertCircle className="h-5 w-5 text-red-600 dark:text-red-400" />
+                    <AlertCircle className="h-5 w-5 text-red-600" />
                     <div>
-                      <h4 className="font-semibold text-red-800 dark:text-red-200">Holdings Error</h4>
-                      <p className="text-sm text-red-600 dark:text-red-300 mt-1">
+                      <h4 className="font-semibold text-red-800">Holdings Error</h4>
+                      <p className="text-sm text-red-600 mt-1">
                         {(snapTradeQueries.positions.error as any)?.message || 'Failed to load holdings'}
                       </p>
                     </div>
                   </div>
                 </div>
               ) : data.balancesAndHoldings.holdings && data.balancesAndHoldings.holdings.length > 0 ? (
-                <div className="overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm">
+                <div className="overflow-x-auto rounded-lg border border-gray-200 bg-white shadow-sm">
                   <table className="w-full text-sm">
-                    <thead className="bg-gradient-to-r from-orange-50 to-red-50 dark:from-orange-900/30 dark:to-red-900/30">
+                    <thead className="bg-gray-50">
                       <tr>
-                        <th className="text-left p-3 font-semibold text-gray-900 dark:text-white">Symbol</th>
-                        <th className="text-left p-3 font-semibold text-gray-900 dark:text-white">Description</th>
-                        <th className="text-right p-3 font-semibold text-gray-900 dark:text-white">Quantity</th>
-                        <th className="text-right p-3 font-semibold text-gray-900 dark:text-white">Current Price</th>
-                        <th className="text-right p-3 font-semibold text-gray-900 dark:text-white">Market Value</th>
-                        <th className="text-right p-3 font-semibold text-gray-900 dark:text-white">P&L</th>
+                        <th className="text-left p-3 font-semibold text-gray-900">Symbol</th>
+                        <th className="text-left p-3 font-semibold text-gray-900">Description</th>
+                        <th className="text-right p-3 font-semibold text-gray-900">Quantity</th>
+                        <th className="text-right p-3 font-semibold text-gray-900">Current Price</th>
+                        <th className="text-right p-3 font-semibold text-gray-900">Market Value</th>
+                        <th className="text-right p-3 font-semibold text-gray-900">P&L</th>
                       </tr>
                     </thead>
                     <tbody>
                       {data.balancesAndHoldings.holdings.map((holding: any, index: number) => (
-                        <tr key={index} className="border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-900/50 transition-colors duration-150">
-                          <td className="p-3 text-gray-900 dark:text-white font-medium">
+                        <tr key={index} className="border-b border-gray-100 hover:bg-gray-50 transition-colors duration-150">
+                          <td className="p-3 text-gray-900 font-medium">
                             <div className="font-semibold">{holding.symbol}</div>
                           </td>
-                          <td className="p-3 text-gray-900 dark:text-white">
+                          <td className="p-3 text-gray-700">
                             <div className="text-sm">{holding.name}</div>
                           </td>
-                          <td className="p-3 text-right text-gray-900 dark:text-white font-medium">
+                          <td className="p-3 text-right text-gray-900 font-medium">
                             {fmtNum(holding.quantity)}
                           </td>
-                          <td className="p-3 text-right text-gray-900 dark:text-white">
+                          <td className="p-3 text-right text-gray-700">
                             {fmtMoney(holding.currentPrice)}
                           </td>
                           <td className="p-3 text-right">
-                            <span className="font-bold text-green-600 dark:text-green-400">
+                            <span className="font-bold text-green-600">
                               {fmtMoney(holding.marketValue)}
                             </span>
                           </td>
                           <td className="p-3 text-right">
                             <span className={`font-medium ${
                               (holding.unrealized || 0) >= 0 
-                                ? 'text-green-600 dark:text-green-400' 
-                                : 'text-red-600 dark:text-red-400'
+                                ? 'text-green-600' 
+                                : 'text-red-600'
                             }`}>
                               {fmtMoney(holding.unrealized)}
                             </span>
@@ -1002,32 +1002,32 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
                   </table>
                 </div>
               ) : (
-                <div className="p-6 bg-gray-50 dark:bg-gray-900/20 rounded-lg border border-gray-200 dark:border-gray-700 text-center">
-                  <p className="text-gray-600 dark:text-gray-400">No holdings found in this account</p>
+                <div className="p-6 bg-gray-50 rounded-lg border border-gray-200 text-center">
+                  <p className="text-gray-600">No holdings found in this account</p>
                 </div>
               )}
             </section>
 
             {/* Orders Section with skeleton */}
             <section>
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center">
-                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center text-white font-bold text-sm mr-3">📋</div>
+              <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                <div className="w-8 h-8 rounded-lg bg-gray-700 flex items-center justify-center text-white font-bold text-sm mr-3">📋</div>
                 Orders
               </h3>
               
               {snapTradeQueries.orders.isLoading ? (
                 <div className="animate-pulse space-y-3">
-                  <div className="h-12 bg-gray-200 dark:bg-gray-700 rounded-lg"></div>
-                  <div className="h-12 bg-gray-200 dark:bg-gray-700 rounded-lg"></div>
-                  <div className="h-12 bg-gray-200 dark:bg-gray-700 rounded-lg"></div>
+                  <div className="h-12 bg-gray-200 rounded-lg"></div>
+                  <div className="h-12 bg-gray-200 rounded-lg"></div>
+                  <div className="h-12 bg-gray-200 rounded-lg"></div>
                 </div>
               ) : snapTradeQueries.orders.isError ? (
-                <div className="p-4 bg-red-50 dark:bg-red-900/20 rounded-lg border border-red-200 dark:border-red-800">
+                <div className="p-4 bg-red-50 rounded-lg border border-red-200">
                   <div className="flex items-center gap-3">
-                    <AlertCircle className="h-5 w-5 text-red-600 dark:text-red-400" />
+                    <AlertCircle className="h-5 w-5 text-red-600" />
                     <div>
-                      <h4 className="font-semibold text-red-800 dark:text-red-200">Orders Error</h4>
-                      <p className="text-sm text-red-600 dark:text-red-300 mt-1">
+                      <h4 className="font-semibold text-red-800">Orders Error</h4>
+                      <p className="text-sm text-red-600 mt-1">
                         {(snapTradeQueries.orders.error as any)?.message || 'Failed to load orders'}
                       </p>
                     </div>
@@ -1036,8 +1036,8 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
               ) : (
                 <Card title="Order History">
                   <List items={data.positionsAndOrders?.orderHistory || []} empty="No recent orders" render={(order: any) => (
-                    <div className="grid grid-cols-5 gap-2">
-                      <span className="font-medium">{order.symbol || '—'}</span>
+                    <div className="grid grid-cols-5 gap-2 text-gray-700">
+                      <span className="font-medium text-gray-900">{order.symbol || '—'}</span>
                       <span className="text-right">{(order.side || '').toUpperCase()}</span>
                       <span className="text-right">{fmtNum(order.quantity)}</span>
                       <span className="text-right">{fmtMoney(order.averageFillPrice?.amount)}</span>
@@ -1050,24 +1050,24 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
 
             {/* Activities Section with skeleton */}
             <section>
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center">
-                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-500 to-blue-500 flex items-center justify-center text-white font-bold text-sm mr-3">🏛️</div>
+              <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                <div className="w-8 h-8 rounded-lg bg-gray-600 flex items-center justify-center text-white font-bold text-sm mr-3">🏛️</div>
                 Activity and Transactions
               </h3>
               
               {snapTradeQueries.activities.isLoading ? (
                 <div className="animate-pulse space-y-3">
-                  <div className="h-12 bg-gray-200 dark:bg-gray-700 rounded-lg"></div>
-                  <div className="h-12 bg-gray-200 dark:bg-gray-700 rounded-lg"></div>
-                  <div className="h-12 bg-gray-200 dark:bg-gray-700 rounded-lg"></div>
+                  <div className="h-12 bg-gray-200 rounded-lg"></div>
+                  <div className="h-12 bg-gray-200 rounded-lg"></div>
+                  <div className="h-12 bg-gray-200 rounded-lg"></div>
                 </div>
               ) : snapTradeQueries.activities.isError ? (
-                <div className="p-4 bg-red-50 dark:bg-red-900/20 rounded-lg border border-red-200 dark:border-red-800">
+                <div className="p-4 bg-red-50 rounded-lg border border-red-200">
                   <div className="flex items-center gap-3">
-                    <AlertCircle className="h-5 w-5 text-red-600 dark:text-red-400" />
+                    <AlertCircle className="h-5 w-5 text-red-600" />
                     <div>
-                      <h4 className="font-semibold text-red-800 dark:text-red-200">Activity Error</h4>
-                      <p className="text-sm text-red-600 dark:text-red-300 mt-1">
+                      <h4 className="font-semibold text-red-800">Activity Error</h4>
+                      <p className="text-sm text-red-600 mt-1">
                         {(snapTradeQueries.activities.error as any)?.message || 'Failed to load activity'}
                       </p>
                     </div>
@@ -1076,12 +1076,12 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
               ) : (
                 <Card title="Recent Activity">
                   <List items={data.activityAndTransactions || []} empty="No recent activity" render={(activity: any) => (
-                    <div className="grid grid-cols-5 gap-2 text-gray-900 dark:text-gray-100">
-                      <span className="font-medium text-gray-800 dark:text-gray-200">{activity.type}</span>
-                      <span className="font-medium text-gray-800 dark:text-gray-200">{activity.symbol || '—'}</span>
-                      <span className="text-right font-medium text-gray-800 dark:text-gray-200">{fmtNum(activity.quantity)}</span>
-                      <span className="text-right font-medium text-gray-800 dark:text-gray-200">{fmtMoney(activity.amount)}</span>
-                      <span className="text-right text-gray-600 dark:text-gray-300">{fmtTime(activity.timestamp)}</span>
+                    <div className="grid grid-cols-5 gap-2 text-gray-700">
+                      <span className="font-medium text-gray-900">{activity.type}</span>
+                      <span className="font-medium text-gray-700">{activity.symbol || '—'}</span>
+                      <span className="text-right font-medium">{fmtNum(activity.quantity)}</span>
+                      <span className="text-right font-medium">{fmtMoney(activity.amount)}</span>
+                      <span className="text-right text-gray-500">{fmtTime(activity.timestamp)}</span>
                     </div>
                   )}/>
                 </Card>
@@ -1089,11 +1089,11 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
             </section>
 
             {/* Footer */}
-            <div className="mt-8 pt-6 border-t border-gradient-to-r from-blue-200 to-blue-200 dark:from-blue-800 dark:to-blue-800 bg-gradient-to-r from-blue-50/50 to-blue-50/50 dark:from-blue-950/30 dark:to-blue-950/30 rounded-xl p-4">
+            <div className="mt-8 pt-6 border-t border-gray-200 bg-white rounded-lg p-4">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-6 text-xs text-gray-600 dark:text-gray-400">
-                  <div className="flex items-center gap-2 bg-white dark:bg-gray-800 px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700">
-                    <Clock className="h-4 w-4 text-blue-500" />
+                <div className="flex items-center gap-6 text-xs text-gray-600">
+                  <div className="flex items-center gap-2 bg-gray-50 px-3 py-2 rounded-lg border border-gray-200">
+                    <Clock className="h-4 w-4 text-gray-600" />
                     <span className="font-medium">Updated: {fmtTime(data.metadata?.fetched_at || new Date().toISOString())}</span>
                   </div>
                   {(snapTradeQueries.details.data?.fromCache || 
@@ -1101,9 +1101,9 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
                     snapTradeQueries.positions.data?.fromCache || 
                     snapTradeQueries.orders.data?.fromCache || 
                     snapTradeQueries.activities.data?.fromCache) && (
-                    <div className="flex items-center gap-1 bg-blue-50 dark:bg-blue-900/30 px-3 py-2 rounded-lg border border-blue-200 dark:border-blue-700" data-testid="cache-indicator">
-                      <Clock className="h-3 w-3 text-blue-600 dark:text-blue-400" />
-                      <span className="text-blue-700 dark:text-blue-300 font-medium">Cached data (updates every 5 min)</span>
+                    <div className="flex items-center gap-1 bg-yellow-50 px-3 py-2 rounded-lg border border-yellow-200" data-testid="cache-indicator">
+                      <Clock className="h-3 w-3 text-yellow-600" />
+                      <span className="text-yellow-700 font-medium">Cached data (updates every 5 min)</span>
                     </div>
                   )}
                 </div>
@@ -1116,38 +1116,38 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
           <div className="mx-6 mb-6">
             {/* Handle authentication errors (401/403) */}
             {errorDetails?.status === 401 ? (
-              <div className="p-8 text-center bg-gradient-to-br from-red-50 to-pink-50 dark:from-red-900/20 dark:to-pink-900/20 border border-red-200 dark:border-red-700 rounded-xl">
-                <div className="mx-auto w-16 h-16 mb-6 bg-gradient-to-br from-red-500 to-pink-500 rounded-full flex items-center justify-center">
+              <div className="p-8 text-center bg-red-50 border border-red-200 rounded-lg">
+                <div className="mx-auto w-16 h-16 mb-6 bg-red-500 rounded-full flex items-center justify-center">
                   <AlertCircle className="h-8 w-8 text-white" />
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">
                   Please sign in again
                 </h3>
-                <p className="text-gray-600 dark:text-gray-400 mb-6 max-w-md mx-auto">
+                <p className="text-gray-600 mb-6 max-w-md mx-auto">
                   Your session has expired. Please log in again to view your account details.
                 </p>
                 <Button
                   onClick={() => window.location.href = '/login'}
-                  className="bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 text-white px-6 py-3 text-base font-medium"
+                  className="bg-gray-900 hover:bg-gray-800 text-white px-6 py-3 text-base font-medium"
                   data-testid="button-login"
                 >
                   Login
                 </Button>
               </div>
             ) : errorDetails?.status === 403 ? (
-              <div className="p-8 text-center bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 border border-amber-200 dark:border-amber-700 rounded-xl">
-                <div className="mx-auto w-16 h-16 mb-6 bg-gradient-to-br from-amber-500 to-orange-500 rounded-full flex items-center justify-center">
+              <div className="p-8 text-center bg-amber-50 border border-amber-200 rounded-lg">
+                <div className="mx-auto w-16 h-16 mb-6 bg-amber-500 rounded-full flex items-center justify-center">
                   <AlertCircle className="h-8 w-8 text-white" />
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">
                   Session expired (CSRF)
                 </h3>
-                <p className="text-gray-600 dark:text-gray-400 mb-6 max-w-md mx-auto">
+                <p className="text-gray-600 mb-6 max-w-md mx-auto">
                   Your security token has expired. Please refresh the page and try again.
                 </p>
                 <Button
                   onClick={() => window.location.reload()}
-                  className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white px-6 py-3 text-base font-medium"
+                  className="bg-gray-900 hover:bg-gray-800 text-white px-6 py-3 text-base font-medium"
                   data-testid="button-refresh"
                 >
                   Refresh and try again
@@ -1155,14 +1155,14 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
               </div>
             ) : errorDetails?.isTransient || errorDetails?.shouldRetry || errorDetails?.status === 503 || errorDetails?.code === 'TEMPORARY_ERROR' || errorDetails?.code === 'TEMPORARY_UNAVAILABLE' ? (
               /* Transient errors - show yellow Retry button */
-              <div className="p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded-xl">
+              <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
                 <div className="flex items-center gap-3">
                   <RefreshCw className="h-5 w-5 text-yellow-600" />
                   <div>
-                    <h4 className="font-semibold text-yellow-900 dark:text-yellow-100">
+                    <h4 className="font-semibold text-yellow-900">
                       Temporarily Unavailable
                     </h4>
-                    <p className="text-sm text-yellow-700 dark:text-yellow-300 mt-1">
+                    <p className="text-sm text-yellow-700 mt-1">
                       {errorDetails?.message || 'Service temporarily unavailable. Please try again in a moment.'}
                     </p>
                   </div>
@@ -1170,7 +1170,6 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
                 <Button
                   onClick={() => {
                     if (isSnapTradeAccount) {
-                      // Refetch all SnapTrade queries
                       snapTradeQueries.details.refetch();
                       snapTradeQueries.balances.refetch();
                       snapTradeQueries.positions.refetch();
@@ -1189,20 +1188,20 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
               </div>
             ) : errorDetails?.isDisconnected || errorDetails?.code === 'DISCONNECTED' || errorDetails?.code === 'AUTH_EXPIRED' || errorDetails?.status === 410 ? (
               /* Permanent disconnection - show red Reconnect button */
-              <div className="p-8 text-center bg-gradient-to-br from-red-50 to-red-100 dark:from-red-900/20 dark:to-red-800/20 border border-red-200 dark:border-red-700 rounded-xl">
-                <div className="mx-auto w-16 h-16 mb-6 bg-gradient-to-br from-red-500 to-red-600 rounded-full flex items-center justify-center">
+              <div className="p-8 text-center bg-red-50 border border-red-200 rounded-lg">
+                <div className="mx-auto w-16 h-16 mb-6 bg-red-500 rounded-full flex items-center justify-center">
                   <AlertCircle className="h-8 w-8 text-white" />
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">
                   Account Disconnected
                 </h3>
-                <p className="text-gray-600 dark:text-gray-400 mb-6 max-w-md mx-auto">
+                <p className="text-gray-600 mb-6 max-w-md mx-auto">
                   {errorDetails?.message || 'It looks like access expired or was revoked. Reconnect to view your account details and continue managing your finances.'}
                 </p>
                 <Button
                   onClick={handleReconnectAccount}
                   disabled={isReconnecting}
-                  className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white px-6 py-3 text-base font-medium"
+                  className="bg-gray-900 hover:bg-gray-800 text-white px-6 py-3 text-base font-medium"
                   data-testid="button-reconnect"
                 >
                   {isReconnecting ? (
@@ -1217,14 +1216,14 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
               </div>
             ) : (
               /* Generic errors - show gray Try Again button */
-              <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
+              <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
                 <div className="flex items-center gap-3 mb-3">
-                  <AlertCircle className="h-5 w-5 text-gray-600 dark:text-gray-400" />
+                  <AlertCircle className="h-5 w-5 text-gray-600" />
                   <div>
-                    <h4 className="font-semibold text-gray-900 dark:text-white">
+                    <h4 className="font-semibold text-gray-900">
                       Failed to load account details
                     </h4>
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                    <p className="text-sm text-gray-600 mt-1">
                       {errorDetails?.message || 'Please check your connection and try again.'}
                     </p>
                   </div>
@@ -1232,7 +1231,6 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
                 <Button
                   onClick={() => {
                     if (isSnapTradeAccount) {
-                      // Refetch all SnapTrade queries
                       snapTradeQueries.details.refetch();
                       snapTradeQueries.balances.refetch();
                       snapTradeQueries.positions.refetch();
@@ -1250,13 +1248,13 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
                 {isDev && (
                   <button
                     onClick={() => setShowErrorDetails(!showErrorDetails)}
-                    className="text-xs text-gray-500 dark:text-gray-400 underline mt-2 ml-2"
+                    className="text-xs text-gray-500 underline mt-2 ml-2"
                   >
                     {showErrorDetails ? 'Hide' : 'View'} error details
                   </button>
                 )}
                 {isDev && showErrorDetails && (
-                  <div className="mt-2 p-2 bg-gray-100 dark:bg-gray-900/30 rounded text-xs font-mono text-gray-700 dark:text-gray-300">
+                  <div className="mt-2 p-2 bg-gray-100 rounded text-xs font-mono text-gray-700">
                     <div>Code: {errorDetails?.code || 'Unknown'}</div>
                     <div>Message: {errorDetails?.message || 'No message'}</div>
                     <div>Status: {errorDetails?.status || 'Unknown'}</div>
@@ -1271,22 +1269,22 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
         )}
 
         {data && (
-          <div className="space-y-8 overflow-y-auto max-h-[75vh] p-6 bg-gradient-to-b from-transparent to-blue-50/30 dark:to-blue-950/10">
+          <div className="space-y-8 overflow-y-auto max-h-[75vh] p-6 bg-[#F4F2ED]">
             
             {/* CREDIT CARD LAYOUT - Teller credit cards get special treatment */}
             {data.provider === 'teller' && data.creditCardInfo ? (
               <>
                 {/* 1. Credit Card Overview (FIRST for credit cards) */}
                 <section>
-                  <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center">
+                  <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
                     <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center text-white font-bold text-sm mr-3">💳</div>
                     Credit Card Overview
                   </h3>
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <div className="p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
-                      <div className="text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wide">Credit Limit</div>
-                      <div className="text-2xl font-bold text-gray-900 dark:text-gray-100 mt-1">
+                    <div className="p-4 bg-white rounded-lg border border-gray-200">
+                      <div className="text-xs font-medium text-gray-600 uppercase tracking-wide">Credit Limit</div>
+                      <div className="text-2xl font-bold text-gray-900 mt-1">
                         {(() => {
                           // Calculate from the same values shown in Spent and Available Credit boxes
                           const spent = data.creditCardInfo?.amountSpent || data.balances?.ledger || 0;
@@ -1294,44 +1292,44 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
                           const creditLimit = spent + available;
                           
                           return creditLimit > 0 ? fmtMoney(creditLimit) : (
-                            <span className="text-gray-500 dark:text-gray-400" title="Not provided by issuer">N/A</span>
+                            <span className="text-gray-500" title="Not provided by issuer">N/A</span>
                           );
                         })()}
                       </div>
                     </div>
-                    <div className="p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
-                      <div className="text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wide">Spent</div>
-                      <div className="text-2xl font-bold text-gray-900 dark:text-gray-100 mt-1">
+                    <div className="p-4 bg-white rounded-lg border border-gray-200">
+                      <div className="text-xs font-medium text-gray-600 uppercase tracking-wide">Spent</div>
+                      <div className="text-2xl font-bold text-gray-900 mt-1">
                         {data.creditCardInfo?.amountSpent ? fmtMoney(data.creditCardInfo?.amountSpent) : 
                          data.balances?.ledger ? fmtMoney(data.balances?.ledger) : (
-                          <span className="text-gray-500 dark:text-gray-400" title="Not provided by issuer">N/A</span>
+                          <span className="text-gray-500" title="Not provided by issuer">N/A</span>
                         )}
                       </div>
                     </div>
-                    <div className="p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
-                      <div className="text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wide">Available Credit</div>
-                      <div className="text-2xl font-bold text-gray-900 dark:text-gray-100 mt-1">
+                    <div className="p-4 bg-white rounded-lg border border-gray-200">
+                      <div className="text-xs font-medium text-gray-600 uppercase tracking-wide">Available Credit</div>
+                      <div className="text-2xl font-bold text-gray-900 mt-1">
                         {data.creditCardInfo?.availableCredit ? fmtMoney(data.creditCardInfo?.availableCredit) : 
                          data.balances?.available ? fmtMoney(data.balances?.available) : (
-                          <span className="text-gray-500 dark:text-gray-400" title="Not provided by issuer">N/A</span>
+                          <span className="text-gray-500" title="Not provided by issuer">N/A</span>
                         )}
                       </div>
                     </div>
-                    <div className="p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
-                      <div className="text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wide">Utilization</div>
+                    <div className="p-4 bg-white rounded-lg border border-gray-200">
+                      <div className="text-xs font-medium text-gray-600 uppercase tracking-wide">Utilization</div>
                       <div className="text-2xl font-bold mt-1">
                         {data.creditCardInfo?.creditUtilization !== null && data.creditCardInfo?.creditUtilization !== undefined ? (
                           <span className={
                             data.creditCardInfo.creditUtilization < 30 
-                              ? 'text-green-600 dark:text-green-400'
+                              ? 'text-green-600'
                               : data.creditCardInfo.creditUtilization < 70
-                              ? 'text-yellow-600 dark:text-yellow-400'
-                              : 'text-red-600 dark:text-red-400'
+                              ? 'text-yellow-600'
+                              : 'text-red-600'
                           }>
                             {data.creditCardInfo.creditUtilization.toFixed(1)}%
                           </span>
                         ) : (
-                          <span className="text-gray-500 dark:text-gray-400" title="Not provided by issuer">N/A</span>
+                          <span className="text-gray-500" title="Not provided by issuer">N/A</span>
                         )}
                       </div>
                     </div>
@@ -1340,7 +1338,7 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
 
                 {/* 2. Account Information */}
                 <section>
-                  <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center">
+                  <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
                     <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-blue-500 flex items-center justify-center text-white font-bold text-sm mr-3">ℹ️</div>
                     Account Information
                   </h3>
@@ -1357,28 +1355,28 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
               <>
                 {/* 1. Balances (FIRST for bank accounts) */}
                 <section>
-                  <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center">
+                  <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
                     <div className="w-8 h-8 rounded-lg bg-green-600 flex items-center justify-center text-white font-bold text-sm mr-3">💰</div>
                     Balances
                   </h3>
                   
                   {/* Emphasized Current & Available balances for bank accounts */}
-                  <div className="mb-6 p-6 rounded-lg bg-gray-50 border border-gray-200 dark:bg-black/60 dark:border-gray-700">
+                  <div className="mb-6 p-6 rounded-lg bg-gray-50 border border-gray-200">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="text-center">
-                        <div className="text-xs font-medium text-green-600 dark:text-green-400 uppercase tracking-wide mb-2">Current Balance</div>
-                        <div className="text-4xl font-bold text-green-700 dark:text-green-400">
+                        <div className="text-xs font-medium text-green-600 uppercase tracking-wide mb-2">Current Balance</div>
+                        <div className="text-4xl font-bold text-green-700">
                           {data.balances?.current ? fmtMoney(data.balances?.current) : 
                            data.balances?.ledger ? fmtMoney(data.balances?.ledger) : (
-                            <span className="text-gray-500 dark:text-gray-400" title="Not provided by bank">N/A</span>
+                            <span className="text-gray-500" title="Not provided by bank">N/A</span>
                           )}
                         </div>
                       </div>
                       <div className="text-center">
-                        <div className="text-xs font-medium text-green-600 dark:text-green-400 uppercase tracking-wide mb-2">Available Balance</div>
-                        <div className="text-4xl font-bold text-green-700 dark:text-green-400">
+                        <div className="text-xs font-medium text-green-600 uppercase tracking-wide mb-2">Available Balance</div>
+                        <div className="text-4xl font-bold text-green-700">
                           {data.balances?.available ? fmtMoney(data.balances?.available) : (
-                            <span className="text-gray-500 dark:text-gray-400" title="Not provided by bank">N/A</span>
+                            <span className="text-gray-500" title="Not provided by bank">N/A</span>
                           )}
                         </div>
                       </div>
@@ -1386,12 +1384,12 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
                     
                     {/* Additional balance details */}
                     {(data.balances?.ledger && data.balances?.ledger !== data.balances?.available) && (
-                      <div className="mt-4 pt-4 border-t border-gray-300 dark:border-gray-700">
+                      <div className="mt-4 pt-4 border-t border-gray-300">
                         <div className="text-center">
-                          <div className="text-xs font-medium text-green-600 dark:text-green-400 uppercase tracking-wide mb-1">Ledger Balance</div>
-                          <div className="text-lg font-semibold text-green-700 dark:text-green-400 flex items-center justify-center gap-1">
+                          <div className="text-xs font-medium text-green-600 uppercase tracking-wide mb-1">Ledger Balance</div>
+                          <div className="text-lg font-semibold text-green-700 flex items-center justify-center gap-1">
                             {fmtMoney(data.balances?.ledger)}
-                            <span className="text-xs text-gray-500 dark:text-gray-400 cursor-help" title="Ledger includes pending transactions; available is what you can use right now">ℹ️</span>
+                            <span className="text-xs text-gray-500 cursor-help" title="Ledger includes pending transactions; available is what you can use right now">ℹ️</span>
                           </div>
                         </div>
                       </div>
@@ -1401,7 +1399,7 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
 
                 {/* 2. Account Identifiers */}
                 <section>
-                  <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center">
+                  <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
                     <div className="w-8 h-8 rounded-lg bg-amber-600 flex items-center justify-center text-white font-bold text-sm mr-3">🔒</div>
                     Account Identifiers
                   </h3>
@@ -1413,8 +1411,8 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
 
                 {/* 3. Account Information */}
                 <section>
-                  <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center">
-                    <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white font-bold text-sm mr-3">ℹ️</div>
+                  <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                    <div className="w-8 h-8 rounded-lg bg-gray-900 flex items-center justify-center text-white font-bold text-sm mr-3">ℹ️</div>
                     Account Information
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -1428,7 +1426,7 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
               <>
                 {/* 1. Wallet Information */}
                 <section>
-                  <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center">
+                  <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
                     <div className="w-8 h-8 rounded-lg bg-orange-600 flex items-center justify-center text-white font-bold text-sm mr-3">🦊</div>
                     Wallet Information
                   </h3>
@@ -1441,14 +1439,14 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
 
                 {/* 2. Portfolio Value */}
                 <section>
-                  <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center">
+                  <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
                     <div className="w-8 h-8 rounded-lg bg-green-600 flex items-center justify-center text-white font-bold text-sm mr-3">💰</div>
                     Portfolio Value
                   </h3>
-                  <div className="mb-6 p-6 rounded-lg bg-gray-50 border border-gray-200 dark:bg-black/60 dark:border-gray-700">
+                  <div className="mb-6 p-6 rounded-lg bg-gray-50 border border-gray-200">
                     <div className="text-center">
-                      <div className="text-xs font-medium text-orange-600 dark:text-orange-400 uppercase tracking-wide mb-2">Total Value</div>
-                      <div className="text-4xl font-bold text-orange-700 dark:text-orange-400">
+                      <div className="text-xs font-medium text-orange-600 uppercase tracking-wide mb-2">Total Value</div>
+                      <div className="text-4xl font-bold text-orange-700">
                         {fmtMoney(data.balancesAndHoldings?.totalValue || data.account?.balance || 0)}
                       </div>
                     </div>
@@ -1458,21 +1456,21 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
                 {/* 3. Token Holdings */}
                 {data.positions && data.positions.length > 0 && (
                   <section>
-                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center">
+                    <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
                       <div className="w-8 h-8 rounded-lg bg-purple-600 flex items-center justify-center text-white font-bold text-sm mr-3">🪙</div>
                       Token Holdings ({data.positions.length})
                     </h3>
                     <div className="space-y-3">
                       {data.positions.map((pos: any, idx: number) => (
-                        <div key={idx} className="p-4 rounded-lg bg-gray-50 border border-gray-200 dark:bg-black/60 dark:border-gray-700 flex justify-between items-center">
+                        <div key={idx} className="p-4 rounded-lg bg-gray-50 border border-gray-200 flex justify-between items-center">
                           <div>
-                            <div className="font-bold text-gray-900 dark:text-white">{pos.symbol}</div>
-                            <div className="text-sm text-gray-500 dark:text-gray-400">{pos.name}</div>
-                            <div className="text-xs text-gray-400 dark:text-gray-500">{pos.quantity?.toFixed(6)} tokens</div>
+                            <div className="font-bold text-gray-900">{pos.symbol}</div>
+                            <div className="text-sm text-gray-500">{pos.name}</div>
+                            <div className="text-xs text-gray-400">{pos.quantity?.toFixed(6)} tokens</div>
                           </div>
                           <div className="text-right">
-                            <div className="font-bold text-gray-900 dark:text-white">{fmtMoney(pos.marketValue || pos.currentValue || 0)}</div>
-                            <div className="text-sm text-gray-500 dark:text-gray-400">@ {fmtMoney(pos.currentPrice || 0)}</div>
+                            <div className="font-bold text-gray-900">{fmtMoney(pos.marketValue || pos.currentValue || 0)}</div>
+                            <div className="text-sm text-gray-500">@ {fmtMoney(pos.currentPrice || 0)}</div>
                           </div>
                         </div>
                       ))}
@@ -1482,13 +1480,13 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
 
                 {/* 4. Network Info */}
                 <section>
-                  <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center">
+                  <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
                     <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white font-bold text-sm mr-3">
                       <ArrowRightLeft className="h-4 w-4" />
                     </div>
                     Network Info
                   </h3>
-                  <div className="p-4 rounded-lg bg-gray-50 border border-gray-200 dark:bg-black/60 dark:border-gray-700">
+                  <div className="p-4 rounded-lg bg-gray-50 border border-gray-200">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
                         {metamaskConnected && chainId ? (
@@ -1536,7 +1534,7 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
                 {/* 5. Recent Transactions */}
                 {pendingTxs.length > 0 && (
                   <section>
-                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center">
+                    <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
                       <div className="w-8 h-8 rounded-lg bg-cyan-600 flex items-center justify-center text-white font-bold text-sm mr-3">
                         <Clock className="h-4 w-4" />
                       </div>
@@ -1546,7 +1544,7 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
                       {pendingTxs.slice(-5).reverse().map((tx) => (
                         <div 
                           key={tx.txHash} 
-                          className="p-3 rounded-lg bg-gray-50 border border-gray-200 dark:bg-black/60 dark:border-gray-700 flex items-center justify-between"
+                          className="p-3 rounded-lg bg-gray-50 border border-gray-200 flex items-center justify-between"
                         >
                           <div className="flex items-center gap-3">
                             {tx.status === 'pending' && (
@@ -1576,7 +1574,7 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
                               href={getBlockExplorerTxUrl(chainId, tx.txHash) || '#'}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="text-xs text-blue-400 hover:text-blue-300"
+                              className="text-xs text-yellow-600 hover:text-blue-300"
                             >
                               View →
                             </a>
@@ -1589,13 +1587,13 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
 
                 {/* 6. Send Tokens */}
                 <section>
-                  <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center">
-                    <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white font-bold text-sm mr-3">
+                  <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                    <div className="w-8 h-8 rounded-lg bg-gray-900 flex items-center justify-center text-white font-bold text-sm mr-3">
                       <Send className="h-4 w-4" />
                     </div>
                     Send Tokens
                   </h3>
-                  <div className="p-6 rounded-lg bg-gray-50 border border-gray-200 dark:bg-black/60 dark:border-gray-700">
+                  <div className="p-6 rounded-lg bg-gray-50 border border-gray-200">
                     {metamaskConnected && metamaskAccount ? (
                       <div className="space-y-4">
                         {/* Token Selector */}
@@ -1717,7 +1715,7 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
                             </>
                           )}
                         </Button>
-                        <p className="text-xs text-gray-500 dark:text-gray-400 text-center">
+                        <p className="text-xs text-gray-500 text-center">
                           MetaMask will prompt you to confirm the transaction
                         </p>
                       </div>
@@ -1753,7 +1751,7 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
               <>
                 {/* 1. Account Information */}
                 <section>
-                  <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center">
+                  <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
                     <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-blue-500 flex items-center justify-center text-white font-bold text-sm mr-3">1</div>
                     Account Information
                   </h3>
@@ -1767,7 +1765,7 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
 
                 {/* 2. Live Balances */}
                 <section>
-                  <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center">
+                  <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
                     <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center text-white font-bold text-sm mr-3">2</div>
                     Live Balances
                   </h3>
@@ -1785,8 +1783,8 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
                 {/* Recent Transactions */}
                 {data.transactions && data.transactions.length > 0 && (
                   <section>
-                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center">
-                      <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white font-bold text-sm mr-3">🏪</div>
+                    <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                      <div className="w-8 h-8 rounded-lg bg-gray-900 flex items-center justify-center text-white font-bold text-sm mr-3">🏪</div>
                       Recent Transactions
                     </h3>
                     <div className="max-h-[300px] overflow-y-auto space-y-2">
@@ -1796,24 +1794,24 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
                         const logoData = getMerchantLogo(merchantName, institutionName);
                         
                         return (
-                          <div key={txn.id || index} className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 border border-gray-200 hover:bg-gray-100 transition-colors dark:bg-black/60 dark:border-gray-700 dark:hover:bg-black/40">
+                          <div key={txn.id || index} className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 border border-gray-200 hover:bg-gray-100 transition-colors">
                             <div className={`w-10 h-10 rounded-lg overflow-hidden flex items-center justify-center flex-shrink-0 ${logoData.bgClass}`}>
                               <div className="h-full w-full flex items-center justify-center [&>img]:h-full [&>img]:w-full [&>img]:object-cover [&>svg]:h-6 [&>svg]:w-6">
                                 {logoData.logo}
                               </div>
                             </div>
                             <div className="flex-1 min-w-0">
-                              <div className="font-medium text-gray-900 dark:text-white text-sm truncate">
+                              <div className="font-medium text-gray-900 text-sm truncate">
                                 {txn.description || txn.merchant || 'Unknown'}
                               </div>
-                              <div className="text-xs text-gray-500 dark:text-gray-400">
+                              <div className="text-xs text-gray-500">
                                 {txn.date ? new Date(txn.date).toLocaleDateString() : 'N/A'}
                               </div>
                             </div>
                             <div className={`font-bold text-sm whitespace-nowrap ${
                               (txn.amount || 0) < 0 
-                                ? 'text-red-600 dark:text-red-400' 
-                                : 'text-green-600 dark:text-green-400'
+                                ? 'text-red-600' 
+                                : 'text-green-600'
                             }`}>
                               {fmtMoney(Math.abs(txn.amount || 0))}
                             </div>
@@ -1830,16 +1828,16 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
             {/* 4. Card Payments - COMING SOON */}
             {data.provider === 'teller' && data.creditCardInfo && (
               <section>
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center">
+                <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
                   <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-gray-400 to-gray-500 flex items-center justify-center text-white font-bold text-sm mr-3">💳</div>
                   Card Payments
                 </h3>
-                <div className="p-6 bg-gradient-to-r from-gray-50 to-slate-50 dark:from-gray-800/20 dark:to-slate-800/20 rounded-xl border border-gray-200 dark:border-gray-700 text-center">
-                  <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-blue-100 to-blue-100 dark:from-blue-900/30 dark:to-blue-900/30 flex items-center justify-center">
+                <div className="p-6 bg-white rounded-lg border border-gray-200 text-center">
+                  <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-100 flex items-center justify-center">
                     <span className="text-2xl">💳</span>
                   </div>
-                  <h4 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2">COMING SOON</h4>
-                  <p className="text-gray-600 dark:text-gray-400 text-sm">
+                  <h4 className="text-lg font-semibold text-gray-800 mb-2">COMING SOON</h4>
+                  <p className="text-gray-600 text-sm">
                     Credit card payment functionality will be available in a future release.
                   </p>
                 </div>
@@ -1849,38 +1847,38 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
             {/* Regular Statements - Only for non-credit cards */}
             {data.provider === 'teller' && !data.creditCardInfo && data.statements && data.statements.length > 0 && (
               <section>
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center">
+                <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
                   <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-500 to-blue-500 flex items-center justify-center text-white font-bold text-sm mr-3">📄</div>
                   Statements
                 </h3>
-                <div className="overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm">
+                <div className="overflow-x-auto rounded-lg border border-gray-200 bg-white shadow-sm">
                   <table className="w-full text-sm">
-                    <thead className="bg-gradient-to-r from-cyan-50 to-blue-50 dark:from-cyan-900/30 dark:to-blue-900/30">
+                    <thead className="bg-gray-50">
                       <tr>
-                        <th className="text-left p-3 font-semibold text-gray-900 dark:text-white">Period</th>
-                        <th className="text-left p-3 font-semibold text-gray-900 dark:text-white">Start Date</th>
-                        <th className="text-left p-3 font-semibold text-gray-900 dark:text-white">End Date</th>
-                        <th className="text-left p-3 font-semibold text-gray-900 dark:text-white">Status</th>
-                        <th className="text-center p-3 font-semibold text-gray-900 dark:text-white">Download</th>
+                        <th className="text-left p-3 font-semibold text-gray-900">Period</th>
+                        <th className="text-left p-3 font-semibold text-gray-900">Start Date</th>
+                        <th className="text-left p-3 font-semibold text-gray-900">End Date</th>
+                        <th className="text-left p-3 font-semibold text-gray-900">Status</th>
+                        <th className="text-center p-3 font-semibold text-gray-900">Download</th>
                       </tr>
                     </thead>
                     <tbody>
                       {data.statements.map((stmt: any, index: number) => (
-                        <tr key={stmt.id || index} className="border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-900/50 transition-colors duration-150">
-                          <td className="p-3 text-gray-900 dark:text-white font-medium">
+                        <tr key={stmt.id || index} className="border-b border-gray-100 hover:bg-gray-50 transition-colors duration-150">
+                          <td className="p-3 text-gray-900 font-medium">
                             {stmt.period}
                           </td>
-                          <td className="p-3 text-gray-900 dark:text-white">
+                          <td className="p-3 text-gray-900">
                             {stmt.startDate ? new Date(stmt.startDate).toLocaleDateString() : 'N/A'}
                           </td>
-                          <td className="p-3 text-gray-900 dark:text-white">
+                          <td className="p-3 text-gray-900">
                             {stmt.endDate ? new Date(stmt.endDate).toLocaleDateString() : 'N/A'}
                           </td>
                           <td className="p-3">
                             <span className={`px-2 py-1 rounded-full text-xs font-medium ${
                               stmt.status === 'available' 
-                                ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400'
-                                : 'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400'
+                                ? 'bg-green-100 text-green-800'
+                                : 'bg-gray-100 text-gray-800'
                             }`}>
                               {stmt.status || 'Available'}
                             </span>
@@ -1891,7 +1889,7 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
                                 href={stmt.downloadUrl}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="inline-flex items-center px-3 py-1 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-xs"
+                                className="inline-flex items-center px-3 py-1 bg-gray-900 text-white rounded-lg hover:bg-gray-900 transition-colors text-xs"
                               >
                                 Download PDF
                               </a>
@@ -1912,7 +1910,7 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
               <>
                 {/* 3. Positions and Orders - BROKERAGE ONLY */}
                 <section>
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center">
+              <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
                 <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center text-white font-bold text-sm mr-3">📊</div>
                 Holdings & Positions
               </h3>
@@ -1920,50 +1918,50 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
               {/* Display holdings from the API response */}
               {data.holdings && data.holdings.length > 0 ? (
                 <div className="space-y-4 mb-6">
-                  <div className="overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm">
+                  <div className="overflow-x-auto rounded-lg border border-gray-200 bg-white shadow-sm">
                     <table className="w-full text-sm">
-                      <thead className="bg-gradient-to-r from-orange-50 to-red-50 dark:from-orange-900/30 dark:to-red-900/30">
+                      <thead className="bg-gray-50">
                         <tr>
-                          <th className="text-left p-3 font-semibold text-gray-900 dark:text-white">Symbol</th>
-                          <th className="text-left p-3 font-semibold text-gray-900 dark:text-white">Description</th>
-                          <th className="text-right p-3 font-semibold text-gray-900 dark:text-white">Quantity</th>
-                          <th className="text-right p-3 font-semibold text-gray-900 dark:text-white">Current Price</th>
-                          <th className="text-right p-3 font-semibold text-gray-900 dark:text-white">Market Value</th>
-                          <th className="text-right p-3 font-semibold text-gray-900 dark:text-white">P&L</th>
+                          <th className="text-left p-3 font-semibold text-gray-900">Symbol</th>
+                          <th className="text-left p-3 font-semibold text-gray-900">Description</th>
+                          <th className="text-right p-3 font-semibold text-gray-900">Quantity</th>
+                          <th className="text-right p-3 font-semibold text-gray-900">Current Price</th>
+                          <th className="text-right p-3 font-semibold text-gray-900">Market Value</th>
+                          <th className="text-right p-3 font-semibold text-gray-900">P&L</th>
                         </tr>
                       </thead>
                       <tbody>
                         {data.holdings.map((holding: any, index: number) => (
-                          <tr key={index} className="border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-900/50 transition-colors duration-150">
-                            <td className="p-3 text-gray-900 dark:text-white font-medium">
+                          <tr key={index} className="border-b border-gray-100 hover:bg-gray-50 transition-colors duration-150">
+                            <td className="p-3 text-gray-900 font-medium">
                               <div className="font-semibold">
                                 {holding.symbol || '—'}
                               </div>
-                              <div className="text-xs text-gray-500 dark:text-gray-400">
+                              <div className="text-xs text-gray-500">
                                 {holding.type || ''}
                               </div>
                             </td>
-                            <td className="p-3 text-gray-900 dark:text-white">
+                            <td className="p-3 text-gray-900">
                               <div className="text-sm">
                                 {holding.description || '—'}
                               </div>
                             </td>
-                            <td className="p-3 text-right text-gray-900 dark:text-white font-medium">
+                            <td className="p-3 text-right text-gray-900 font-medium">
                               {fmtNum(holding.quantity || 0)}
                             </td>
-                            <td className="p-3 text-right text-gray-900 dark:text-white">
+                            <td className="p-3 text-right text-gray-900">
                               {fmtMoney(holding.currentPrice || 0)}
                             </td>
                             <td className="p-3 text-right">
-                              <span className="font-bold text-green-600 dark:text-green-400">
+                              <span className="font-bold text-green-600">
                                 {fmtMoney(holding.marketValue || 0)}
                               </span>
                             </td>
                             <td className="p-3 text-right">
                               <span className={`font-medium ${
                                 (holding.unrealizedPnL || 0) >= 0 
-                                  ? 'text-green-600 dark:text-green-400' 
-                                  : 'text-red-600 dark:text-red-400'
+                                  ? 'text-green-600' 
+                                  : 'text-red-600'
                               }`}>
                                 {fmtMoney(holding.unrealizedPnL || 0)}
                               </span>
@@ -1975,8 +1973,8 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
                   </div>
                 </div>
               ) : (
-                <div className="p-6 bg-gray-50 dark:bg-gray-900/20 rounded-lg border border-gray-200 dark:border-gray-700 text-center mb-6">
-                  <p className="text-gray-600 dark:text-gray-400">No holdings found in this account</p>
+                <div className="p-6 bg-gray-50 rounded-lg border border-gray-200 text-center mb-6">
+                  <p className="text-gray-600">No holdings found in this account</p>
                 </div>
               )}
               
@@ -2018,16 +2016,16 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
 
             {/* 4. Trading Actions - COMING SOON for MVP */}
             <section>
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center">
+              <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
                 <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-gray-400 to-gray-500 flex items-center justify-center text-white font-bold text-sm mr-3">4</div>
                 Trading Actions
               </h3>
-              <div className="p-6 bg-gradient-to-r from-gray-50 to-slate-50 dark:from-gray-800/20 dark:to-slate-800/20 rounded-xl border border-gray-200 dark:border-gray-700 text-center">
-                <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-blue-100 to-blue-100 dark:from-blue-900/30 dark:to-blue-900/30 flex items-center justify-center">
+              <div className="p-6 bg-white rounded-lg border border-gray-200 text-center">
+                <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-100 flex items-center justify-center">
                   <span className="text-2xl">🚀</span>
                 </div>
-                <h4 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2">COMING SOON</h4>
-                <p className="text-gray-600 dark:text-gray-400 text-sm">
+                <h4 className="text-lg font-semibold text-gray-800 mb-2">COMING SOON</h4>
+                <p className="text-gray-600 text-sm">
                   Trading functionality will be available in a future release. Focus on transfers and payments for now.
                 </p>
               </div>
@@ -2035,18 +2033,18 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
 
             {/* 5. Activity and Transactions */}
             <section>
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center">
+              <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
                 <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-500 to-blue-500 flex items-center justify-center text-white font-bold text-sm mr-3">5</div>
                 Activity and Transactions
               </h3>
               <Card title="Recent Activity">
                 <List items={data.activityAndTransactions || data.transactions || []} empty="No recent activity" render={(a: any) => (
-                  <div className="grid grid-cols-5 gap-2 text-gray-900 dark:text-gray-100">
-                    <span className="font-medium text-gray-800 dark:text-gray-200">{a.type}</span>
-                    <span className="font-medium text-gray-800 dark:text-gray-200">{extractSymbol(a.symbol)}</span>
-                    <span className="text-right font-medium text-gray-800 dark:text-gray-200">{fmtNum(a.quantity)}</span>
-                    <span className="text-right font-medium text-gray-800 dark:text-gray-200">{fmtMoney(a.amount)}</span>
-                    <span className="text-right text-gray-600 dark:text-gray-300">{fmtTime(a.timestamp)}</span>
+                  <div className="grid grid-cols-5 gap-2 text-gray-900">
+                    <span className="font-medium text-gray-800">{a.type}</span>
+                    <span className="font-medium text-gray-800">{extractSymbol(a.symbol)}</span>
+                    <span className="text-right font-medium text-gray-800">{fmtNum(a.quantity)}</span>
+                    <span className="text-right font-medium text-gray-800">{fmtMoney(a.amount)}</span>
+                    <span className="text-right text-gray-600">{fmtTime(a.timestamp)}</span>
                   </div>
                 )}/>
               </Card>
@@ -2055,15 +2053,15 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
             )}
 
             {/* Footer with metadata */}
-            <div className="mt-8 pt-6 border-t border-gradient-to-r from-blue-200 to-blue-200 dark:from-blue-800 dark:to-blue-800 bg-gradient-to-r from-blue-50/50 to-blue-50/50 dark:from-blue-950/30 dark:to-blue-950/30 rounded-xl p-4">
+            <div className="mt-8 pt-6 border-t border-gray-200 bg-white rounded-lg p-4">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-6 text-xs text-gray-600 dark:text-gray-400">
-                  <div className="flex items-center gap-2 bg-white dark:bg-gray-800 px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700">
-                    <Clock className="h-4 w-4 text-blue-500" />
+                <div className="flex items-center gap-6 text-xs text-gray-600">
+                  <div className="flex items-center gap-2 bg-white px-3 py-2 rounded-lg border border-gray-200">
+                    <Clock className="h-4 w-4 text-gray-700" />
                     <span className="font-medium">Updated: {fmtTime(data.metadata?.fetched_at || new Date().toISOString())}</span>
                   </div>
-                  <div className="flex items-center gap-2 bg-white dark:bg-gray-800 px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700">
-                    <Calendar className="h-4 w-4 text-blue-500" />
+                  <div className="flex items-center gap-2 bg-white px-3 py-2 rounded-lg border border-gray-200">
+                    <Calendar className="h-4 w-4 text-gray-700" />
                     <span className="font-medium">Created: {fmtTime(data.metadata?.account_created || 'N/A')}</span>
                   </div>
                 </div>
