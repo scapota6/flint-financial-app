@@ -98,9 +98,9 @@ export default function UnifiedDashboard() {
           <CardHeader>
             <CardTitle className="text-center">
               <div className="animate-pulse">
-                <div className="text-lg text-gray-400 mb-2">Total Net Worth</div>
-                <div className="h-12 bg-gray-700 rounded mx-auto w-48 mb-2"></div>
-                <div className="h-4 bg-gray-700 rounded mx-auto w-64"></div>
+                <div className="text-lg text-gray-500 mb-2">Total Net Worth</div>
+                <div className="h-12 bg-gray-200 rounded mx-auto w-48 mb-2"></div>
+                <div className="h-4 bg-gray-200 rounded mx-auto w-64"></div>
               </div>
             </CardTitle>
           </CardHeader>
@@ -112,9 +112,9 @@ export default function UnifiedDashboard() {
             <Card key={i} className="flint-card">
               <CardContent className="p-6">
                 <div className="animate-pulse">
-                  <div className="h-4 bg-gray-700 rounded w-1/2 mb-2"></div>
-                  <div className="h-8 bg-gray-700 rounded w-3/4"></div>
-                  <div className="h-3 bg-gray-700 rounded w-1/3 mt-2"></div>
+                  <div className="h-4 bg-gray-200 rounded w-1/2 mb-2"></div>
+                  <div className="h-8 bg-gray-200 rounded w-3/4"></div>
+                  <div className="h-3 bg-gray-200 rounded w-1/3 mt-2"></div>
                 </div>
               </CardContent>
             </Card>
@@ -129,8 +129,8 @@ export default function UnifiedDashboard() {
       <Card className="flint-card">
         <CardContent className="p-6 text-center">
           <AlertCircle className="h-12 w-12 text-red-400 mx-auto mb-4" />
-          <div className="text-red-400 mb-2">Failed to load account data</div>
-          <div className="text-gray-400 text-sm">Please check your connection and try again</div>
+          <div className="text-red-500 mb-2">Failed to load account data</div>
+          <div className="text-gray-500 text-sm">Please check your connection and try again</div>
         </CardContent>
       </Card>
     );
@@ -147,13 +147,13 @@ export default function UnifiedDashboard() {
 
     return (
       <div className="text-center py-12">
-        <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-gradient-to-r from-blue-500/20 to-cyan-500/20 flex items-center justify-center">
-          <Wallet className="h-8 w-8 text-blue-400" />
+        <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-gradient-to-r from-amber-100 to-yellow-100 flex items-center justify-center">
+          <Wallet className="h-8 w-8 text-amber-600" />
         </div>
-        <h3 className="text-xl font-semibold text-white mb-2">
+        <h3 className="text-xl font-semibold text-gray-900 mb-2">
           No accounts connected
         </h3>
-        <p className="text-gray-400 mb-6 max-w-md mx-auto">
+        <p className="text-gray-500 mb-6 max-w-md mx-auto">
           Connect your bank accounts and brokerages to see your complete financial picture.
         </p>
         <RainbowButton 
@@ -163,9 +163,9 @@ export default function UnifiedDashboard() {
           Connect Accounts
         </RainbowButton>
         {hasDisconnectedAccounts && (
-          <div className="mt-6 p-4 bg-orange-900/20 border border-orange-700 rounded-lg max-w-md mx-auto">
-            <AlertCircle className="h-5 w-5 text-orange-400 mx-auto mb-2" />
-            <p className="text-orange-200 text-sm">
+          <div className="mt-6 p-4 bg-orange-50 border border-orange-200 rounded-lg max-w-md mx-auto">
+            <AlertCircle className="h-5 w-5 text-orange-500 mx-auto mb-2" />
+            <p className="text-orange-700 text-sm">
               Some previously connected accounts need to be reconnected.
             </p>
           </div>
@@ -204,8 +204,8 @@ export default function UnifiedDashboard() {
     <div className="space-y-6">
       {/* Header with Total Net Worth */}
       <div className="text-center py-4">
-        <div className="text-sm text-gray-400">Total Net Worth</div>
-        <div className="text-3xl sm:text-4xl font-bold text-white">
+        <div className="text-sm text-gray-500">Total Net Worth</div>
+        <div className="text-3xl sm:text-4xl font-bold text-gray-900">
           {formatCurrency(adjustedTotals.totalBalance)}
         </div>
         <div className="text-xs text-gray-500">
@@ -224,8 +224,8 @@ export default function UnifiedDashboard() {
             onClick={() => setSelectedView(view.key as any)}
             className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
               selectedView === view.key
-                ? 'bg-blue-600 text-white'
-                : 'bg-gray-800 text-gray-400 hover:text-white hover:bg-gray-700'
+                ? 'bg-gray-900 text-white'
+                : 'bg-gray-100 text-gray-600 hover:text-gray-900 hover:bg-gray-200'
             }`}
           >
             {view.label}
@@ -236,8 +236,8 @@ export default function UnifiedDashboard() {
       {/* Overview - Pie Chart */}
       {selectedView === 'overview' && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-4">
-            <h3 className="text-lg font-semibold text-white mb-4">Asset Allocation</h3>
+          <div className="bg-white border border-gray-200 rounded-xl p-4">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Asset Allocation</h3>
             {typeBreakdown.length > 0 ? (
               <div className="relative">
                 <ResponsiveContainer width="100%" height={280}>
@@ -293,12 +293,13 @@ export default function UnifiedDashboard() {
                     <Tooltip 
                       formatter={(value) => formatCurrency(value as number)}
                       contentStyle={{
-                        backgroundColor: 'rgba(17, 24, 39, 0.95)',
-                        border: '1px solid rgba(255, 255, 255, 0.1)',
+                        backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                        border: '1px solid #e5e7eb',
                         borderRadius: '8px',
-                        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)'
+                        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)',
+                        color: '#111827'
                       }}
-                      labelStyle={{ color: '#fff' }}
+                      labelStyle={{ color: '#111827' }}
                     />
                   </PieChart>
                 </ResponsiveContainer>
@@ -309,7 +310,7 @@ export default function UnifiedDashboard() {
                         className="w-3 h-3 rounded-full"
                         style={{ backgroundColor: entry.color }}
                       />
-                      <span className="text-sm text-gray-300">{entry.name}</span>
+                      <span className="text-sm text-gray-600">{entry.name}</span>
                     </div>
                   ))}
                 </div>
@@ -317,15 +318,15 @@ export default function UnifiedDashboard() {
             ) : (
               <div className="h-[300px] flex items-center justify-center">
                 <div className="text-center">
-                  <p className="text-gray-400 mb-2">No account data available</p>
+                  <p className="text-gray-500 mb-2">No account data available</p>
                   <p className="text-sm text-gray-500">Connect accounts to see your allocation</p>
                 </div>
               </div>
             )}
           </div>
 
-          <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-4">
-            <h3 className="text-lg font-semibold text-white mb-4">Account Types</h3>
+          <div className="bg-white border border-gray-200 rounded-xl p-4">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Account Types</h3>
             <div className="space-y-4">
               {typeBreakdown.length > 0 ? (
                 typeBreakdown.map((type, index) => (
@@ -335,13 +336,13 @@ export default function UnifiedDashboard() {
                         className="w-4 h-4 rounded-full"
                         style={{ backgroundColor: type.color }}
                       ></div>
-                      <span className="text-white">{type.name}</span>
+                      <span className="text-gray-900">{type.name}</span>
                     </div>
                     <div className="text-right">
-                      <div className="text-white font-semibold">
+                      <div className="text-gray-900 font-semibold">
                         {formatCurrency(type.value)}
                       </div>
-                      <div className="text-gray-400 text-sm">
+                      <div className="text-gray-500 text-sm">
                         {adjustedTotals.totalBalance > 0 ? ((type.value / adjustedTotals.totalBalance) * 100).toFixed(1) : 0}%
                       </div>
                     </div>
@@ -350,7 +351,7 @@ export default function UnifiedDashboard() {
               ) : (
                 <div className="h-[200px] flex items-center justify-center">
                   <div className="text-center">
-                    <p className="text-gray-400 mb-2">No account data available</p>
+                    <p className="text-gray-500 mb-2">No account data available</p>
                     <p className="text-sm text-gray-500">Connect accounts to see breakdown</p>
                   </div>
                 </div>
@@ -370,7 +371,7 @@ export default function UnifiedDashboard() {
             return (
               <div 
                 key={account.id} 
-                className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-4 flex items-center justify-between cursor-pointer hover:bg-white/10 transition-colors"
+                className="bg-white border border-gray-200 rounded-xl p-4 flex items-center justify-between cursor-pointer hover:bg-gray-50 transition-colors"
                 onClick={() => setSelectedAccountId(account.id)}
               >
                 <div className="flex items-center gap-3 flex-1">
@@ -378,7 +379,7 @@ export default function UnifiedDashboard() {
                     {logo}
                   </div>
                   <div className="flex-1">
-                    <div className="text-white font-medium text-base leading-tight">
+                    <div className="text-gray-900 font-medium text-base leading-tight">
                       {account.accountName === 'Default' && account.institutionName === 'Coinbase' 
                         ? 'Coinbase' 
                         : account.accountName}
@@ -393,19 +394,19 @@ export default function UnifiedDashboard() {
                 </div>
                 <div className="flex items-center gap-2 flex-shrink-0">
                   <div className={`text-lg font-bold text-right ${
-                    account.type === 'credit' ? 'text-red-500' : 'text-green-500'
+                    account.type === 'credit' ? 'text-red-500' : 'text-green-600'
                   }`}>
                     {formatCurrency(account.balance)}
                   </div>
-                  <ChevronRight className="w-5 h-5 text-gray-500" />
+                  <ChevronRight className="w-5 h-5 text-gray-400" />
                 </div>
               </div>
             );
           })}
           
           {connectedAccounts.length === 0 && (
-            <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-6 text-center">
-              <div className="text-gray-400 mb-2">No accounts connected</div>
+            <div className="bg-white border border-gray-200 rounded-xl p-6 text-center">
+              <div className="text-gray-600 mb-2">No accounts connected</div>
               <div className="text-gray-500 text-sm">Connect your bank and brokerage accounts to see your portfolio</div>
             </div>
           )}

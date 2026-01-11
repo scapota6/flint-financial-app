@@ -71,19 +71,19 @@ export default function MoneyMovement() {
   ) => (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
       {/* Money In */}
-      <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-6">
+      <div className="bg-white border border-gray-200 shadow-sm rounded-xl p-6">
         <div className="flex items-center gap-2 mb-2">
-          <h4 className="text-sm text-gray-400">Money in</h4>
+          <h4 className="text-sm text-gray-500">Money in</h4>
         </div>
-        <div className="text-2xl font-bold text-green-400 mb-6" data-testid={`${dataTestPrefix}-money-in`}>
+        <div className="text-2xl font-bold text-green-600 mb-6" data-testid={`${dataTestPrefix}-money-in`}>
           {formatCurrency(section.moneyIn || 0)}
         </div>
 
         <div className="mb-6">
-          <p className="text-sm text-gray-400 mb-3">Top sources</p>
+          <p className="text-sm text-gray-500 mb-3">Top sources</p>
           <div className="space-y-3 max-h-[280px] overflow-y-auto pr-2" style={{ 
             scrollbarWidth: 'thin',
-            scrollbarColor: '#374151 transparent'
+            scrollbarColor: '#d1d5db transparent'
           }}>
             {section.topSources && section.topSources.length > 0 ? (
               section.topSources.map((source, index) => {
@@ -94,9 +94,9 @@ export default function MoneyMovement() {
                       <div className={`w-10 h-10 rounded-full ${bgClass} flex items-center justify-center flex-shrink-0 overflow-hidden`}>
                         {logo}
                       </div>
-                      <span className="text-white">{source.name}</span>
+                      <span className="text-gray-900">{source.name}</span>
                     </div>
-                    <span className="text-white font-medium whitespace-nowrap">{formatCurrency(source.amount)}</span>
+                    <span className="text-gray-900 font-medium whitespace-nowrap">{formatCurrency(source.amount)}</span>
                   </div>
                 );
               })
@@ -106,29 +106,29 @@ export default function MoneyMovement() {
           </div>
         </div>
 
-        <div className="pt-4 border-t border-gray-800">
-          <p className="text-sm text-gray-400 mb-1">Last 3 months average</p>
-          <p className="text-lg font-semibold text-white" data-testid={`${dataTestPrefix}-avg-money-in`}>
+        <div className="pt-4 border-t border-gray-200">
+          <p className="text-sm text-gray-500 mb-1">Last 3 months average</p>
+          <p className="text-lg font-semibold text-gray-900" data-testid={`${dataTestPrefix}-avg-money-in`}>
             {formatShortCurrency(section.threeMonthAverage?.moneyIn || 0)}
           </p>
         </div>
       </div>
 
       {/* Money Out */}
-      <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-6">
+      <div className="bg-white border border-gray-200 shadow-sm rounded-xl p-6">
         <div className="flex items-center gap-2 mb-2">
-          <h4 className="text-sm text-gray-400">Money out</h4>
-          <Info className="h-4 w-4 text-gray-500" />
+          <h4 className="text-sm text-gray-500">Money out</h4>
+          <Info className="h-4 w-4 text-gray-400" />
         </div>
-        <div className="text-2xl font-bold text-red-400 mb-6" data-testid={`${dataTestPrefix}-money-out`}>
+        <div className="text-2xl font-bold text-red-600 mb-6" data-testid={`${dataTestPrefix}-money-out`}>
           −{formatCurrency(section.moneyOut || 0)}
         </div>
 
         <div className="mb-6">
-          <p className="text-sm text-gray-400 mb-3">Top spend</p>
+          <p className="text-sm text-gray-500 mb-3">Top spend</p>
           <div className="space-y-3 max-h-[280px] overflow-y-auto pr-2" style={{ 
             scrollbarWidth: 'thin',
-            scrollbarColor: '#374151 transparent'
+            scrollbarColor: '#d1d5db transparent'
           }}>
             {section.topSpend && section.topSpend.length > 0 ? (
               section.topSpend.map((spend, index) => {
@@ -139,9 +139,9 @@ export default function MoneyMovement() {
                       <div className={`w-10 h-10 rounded-full ${bgClass} flex items-center justify-center flex-shrink-0 overflow-hidden`}>
                         {logo}
                       </div>
-                      <span className="text-white">{spend.name}</span>
+                      <span className="text-gray-900">{spend.name}</span>
                     </div>
-                    <span className="text-white font-medium whitespace-nowrap">−{formatCurrency(spend.amount)}</span>
+                    <span className="text-gray-900 font-medium whitespace-nowrap">−{formatCurrency(spend.amount)}</span>
                   </div>
                 );
               })
@@ -151,9 +151,9 @@ export default function MoneyMovement() {
           </div>
         </div>
 
-        <div className="pt-4 border-t border-gray-800">
-          <p className="text-sm text-gray-400 mb-1">Last 3 months average</p>
-          <p className="text-lg font-semibold text-white" data-testid={`${dataTestPrefix}-avg-money-out`}>
+        <div className="pt-4 border-t border-gray-200">
+          <p className="text-sm text-gray-500 mb-1">Last 3 months average</p>
+          <p className="text-lg font-semibold text-gray-900" data-testid={`${dataTestPrefix}-avg-money-out`}>
             −{formatShortCurrency(section.threeMonthAverage?.moneyOut || 0)}
           </p>
         </div>
@@ -165,28 +165,28 @@ export default function MoneyMovement() {
     return (
       <div className="space-y-6">
         <div className="flex items-center justify-between">
-          <h3 className="text-xl font-semibold text-white">Money movement</h3>
-          <div className="h-10 bg-gray-800 rounded w-48 animate-pulse"></div>
+          <h3 className="text-xl font-semibold text-gray-900">Money movement</h3>
+          <div className="h-10 bg-gray-200 rounded w-48 animate-pulse"></div>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-6">
+          <div className="bg-white border border-gray-200 shadow-sm rounded-xl p-6">
             <div className="animate-pulse">
-              <div className="h-6 bg-gray-700 rounded w-24 mb-4"></div>
-              <div className="h-10 bg-gray-700 rounded w-40 mb-6"></div>
+              <div className="h-6 bg-gray-200 rounded w-24 mb-4"></div>
+              <div className="h-10 bg-gray-200 rounded w-40 mb-6"></div>
               <div className="space-y-3">
                 {[1, 2, 3].map(i => (
-                  <div key={i} className="h-12 bg-gray-700 rounded"></div>
+                  <div key={i} className="h-12 bg-gray-200 rounded"></div>
                 ))}
               </div>
             </div>
           </div>
-          <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-6">
+          <div className="bg-white border border-gray-200 shadow-sm rounded-xl p-6">
             <div className="animate-pulse">
-              <div className="h-6 bg-gray-700 rounded w-24 mb-4"></div>
-              <div className="h-10 bg-gray-700 rounded w-40 mb-6"></div>
+              <div className="h-6 bg-gray-200 rounded w-24 mb-4"></div>
+              <div className="h-10 bg-gray-200 rounded w-40 mb-6"></div>
               <div className="space-y-3">
                 {[1, 2, 3].map(i => (
-                  <div key={i} className="h-12 bg-gray-700 rounded"></div>
+                  <div key={i} className="h-12 bg-gray-200 rounded"></div>
                 ))}
               </div>
             </div>
@@ -200,25 +200,25 @@ export default function MoneyMovement() {
     <div className="space-y-8" data-testid="money-movement-section">
       {/* Month Navigation */}
       <div className="flex items-center justify-between">
-        <h3 className="text-xl font-semibold text-white">Money movement</h3>
+        <h3 className="text-xl font-semibold text-gray-900">Money movement</h3>
         <div className="flex items-center gap-2">
           <Button
             variant="ghost"
             size="icon"
             onClick={handlePrevMonth}
-            className="text-gray-400 hover:text-white"
+            className="text-gray-500 hover:text-gray-900"
             data-testid="button-prev-month"
           >
             <ChevronLeft className="h-5 w-5" />
           </Button>
-          <span className="text-white font-medium min-w-[100px] text-center" data-testid="text-current-month">
+          <span className="text-gray-900 font-medium min-w-[100px] text-center" data-testid="text-current-month">
             {monthName}
           </span>
           <Button
             variant="ghost"
             size="icon"
             onClick={handleNextMonth}
-            className="text-gray-400 hover:text-white"
+            className="text-gray-500 hover:text-gray-900"
             data-testid="button-next-month"
           >
             <ChevronRight className="h-5 w-5" />
@@ -228,13 +228,13 @@ export default function MoneyMovement() {
 
       {/* Banking Section */}
       <div className="space-y-4" data-testid="banking-section">
-        <h4 className="text-lg font-semibold text-white">Banking - Money movement</h4>
+        <h4 className="text-lg font-semibold text-gray-900">Banking - Money movement</h4>
         {data?.banking && renderMoneyFlowSection(data.banking, 'Banking', 'banking')}
       </div>
 
       {/* Credit Cards Section */}
       <div className="space-y-4" data-testid="credit-cards-section">
-        <h4 className="text-lg font-semibold text-white">Credit Cards - Money movement</h4>
+        <h4 className="text-lg font-semibold text-gray-900">Credit Cards - Money movement</h4>
         {data?.creditCards && renderMoneyFlowSection(data.creditCards, 'Credit Cards', 'credit-cards')}
       </div>
     </div>

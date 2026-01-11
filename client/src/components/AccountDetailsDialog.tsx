@@ -198,7 +198,7 @@ const getActivityIcon = (type: string) => {
 // Helper components and utilities
 function Info({ label, value, className = '' }: any) {
   return (
-    <div className={`rounded-lg bg-white/5 dark:bg-black/60 p-4 ${className}`}>
+    <div className={`rounded-lg bg-gray-50 border border-gray-200 dark:bg-black/60 dark:border-gray-700 p-4 ${className}`}>
       <div className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">{label}</div>
       <div className="font-semibold text-gray-900 dark:text-white mt-1">{value ?? '—'}</div>
     </div>
@@ -207,7 +207,7 @@ function Info({ label, value, className = '' }: any) {
 
 function Card({ title, children }: any) {
   return (
-    <div className="rounded-lg bg-white/5 dark:bg-black/60 p-4">
+    <div className="rounded-lg bg-gray-50 border border-gray-200 dark:bg-black/60 dark:border-gray-700 p-4">
       <div className="mb-3 font-semibold text-gray-900 dark:text-white">{title}</div>
       {children}
     </div>
@@ -1363,7 +1363,7 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
                   </h3>
                   
                   {/* Emphasized Current & Available balances for bank accounts */}
-                  <div className="mb-6 p-6 rounded-lg bg-white/5 dark:bg-black/60">
+                  <div className="mb-6 p-6 rounded-lg bg-gray-50 border border-gray-200 dark:bg-black/60 dark:border-gray-700">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="text-center">
                         <div className="text-xs font-medium text-green-600 dark:text-green-400 uppercase tracking-wide mb-2">Current Balance</div>
@@ -1445,7 +1445,7 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
                     <div className="w-8 h-8 rounded-lg bg-green-600 flex items-center justify-center text-white font-bold text-sm mr-3">💰</div>
                     Portfolio Value
                   </h3>
-                  <div className="mb-6 p-6 rounded-lg bg-white/5 dark:bg-black/60">
+                  <div className="mb-6 p-6 rounded-lg bg-gray-50 border border-gray-200 dark:bg-black/60 dark:border-gray-700">
                     <div className="text-center">
                       <div className="text-xs font-medium text-orange-600 dark:text-orange-400 uppercase tracking-wide mb-2">Total Value</div>
                       <div className="text-4xl font-bold text-orange-700 dark:text-orange-400">
@@ -1464,7 +1464,7 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
                     </h3>
                     <div className="space-y-3">
                       {data.positions.map((pos: any, idx: number) => (
-                        <div key={idx} className="p-4 rounded-lg bg-white/5 dark:bg-black/60 flex justify-between items-center">
+                        <div key={idx} className="p-4 rounded-lg bg-gray-50 border border-gray-200 dark:bg-black/60 dark:border-gray-700 flex justify-between items-center">
                           <div>
                             <div className="font-bold text-gray-900 dark:text-white">{pos.symbol}</div>
                             <div className="text-sm text-gray-500 dark:text-gray-400">{pos.name}</div>
@@ -1488,7 +1488,7 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
                     </div>
                     Network Info
                   </h3>
-                  <div className="p-4 rounded-lg bg-white/5 dark:bg-black/60">
+                  <div className="p-4 rounded-lg bg-gray-50 border border-gray-200 dark:bg-black/60 dark:border-gray-700">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
                         {metamaskConnected && chainId ? (
@@ -1546,7 +1546,7 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
                       {pendingTxs.slice(-5).reverse().map((tx) => (
                         <div 
                           key={tx.txHash} 
-                          className="p-3 rounded-lg bg-white/5 dark:bg-black/60 flex items-center justify-between"
+                          className="p-3 rounded-lg bg-gray-50 border border-gray-200 dark:bg-black/60 dark:border-gray-700 flex items-center justify-between"
                         >
                           <div className="flex items-center gap-3">
                             {tx.status === 'pending' && (
@@ -1595,7 +1595,7 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
                     </div>
                     Send Tokens
                   </h3>
-                  <div className="p-6 rounded-lg bg-white/5 dark:bg-black/60">
+                  <div className="p-6 rounded-lg bg-gray-50 border border-gray-200 dark:bg-black/60 dark:border-gray-700">
                     {metamaskConnected && metamaskAccount ? (
                       <div className="space-y-4">
                         {/* Token Selector */}
@@ -1796,7 +1796,7 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
                         const logoData = getMerchantLogo(merchantName, institutionName);
                         
                         return (
-                          <div key={txn.id || index} className="flex items-center gap-3 p-3 rounded-lg bg-white/5 backdrop-blur-sm border border-white/10 hover:bg-white/10 transition-colors">
+                          <div key={txn.id || index} className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 border border-gray-200 hover:bg-gray-100 transition-colors dark:bg-black/60 dark:border-gray-700 dark:hover:bg-black/40">
                             <div className={`w-10 h-10 rounded-lg overflow-hidden flex items-center justify-center flex-shrink-0 ${logoData.bgClass}`}>
                               <div className="h-full w-full flex items-center justify-center [&>img]:h-full [&>img]:w-full [&>img]:object-cover [&>svg]:h-6 [&>svg]:w-6">
                                 {logoData.logo}

@@ -60,7 +60,6 @@ export default function ConnectedAccounts({
   };
 
   const handleAccountDisconnected = () => {
-    // Refresh dashboard data after account disconnection
     queryClient.invalidateQueries({ queryKey: ['/api/dashboard'] });
   };
 
@@ -72,7 +71,6 @@ export default function ConnectedAccounts({
   const handleRetryLoad = () => {
     setError(null);
     setIsLoading(true);
-    // Simulate retry logic
     setTimeout(() => {
       setIsLoading(false);
       queryClient.invalidateQueries({ queryKey: ['/api/dashboard'] });
@@ -80,58 +78,54 @@ export default function ConnectedAccounts({
   };
 
   const handleQuickBuy = () => {
-    // Navigate to trading page with buy preset
     window.location.href = '/trading?action=buy';
   };
 
   const handleQuickSell = () => {
-    // Navigate to trading page with sell preset
     window.location.href = '/trading?action=sell';
   };
 
   const handleTransferFunds = () => {
-    // Navigate to transfers page
     window.location.href = '/transfers';
   };
 
   const getProviderIcon = (provider: string) => {
     switch (provider.toLowerCase()) {
       case 'teller':
-        return <Building2 className="h-5 w-5 text-blue-400" />;
+        return <Building2 className="h-5 w-5 text-gray-700" />;
       case 'snaptrade':
-        return <TrendingUp className="h-5 w-5 text-blue-400" />;
+        return <TrendingUp className="h-5 w-5 text-gray-700" />;
       default:
-        return <Building2 className="h-5 w-5 text-gray-400" />;
+        return <Building2 className="h-5 w-5 text-gray-500" />;
     }
   };
 
   const getProviderBadge = (provider: string, needsReconnection?: boolean) => {
     if (needsReconnection) {
-      return <Badge variant="outline" className="border-red-400 text-red-400">Disconnected</Badge>;
+      return <Badge variant="outline" className="border-red-400 text-red-500">Disconnected</Badge>;
     }
     switch (provider.toLowerCase()) {
       case 'teller':
-        return <Badge variant="outline" className="border-blue-400 text-blue-400">Bank</Badge>;
+        return <Badge variant="outline" className="border-gray-300 text-gray-600">Bank</Badge>;
       case 'snaptrade':
-        return <Badge variant="outline" className="border-blue-400 text-blue-400">Brokerage</Badge>;
+        return <Badge variant="outline" className="border-gray-300 text-gray-600">Brokerage</Badge>;
       default:
-        return <Badge variant="outline">{provider}</Badge>;
+        return <Badge variant="outline" className="border-gray-300 text-gray-600">{provider}</Badge>;
     }
   };
 
   return (
-    <Card className="flint-card">
+    <Card className="bg-white border border-gray-200 shadow-sm">
       <CardHeader>
-        <CardTitle className="text-xl text-white font-mono">Connected Accounts</CardTitle>
+        <CardTitle className="text-xl text-gray-900 font-mono">Connected Accounts</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        {/* Enhanced Connection Buttons with Tooltips */}
         <div className="flex gap-4 mb-6">
           <Tooltip content="Connect your bank account via Teller" position="top">
             <Button 
               onClick={handleConnectBank}
               disabled={loadingConnect === 'bank'}
-              className="btn-standard flex-1 bg-blue-600 hover:bg-blue-700 text-white btn-glow-hover focus-visible:outline-blue-400"
+              className="btn-standard flex-1 bg-gray-900 hover:bg-gray-800 text-white"
             >
               {loadingConnect === 'bank' ? (
                 <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -146,7 +140,7 @@ export default function ConnectedAccounts({
             <Button 
               onClick={handleConnectBrokerage}
               disabled={loadingConnect === 'brokerage'}
-              className="btn-standard flex-1 bg-blue-600 hover:bg-blue-700 text-white btn-glow-hover focus-visible:outline-blue-400"
+              className="btn-standard flex-1 bg-gray-900 hover:bg-gray-800 text-white"
             >
               {loadingConnect === 'brokerage' ? (
                 <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -158,16 +152,14 @@ export default function ConnectedAccounts({
           </Tooltip>
         </div>
 
-        {/* Enhanced Account Grid */}
         {accounts.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))' }}>
             {accounts.map((account) => (
               <div 
                 key={account.id}
-                className={`account-card ${account.provider.toLowerCase()} relative blue-glow-border card-hover-lift`}
+                className="relative p-4 rounded-xl bg-white border border-gray-200 hover:border-gray-300 hover:shadow-md transition-all duration-200"
                 style={{ borderRadius: '16px', minWidth: '240px' }}
               >
-                {/* Disconnect Button */}
                 <div className="absolute top-3 right-3">
                   <DisconnectButton
                     accountId={account.id}
@@ -182,20 +174,20 @@ export default function ConnectedAccounts({
                     {getProviderIcon(account.provider)}
                     <div>
                       <div className="flex items-center gap-2">
-                        <h3 className="font-semibold text-white">
+                        <h3 className="font-semibold text-gray-900">
                           {account.accountName === 'Default' && account.institutionName === 'Coinbase' 
                             ? 'Coinbase' 
                             : account.accountName}
                         </h3>
                         {getProviderBadge(account.provider, account.needsReconnection)}
                       </div>
-                      <p className="text-sm text-gray-400">
+                      <p className="text-sm text-gray-500">
                         {account.institutionName || account.provider}
                       </p>
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className="text-lg font-semibold text-white">
+                    <div className="text-lg font-semibold text-gray-900">
                       ${parseFloat(account.balance).toLocaleString()}
                     </div>
                     {account.needsReconnection ? (
@@ -203,7 +195,7 @@ export default function ConnectedAccounts({
                         <Button 
                           variant="outline" 
                           size="sm" 
-                          className="text-red-400 hover:text-red-300 border-red-400 hover:border-red-300 interactive-glow focus-visible:outline-red-400"
+                          className="text-red-500 hover:text-red-600 border-red-300 hover:border-red-400"
                           onClick={handleConnectBrokerage}
                         >
                           <RefreshCw className="h-3 w-3 mr-1" />
@@ -215,7 +207,7 @@ export default function ConnectedAccounts({
                         <Button 
                           variant="ghost" 
                           size="sm" 
-                          className="text-blue-400 hover:text-blue-300 interactive-glow focus-visible:outline-blue-400"
+                          className="text-gray-600 hover:text-gray-900 hover:bg-gray-100"
                           onClick={() => handleAccountDetails(account)}
                         >
                           Details <Eye className="h-3 w-3 ml-1" />
@@ -228,19 +220,24 @@ export default function ConnectedAccounts({
             ))}
           </div>
         ) : (
-          <div className="text-center py-8 text-gray-400">
+          <div className="text-center py-8 text-gray-500">
             <Building2 className="h-12 w-12 mx-auto mb-4 opacity-50" />
-            <p>No accounts connected yet.</p>
+            <p className="text-gray-700">No accounts connected yet.</p>
             <p className="text-sm">Connect your bank and brokerage to get started.</p>
           </div>
         )}
       </CardContent>
 
-      {/* Account Details Modal */}
       <AccountDetailsModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        account={selectedAccount}
+        account={selectedAccount ? {
+          id: selectedAccount.id,
+          name: selectedAccount.accountName,
+          type: selectedAccount.accountType || 'bank',
+          balance: parseFloat(selectedAccount.balance) || 0,
+          status: selectedAccount.needsReconnection ? 'disconnected' : 'connected'
+        } : null}
       />
     </Card>
   );

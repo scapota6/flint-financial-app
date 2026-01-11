@@ -160,15 +160,15 @@ const HoldingRow = memo(function HoldingRow({
 
   return (
     <div 
-      className="flex items-center justify-between py-4 px-2 hover:bg-white/5 transition-colors cursor-pointer rounded-lg"
+      className="flex items-center justify-between py-4 px-2 hover:bg-gray-50 transition-colors cursor-pointer rounded-lg"
       onClick={onClick}
       data-testid={`holding-row-${holding.symbol}`}
     >
       <div className="flex-1 min-w-0">
-        <div className="font-semibold text-white text-base sm:text-lg">
+        <div className="font-semibold text-gray-900 text-base sm:text-lg">
           {cleanSymbol}
         </div>
-        <div className="text-xs sm:text-sm text-gray-400 truncate">
+        <div className="text-xs sm:text-sm text-gray-500 truncate">
           {formatQuantity(holding.quantity)}
         </div>
         {avgCostDisplay && (
@@ -205,11 +205,11 @@ const SectionHeader = memo(function SectionHeader({
       data-testid={`section-header-${title.toLowerCase().replace(/\s+/g, '-')}`}
     >
       <div className="flex items-center gap-2">
-        <h2 className="text-xl sm:text-2xl font-bold text-white">{title}</h2>
-        <ChevronRight className="h-5 w-5 sm:h-6 sm:w-6 text-white group-hover:translate-x-1 transition-transform" />
+        <h2 className="text-xl sm:text-2xl font-bold text-gray-900">{title}</h2>
+        <ChevronRight className="h-5 w-5 sm:h-6 sm:w-6 text-gray-900 group-hover:translate-x-1 transition-transform" />
       </div>
       {subtitle && (
-        <div className="flex items-center gap-1 text-gray-400 text-sm">
+        <div className="flex items-center gap-1 text-gray-500 text-sm">
           <span>{subtitle}</span>
           <Info className="h-4 w-4" />
         </div>
@@ -242,17 +242,17 @@ const PortfolioSummary = memo(function PortfolioSummary({
   };
 
   return (
-    <div className="mb-6 pb-4 border-b border-gray-800" data-testid="portfolio-summary">
+    <div className="mb-6 pb-4 border-b border-gray-200" data-testid="portfolio-summary">
       <div className="flex items-baseline justify-between">
         <div>
-          <p className="text-gray-400 text-sm mb-1">Portfolio Value</p>
-          <p className="text-3xl sm:text-4xl font-bold text-white">
+          <p className="text-gray-500 text-sm mb-1">Portfolio Value</p>
+          <p className="text-3xl sm:text-4xl font-bold text-gray-900">
             ${formatCurrency(totalValue)}
           </p>
         </div>
         {hasValidPnLData ? (
           <div className="text-right">
-            <p className="text-gray-400 text-sm mb-1">Total Return</p>
+            <p className="text-gray-500 text-sm mb-1">Total Return</p>
             <div className={`text-xl sm:text-2xl font-semibold ${isPositive ? 'text-green-500' : 'text-red-500'}`}>
               {isPositive ? '+' : ''}${formatCurrency(totalPnL)}
             </div>
@@ -262,7 +262,7 @@ const PortfolioSummary = memo(function PortfolioSummary({
           </div>
         ) : (
           <div className="text-right">
-            <p className="text-gray-400 text-sm mb-1">Total Return</p>
+            <p className="text-gray-500 text-sm mb-1">Total Return</p>
             <div className="text-gray-500 text-lg">—</div>
             <div className="text-xs text-gray-500">Cost basis unavailable</div>
           </div>
@@ -346,16 +346,16 @@ const RobinhoodHoldings = memo(function RobinhoodHoldings({
 
   if (isLoading) {
     return (
-      <div className="bg-white/5 backdrop-blur-sm border border-white/10 min-h-[400px] rounded-xl p-4 sm:p-6" data-testid="holdings-loading">
+      <div className="bg-white border border-gray-200 shadow-sm min-h-[400px] rounded-xl p-4 sm:p-6" data-testid="holdings-loading">
         <div className="space-y-4">
           {[1, 2, 3, 4, 5].map(i => (
             <div key={i} className="animate-pulse flex items-center justify-between py-4">
               <div className="flex-1">
-                <div className="h-5 bg-gray-800 rounded w-16 mb-2"></div>
-                <div className="h-4 bg-gray-800 rounded w-24"></div>
+                <div className="h-5 bg-gray-200 rounded w-16 mb-2"></div>
+                <div className="h-4 bg-gray-200 rounded w-24"></div>
               </div>
-              <div className="w-20 h-10 bg-gray-800 rounded mx-4"></div>
-              <div className="w-24 h-10 bg-gray-800 rounded-md"></div>
+              <div className="w-20 h-10 bg-gray-200 rounded mx-4"></div>
+              <div className="w-24 h-10 bg-gray-200 rounded-md"></div>
             </div>
           ))}
         </div>
@@ -365,8 +365,8 @@ const RobinhoodHoldings = memo(function RobinhoodHoldings({
 
   if (error) {
     return (
-      <div className="bg-white/5 backdrop-blur-sm border border-white/10 min-h-[200px] rounded-xl p-6 flex items-center justify-center" data-testid="holdings-error">
-        <div className="text-center text-gray-400">
+      <div className="bg-white border border-gray-200 shadow-sm min-h-[200px] rounded-xl p-6 flex items-center justify-center" data-testid="holdings-error">
+        <div className="text-center text-gray-500">
           <p className="text-lg mb-2">Unable to load holdings</p>
           <p className="text-sm">Please check your brokerage connections</p>
         </div>
@@ -376,8 +376,8 @@ const RobinhoodHoldings = memo(function RobinhoodHoldings({
 
   if (holdings.length === 0) {
     return (
-      <div className="bg-white/5 backdrop-blur-sm border border-white/10 min-h-[200px] rounded-xl p-6 flex items-center justify-center" data-testid="holdings-empty">
-        <div className="text-center text-gray-400">
+      <div className="bg-white border border-gray-200 shadow-sm min-h-[200px] rounded-xl p-6 flex items-center justify-center" data-testid="holdings-empty">
+        <div className="text-center text-gray-500">
           <p className="text-lg mb-2">No holdings yet</p>
           <p className="text-sm">Connect your brokerage accounts to view your portfolio</p>
         </div>
@@ -386,7 +386,7 @@ const RobinhoodHoldings = memo(function RobinhoodHoldings({
   }
 
   return (
-    <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-4 sm:p-6" data-testid="robinhood-holdings">
+    <div className="bg-white border border-gray-200 shadow-sm rounded-xl p-4 sm:p-6" data-testid="robinhood-holdings">
       {/* Portfolio Summary with Total P&L */}
       <PortfolioSummary holdings={holdings} />
       
@@ -395,7 +395,7 @@ const RobinhoodHoldings = memo(function RobinhoodHoldings({
           <SectionHeader 
             title="Crypto" 
           />
-          <div className="divide-y divide-gray-800/50">
+          <div className="divide-y divide-gray-200">
             {cryptoHoldings.map((holding, index) => (
               <HoldingRow
                 key={`crypto-${holding.brokerageName}-${holding.accountId}-${holding.symbol}-${index}`}
@@ -410,7 +410,7 @@ const RobinhoodHoldings = memo(function RobinhoodHoldings({
       {stockHoldings.length > 0 && (
         <div>
           <SectionHeader title="Stocks & ETFs" />
-          <div className="divide-y divide-gray-800/50">
+          <div className="divide-y divide-gray-200">
             {stockHoldings.map((holding, index) => (
               <HoldingRow
                 key={`stock-${holding.brokerageName}-${holding.accountId}-${holding.symbol}-${index}`}

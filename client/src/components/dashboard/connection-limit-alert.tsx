@@ -19,7 +19,6 @@ export default function ConnectionLimitAlert({
 }: ConnectionLimitAlertProps) {
   const [isDismissed, setIsDismissed] = useState(false);
   
-  // Check if user has dismissed this specific alert
   useEffect(() => {
     const dismissKey = `snaptrade-limit-dismissed-${accepted}-${rejected}-${tier}`;
     const wasDismissed = localStorage.getItem(dismissKey) === 'true';
@@ -36,25 +35,22 @@ export default function ConnectionLimitAlert({
     return null;
   }
   
-  // Parse brokerages list - guard against missing/empty brokerages param
   const rejectedBrokeragesList = (brokerages && brokerages.trim()) 
     ? brokerages.split(',').filter(b => b && b.trim()) 
     : [];
   const total = accepted + rejected;
   
-  // Get tier limit dynamically
   const getTierLimit = (tierName: string): number | null => {
     const normalizedTier = tierName.toLowerCase();
     if (normalizedTier === 'free') return 4;
-    if (normalizedTier === 'basic' || normalizedTier === 'pro') return null; // unlimited
-    return 4; // default to free limit
+    if (normalizedTier === 'basic' || normalizedTier === 'pro') return null;
+    return 4;
   };
   
   const tierLimit = getTierLimit(tier);
   const isUnlimited = tierLimit === null;
   const limitText = isUnlimited ? 'unlimited connections' : `up to ${tierLimit} connections`;
   
-  // Determine alert state and messaging
   let variant: 'default' | 'destructive' = 'default';
   let icon: React.ReactNode;
   let title: string;
@@ -63,12 +59,11 @@ export default function ConnectionLimitAlert({
   let bgColor: string;
   
   if (rejected > 0 && accepted === 0) {
-    // Zero accepted - complete failure due to limit
     variant = 'destructive';
     icon = <AlertCircle className="h-5 w-5" />;
     title = 'Connection Limit Reached';
-    borderColor = 'border-red-500/50';
-    bgColor = 'bg-red-500/10';
+    borderColor = 'border-red-300';
+    bgColor = 'bg-red-50';
     
     if (rejectedBrokeragesList.length > 0) {
       const brokerageNames = rejectedBrokeragesList.slice(0, 3).join(', ');
@@ -78,11 +73,10 @@ export default function ConnectionLimitAlert({
       description = `Unable to connect ${rejected} brokerage${rejected > 1 ? 's' : ''}. Your ${tier} plan allows ${limitText} and you've reached the limit.`;
     }
   } else if (rejected > 0 && accepted > 0) {
-    // Partial acceptance - some succeeded, some failed
     icon = <AlertTriangle className="h-5 w-5" />;
     title = 'Partial Connection - Limit Reached';
-    borderColor = 'border-orange-500/50';
-    bgColor = 'bg-orange-500/10';
+    borderColor = 'border-orange-300';
+    bgColor = 'bg-orange-50';
     
     if (rejectedBrokeragesList.length > 0) {
       const brokerageNames = rejectedBrokeragesList.slice(0, 3).join(', ');
@@ -92,7 +86,6 @@ export default function ConnectionLimitAlert({
       description = `Connected ${accepted} of ${total} brokerages. Unable to connect ${rejected} additional brokerage${rejected > 1 ? 's' : ''} due to your ${tier} plan limit of ${limitText}.`;
     }
   } else {
-    // This shouldn't render, but just in case
     return null;
   }
   
@@ -106,19 +99,18 @@ export default function ConnectionLimitAlert({
           <div className="mt-0.5">{icon}</div>
           <div className="flex-1 space-y-3">
             <div>
-              <AlertTitle className="text-base font-semibold mb-2">
+              <AlertTitle className="text-base font-semibold mb-2 text-gray-900">
                 {title}
               </AlertTitle>
-              <AlertDescription className="text-sm">
+              <AlertDescription className="text-sm text-gray-600">
                 <p className="mb-3">{description}</p>
                 
-                {/* Upgrade CTA - only show for Free tier */}
                 {tier.toLowerCase() === 'free' && (
                   <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
                     <Link href="/subscribe">
                       <Button 
                         size="sm" 
-                        className="bg-blue-600 hover:bg-blue-700 text-white"
+                        className="bg-gray-900 hover:bg-gray-800 text-white"
                         data-testid="button-upgrade-plan"
                       >
                         Upgrade to Basic for Unlimited Connections
@@ -126,7 +118,7 @@ export default function ConnectionLimitAlert({
                       </Button>
                     </Link>
                     
-                    <p className="text-xs text-gray-400">
+                    <p className="text-xs text-gray-500">
                       Basic plan starts at $19.99/month
                     </p>
                   </div>
@@ -136,12 +128,11 @@ export default function ConnectionLimitAlert({
           </div>
         </div>
         
-        {/* Dismiss button */}
         <Button
           variant="ghost"
           size="sm"
           onClick={handleDismiss}
-          className="ml-4 h-6 w-6 p-0 hover:bg-white/10"
+          className="ml-4 h-6 w-6 p-0 hover:bg-gray-200"
           data-testid="button-dismiss-alert"
         >
           <X className="h-4 w-4" />

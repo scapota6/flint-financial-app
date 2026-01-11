@@ -140,18 +140,18 @@ export function BankAccountModal({ account, isOpen, onClose }: BankAccountModalP
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="bg-gray-900/95 backdrop-blur-xl border-white/10 max-w-3xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader className="border-b border-gray-700 pb-4">
+      <DialogContent className="bg-white border-gray-200 max-w-3xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader className="border-b border-gray-200 pb-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-blue-600/20 border border-blue-600/30">
-                <Building className="h-6 w-6 text-blue-400" />
+              <div className="p-2 rounded-lg bg-blue-100 border border-blue-200">
+                <Building className="h-6 w-6 text-blue-600" />
               </div>
               <div>
-                <DialogTitle className="text-xl font-bold text-white">
+                <DialogTitle className="text-xl font-bold text-gray-900">
                   {account.name || account.official_name || 'Bank Account'}
                 </DialogTitle>
-                <p className="text-sm text-gray-400">
+                <p className="text-sm text-gray-500">
                   {account.type || 'Checking'} • {account.mask ? `****${account.mask}` : account.account_number}
                 </p>
               </div>
@@ -164,18 +164,18 @@ export function BankAccountModal({ account, isOpen, onClose }: BankAccountModalP
                     Disconnect
                   </Button>
                 </AlertDialogTrigger>
-                <AlertDialogContent className="bg-gray-900 border-gray-700">
+                <AlertDialogContent className="bg-white border-gray-200">
                   <AlertDialogHeader>
-                    <AlertDialogTitle className="text-white flex items-center gap-2">
-                      <AlertTriangle className="h-5 w-5 text-red-400" />
+                    <AlertDialogTitle className="text-gray-900 flex items-center gap-2">
+                      <AlertTriangle className="h-5 w-5 text-red-500" />
                       Disconnect Bank Account
                     </AlertDialogTitle>
-                    <AlertDialogDescription className="text-gray-400">
+                    <AlertDialogDescription className="text-gray-500">
                       Are you sure you want to disconnect "{account.name}"? This will remove access to your account balance and transaction history. You can reconnect later if needed.
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
-                    <AlertDialogCancel className="bg-gray-800 border-gray-600 text-white hover:bg-gray-700">
+                    <AlertDialogCancel className="bg-gray-100 border-gray-200 text-gray-900 hover:bg-gray-200">
                       Cancel
                     </AlertDialogCancel>
                     <AlertDialogAction 
@@ -197,21 +197,21 @@ export function BankAccountModal({ account, isOpen, onClose }: BankAccountModalP
           {/* Account Balance */}
           <div className="flex items-center gap-6 mt-4">
             <div>
-              <p className="text-sm text-gray-400">Available Balance</p>
-              <p className="text-3xl font-bold text-white">
+              <p className="text-sm text-gray-500">Available Balance</p>
+              <p className="text-3xl font-bold text-gray-900">
                 ${(account.balance || account.current_balance || 45230.50).toLocaleString('en-US', { minimumFractionDigits: 2 })}
               </p>
             </div>
             <div>
-              <p className="text-sm text-gray-400">Account Status</p>
-              <Badge variant="outline" className="text-green-400 border-green-400">
+              <p className="text-sm text-gray-500">Account Status</p>
+              <Badge variant="outline" className="text-green-600 border-green-600">
                 <CheckCircle className="h-3 w-3 mr-1" />
                 Active
               </Badge>
             </div>
             <div>
-              <p className="text-sm text-gray-400">Last Updated</p>
-              <p className="text-sm text-white">
+              <p className="text-sm text-gray-500">Last Updated</p>
+              <p className="text-sm text-gray-900">
                 {formatDistanceToNow(new Date(), { addSuffix: true })}
               </p>
             </div>
@@ -219,17 +219,17 @@ export function BankAccountModal({ account, isOpen, onClose }: BankAccountModalP
         </DialogHeader>
 
         <Tabs defaultValue="transactions" className="mt-6">
-          <TabsList className="grid w-full grid-cols-3 bg-white/5 border border-white/10">
+          <TabsList className="grid w-full grid-cols-3 bg-gray-100 border border-gray-200">
             <TabsTrigger value="transactions">Recent Transactions</TabsTrigger>
             <TabsTrigger value="details">Account Details</TabsTrigger>
             <TabsTrigger value="settings">Settings</TabsTrigger>
           </TabsList>
 
           <TabsContent value="transactions" className="space-y-4">
-            <Card className="bg-white/5 backdrop-blur-sm border border-white/10">
+            <Card className="bg-white border border-gray-200 shadow-sm">
               <CardHeader>
-                <CardTitle className="text-white flex items-center gap-2">
-                  <Activity className="h-5 w-5 text-blue-400" />
+                <CardTitle className="text-gray-900 flex items-center gap-2">
+                  <Activity className="h-5 w-5 text-blue-600" />
                   Recent Transactions
                   <Badge variant="outline" className="ml-auto">{displayTransactions.length} transactions</Badge>
                 </CardTitle>
@@ -238,13 +238,13 @@ export function BankAccountModal({ account, isOpen, onClose }: BankAccountModalP
                 {transactionsLoading ? (
                   <div className="space-y-3">
                     {[...Array(5)].map((_, i) => (
-                      <div key={i} className="flex items-center gap-3 p-3 rounded-lg bg-gray-700/30 animate-pulse">
-                        <div className="w-8 h-8 bg-gray-600 rounded-full"></div>
+                      <div key={i} className="flex items-center gap-3 p-3 rounded-lg bg-gray-100 animate-pulse">
+                        <div className="w-8 h-8 bg-gray-200 rounded-full"></div>
                         <div className="flex-1">
-                          <div className="h-4 bg-gray-600 rounded w-3/4 mb-2"></div>
-                          <div className="h-3 bg-gray-600 rounded w-1/2"></div>
+                          <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+                          <div className="h-3 bg-gray-200 rounded w-1/2"></div>
                         </div>
-                        <div className="h-4 bg-gray-600 rounded w-20"></div>
+                        <div className="h-4 bg-gray-200 rounded w-20"></div>
                       </div>
                     ))}
                   </div>
@@ -255,15 +255,15 @@ export function BankAccountModal({ account, isOpen, onClose }: BankAccountModalP
                       const logoData = getMerchantLogo(transaction.description, institutionName);
                       
                       return (
-                        <div key={transaction.id} className="flex items-center gap-3 p-3 rounded-lg bg-white/5 backdrop-blur-sm border border-white/10 hover:bg-white/10 transition-colors">
+                        <div key={transaction.id} className="flex items-center gap-3 p-3 rounded-lg bg-white border border-gray-200 hover:bg-gray-50 transition-colors">
                           <div className={`w-10 h-10 rounded-lg overflow-hidden flex items-center justify-center flex-shrink-0 ${logoData.bgClass}`}>
                             <div className="h-full w-full flex items-center justify-center [&>img]:h-full [&>img]:w-full [&>img]:object-cover [&>svg]:h-6 [&>svg]:w-6">
                               {logoData.logo}
                             </div>
                           </div>
                           <div className="flex-1">
-                            <p className="text-white font-medium text-sm">{transaction.description}</p>
-                            <div className="flex items-center gap-2 text-xs text-gray-400">
+                            <p className="text-gray-900 font-medium text-sm">{transaction.description}</p>
+                            <div className="flex items-center gap-2 text-xs text-gray-500">
                               <Calendar className="h-3 w-3" />
                               {new Date(transaction.date).toLocaleDateString()}
                               <Badge variant="outline" className="text-xs py-0 px-1">
@@ -275,7 +275,7 @@ export function BankAccountModal({ account, isOpen, onClose }: BankAccountModalP
                             <p className={`font-medium ${getTransactionColor(transaction.amount)}`}>
                               {transaction.amount >= 0 ? '+' : ''}${Math.abs(transaction.amount).toFixed(2)}
                             </p>
-                            <p className="text-xs text-gray-400">{transaction.status}</p>
+                            <p className="text-xs text-gray-500">{transaction.status}</p>
                           </div>
                         </div>
                       );
@@ -284,7 +284,7 @@ export function BankAccountModal({ account, isOpen, onClose }: BankAccountModalP
                 )}
                 
                 {displayTransactions.length === 0 && !transactionsLoading && (
-                  <div className="text-center py-8 text-gray-400">
+                  <div className="text-center py-8 text-gray-500">
                     <Activity className="h-12 w-12 mx-auto mb-4 opacity-50" />
                     <p>No recent transactions.</p>
                     <p className="text-sm">Transaction history will appear here.</p>
@@ -295,38 +295,38 @@ export function BankAccountModal({ account, isOpen, onClose }: BankAccountModalP
           </TabsContent>
 
           <TabsContent value="details" className="space-y-4">
-            <Card className="bg-white/5 backdrop-blur-sm border border-white/10">
+            <Card className="bg-white border border-gray-200 shadow-sm">
               <CardHeader>
-                <CardTitle className="text-white flex items-center gap-2">
-                  <CreditCard className="h-5 w-5 text-blue-400" />
+                <CardTitle className="text-gray-900 flex items-center gap-2">
+                  <CreditCard className="h-5 w-5 text-blue-600" />
                   Account Information
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <p className="text-sm text-gray-400">Account Name</p>
-                    <p className="text-white font-medium">{account.name || 'Primary Checking'}</p>
+                    <p className="text-sm text-gray-500">Account Name</p>
+                    <p className="text-gray-900 font-medium">{account.name || 'Primary Checking'}</p>
                   </div>
                   <div>
-                    <p className="text-sm text-gray-400">Account Type</p>
-                    <p className="text-white font-medium">{account.type || 'Checking'}</p>
+                    <p className="text-sm text-gray-500">Account Type</p>
+                    <p className="text-gray-900 font-medium">{account.type || 'Checking'}</p>
                   </div>
                   <div>
-                    <p className="text-sm text-gray-400">Institution</p>
-                    <p className="text-white font-medium">{account.institution?.name || 'Chase Bank'}</p>
+                    <p className="text-sm text-gray-500">Institution</p>
+                    <p className="text-gray-900 font-medium">{account.institution?.name || 'Chase Bank'}</p>
                   </div>
                   <div>
-                    <p className="text-sm text-gray-400">Routing Number</p>
-                    <p className="text-white font-medium">{account.routing_number || '****9876'}</p>
+                    <p className="text-sm text-gray-500">Routing Number</p>
+                    <p className="text-gray-900 font-medium">{account.routing_number || '****9876'}</p>
                   </div>
                   <div>
-                    <p className="text-sm text-gray-400">Connected Via</p>
-                    <p className="text-white font-medium">Teller Banking API</p>
+                    <p className="text-sm text-gray-500">Connected Via</p>
+                    <p className="text-gray-900 font-medium">Teller Banking API</p>
                   </div>
                   <div>
-                    <p className="text-sm text-gray-400">Connection Status</p>
-                    <Badge variant="outline" className="text-green-400 border-green-400">
+                    <p className="text-sm text-gray-500">Connection Status</p>
+                    <Badge variant="outline" className="text-green-600 border-green-600">
                       <CheckCircle className="h-3 w-3 mr-1" />
                       Connected
                     </Badge>
@@ -337,48 +337,48 @@ export function BankAccountModal({ account, isOpen, onClose }: BankAccountModalP
           </TabsContent>
 
           <TabsContent value="settings" className="space-y-4">
-            <Card className="bg-white/5 backdrop-blur-sm border border-white/10">
+            <Card className="bg-white border border-gray-200 shadow-sm">
               <CardHeader>
-                <CardTitle className="text-white">Account Settings</CardTitle>
+                <CardTitle className="text-gray-900">Account Settings</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="flex items-center justify-between p-4 rounded-lg bg-white/5 border border-white/10">
+                <div className="flex items-center justify-between p-4 rounded-lg bg-gray-50 border border-gray-200">
                   <div>
-                    <p className="text-white font-medium">Auto-sync Transactions</p>
-                    <p className="text-sm text-gray-400">Automatically fetch new transactions every hour</p>
+                    <p className="text-gray-900 font-medium">Auto-sync Transactions</p>
+                    <p className="text-sm text-gray-500">Automatically fetch new transactions every hour</p>
                   </div>
-                  <Badge variant="outline" className="text-green-400 border-green-400">Enabled</Badge>
+                  <Badge variant="outline" className="text-green-600 border-green-600">Enabled</Badge>
                 </div>
                 
-                <div className="flex items-center justify-between p-4 rounded-lg bg-white/5 border border-white/10">
+                <div className="flex items-center justify-between p-4 rounded-lg bg-gray-50 border border-gray-200">
                   <div>
-                    <p className="text-white font-medium">Balance Notifications</p>
-                    <p className="text-sm text-gray-400">Get notified of low balance or large transactions</p>
+                    <p className="text-gray-900 font-medium">Balance Notifications</p>
+                    <p className="text-sm text-gray-500">Get notified of low balance or large transactions</p>
                   </div>
-                  <Badge variant="outline" className="text-green-400 border-green-400">Enabled</Badge>
+                  <Badge variant="outline" className="text-green-600 border-green-600">Enabled</Badge>
                 </div>
 
-                <div className="border-t border-gray-600 pt-4">
-                  <h4 className="text-white font-medium mb-3">Danger Zone</h4>
+                <div className="border-t border-gray-200 pt-4">
+                  <h4 className="text-gray-900 font-medium mb-3">Danger Zone</h4>
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
-                      <Button variant="outline" className="w-full border-red-600 text-red-400 hover:bg-red-600/10">
+                      <Button variant="outline" className="w-full border-red-600 text-red-600 hover:bg-red-50">
                         <Unlink className="h-4 w-4 mr-2" />
                         Disconnect This Account
                       </Button>
                     </AlertDialogTrigger>
-                    <AlertDialogContent className="bg-gray-900 border-gray-700">
+                    <AlertDialogContent className="bg-white border-gray-200">
                       <AlertDialogHeader>
-                        <AlertDialogTitle className="text-white flex items-center gap-2">
-                          <AlertTriangle className="h-5 w-5 text-red-400" />
+                        <AlertDialogTitle className="text-gray-900 flex items-center gap-2">
+                          <AlertTriangle className="h-5 w-5 text-red-500" />
                           Confirm Account Disconnection
                         </AlertDialogTitle>
-                        <AlertDialogDescription className="text-gray-400">
+                        <AlertDialogDescription className="text-gray-500">
                           This action will permanently disconnect "{account.name}" from your Flint account. All transaction history and balance information will be removed. You can reconnect this account later if needed.
                         </AlertDialogDescription>
                       </AlertDialogHeader>
                       <AlertDialogFooter>
-                        <AlertDialogCancel className="bg-gray-800 border-gray-600 text-white hover:bg-gray-700">
+                        <AlertDialogCancel className="bg-gray-100 border-gray-200 text-gray-900 hover:bg-gray-200">
                           Cancel
                         </AlertDialogCancel>
                         <AlertDialogAction 

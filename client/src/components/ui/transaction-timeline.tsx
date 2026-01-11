@@ -47,7 +47,7 @@ const TransactionTimeline = ({
 
   if (transactions.length === 0) {
     return (
-      <p className="text-gray-400 text-sm text-center py-8">
+      <p className="text-gray-500 text-sm text-center py-8">
         No transactions in this category
       </p>
     );
@@ -55,7 +55,7 @@ const TransactionTimeline = ({
 
   return (
     <motion.ol
-      className={cn("relative border-l border-gray-700/50 ml-4", className)}
+      className={cn("relative border-l border-gray-300 ml-4", className)}
       initial="hidden"
       animate="visible"
       variants={containerVariants}
@@ -72,7 +72,7 @@ const TransactionTimeline = ({
         >
           <span
             className={cn(
-              "absolute -left-3 flex h-8 w-8 items-center justify-center rounded-full ring-4 ring-gray-900 overflow-hidden",
+              "absolute -left-3 flex h-8 w-8 items-center justify-center rounded-full ring-4 ring-[#F4F2ED] overflow-hidden",
               merchantLogoData.bgClass
             )}
           >
@@ -81,13 +81,13 @@ const TransactionTimeline = ({
             </div>
           </span>
 
-          <div className="rounded-lg bg-white/5 backdrop-blur-sm border border-white/10 p-3 hover:bg-white/10 transition-colors">
+          <div className="rounded-lg bg-white border border-gray-200 p-3 hover:bg-gray-50 transition-colors shadow-sm">
             <div className="flex items-start justify-between gap-3">
               <div className="flex-1 min-w-0">
-                <h3 className="font-medium text-white truncate">
+                <h3 className="font-medium text-gray-900 truncate">
                   {transaction.merchant}
                 </h3>
-                <p className="text-sm text-gray-400 truncate mt-0.5">
+                <p className="text-sm text-gray-500 truncate mt-0.5">
                   {transaction.description}
                 </p>
                 <div className="flex items-center gap-3 mt-2">

@@ -54,13 +54,13 @@ export default function ConnectionStatus({ accounts }: ConnectionStatusProps) {
   return (
     <>
       <div className="mb-8">
-        <Card className="trade-card shadow-lg">
+        <Card className="bg-white border border-gray-200 shadow-sm">
           <CardHeader>
             <div className="flex items-center justify-between">
-              <CardTitle className="text-lg font-semibold text-white">Connected Accounts</CardTitle>
+              <CardTitle className="text-lg font-semibold text-gray-900">Connected Accounts</CardTitle>
               <Button
                 onClick={() => setIsModalOpen(true)}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium"
+                className="bg-gray-900 hover:bg-gray-800 text-white px-4 py-2 rounded-lg text-sm font-medium"
               >
                 <Plus className="h-4 w-4 mr-2" />
                 Add Account
@@ -74,15 +74,15 @@ export default function ConnectionStatus({ accounts }: ConnectionStatusProps) {
                 return (
                   <div
                     key={index}
-                    className="flex items-center justify-between p-4 bg-gray-800 rounded-lg"
+                    className="flex items-center justify-between p-4 bg-white border border-gray-200 rounded-lg"
                   >
                     <div className="flex items-center space-x-3">
                       <div className={`w-8 h-8 ${connection.color} rounded-full flex items-center justify-center`}>
                         <Icon className="h-4 w-4 text-white" />
                       </div>
                       <div>
-                        <p className="text-white font-medium">{connection.institutionName}</p>
-                        <p className="text-gray-400 text-sm">
+                        <p className="text-gray-900 font-medium">{connection.institutionName}</p>
+                        <p className="text-gray-500 text-sm">
                           {connection.isActive ? 'Connected' : 'Disconnected'}
                         </p>
                       </div>

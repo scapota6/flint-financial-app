@@ -130,12 +130,12 @@ export default function Dashboard() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen text-white">
+      <div className="min-h-screen bg-[#F4F2ED]">
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pb-20 md:pb-6">
           {/* Dashboard Header Skeleton */}
           <div className="mb-8" data-testid="skeleton-dashboard-header-0">
-            <Skeleton className="h-8 w-64 mb-2" data-testid="skeleton-title-0" />
-            <Skeleton className="h-4 w-96" data-testid="skeleton-subtitle-0" />
+            <Skeleton className="h-8 w-64 mb-2 bg-gray-200" data-testid="skeleton-title-0" />
+            <Skeleton className="h-4 w-96 bg-gray-200" data-testid="skeleton-subtitle-0" />
           </div>
 
           {/* Summary Cards Skeleton */}
@@ -239,11 +239,11 @@ export default function Dashboard() {
 
   if (isError) {
     return (
-      <div className="min-h-screen text-white">
+      <div className="min-h-screen bg-[#F4F2ED]">
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pb-20 md:pb-6">
           <div className="text-center py-12">
-            <h2 className="apple-h2 mb-4">Error Loading Dashboard</h2>
-            <p className="apple-body text-gray-400">Please try refreshing the page</p>
+            <h2 className="font-serif text-2xl mb-4 text-gray-900">Error Loading Dashboard</h2>
+            <p className="text-gray-600">Please try refreshing the page</p>
           </div>
         </main>
       </div>
@@ -251,14 +251,14 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen text-white">
+    <div className="min-h-screen bg-[#F4F2ED]">
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pb-20 md:pb-6">
         {/* Dashboard Header */}
         <div className="mb-8">
-          <h2 className="apple-h2 mb-2">
+          <h2 className="font-serif text-2xl mb-2 text-gray-900">
             Financial Dashboard
           </h2>
-          <p className="apple-caption text-gray-400">Unified view of your total net worth across all accounts</p>
+          <p className="text-sm text-gray-600">Unified view of your total net worth across all accounts</p>
         </div>
 
         {/* Unified Dashboard - Real API Data Only */}
@@ -300,7 +300,7 @@ export default function Dashboard() {
       {/* Floating Feature Request Button */}
       <button
         onClick={() => setFeatureRequestModalOpen(true)}
-        className="fixed bottom-6 right-6 z-50 bg-blue-600 hover:bg-blue-700 text-white rounded-full p-4 shadow-lg transition-all duration-200 hover:scale-110 flex items-center gap-2 group"
+        className="fixed bottom-6 right-6 z-50 bg-gray-900 hover:bg-gray-800 text-white rounded-full p-4 shadow-lg transition-all duration-200 hover:scale-110 flex items-center gap-2 group"
         data-testid="button-feature-request-floating-dashboard"
         aria-label="Request a feature"
       >

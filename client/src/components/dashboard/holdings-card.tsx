@@ -55,22 +55,22 @@ export const HoldingsCard = memo(function HoldingsCard({ data }: HoldingsCardPro
 
   if (isLoading) {
     return (
-      <Card>
+      <Card className="bg-white border-gray-200 shadow-sm">
         <CardHeader>
-          <CardTitle>Portfolio Holdings</CardTitle>
-          <CardDescription>Your current positions</CardDescription>
+          <CardTitle className="text-gray-900">Portfolio Holdings</CardTitle>
+          <CardDescription className="text-gray-500">Your current positions</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-3">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="flex items-center justify-between p-3 border rounded-lg">
+              <div key={i} className="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
                 <div className="space-y-2">
-                  <Skeleton className="h-4 w-16" />
-                  <Skeleton className="h-3 w-24" />
+                  <Skeleton className="h-4 w-16 bg-gray-200" />
+                  <Skeleton className="h-3 w-24 bg-gray-200" />
                 </div>
                 <div className="text-right space-y-2">
-                  <Skeleton className="h-4 w-20" />
-                  <Skeleton className="h-3 w-16" />
+                  <Skeleton className="h-4 w-20 bg-gray-200" />
+                  <Skeleton className="h-3 w-16 bg-gray-200" />
                 </div>
               </div>
             ))}
@@ -82,16 +82,16 @@ export const HoldingsCard = memo(function HoldingsCard({ data }: HoldingsCardPro
 
   if (error) {
     return (
-      <Card>
+      <Card className="bg-white border-gray-200 shadow-sm">
         <CardHeader>
-          <CardTitle>Portfolio Holdings</CardTitle>
-          <CardDescription>Your current positions</CardDescription>
+          <CardTitle className="text-gray-900">Portfolio Holdings</CardTitle>
+          <CardDescription className="text-gray-500">Your current positions</CardDescription>
         </CardHeader>
         <CardContent>
           <Alert variant="destructive">
             <AlertDescription>{error}</AlertDescription>
           </Alert>
-          <Button onClick={loadHoldings} variant="outline" className="mt-4">
+          <Button onClick={loadHoldings} variant="outline" className="mt-4 border-gray-200">
             <RefreshCw className="h-4 w-4 mr-2" />
             Retry
           </Button>
@@ -102,15 +102,15 @@ export const HoldingsCard = memo(function HoldingsCard({ data }: HoldingsCardPro
 
   if (holdings.length === 0) {
     return (
-      <Card>
+      <Card className="bg-white border-gray-200 shadow-sm">
         <CardHeader>
-          <CardTitle>Portfolio Holdings</CardTitle>
-          <CardDescription>Your current positions</CardDescription>
+          <CardTitle className="text-gray-900">Portfolio Holdings</CardTitle>
+          <CardDescription className="text-gray-500">Your current positions</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="text-center py-8">
             <p className="text-gray-500 mb-4">No holdings found</p>
-            <Button onClick={() => setLocation('/trading')} variant="outline">
+            <Button onClick={() => setLocation('/trading')} variant="outline" className="border-gray-200">
               Start Trading
             </Button>
           </div>
@@ -120,11 +120,11 @@ export const HoldingsCard = memo(function HoldingsCard({ data }: HoldingsCardPro
   }
 
   return (
-    <Card>
+    <Card className="bg-white border-gray-200 shadow-sm">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <div>
-          <CardTitle>Portfolio Holdings</CardTitle>
-          <CardDescription>Your current positions</CardDescription>
+          <CardTitle className="text-gray-900">Portfolio Holdings</CardTitle>
+          <CardDescription className="text-gray-500">Your current positions</CardDescription>
         </div>
         <Button onClick={loadHoldings} variant="ghost" size="sm">
           <RefreshCw className="h-4 w-4" />
@@ -132,20 +132,20 @@ export const HoldingsCard = memo(function HoldingsCard({ data }: HoldingsCardPro
       </CardHeader>
       <CardContent>
         {/* Portfolio Summary */}
-        <div className="grid grid-cols-2 gap-4 mb-6 p-4 bg-gray-50 rounded-lg">
+        <div className="grid grid-cols-2 gap-4 mb-6 p-4 bg-gray-50 border border-gray-200 rounded-lg">
           <div>
             <p className="text-sm text-gray-500">Total Value</p>
-            <p className="text-2xl font-bold">${totalValue.toFixed(2)}</p>
+            <p className="text-2xl font-bold text-gray-900">${totalValue.toFixed(2)}</p>
           </div>
           <div>
             <p className="text-sm text-gray-500">Total P&L</p>
             <div className="flex items-center gap-2">
               {totalPnL >= 0 ? (
-                <TrendingUp className="h-4 w-4 text-green-600" />
+                <TrendingUp className="h-4 w-4 text-green-500" />
               ) : (
-                <TrendingDown className="h-4 w-4 text-red-600" />
+                <TrendingDown className="h-4 w-4 text-red-500" />
               )}
-              <span className={`text-lg font-semibold ${totalPnL >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+              <span className={`text-lg font-semibold ${totalPnL >= 0 ? 'text-green-500' : 'text-red-500'}`}>
                 {totalPnL >= 0 ? '+' : ''}${totalPnL.toFixed(2)} ({totalPnLPercent.toFixed(2)}%)
               </span>
             </div>
@@ -163,37 +163,37 @@ export const HoldingsCard = memo(function HoldingsCard({ data }: HoldingsCardPro
             return (
               <div
                 key={`${holding.account_id}-${holding.symbol}`}
-                className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 cursor-pointer transition-colors"
+                className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors"
                 onClick={() => setLocation(`/stock/${holding.symbol}`)}
               >
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-1">
-                    <span className="font-semibold text-lg">{holding.symbol}</span>
-                    <Badge variant="outline" className="text-xs">
+                    <span className="font-semibold text-lg text-gray-900">{holding.symbol}</span>
+                    <Badge variant="outline" className="text-xs border-gray-200">
                       {holding.quantity} shares
                     </Badge>
                   </div>
                   <p className="text-sm text-gray-500">{holding.name}</p>
-                  <p className="text-sm text-gray-400">
+                  <p className="text-sm text-gray-500">
                     Avg Cost: ${(holding.price || 0).toFixed(2)}
                   </p>
                 </div>
 
                 <div className="text-right">
-                  <p className="font-semibold text-lg">
+                  <p className="font-semibold text-lg text-gray-900">
                     ${holding.market_value.toFixed(2)}
                   </p>
                   <div className="flex items-center gap-1 justify-end">
                     {isPositive ? (
-                      <TrendingUp className="h-3 w-3 text-green-600" />
+                      <TrendingUp className="h-3 w-3 text-green-500" />
                     ) : (
-                      <TrendingDown className="h-3 w-3 text-red-600" />
+                      <TrendingDown className="h-3 w-3 text-red-500" />
                     )}
-                    <span className={`text-sm ${isPositive ? 'text-green-600' : 'text-red-600'}`}>
+                    <span className={`text-sm ${isPositive ? 'text-green-500' : 'text-red-500'}`}>
                       {isPositive ? '+' : ''}${pnl.toFixed(2)}
                     </span>
                   </div>
-                  <p className={`text-xs ${isPositive ? 'text-green-600' : 'text-red-600'}`}>
+                  <p className={`text-xs ${isPositive ? 'text-green-500' : 'text-red-500'}`}>
                     ({pnlPercent.toFixed(2)}%)
                   </p>
                 </div>

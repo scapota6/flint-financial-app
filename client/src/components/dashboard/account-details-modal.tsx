@@ -438,27 +438,27 @@ export function AccountDetailsModal({ isOpen, onClose, accountId, accountName }:
               </div>
             ) : balances ? (
               <div className="grid grid-cols-2 gap-3">
-                <div className="p-4 rounded-lg bg-black/60">
-                  <div className="text-sm text-muted-foreground">Cash Available</div>
-                  <div className="text-2xl font-bold" data-testid="text-cash-balance">
+                <div className="p-4 rounded-lg bg-white border border-gray-200">
+                  <div className="text-sm text-gray-500">Cash Available</div>
+                  <div className="text-2xl font-bold text-gray-900" data-testid="text-cash-balance">
                     {balances.cash ? formatCurrency(balances.cash.amount, balances.cash.currency) : 'N/A'}
                   </div>
                 </div>
-                <div className="p-4 rounded-lg bg-black/60">
-                  <div className="text-sm text-muted-foreground">Total Equity</div>
-                  <div className="text-2xl font-bold" data-testid="text-total-balance">
+                <div className="p-4 rounded-lg bg-white border border-gray-200">
+                  <div className="text-sm text-gray-500">Total Equity</div>
+                  <div className="text-2xl font-bold text-gray-900" data-testid="text-total-balance">
                     {balances.total ? formatCurrency(balances.total.amount, balances.total.currency) : 'N/A'}
                   </div>
                 </div>
-                <div className="p-4 rounded-lg bg-black/60">
-                  <div className="text-sm text-muted-foreground">Buying Power</div>
-                  <div className="text-xl font-semibold" data-testid="text-buying-power">
+                <div className="p-4 rounded-lg bg-white border border-gray-200">
+                  <div className="text-sm text-gray-500">Buying Power</div>
+                  <div className="text-xl font-semibold text-gray-900" data-testid="text-buying-power">
                     {balances.buyingPower ? formatCurrency(balances.buyingPower.amount, balances.buyingPower.currency) : 'N/A'}
                   </div>
                 </div>
-                <div className="p-4 rounded-lg bg-black/60">
-                  <div className="text-sm text-muted-foreground">Maintenance Excess</div>
-                  <div className="text-xl font-semibold" data-testid="text-maintenance-excess">
+                <div className="p-4 rounded-lg bg-white border border-gray-200">
+                  <div className="text-sm text-gray-500">Maintenance Excess</div>
+                  <div className="text-xl font-semibold text-gray-900" data-testid="text-maintenance-excess">
                     {balances.maintenanceExcess ? formatCurrency(balances.maintenanceExcess.amount, balances.maintenanceExcess.currency) : 'N/A'}
                   </div>
                 </div>
@@ -488,7 +488,7 @@ export function AccountDetailsModal({ isOpen, onClose, accountId, accountName }:
                   {equityPositions.length > 0 ? (
                     <div className="space-y-2">
                       {equityPositions.map((position: any, index: number) => (
-                        <div key={`${position.symbol}-${index}`} className="p-4 rounded-lg bg-black/60" data-testid={`position-${position.symbol}`}>
+                        <div key={`${position.symbol}-${index}`} className="p-4 rounded-lg bg-white border border-gray-200" data-testid={`position-${position.symbol}`}>
                           <div className="flex justify-between items-start">
                             <div>
                               <div className="font-semibold">{position.symbol}</div>
@@ -523,7 +523,7 @@ export function AccountDetailsModal({ isOpen, onClose, accountId, accountName }:
                   {optionPositions.length > 0 ? (
                     <div className="space-y-2">
                       {optionPositions.map((position: any, index: number) => (
-                        <div key={`${position.symbol}-${index}`} className="p-4 rounded-lg bg-black/60" data-testid={`option-${position.symbol}`}>
+                        <div key={`${position.symbol}-${index}`} className="p-4 rounded-lg bg-white border border-gray-200" data-testid={`option-${position.symbol}`}>
                           <div className="flex justify-between items-start">
                             <div>
                               <div className="font-semibold font-mono">{position.symbol}</div>

@@ -45,11 +45,11 @@ export default function QuickTransfer({ accounts }: QuickTransferProps) {
 
   return (
     <>
-      <Card className="trade-card shadow-lg">
+      <Card className="bg-white border border-gray-200 shadow-sm">
         <CardHeader>
           <div className="flex items-center justify-between">
-            <CardTitle className="text-lg font-semibold text-white">Quick Transfer</CardTitle>
-            <Button variant="ghost" className="text-blue-500 text-sm font-medium">
+            <CardTitle className="text-lg font-semibold text-gray-900">Quick Transfer</CardTitle>
+            <Button variant="ghost" className="text-gray-600 text-sm font-medium">
               View All
             </Button>
           </div>
@@ -61,22 +61,22 @@ export default function QuickTransfer({ accounts }: QuickTransferProps) {
               return (
                 <div
                   key={index}
-                  className="flex items-center justify-between p-4 bg-gray-800 rounded-lg"
+                  className="flex items-center justify-between p-4 bg-white border border-gray-200 rounded-lg"
                 >
                   <div className="flex items-center space-x-3">
                     <div className={`w-8 h-8 ${option.iconColor} rounded-full flex items-center justify-center`}>
                       <Icon className="h-4 w-4 text-white" />
                     </div>
                     <div>
-                      <p className="text-white font-medium">{option.from} → {option.to}</p>
-                      <p className="text-gray-400 text-sm">
+                      <p className="text-gray-900 font-medium">{option.from} → {option.to}</p>
+                      <p className="text-gray-500 text-sm">
                         Available: {formatCurrency(option.available)}
                       </p>
                     </div>
                   </div>
                   <Button
                     onClick={() => setIsModalOpen(true)}
-                    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium"
+                    className="bg-gray-900 hover:bg-gray-800 text-white px-4 py-2 rounded-lg text-sm font-medium"
                   >
                     Transfer
                   </Button>

@@ -48,15 +48,15 @@ export function AllAssetsChart({ totalValue, changePercent, marketCap }: AllAsse
   const range = maxPoint - minPoint;
 
   return (
-    <Card className="trade-card col-span-full lg:col-span-2">
+    <Card className="bg-white border border-gray-200 shadow-sm col-span-full lg:col-span-2">
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
-          <CardTitle className="text-lg font-semibold text-white flex items-center space-x-2">
-            <Activity className="h-5 w-5 text-blue-400" />
+          <CardTitle className="text-lg font-semibold text-gray-900 flex items-center space-x-2">
+            <Activity className="h-5 w-5 text-gray-600" />
             <span>All Assets Summary</span>
           </CardTitle>
           <div className={`flex items-center space-x-1 text-sm ${
-            isPositive ? 'text-green-400' : 'text-red-400'
+            isPositive ? 'text-green-500' : 'text-red-500'
           }`}>
             {isPositive ? (
               <TrendingUp className="h-4 w-4" />
@@ -71,16 +71,16 @@ export function AllAssetsChart({ totalValue, changePercent, marketCap }: AllAsse
         <div className="space-y-4">
           {/* Portfolio Value */}
           <div>
-            <div className="text-3xl font-bold text-white mb-1">
+            <div className="text-3xl font-bold text-gray-900 mb-1">
               {formatCurrency(totalValue)}
             </div>
-            <div className="text-sm text-gray-400">
+            <div className="text-sm text-gray-500">
               Total Portfolio Value
             </div>
           </div>
 
           {/* Sparkline Chart */}
-          <div className="relative h-16 bg-gray-800 rounded-lg p-2">
+          <div className="relative h-16 bg-gray-100 border border-gray-200 rounded-lg p-2">
             <svg width="100%" height="100%" className="overflow-visible">
               <defs>
                 <linearGradient id="sparklineGradient" x1="0%" y1="0%" x2="0%" y2="100%">
@@ -129,25 +129,25 @@ export function AllAssetsChart({ totalValue, changePercent, marketCap }: AllAsse
           {/* Stats Grid */}
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div>
-              <div className="text-gray-400">Today's Change</div>
-              <div className={`font-medium ${isPositive ? 'text-green-400' : 'text-red-400'}`}>
+              <div className="text-gray-500">Today's Change</div>
+              <div className={`font-medium ${isPositive ? 'text-green-500' : 'text-red-500'}`}>
                 {formatCurrency(totalValue * (changePercent / 100))}
               </div>
             </div>
             <div>
-              <div className="text-gray-400">Market Cap</div>
-              <div className="text-white font-medium">
+              <div className="text-gray-500">Market Cap</div>
+              <div className="text-gray-900 font-medium">
                 {marketCap ? formatLargeNumber(marketCap) : 'N/A'}
               </div>
             </div>
           </div>
 
           {/* Performance indicator */}
-          <div className="flex items-center justify-between text-xs text-gray-400">
+          <div className="flex items-center justify-between text-xs text-gray-500">
             <span>1D</span>
             <span>1W</span>
             <span>1M</span>
-            <span className="text-blue-400 font-medium">3M</span>
+            <span className="text-gray-900 font-medium">3M</span>
             <span>6M</span>
             <span>1Y</span>
           </div>

@@ -372,11 +372,11 @@ export default function SimpleConnectButtons({ accounts, userTier, isAdmin }: Si
 
   return (
     <div className="mb-8">
-      <Card className="trade-card shadow-lg">
+      <Card className="bg-white border border-gray-200 shadow-sm">
         <CardHeader>
           <div className="flex items-center justify-between">
-            <CardTitle className="text-lg font-semibold text-white">Quick Connect</CardTitle>
-            <Badge variant="outline" className="border-gray-600 text-gray-300">
+            <CardTitle className="text-lg font-semibold text-gray-900">Quick Connect</CardTitle>
+            <Badge variant="outline" className="border-gray-200 text-gray-600">
               {connectedAccounts} / {accountLimit === Infinity ? '∞' : accountLimit} connected
             </Badge>
           </div>
@@ -384,21 +384,21 @@ export default function SimpleConnectButtons({ accounts, userTier, isAdmin }: Si
         <CardContent>
           <div className={`grid grid-cols-1 ${showMetamask ? 'md:grid-cols-3' : 'md:grid-cols-2'} gap-4`}>
             {/* Bank/Credit Connection */}
-            <div className="p-4 bg-gray-800 rounded-lg">
+            <div className="p-4 bg-white border border-gray-200 rounded-lg">
               <div className="flex items-center space-x-3 mb-3">
-                <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center">
+                <div className="w-10 h-10 bg-gray-900 rounded-full flex items-center justify-center">
                   <Building className="h-5 w-5 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-white font-medium">Bank & Credit</h3>
-                  <p className="text-gray-400 text-sm">Connect Bank Account</p>
+                  <h3 className="text-gray-900 font-medium">Bank & Credit</h3>
+                  <p className="text-gray-500 text-sm">Connect Bank Account</p>
                 </div>
               </div>
               
               {hasBankAccount ? (
                 <div className="flex items-center space-x-2">
                   <Badge className="bg-green-600 text-white">Connected</Badge>
-                  <span className="text-gray-400 text-sm">Bank account linked</span>
+                  <span className="text-gray-500 text-sm">Bank account linked</span>
                 </div>
               ) : (
                 <Button
@@ -410,7 +410,7 @@ export default function SimpleConnectButtons({ accounts, userTier, isAdmin }: Si
                     tellerConnectMutation.mutate();
                   }}
                   disabled={tellerConnectMutation.isPending}
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                  className="w-full bg-gray-900 hover:bg-gray-800 text-white"
                 >
                   {tellerConnectMutation.isPending ? (
                     "Connecting..."
@@ -425,21 +425,21 @@ export default function SimpleConnectButtons({ accounts, userTier, isAdmin }: Si
             </div>
 
             {/* Brokerage/Crypto Connection */}
-            <div className="p-4 bg-gray-800 rounded-lg">
+            <div className="p-4 bg-white border border-gray-200 rounded-lg">
               <div className="flex items-center space-x-3 mb-3">
                 <div className="w-10 h-10 bg-cyan-600 rounded-full flex items-center justify-center">
                   <TrendingUp className="h-5 w-5 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-white font-medium">Brokerage & Crypto</h3>
-                  <p className="text-gray-400 text-sm">Connect Brokerage</p>
+                  <h3 className="text-gray-900 font-medium">Brokerage & Crypto</h3>
+                  <p className="text-gray-500 text-sm">Connect Brokerage</p>
                 </div>
               </div>
               
               {hasBrokerageAccount ? (
                 <div className="flex items-center space-x-2">
                   <Badge className="bg-green-600 text-white">Connected</Badge>
-                  <span className="text-gray-400 text-sm">Brokerage account linked</span>
+                  <span className="text-gray-500 text-sm">Brokerage account linked</span>
                 </div>
               ) : (
                 <Button
@@ -467,7 +467,7 @@ export default function SimpleConnectButtons({ accounts, userTier, isAdmin }: Si
 
             {/* MetaMask Wallet Connection - Internal Testers Only */}
             {showMetamask && (
-              <div className="p-4 bg-gray-800 rounded-lg">
+              <div className="p-4 bg-white border border-gray-200 rounded-lg">
                 <div className="flex items-center space-x-3 mb-3">
                   <div className="w-10 h-10 rounded-full flex items-center justify-center overflow-hidden bg-[#F6851B]">
                     <svg viewBox="0 0 318.6 318.6" className="w-6 h-6">
@@ -486,15 +486,15 @@ export default function SimpleConnectButtons({ accounts, userTier, isAdmin }: Si
                     </svg>
                   </div>
                   <div>
-                    <h3 className="text-white font-medium">MetaMask Wallet</h3>
-                    <p className="text-gray-400 text-sm">Connect Crypto Wallet</p>
+                    <h3 className="text-gray-900 font-medium">MetaMask Wallet</h3>
+                    <p className="text-gray-500 text-sm">Connect Crypto Wallet</p>
                   </div>
                 </div>
                 
                 {metamaskConnected && metamaskAccount ? (
                   <div className="flex items-center space-x-2">
                     <Badge className="bg-green-600 text-white">Connected</Badge>
-                    <span className="text-gray-400 text-sm font-mono">
+                    <span className="text-gray-500 text-sm font-mono">
                       {metamaskAccount.slice(0, 6)}...{metamaskAccount.slice(-4)}
                     </span>
                   </div>
@@ -533,14 +533,14 @@ export default function SimpleConnectButtons({ accounts, userTier, isAdmin }: Si
 
           {/* Account Limit Warning */}
           {!canConnectMore && (
-            <div className="mt-4 p-3 bg-yellow-900/20 border border-yellow-600 rounded-lg">
+            <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
               <div className="flex items-center space-x-2">
-                <AlertCircle className="h-4 w-4 text-yellow-400" />
-                <span className="text-yellow-400 text-sm">
+                <AlertCircle className="h-4 w-4 text-yellow-600" />
+                <span className="text-yellow-700 text-sm">
                   Account limit reached. 
                   <button
                     onClick={handleUpgradeNeeded}
-                    className="underline ml-1 hover:text-yellow-300"
+                    className="underline ml-1 hover:text-yellow-900"
                   >
                     Upgrade to connect more
                   </button>

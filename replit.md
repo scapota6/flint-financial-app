@@ -9,7 +9,19 @@ Preferred communication style: Simple, everyday language.
 ## System Architecture
 
 ### UI/UX Decisions
-The platform features an Apple 2025 "Liquid Glass" aesthetic, utilizing dark neutrals, translucent glass effects (16px blur + 140% saturation), and the Inter font. It employs Tailwind CSS and Radix UI (via shadcn/ui components) for a fully responsive, mobile-first design. Key UI elements include a fixed top navigation with a Liquid Glass effect, animated link glows, responsive account grids, full-screen modals, micro-animations, an Apple blue accent, and accessible design principles. The landing page includes an interactive dashboard preview, social proof notifications, a scrolling institutions banner, FAQ, tiered pricing, and conversion-optimized CTAs. Demo dashboards accurately reflect production data, including account-specific transactions, credit card details, debt summaries, and dynamic financial calculations.
+The platform features a clean "Cream Startup Template" aesthetic, utilizing a cream background (#F4F2ED), white cards with subtle borders, and professional typography. It employs Tailwind CSS and Radix UI (via shadcn/ui components) for a fully responsive, mobile-first design.
+
+**Design System (Jan 2026)**:
+- **Background**: Cream (#F4F2ED) for all pages
+- **Cards**: White backgrounds with `border-gray-200` and subtle shadows (`shadow-sm`)
+- **Typography**: PT Serif for headings (`font-serif`), system fonts for body text
+- **Text colors**: `text-gray-900` for primary text, `text-gray-500`/`text-gray-600` for secondary
+- **Accent color**: Yellow (#FBBF24) for highlights and accents
+- **Primary buttons**: `bg-gray-900 hover:bg-gray-800 text-white`
+- **Loading skeletons**: `bg-gray-200` for skeleton loading states
+- **Meaningful colors preserved**: Green for gains/positive, Red for losses/negative
+
+Key UI elements include a fixed top navigation with white background and yellow accent underlines, responsive account grids, full-screen modals, micro-animations, and accessible design principles. The landing page includes an interactive dashboard preview, social proof notifications, a scrolling institutions banner, FAQ, tiered pricing, and conversion-optimized CTAs. Demo dashboards accurately reflect production data, including account-specific transactions, credit card details, debt summaries, and dynamic financial calculations.
 
 **Responsive Design Implementation**: The landing page at /new is fully optimized for all device sizes (320px-2560px) with:
 - Root-level `overflow-x-hidden` to prevent horizontal scrolling

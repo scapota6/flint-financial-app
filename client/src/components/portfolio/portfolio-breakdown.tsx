@@ -134,18 +134,18 @@ export function PortfolioBreakdown({
     if (active && payload && payload.length) {
       const data = payload[0].payload;
       return (
-        <div className="bg-slate-800/95 border border-slate-700 rounded-lg p-4 shadow-2xl backdrop-blur-sm">
+        <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-xl">
           <div className="flex items-center gap-2 mb-2">
             <div 
               className="w-3 h-3 rounded-full" 
               style={{ backgroundColor: data.color }}
             ></div>
-            <p className="font-semibold text-white">{data.name}</p>
+            <p className="font-semibold text-gray-900">{data.name}</p>
           </div>
-          <p className="text-lg font-bold text-white mb-1">
+          <p className="text-lg font-bold text-gray-900 mb-1">
             {formatCurrency(data.value)}
           </p>
-          <p className="text-xs text-slate-400">
+          <p className="text-xs text-gray-500">
             {formatPercent(data.percentage)} of total portfolio
           </p>
         </div>
@@ -156,20 +156,20 @@ export function PortfolioBreakdown({
 
   if (isLoading) {
     return (
-      <Card className="trade-card shadow-lg">
+      <Card className="bg-white border-gray-200 shadow-sm">
         <CardHeader>
-          <CardTitle className="text-lg font-semibold text-white flex items-center space-x-2">
+          <CardTitle className="text-lg font-semibold text-gray-900 flex items-center space-x-2">
             <Target className="h-5 w-5" />
             <span>Portfolio Breakdown</span>
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="animate-pulse">
-            <div className="h-8 bg-gray-800 rounded w-1/2 mb-4"></div>
-            <div className="h-64 bg-gray-800 rounded-lg mb-4"></div>
+            <div className="h-8 bg-gray-200 rounded w-1/2 mb-4"></div>
+            <div className="h-64 bg-gray-200 rounded-lg mb-4"></div>
             <div className="space-y-2">
               {[...Array(3)].map((_, i) => (
-                <div key={i} className="h-16 bg-gray-800 rounded-lg"></div>
+                <div key={i} className="h-16 bg-gray-200 rounded-lg"></div>
               ))}
             </div>
           </div>
@@ -179,36 +179,36 @@ export function PortfolioBreakdown({
   }
 
   return (
-    <Card className="trade-card shadow-lg">
+    <Card className="bg-white border-gray-200 shadow-sm">
       <CardHeader>
         <div className="flex items-center justify-between">
-          <CardTitle className="text-lg font-semibold text-white flex items-center space-x-2">
+          <CardTitle className="text-lg font-semibold text-gray-900 flex items-center space-x-2">
             <Target className="h-5 w-5" />
             <span>Portfolio Breakdown</span>
           </CardTitle>
-          <Badge variant="outline" className="text-blue-400 border-blue-600">
+          <Badge variant="outline" className="text-blue-600 border-blue-600">
             {portfolioData.segments.length} Asset Classes
           </Badge>
         </div>
       </CardHeader>
       <CardContent>
         {/* Total Balance */}
-        <div className="mb-6 p-4 bg-gradient-to-r from-green-900/20 to-blue-900/20 rounded-lg border border-green-600/30">
+        <div className="mb-6 p-4 bg-gradient-to-r from-green-50 to-blue-50 rounded-lg border border-green-200">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <div className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center">
                 <DollarSign className="h-6 w-6 text-white" />
               </div>
               <div>
-                <p className="text-gray-400 text-sm">Total Portfolio Value</p>
-                <p className="text-2xl font-bold text-white">
+                <p className="text-gray-500 text-sm">Total Portfolio Value</p>
+                <p className="text-2xl font-bold text-gray-900">
                   {formatCurrency(portfolioData.totalBalance)}
                 </p>
               </div>
             </div>
             <div className="text-right">
-              <p className="text-gray-400 text-sm">Diversified across</p>
-              <p className="text-lg font-semibold text-green-400">
+              <p className="text-gray-500 text-sm">Diversified across</p>
+              <p className="text-lg font-semibold text-green-600">
                 {portfolioData.segments.length} categories
               </p>
             </div>
@@ -217,8 +217,8 @@ export function PortfolioBreakdown({
 
         {portfolioData.totalBalance === 0 ? (
           <div className="text-center py-12">
-            <Wallet className="h-12 w-12 text-gray-600 mx-auto mb-4" />
-            <p className="text-gray-400 text-lg">No portfolio data available</p>
+            <Wallet className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+            <p className="text-gray-500 text-lg">No portfolio data available</p>
             <p className="text-gray-500 text-sm mt-1">
               Connect your accounts to see portfolio breakdown
             </p>
@@ -227,7 +227,7 @@ export function PortfolioBreakdown({
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* 3D Pie Chart */}
             <div className="flex flex-col">
-              <h3 className="text-white font-medium mb-4 text-center">Asset Allocation</h3>
+              <h3 className="text-gray-900 font-medium mb-4 text-center">Asset Allocation</h3>
               <div className="chart-container chart-glow relative overflow-hidden h-80">
                 {/* Animated background effects */}
                 <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 via-green-500/5 to-orange-500/10 rounded-lg blur-2xl animate-pulse"></div>
@@ -307,14 +307,14 @@ export function PortfolioBreakdown({
 
             {/* Breakdown List */}
             <div className="flex flex-col">
-              <h3 className="text-white font-medium mb-4">Category Breakdown</h3>
+              <h3 className="text-gray-900 font-medium mb-4">Category Breakdown</h3>
               <div className="space-y-3 flex-1">
                 {portfolioData.segments.map((segment, index) => {
                   const Icon = segment.icon;
                   return (
                     <div
                       key={index}
-                      className="flex items-center justify-between p-4 bg-gray-800/50 rounded-lg border border-gray-700/50 hover:bg-gray-800/70 transition-all duration-200"
+                      className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200 hover:bg-gray-100 transition-all duration-200"
                     >
                       <div className="flex items-center space-x-3">
                         <div 
@@ -324,12 +324,12 @@ export function PortfolioBreakdown({
                           <Icon className="h-5 w-5 text-white" />
                         </div>
                         <div>
-                          <p className="text-white font-medium text-sm">{segment.name}</p>
-                          <p className="text-gray-400 text-xs">{segment.description}</p>
+                          <p className="text-gray-900 font-medium text-sm">{segment.name}</p>
+                          <p className="text-gray-500 text-xs">{segment.description}</p>
                         </div>
                       </div>
                       <div className="text-right">
-                        <p className="text-white font-semibold text-sm">
+                        <p className="text-gray-900 font-semibold text-sm">
                           {formatCurrency(segment.value)}
                         </p>
                         <p 
@@ -349,27 +349,27 @@ export function PortfolioBreakdown({
 
         {/* Portfolio Insights */}
         {portfolioData.segments.length > 0 && (
-          <div className="mt-6 p-4 bg-blue-900/20 border border-blue-600/30 rounded-lg">
-            <h4 className="text-blue-400 font-medium mb-2 flex items-center space-x-2">
+          <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+            <h4 className="text-blue-600 font-medium mb-2 flex items-center space-x-2">
               <Target className="h-4 w-4" />
               <span>Portfolio Insights</span>
             </h4>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
               <div>
-                <p className="text-gray-400">Largest Allocation</p>
-                <p className="text-white font-medium">
+                <p className="text-gray-500">Largest Allocation</p>
+                <p className="text-gray-900 font-medium">
                   {portfolioData.segments[0]?.name} ({formatPercent(portfolioData.segments[0]?.percentage || 0)})
                 </p>
               </div>
               <div>
-                <p className="text-gray-400">Asset Diversity</p>
-                <p className="text-white font-medium">
+                <p className="text-gray-500">Asset Diversity</p>
+                <p className="text-gray-900 font-medium">
                   {portfolioData.segments.length} categories
                 </p>
               </div>
               <div>
-                <p className="text-gray-400">Risk Level</p>
-                <p className="text-white font-medium">
+                <p className="text-gray-500">Risk Level</p>
+                <p className="text-gray-900 font-medium">
                   {portfolioData.segments.length >= 3 ? 'Well Diversified' : 'Moderate'}
                 </p>
               </div>

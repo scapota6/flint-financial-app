@@ -105,10 +105,10 @@ export default function SmoothLineChart({
     <div className="w-full" data-testid="smooth-line-chart">
       {isLoading ? (
         <div 
-          className="w-full flex items-center justify-center bg-white/5 rounded-lg"
+          className="w-full flex items-center justify-center bg-gray-100 rounded-lg"
           style={{ height: `${height}px` }}
         >
-          <div className="text-[#A7ADBA] text-sm">Loading chart data...</div>
+          <div className="text-gray-500 text-sm">Loading chart data...</div>
         </div>
       ) : (
         <svg 
@@ -161,8 +161,8 @@ export default function SmoothLineChart({
               onClick={() => setSelectedPeriod(period)}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                 selectedPeriod === period
-                  ? 'bg-[#0A84FF] text-white shadow-lg shadow-[#0A84FF]/30'
-                  : 'text-[#A7ADBA] hover:text-[#F2F4F6] hover:bg-white/5'
+                  ? 'bg-gray-900 text-white shadow-lg'
+                  : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100'
               }`}
               data-testid={`period-${period}`}
             >

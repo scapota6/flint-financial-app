@@ -59,72 +59,70 @@ export function EnhancedConnectedAccounts({ accounts, onConnectBank, onConnectBr
   return (
     <>
       <div className="space-y-6">
-        {/* Connect Account Buttons */}
         <div className="flex flex-col sm:flex-row gap-4">
           <Button
             onClick={onConnectBank}
-            className="flex-1 bg-blue-600 hover:bg-blue-700 text-white h-12 rounded-xl font-medium
-              shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-[1.02]"
+            className="flex-1 bg-gray-900 hover:bg-gray-800 text-white h-12 rounded-xl font-medium
+              shadow-sm hover:shadow-md transition-all duration-200 transform hover:scale-[1.02]"
           >
             <Plus className="h-5 w-5 mr-2" />
             + Connect Bank/Credit Card
           </Button>
           <Button
             onClick={onConnectBrokerage}
-            className="flex-1 bg-blue-600 hover:bg-blue-700 text-white h-12 rounded-xl font-medium
-              shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-[1.02]"
+            className="flex-1 bg-gray-900 hover:bg-gray-800 text-white h-12 rounded-xl font-medium
+              shadow-sm hover:shadow-md transition-all duration-200 transform hover:scale-[1.02]"
           >
             <Plus className="h-5 w-5 mr-2" />
             + Connect Brokerage/Crypto Wallet
           </Button>
         </div>
 
-        {/* Connected Accounts Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {mockAccounts.map((account) => (
             <Card
               key={account.id}
-              className="group relative bg-gray-800/50 border-gray-700 hover:border-blue-500/50 
-                rounded-xl transition-all duration-300 transform hover:scale-[1.03]
-                shadow-lg hover:shadow-[0_0_20px_rgba(10,132,255,0.4)]
+              className="group relative bg-white border border-gray-200 hover:border-gray-300 
+                rounded-xl transition-all duration-300 transform hover:scale-[1.02]
+                shadow-sm hover:shadow-md
                 min-w-[240px] max-w-[300px]"
-              style={{ 
-                boxShadow: '0 0 8px rgba(10,132,255,0.4)',
-              }}
             >
               <CardContent className="p-4">
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
+                    <div className="w-10 h-10 bg-gray-100 border border-gray-200 rounded-lg flex items-center justify-center">
                       {account.type === 'bank' ? (
-                        <Building2 className="h-5 w-5 text-white" />
+                        <Building2 className="h-5 w-5 text-gray-700" />
                       ) : (
-                        <CreditCard className="h-5 w-5 text-white" />
+                        <CreditCard className="h-5 w-5 text-gray-700" />
                       )}
                     </div>
                     <div>
-                      <h3 className="font-semibold text-white text-sm">{account.name}</h3>
-                      <p className="text-xs text-gray-400 capitalize">{account.type}</p>
+                      <h3 className="font-semibold text-gray-900 text-sm">{account.name}</h3>
+                      <p className="text-xs text-gray-500 capitalize">{account.type}</p>
                     </div>
                   </div>
-                  <Badge variant={account.status === 'active' ? 'default' : 'secondary'} className="text-xs">
+                  <Badge 
+                    variant={account.status === 'active' ? 'default' : 'secondary'} 
+                    className={`text-xs ${account.status === 'active' ? 'bg-green-100 text-green-700 border-green-200' : ''}`}
+                  >
                     {account.status}
                   </Badge>
                 </div>
                 
                 <div className="space-y-2">
                   <div>
-                    <p className="text-xs text-gray-400">Balance</p>
-                    <p className="text-lg font-bold text-white">${account.balance.toLocaleString()}</p>
+                    <p className="text-xs text-gray-500">Balance</p>
+                    <p className="text-lg font-bold text-gray-900">${account.balance.toLocaleString()}</p>
                   </div>
                   
                   <div className="flex items-center justify-between">
-                    <span className="text-xs text-gray-400 font-mono">{account.accountNumber}</span>
+                    <span className="text-xs text-gray-500 font-mono">{account.accountNumber}</span>
                     <Button
                       size="sm"
                       variant="ghost"
                       onClick={() => handleAccountDetails(account)}
-                      className="text-blue-400 hover:text-blue-300 hover:bg-blue-500/10 h-8 px-2"
+                      className="text-gray-600 hover:text-gray-900 hover:bg-gray-100 h-8 px-2"
                     >
                       <Eye className="h-4 w-4 mr-1" />
                       Details

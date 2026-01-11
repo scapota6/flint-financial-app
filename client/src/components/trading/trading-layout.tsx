@@ -40,18 +40,13 @@ export default function TradingLayout({ initialSymbol = 'AAPL' }: TradingLayoutP
 
   return (
     <div 
-      className="min-h-screen bg-[#0B0D11] p-6"
+      className="min-h-screen bg-[#F4F2ED] p-6"
       data-testid="trading-layout"
     >
       {/* Symbol Search Bar */}
       <div className="mb-6">
         <div 
-          className="flex gap-3 p-4 rounded-xl"
-          style={{
-            background: 'rgba(24, 27, 31, 0.55)',
-            backdropFilter: 'blur(16px)',
-            border: '1px solid rgba(255, 255, 255, 0.08)',
-          }}
+          className="flex gap-3 p-4 rounded-xl bg-white border border-gray-200 shadow-sm"
         >
           <div className="flex-1 relative">
             <Input
@@ -60,13 +55,13 @@ export default function TradingLayout({ initialSymbol = 'AAPL' }: TradingLayoutP
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
               onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
-              className="bg-white/5 border-white/10 text-[#F2F4F6] placeholder:text-[#A7ADBA]/50 h-12 rounded-xl pl-4 pr-4"
+              className="bg-white border-gray-200 text-gray-900 placeholder:text-gray-400 h-12 rounded-xl pl-4 pr-4"
               data-testid="input-symbol-search"
             />
           </div>
           <Button
             onClick={handleSearch}
-            className="bg-[#0A84FF] hover:bg-[#0A84FF]/90 h-12 px-6 rounded-xl shadow-lg shadow-[#0A84FF]/30"
+            className="bg-gray-900 hover:bg-gray-800 text-white h-12 px-6 rounded-xl"
             data-testid="button-search"
           >
             <Search className="w-5 h-5" />
@@ -79,29 +74,24 @@ export default function TradingLayout({ initialSymbol = 'AAPL' }: TradingLayoutP
         {/* Left Panel - Chart (60% / 3 columns) */}
         <div className="lg:col-span-3">
           <div 
-            className="p-6 rounded-xl"
-            style={{
-              background: 'rgba(24, 27, 31, 0.55)',
-              backdropFilter: 'blur(16px)',
-              border: '1px solid rgba(255, 255, 255, 0.08)',
-            }}
+            className="p-6 rounded-xl bg-white border border-gray-200 shadow-sm"
             data-testid="chart-panel"
           >
             {/* Price Display with Update Indicator */}
             <div className="flex items-center justify-between mb-6">
               <div>
-                <div className="text-5xl font-bold text-[#F2F4F6]" data-testid="chart-price">
+                <div className="text-5xl font-bold text-gray-900" data-testid="chart-price">
                   ${price.toFixed(2)}
                 </div>
                 <div className="flex items-center gap-2 mt-2">
-                  <RefreshCw className="w-4 h-4 text-[#A7ADBA] animate-spin" />
-                  <span className="text-[#A7ADBA] text-sm" data-testid="update-indicator">
+                  <RefreshCw className="w-4 h-4 text-gray-500 animate-spin" />
+                  <span className="text-gray-500 text-sm" data-testid="update-indicator">
                     Updates every 5 seconds • Last update: {lastUpdate}
                   </span>
                 </div>
               </div>
               <div className="text-right">
-                <div className="text-2xl font-bold text-[#F2F4F6]">{symbol}</div>
+                <div className="text-2xl font-bold text-gray-900">{symbol}</div>
               </div>
             </div>
 

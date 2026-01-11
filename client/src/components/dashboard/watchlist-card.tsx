@@ -33,7 +33,6 @@ export default function WatchlistCard({ data, onAccountDetail }: WatchlistCardPr
     return colors[symbol as keyof typeof colors] || 'bg-gray-500';
   };
 
-  // Show default items if no data
   const displayItems = data?.length > 0 ? data : [
     { symbol: 'TSLA', name: 'Tesla, Inc.', currentPrice: '248.42', changePercent: '4.7' },
     { symbol: 'ETH', name: 'Ethereum', currentPrice: '2847.32', changePercent: '-0.8' },
@@ -41,11 +40,11 @@ export default function WatchlistCard({ data, onAccountDetail }: WatchlistCardPr
   ];
 
   return (
-    <Card className="trade-card shadow-lg">
+    <Card className="bg-white border border-gray-200 shadow-sm">
       <CardHeader>
         <div className="flex items-center justify-between">
-          <CardTitle className="text-lg font-semibold text-white">Watchlist</CardTitle>
-          <Button variant="ghost" className="text-blue-500 text-sm font-medium">
+          <CardTitle className="text-lg font-semibold text-gray-900">Watchlist</CardTitle>
+          <Button variant="ghost" className="text-gray-900 text-sm font-medium hover:bg-gray-100">
             Edit
           </Button>
         </div>
@@ -55,7 +54,7 @@ export default function WatchlistCard({ data, onAccountDetail }: WatchlistCardPr
           {displayItems.map((item) => (
             <div
               key={item.symbol}
-              className="watchlist-item flex items-center justify-between p-3 rounded-lg cursor-pointer hover:bg-gray-800 transition-colors"
+              className="watchlist-item flex items-center justify-between p-3 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors border border-gray-100"
             >
               <div className="flex items-center space-x-3">
                 <div className={`w-8 h-8 ${getColorFromSymbol(item.symbol)} rounded-full flex items-center justify-center`}>
@@ -64,12 +63,12 @@ export default function WatchlistCard({ data, onAccountDetail }: WatchlistCardPr
                   </span>
                 </div>
                 <div>
-                  <p className="text-white font-medium">{item.symbol}</p>
-                  <p className="text-gray-400 text-sm">{item.name}</p>
+                  <p className="text-gray-900 font-medium">{item.symbol}</p>
+                  <p className="text-gray-500 text-sm">{item.name}</p>
                 </div>
               </div>
               <div className="text-right">
-                <p className="text-white font-medium">{formatCurrency(item.currentPrice)}</p>
+                <p className="text-gray-900 font-medium">{formatCurrency(item.currentPrice)}</p>
                 <p className={`text-sm ${parseFloat(item.changePercent) >= 0 ? 'text-green-500' : 'text-red-500'}`}>
                   {formatPercent(item.changePercent)}
                 </p>
@@ -80,9 +79,9 @@ export default function WatchlistCard({ data, onAccountDetail }: WatchlistCardPr
         
         {data?.length === 0 && (
           <div className="text-center py-8">
-            <Star className="h-8 w-8 text-gray-500 mx-auto mb-2" />
-            <p className="text-gray-400">No items in your watchlist</p>
-            <Button variant="outline" className="mt-2" size="sm">
+            <Star className="h-8 w-8 text-gray-400 mx-auto mb-2" />
+            <p className="text-gray-500">No items in your watchlist</p>
+            <Button variant="outline" className="mt-2 border-gray-200" size="sm">
               Add Symbols
             </Button>
           </div>

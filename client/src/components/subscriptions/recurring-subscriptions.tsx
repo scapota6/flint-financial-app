@@ -127,38 +127,38 @@ export default function RecurringSubscriptions() {
 
   const getCategoryColor = (category: string) => {
     const colors = {
-      'Streaming': 'bg-red-500/20 text-red-400 border-red-500/30',
-      'Utilities': 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30',
-      'Software': 'bg-blue-500/20 text-blue-400 border-blue-500/30',
-      'Fitness': 'bg-green-500/20 text-green-400 border-green-500/30',
-      'Financial': 'bg-blue-500/20 text-blue-400 border-blue-500/30',
-      'Other': 'bg-gray-500/20 text-gray-400 border-gray-500/30'
+      'Streaming': 'bg-red-100 text-red-600 border-red-200',
+      'Utilities': 'bg-yellow-100 text-yellow-600 border-yellow-200',
+      'Software': 'bg-blue-100 text-blue-600 border-blue-200',
+      'Fitness': 'bg-green-100 text-green-600 border-green-200',
+      'Financial': 'bg-blue-100 text-blue-600 border-blue-200',
+      'Other': 'bg-gray-100 text-gray-600 border-gray-200'
     };
     return colors[category as keyof typeof colors] || colors.Other;
   };
 
   const getConfidenceColor = (confidence: number) => {
-    if (confidence >= 0.8) return 'text-green-400';
-    if (confidence >= 0.6) return 'text-yellow-400';
-    return 'text-red-400';
+    if (confidence >= 0.8) return 'text-green-600';
+    if (confidence >= 0.6) return 'text-yellow-600';
+    return 'text-red-600';
   };
 
   if (isLoading) {
     return (
-      <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-4 sm:p-6" data-testid="subscriptions-loading">
+      <div className="bg-white border border-gray-200 shadow-sm rounded-xl p-4 sm:p-6" data-testid="subscriptions-loading">
         <div className="space-y-4">
           {[1, 2, 3, 4, 5].map(i => (
             <div key={i} className="animate-pulse flex items-center justify-between py-4">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-gray-800 rounded-lg"></div>
+                <div className="w-10 h-10 bg-gray-200 rounded-lg"></div>
                 <div>
-                  <div className="h-4 bg-gray-800 rounded w-24 mb-2"></div>
-                  <div className="h-3 bg-gray-800 rounded w-32"></div>
+                  <div className="h-4 bg-gray-200 rounded w-24 mb-2"></div>
+                  <div className="h-3 bg-gray-200 rounded w-32"></div>
                 </div>
               </div>
               <div className="text-right">
-                <div className="h-4 bg-gray-800 rounded w-16 mb-2"></div>
-                <div className="h-3 bg-gray-800 rounded w-12"></div>
+                <div className="h-4 bg-gray-200 rounded w-16 mb-2"></div>
+                <div className="h-3 bg-gray-200 rounded w-12"></div>
               </div>
             </div>
           ))}
@@ -169,10 +169,10 @@ export default function RecurringSubscriptions() {
 
   if (error) {
     return (
-      <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-6 min-h-[200px] flex items-center justify-center" data-testid="subscriptions-error">
-        <div className="text-center text-gray-400">
+      <div className="bg-white border border-gray-200 shadow-sm rounded-xl p-6 min-h-[200px] flex items-center justify-center" data-testid="subscriptions-error">
+        <div className="text-center text-gray-500">
           <AlertTriangle className="h-12 w-12 mx-auto mb-4 opacity-50" />
-          <p className="text-lg mb-2">Unable to load subscriptions</p>
+          <p className="text-lg mb-2 text-gray-900">Unable to load subscriptions</p>
           <p className="text-sm">Connect your bank accounts to track recurring payments</p>
         </div>
       </div>
@@ -180,16 +180,16 @@ export default function RecurringSubscriptions() {
   }
 
   return (
-    <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-4 sm:p-6" data-testid="recurring-subscriptions">
+    <div className="bg-white border border-gray-200 shadow-sm rounded-xl p-4 sm:p-6" data-testid="recurring-subscriptions">
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl sm:text-2xl font-bold text-white">Recurring Subscriptions</h2>
+        <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Recurring Subscriptions</h2>
         <div className="flex items-center gap-2">
-          <Badge variant="secondary" className="bg-blue-600/20 text-blue-400" data-testid="badge-active-count">
+          <Badge variant="secondary" className="bg-blue-100 text-blue-600" data-testid="badge-active-count">
             {subscriptions.length} Active
           </Badge>
           {monthlyRounded > 0 && !isFreeTier && (
-            <Badge variant="secondary" className="bg-green-600/20 text-green-400" data-testid="badge-monthly-spend">
+            <Badge variant="secondary" className="bg-green-100 text-green-600" data-testid="badge-monthly-spend">
               {formatCurrency(monthlyRounded)}/mo
             </Badge>
           )}
@@ -197,12 +197,12 @@ export default function RecurringSubscriptions() {
       </div>
         <div className="relative">
           {/* Subscription List - Blurred for Free tier */}
-          <div className={`divide-y divide-gray-800/50 ${isFreeTier ? 'blur-md pointer-events-none select-none' : ''}`}>
+          <div className={`divide-y divide-gray-200 ${isFreeTier ? 'blur-md pointer-events-none select-none' : ''}`}>
             {subscriptions.length > 0 ? (
               subscriptions.map((subscription) => (
                 <div 
                   key={subscription.id} 
-                  className="flex items-center justify-between py-4 px-2 hover:bg-white/5 transition-colors rounded-lg"
+                  className="flex items-center justify-between py-4 px-2 hover:bg-gray-50 transition-colors rounded-lg"
                   data-testid={`subscription-item-${subscription.id}`}
                 >
                   <div className="flex items-center gap-3 flex-1 min-w-0">
@@ -210,15 +210,15 @@ export default function RecurringSubscriptions() {
                       {getMerchantLogo(subscription.merchantName).logo}
                     </div>
                     <div className="min-w-0 flex-1">
-                      <div className="font-semibold text-white text-sm sm:text-base truncate">{subscription.merchantName}</div>
-                      <div className="text-xs sm:text-sm text-gray-400">
+                      <div className="font-semibold text-gray-900 text-sm sm:text-base truncate">{subscription.merchantName}</div>
+                      <div className="text-xs sm:text-sm text-gray-500">
                         {getFrequencyLabel(subscription.frequency)} • {subscription.accountName.length > 20 ? subscription.accountName.substring(0, 20) + '...' : subscription.accountName}
                       </div>
                     </div>
                   </div>
                   
                   <div className="text-right flex-shrink-0 ml-2">
-                    <div className="font-semibold text-white text-sm sm:text-base">
+                    <div className="font-semibold text-gray-900 text-sm sm:text-base">
                       {formatCurrency(subscription.amount)}
                     </div>
                     <div className="text-xs text-gray-500">
@@ -231,9 +231,9 @@ export default function RecurringSubscriptions() {
                 </div>
               ))
             ) : (
-              <div className="text-center py-8 text-gray-400">
+              <div className="text-center py-8 text-gray-500">
                 <DollarSign className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                <p className="text-lg mb-2">No recurring subscriptions found</p>
+                <p className="text-lg mb-2 text-gray-900">No recurring subscriptions found</p>
                 <p className="text-sm">Connect your bank accounts to automatically detect recurring payments</p>
               </div>
             )}
@@ -242,18 +242,18 @@ export default function RecurringSubscriptions() {
           {/* Upgrade Overlay for Free Tier */}
           {isFreeTier && (
             <div className="absolute inset-0 flex items-center justify-center z-10" data-testid="upgrade-overlay">
-              <div className="text-center p-6 bg-gray-900/95 rounded-lg border-2 border-blue-500/50 backdrop-blur-sm max-w-md">
+              <div className="text-center p-6 bg-white/95 rounded-lg border-2 border-gray-300 backdrop-blur-sm max-w-md shadow-lg">
                 <div className="flex items-center justify-center mb-4">
-                  <div className="p-3 bg-blue-600/20 rounded-full">
-                    <Crown className="h-8 w-8 text-blue-400" />
+                  <div className="p-3 bg-amber-100 rounded-full">
+                    <Crown className="h-8 w-8 text-amber-600" />
                   </div>
                 </div>
-                <h3 className="text-xl font-bold text-white mb-2">Unlock Subscription Tracking</h3>
-                <p className="text-gray-400 mb-4">
+                <h3 className="text-xl font-bold text-gray-900 mb-2">Unlock Subscription Tracking</h3>
+                <p className="text-gray-600 mb-4">
                   Upgrade to Basic, Pro, or Premium to automatically detect and track your recurring subscriptions from bank transactions, including merchant names, amounts, and billing dates.
                 </p>
                 <Link href="/subscribe">
-                  <Button className="bg-blue-600 hover:bg-blue-700 text-white" data-testid="button-upgrade">
+                  <Button className="bg-gray-900 hover:bg-gray-800 text-white" data-testid="button-upgrade">
                     <Crown className="h-4 w-4 mr-2" />
                     Upgrade Plan
                   </Button>
@@ -269,15 +269,15 @@ export default function RecurringSubscriptions() {
 
           {/* Summary - Only visible for non-Free tier */}
           {subscriptions.length > 0 && !isFreeTier && (
-            <div className="mt-6 pt-4 border-t border-gray-800">
+            <div className="mt-6 pt-4 border-t border-gray-200">
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div className="flex items-center justify-between">
-                  <span className="text-gray-400">Total Monthly</span>
-                  <span className="text-white font-semibold" data-testid="text-total-monthly">{formatCurrency(monthlyRounded)}</span>
+                  <span className="text-gray-500">Total Monthly</span>
+                  <span className="text-gray-900 font-semibold" data-testid="text-total-monthly">{formatCurrency(monthlyRounded)}</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-gray-400">Annual Cost</span>
-                  <span className="text-white font-semibold" data-testid="text-annual-cost">{formatCurrency(monthlyRounded * 12)}</span>
+                  <span className="text-gray-500">Annual Cost</span>
+                  <span className="text-gray-900 font-semibold" data-testid="text-annual-cost">{formatCurrency(monthlyRounded * 12)}</span>
                 </div>
               </div>
             </div>
@@ -285,7 +285,7 @@ export default function RecurringSubscriptions() {
         </div>
 
       {/* Data source info */}
-      <div className="text-xs text-gray-500 text-center pt-4 mt-4 border-t border-gray-800">
+      <div className="text-xs text-gray-500 text-center pt-4 mt-4 border-t border-gray-200">
         Analyzed from your bank & credit card transactions
       </div>
     </div>

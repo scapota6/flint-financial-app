@@ -64,9 +64,9 @@ export default function HoldingsBreakdown() {
 
   if (isLoading) {
     return (
-      <Card className="bg-gray-900 border-gray-800">
+      <Card className="bg-white border-gray-200 shadow-sm">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+          <CardTitle className="flex items-center gap-2 text-gray-900">
             <BarChart3 className="h-5 w-5" />
             Holdings Breakdown
           </CardTitle>
@@ -74,7 +74,7 @@ export default function HoldingsBreakdown() {
         <CardContent>
           <div className="space-y-4">
             {[1, 2, 3].map((i) => (
-              <Skeleton key={i} className="h-20 bg-gray-800" />
+              <Skeleton key={i} className="h-20 bg-gray-200" />
             ))}
           </div>
         </CardContent>
@@ -84,15 +84,15 @@ export default function HoldingsBreakdown() {
 
   if (error || data?.needsConnection) {
     return (
-      <Card className="bg-gray-900 border-gray-800">
+      <Card className="bg-white border-gray-200 shadow-sm">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+          <CardTitle className="flex items-center gap-2 text-gray-900">
             <BarChart3 className="h-5 w-5" />
             Holdings Breakdown
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-gray-400">
+          <p className="text-gray-500">
             {data?.message || 'Connect your brokerage accounts to view holdings'}
           </p>
         </CardContent>
@@ -102,15 +102,15 @@ export default function HoldingsBreakdown() {
 
   if (holdings.length === 0) {
     return (
-      <Card className="bg-gray-900 border-gray-800">
+      <Card className="bg-white border-gray-200 shadow-sm">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+          <CardTitle className="flex items-center gap-2 text-gray-900">
             <BarChart3 className="h-5 w-5" />
             Holdings Breakdown
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-gray-400">No holdings found. Connect a brokerage account to see your positions.</p>
+          <p className="text-gray-500">No holdings found. Connect a brokerage account to see your positions.</p>
         </CardContent>
       </Card>
     );
@@ -136,14 +136,14 @@ export default function HoldingsBreakdown() {
   return (
     <div className="space-y-6">
       {/* Portfolio Summary */}
-      <Card className="bg-gray-900 border-blue-600/20">
+      <Card className="bg-white border-gray-200 shadow-sm">
         <CardHeader>
-          <CardTitle className="flex items-center justify-between">
+          <CardTitle className="flex items-center justify-between text-gray-900">
             <span className="flex items-center gap-2">
               <BarChart3 className="h-5 w-5" />
               Portfolio Summary
             </span>
-            <Badge variant="secondary" className="bg-blue-600/20 text-blue-400">
+            <Badge variant="secondary" className="bg-blue-100 text-blue-600">
               {summary.positionCount} Positions • {summary.accountCount} Accounts
             </Badge>
           </CardTitle>
@@ -151,23 +151,23 @@ export default function HoldingsBreakdown() {
         <CardContent>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div>
-              <p className="text-sm text-gray-400">Total Value</p>
-              <p className="text-2xl font-bold">${summary.totalValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+              <p className="text-sm text-gray-500">Total Value</p>
+              <p className="text-2xl font-bold text-gray-900">${summary.totalValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
             </div>
             <div>
-              <p className="text-sm text-gray-400">Total Cost</p>
-              <p className="text-xl">${summary.totalCost.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+              <p className="text-sm text-gray-500">Total Cost</p>
+              <p className="text-xl text-gray-900">${summary.totalCost.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
             </div>
             <div>
-              <p className="text-sm text-gray-400">Total P/L</p>
-              <p className={`text-xl font-semibold flex items-center gap-1 ${summary.totalProfitLoss >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+              <p className="text-sm text-gray-500">Total P/L</p>
+              <p className={`text-xl font-semibold flex items-center gap-1 ${summary.totalProfitLoss >= 0 ? 'text-green-500' : 'text-red-500'}`}>
                 {summary.totalProfitLoss >= 0 ? <TrendingUp className="h-4 w-4" /> : <TrendingDown className="h-4 w-4" />}
                 ${Math.abs(summary.totalProfitLoss).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </p>
             </div>
             <div>
-              <p className="text-sm text-gray-400">Total Return</p>
-              <p className={`text-xl font-semibold ${summary.totalProfitLossPercent >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+              <p className="text-sm text-gray-500">Total Return</p>
+              <p className={`text-xl font-semibold ${summary.totalProfitLossPercent >= 0 ? 'text-green-500' : 'text-red-500'}`}>
                 {summary.totalProfitLossPercent >= 0 ? '+' : ''}{summary.totalProfitLossPercent.toFixed(2)}%
               </p>
             </div>
@@ -177,30 +177,30 @@ export default function HoldingsBreakdown() {
 
       {/* Holdings by Account */}
       {Object.entries(holdingsByAccount).map(([accountId, accountData]) => (
-        <Card key={accountId} className="bg-gray-900 border-gray-800">
+        <Card key={accountId} className="bg-white border-gray-200 shadow-sm">
           <CardHeader>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Building className="h-4 w-4 text-gray-400" />
+                <Building className="h-4 w-4 text-gray-500" />
                 <div>
-                  <h3 className="font-semibold">{accountData.accountName}</h3>
-                  <p className="text-sm text-gray-400">{accountData.brokerageName}</p>
+                  <h3 className="font-semibold text-gray-900">{accountData.accountName}</h3>
+                  <p className="text-sm text-gray-500">{accountData.brokerageName}</p>
                 </div>
               </div>
               <div className="text-right">
-                <p className="text-sm text-gray-400">Account Value</p>
-                <p className="font-semibold">${accountData.totalValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+                <p className="text-sm text-gray-500">Account Value</p>
+                <p className="font-semibold text-gray-900">${accountData.totalValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
               </div>
             </div>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
               {accountData.holdings.map((holding: Holding) => (
-                <div key={`${accountId}-${holding.symbol}`} className="bg-gray-800 rounded-lg p-4">
+                <div key={`${accountId}-${holding.symbol}`} className="bg-gray-50 border border-gray-200 rounded-lg p-4">
                   <div className="flex items-center justify-between mb-2">
                     <div>
-                      <h4 className="font-semibold text-lg">{holding.symbol}</h4>
-                      <p className="text-sm text-gray-400">{holding.name}</p>
+                      <h4 className="font-semibold text-lg text-gray-900">{holding.symbol}</h4>
+                      <p className="text-sm text-gray-500">{holding.name}</p>
                     </div>
                     <Badge variant={holding.type === 'crypto' ? 'secondary' : 'default'} className="text-xs">
                       {holding.type}
@@ -209,24 +209,24 @@ export default function HoldingsBreakdown() {
                   
                   <div className="grid grid-cols-2 md:grid-cols-5 gap-3 text-sm">
                     <div>
-                      <p className="text-gray-400">Quantity</p>
-                      <p className="font-medium">{holding.quantity.toLocaleString(undefined, { maximumFractionDigits: 4 })}</p>
+                      <p className="text-gray-500">Quantity</p>
+                      <p className="font-medium text-gray-900">{holding.quantity.toLocaleString(undefined, { maximumFractionDigits: 4 })}</p>
                     </div>
                     <div>
-                      <p className="text-gray-400">Avg Cost</p>
-                      <p className="font-medium">${holding.averageCost.toFixed(2)}</p>
+                      <p className="text-gray-500">Avg Cost</p>
+                      <p className="font-medium text-gray-900">${holding.averageCost.toFixed(2)}</p>
                     </div>
                     <div>
-                      <p className="text-gray-400">Current Price</p>
-                      <p className="font-medium">${holding.currentPrice.toFixed(2)}</p>
+                      <p className="text-gray-500">Current Price</p>
+                      <p className="font-medium text-gray-900">${holding.currentPrice.toFixed(2)}</p>
                     </div>
                     <div>
-                      <p className="text-gray-400">Market Value</p>
-                      <p className="font-medium">${holding.currentValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+                      <p className="text-gray-500">Market Value</p>
+                      <p className="font-medium text-gray-900">${holding.currentValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
                     </div>
                     <div>
-                      <p className="text-gray-400">P/L</p>
-                      <div className={`font-medium ${holding.profitLoss >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                      <p className="text-gray-500">P/L</p>
+                      <div className={`font-medium ${holding.profitLoss >= 0 ? 'text-green-500' : 'text-red-500'}`}>
                         <p className="flex items-center gap-1">
                           {holding.profitLoss >= 0 ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
                           ${Math.abs(holding.profitLoss).toFixed(2)}

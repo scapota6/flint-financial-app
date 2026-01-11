@@ -170,9 +170,9 @@ const RealTimeHoldings = memo(function RealTimeHoldings({
 
   if (isLoading) {
     return (
-      <Card className="flint-card">
+      <Card className="bg-white border-gray-200 shadow-sm">
         <CardHeader>
-          <CardTitle className="flex items-center justify-between">
+          <CardTitle className="flex items-center justify-between text-gray-900">
             <span>Portfolio Holdings</span>
             <Badge variant="secondary">Real-Time</Badge>
           </CardTitle>
@@ -181,17 +181,17 @@ const RealTimeHoldings = memo(function RealTimeHoldings({
           <div className="space-y-3">
             {[1, 2, 3, 4, 5].map(i => (
               <div key={i} className="animate-pulse">
-                <div className="flex items-center justify-between p-3 bg-gray-800 rounded-lg">
+                <div className="flex items-center justify-between p-3 bg-gray-50 border border-gray-200 rounded-lg">
                   <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 bg-gray-700 rounded-full"></div>
+                    <div className="w-10 h-10 bg-gray-200 rounded-full"></div>
                     <div>
-                      <div className="h-4 bg-gray-700 rounded w-16 mb-1"></div>
-                      <div className="h-3 bg-gray-700 rounded w-24"></div>
+                      <div className="h-4 bg-gray-200 rounded w-16 mb-1"></div>
+                      <div className="h-3 bg-gray-200 rounded w-24"></div>
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className="h-4 bg-gray-700 rounded w-20 mb-1"></div>
-                    <div className="h-3 bg-gray-700 rounded w-16"></div>
+                    <div className="h-4 bg-gray-200 rounded w-20 mb-1"></div>
+                    <div className="h-3 bg-gray-200 rounded w-16"></div>
                   </div>
                 </div>
               </div>
@@ -204,15 +204,15 @@ const RealTimeHoldings = memo(function RealTimeHoldings({
 
   if (error) {
     return (
-      <Card className="flint-card">
+      <Card className="bg-white border-gray-200 shadow-sm">
         <CardHeader>
-          <CardTitle>Portfolio Holdings</CardTitle>
+          <CardTitle className="text-gray-900">Portfolio Holdings</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="text-center py-8 text-red-400">
+          <div className="text-center py-8 text-red-500">
             <Activity className="h-12 w-12 mx-auto mb-4 opacity-50" />
             <p className="text-lg mb-2">Failed to load holdings</p>
-            <p className="text-sm">Check your brokerage connections</p>
+            <p className="text-sm text-gray-500">Check your brokerage connections</p>
           </div>
         </CardContent>
       </Card>
@@ -220,15 +220,15 @@ const RealTimeHoldings = memo(function RealTimeHoldings({
   }
 
   return (
-    <Card className="flint-card">
+    <Card className="bg-white border-gray-200 shadow-sm">
       <CardHeader>
-        <CardTitle className="flex items-center justify-between">
+        <CardTitle className="flex items-center justify-between text-gray-900">
           <span>Portfolio Holdings</span>
           <div className="flex items-center space-x-2">
-            <Badge variant="secondary" className="bg-green-600/20 text-green-400">
+            <Badge variant="secondary" className="bg-green-100 text-green-600">
               Live Prices
             </Badge>
-            <Badge variant="outline" className="text-gray-400">
+            <Badge variant="outline" className="text-gray-500 border-gray-300">
               {holdings.length} positions
             </Badge>
           </div>
@@ -238,17 +238,17 @@ const RealTimeHoldings = memo(function RealTimeHoldings({
       <CardContent className="space-y-4">
         {/* Portfolio Summary */}
         {holdings.length > 0 && (
-          <div className="grid grid-cols-2 gap-4 p-4 bg-gray-800/50 rounded-lg">
+          <div className="grid grid-cols-2 gap-4 p-4 bg-gray-50 border border-gray-200 rounded-lg">
             <div>
-              <div className="text-sm text-gray-400">Total Value</div>
-              <div className="text-xl font-bold text-white">
+              <div className="text-sm text-gray-500">Total Value</div>
+              <div className="text-xl font-bold text-gray-900">
                 {formatCurrency(totalValue)}
               </div>
             </div>
             <div>
-              <div className="text-sm text-gray-400">Total Gain/Loss</div>
+              <div className="text-sm text-gray-500">Total Gain/Loss</div>
               <div className={`text-xl font-bold flex items-center ${
-                totalGainLoss >= 0 ? 'text-green-400' : 'text-red-400'
+                totalGainLoss >= 0 ? 'text-green-500' : 'text-red-500'
               }`}>
                 {totalGainLoss >= 0 ? 
                   <TrendingUp className="h-5 w-5 mr-1" /> : 
@@ -266,7 +266,7 @@ const RealTimeHoldings = memo(function RealTimeHoldings({
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as any)}
-              className="px-3 py-1 bg-gray-800 border border-gray-700 rounded text-white text-sm"
+              className="px-3 py-1 bg-white border border-gray-200 rounded text-gray-900 text-sm"
             >
               <option value="value">Sort by Value</option>
               <option value="gainloss">Sort by Gain/Loss</option>
@@ -274,7 +274,7 @@ const RealTimeHoldings = memo(function RealTimeHoldings({
             </select>
             <button
               onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
-              className="px-3 py-1 bg-gray-800 border border-gray-700 rounded text-white text-sm hover:bg-gray-700"
+              className="px-3 py-1 bg-white border border-gray-200 rounded text-gray-900 text-sm hover:bg-gray-50"
             >
               {sortOrder === 'asc' ? '↑' : '↓'}
             </button>
@@ -286,7 +286,7 @@ const RealTimeHoldings = memo(function RealTimeHoldings({
           {sortedHoldings.slice(0, maxItems).map((holding) => (
             <div 
               key={`${holding.accountId}-${holding.symbol}`} 
-              className="group flex items-center justify-between p-3 bg-gray-800/50 rounded-lg hover:bg-gray-800 transition-colors cursor-pointer"
+              className="group flex items-center justify-between p-3 bg-gray-50 border border-gray-200 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer"
               onClick={() => onHoldingClick?.(holding.symbol, holding.name)}
             >
               <div className="flex items-center space-x-3">
@@ -294,7 +294,7 @@ const RealTimeHoldings = memo(function RealTimeHoldings({
                   {getHoldingLogo(holding.symbol, holding.name, holding.type).logo}
                 </div>
                 <div>
-                  <div className="font-semibold text-white flex items-center space-x-2">
+                  <div className="font-semibold text-gray-900 flex items-center space-x-2">
                     <span>{holding.symbol}</span>
                     {showAccountProvider && holding.brokerageName && (
                       <Badge variant="secondary" className="text-xs">
@@ -302,21 +302,21 @@ const RealTimeHoldings = memo(function RealTimeHoldings({
                       </Badge>
                     )}
                   </div>
-                  <div className="text-sm text-gray-400">
+                  <div className="text-sm text-gray-500">
                     {holding.quantity.toFixed(4)} shares @ {formatCurrency(holding.averageCost)}
                   </div>
                 </div>
               </div>
               
               <div className="text-right">
-                <div className="font-semibold text-white">
+                <div className="font-semibold text-gray-900">
                   {formatCurrency(holding.currentValue)}
                 </div>
-                <div className="text-sm text-gray-400">
+                <div className="text-sm text-gray-500">
                   {formatCurrency(holding.currentPrice)} current
                 </div>
                 <div className={`text-sm flex items-center justify-end ${
-                  holding.profitLoss >= 0 ? 'text-green-400' : 'text-red-400'
+                  holding.profitLoss >= 0 ? 'text-green-500' : 'text-red-500'
                 }`}>
                   {holding.profitLoss >= 0 ? 
                     <TrendingUp className="h-3 w-3 mr-1" /> : 
@@ -329,7 +329,7 @@ const RealTimeHoldings = memo(function RealTimeHoldings({
           ))}
           
           {holdings.length === 0 && (
-            <div className="text-center py-8 text-gray-400">
+            <div className="text-center py-8 text-gray-500">
               <DollarSign className="h-12 w-12 mx-auto mb-4 opacity-50" />
               <p className="text-lg mb-2">No holdings found</p>
               <p className="text-sm">Connect your brokerage accounts to view your portfolio</p>

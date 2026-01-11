@@ -48,11 +48,11 @@ export default function QuickTrade() {
 
   return (
     <>
-      <Card className="trade-card shadow-lg">
+      <Card className="bg-white border border-gray-200 shadow-sm">
         <CardHeader>
           <div className="flex items-center justify-between">
-            <CardTitle className="text-lg font-semibold text-white">Quick Trade</CardTitle>
-            <Button variant="ghost" className="text-blue-500 text-sm font-medium">
+            <CardTitle className="text-lg font-semibold text-gray-900">Quick Trade</CardTitle>
+            <Button variant="ghost" className="text-gray-600 text-sm font-medium">
               View All
             </Button>
           </div>
@@ -62,26 +62,26 @@ export default function QuickTrade() {
             {quickTrades.map((trade) => (
               <div
                 key={trade.symbol}
-                className="flex items-center justify-between p-4 bg-gray-800 rounded-lg"
+                className="flex items-center justify-between p-4 bg-white border border-gray-200 rounded-lg"
               >
                 <div className="flex items-center space-x-3">
                   <div className={`w-8 h-8 ${trade.color} rounded-full flex items-center justify-center`}>
                     <span className="text-white text-sm font-bold">{trade.letter}</span>
                   </div>
                   <div>
-                    <p className="text-white font-medium">{trade.symbol}</p>
-                    <p className="text-gray-400 text-sm">{trade.name}</p>
+                    <p className="text-gray-900 font-medium">{trade.symbol}</p>
+                    <p className="text-gray-500 text-sm">{trade.name}</p>
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="text-white font-medium">{formatCurrency(trade.price)}</p>
+                  <p className="text-gray-900 font-medium">{formatCurrency(trade.price)}</p>
                   <p className={`text-sm ${trade.change >= 0 ? 'text-green-500' : 'text-red-500'}`}>
                     {trade.change >= 0 ? '+' : ''}{trade.change}%
                   </p>
                 </div>
                 <Button
                   onClick={() => handleTradeClick(trade)}
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium"
+                  className="bg-gray-900 hover:bg-gray-800 text-white px-4 py-2 rounded-lg text-sm font-medium"
                 >
                   Buy
                 </Button>

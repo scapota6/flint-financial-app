@@ -52,20 +52,15 @@ export default function ActivityFeed({ activities }: ActivityFeedProps) {
     }
   };
 
-  // Safely handle activities array - prevent crashes
   const safeActivities = Array.isArray(activities) ? activities : [];
-  
-  // No mock data - real activities only
-
-  // Use only real activity data - no mock transactions
   const displayActivities = safeActivities.slice(0, 10);
 
   return (
-    <Card className="trade-card shadow-lg">
+    <Card className="bg-white border border-gray-200 shadow-sm">
       <CardHeader>
         <div className="flex items-center justify-between">
-          <CardTitle className="text-lg font-semibold text-white">Recent Activity</CardTitle>
-          <Button variant="ghost" className="text-blue-500 text-sm font-medium">
+          <CardTitle className="text-lg font-semibold text-gray-900">Recent Activity</CardTitle>
+          <Button variant="ghost" className="text-gray-900 text-sm font-medium hover:bg-gray-100">
             View All
           </Button>
         </div>
@@ -80,7 +75,7 @@ export default function ActivityFeed({ activities }: ActivityFeedProps) {
             return (
               <div
                 key={index}
-                className="activity-item flex items-center justify-between py-3 px-2 rounded-lg bg-gray-800/50 hover:bg-gray-800/70 transition-all duration-200"
+                className="activity-item flex items-center justify-between py-3 px-2 rounded-lg bg-gray-50 hover:bg-gray-100 transition-all duration-200 border border-gray-100"
               >
                 <div className="flex items-center space-x-3 flex-1">
                   <div className={`w-10 h-10 ${color} rounded-full flex items-center justify-center flex-shrink-0`}>
@@ -88,22 +83,22 @@ export default function ActivityFeed({ activities }: ActivityFeedProps) {
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between">
-                      <p className="text-white font-medium text-sm truncate">{activity.description}</p>
+                      <p className="text-gray-900 font-medium text-sm truncate">{activity.description}</p>
                       <span className={`text-sm font-semibold ml-2 ${
-                        amount >= 0 ? 'text-green-400' : 'text-red-400'
+                        amount >= 0 ? 'text-green-500' : 'text-red-500'
                       }`}>
                         {amount >= 0 ? '+' : ''}{formatCurrency(Math.abs(amount))}
                       </span>
                     </div>
                     <div className="flex items-center justify-between mt-1">
-                      <div className="flex items-center space-x-2 text-xs text-gray-400">
-                        <span className="px-2 py-0.5 rounded bg-gray-700 text-gray-300 font-medium">
+                      <div className="flex items-center space-x-2 text-xs text-gray-500">
+                        <span className="px-2 py-0.5 rounded bg-gray-200 text-gray-600 font-medium">
                           {activity.action}
                         </span>
                         {isTradeActivity && activity.symbol && (
                           <>
                             <span>•</span>
-                            <span className="text-blue-400 font-medium">{activity.symbol}</span>
+                            <span className="text-gray-700 font-medium">{activity.symbol}</span>
                           </>
                         )}
                         {isTradeActivity && activity.quantity && (
@@ -137,8 +132,8 @@ export default function ActivityFeed({ activities }: ActivityFeedProps) {
         
         {safeActivities.length === 0 && (
           <div className="text-center py-8">
-            <p className="text-gray-400">Showing demo transaction history</p>
-            <p className="text-gray-500 text-sm mt-1">Connect your brokerage account to see real trades</p>
+            <p className="text-gray-500">Showing demo transaction history</p>
+            <p className="text-gray-400 text-sm mt-1">Connect your brokerage account to see real trades</p>
           </div>
         )}
       </CardContent>
