@@ -440,6 +440,20 @@ export default function LandingNew() {
     }
   }, [mobileMenuOpen]);
 
+  // Force light mode on landing page (override dark theme for cream background)
+  useEffect(() => {
+    const root = document.documentElement;
+    const hadDarkClass = root.classList.contains('dark');
+    root.classList.remove('dark');
+    
+    return () => {
+      // Restore dark class when leaving landing page if it was there before
+      if (hadDarkClass) {
+        root.classList.add('dark');
+      }
+    };
+  }, []);
+
   // Money goals state
   const [selectedGoals, setSelectedGoals] = useState<string[]>([]);
   const [goalsEmail, setGoalsEmail] = useState('');
