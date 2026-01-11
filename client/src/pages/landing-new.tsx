@@ -799,10 +799,10 @@ export default function LandingNew() {
         {/* Hero Section - Template Style */}
         <section className="pt-24 md:mt-0 md:min-h-screen flex flex-col justify-center text-center md:text-left md:flex-row md:justify-between md:items-center lg:px-48 md:px-12 px-4 bg-[#F4F2ED]">
           <div className="md:flex-1 md:mr-10 py-12">
-            <h1 className="font-serif text-4xl sm:text-5xl font-bold mb-7 leading-tight">
+            <h1 className="font-serif text-4xl sm:text-5xl font-bold mb-7 leading-tight text-black">
               All your money apps,{' '}
               <span className="relative inline-block">
-                <span className="relative z-10">in one place</span>
+                <span className="relative z-10 text-black">in one place</span>
                 <span className="absolute bottom-1 left-0 w-full h-3 bg-yellow-300 -z-0 opacity-60"></span>
               </span>
             </h1>
