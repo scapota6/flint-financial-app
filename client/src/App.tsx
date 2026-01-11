@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect } from "react";
+import { lazy, Suspense, useEffect, type ReactNode } from "react";
 import { Switch, Route } from "wouter";
 import { AnimatePresence } from "framer-motion";
 import { queryClient } from "./lib/queryClient";
@@ -12,6 +12,29 @@ import { FloatingHeader } from "@/components/ui/floating-header";
 import { UpgradeBanner } from "@/components/ui/upgrade-banner";
 import { useAuth } from "@/hooks/useAuth";
 import { initializeAnalytics } from "@/lib/analytics";
+import { MetaMaskProvider } from "@metamask/sdk-react";
+
+// Conditional MetaMask wrapper - only loads for authenticated users
+function MetaMaskWrapper({ children, enabled }: { children: ReactNode; enabled: boolean }) {
+  if (!enabled) {
+    return <>{children}</>;
+  }
+  
+  return (
+    <MetaMaskProvider
+      sdkOptions={{
+        dappMetadata: {
+          name: "Flint",
+          url: typeof window !== 'undefined' ? window.location.href : '',
+        },
+        infuraAPIKey: import.meta.env.VITE_INFURA_API_KEY,
+        enableAnalytics: false,
+      }}
+    >
+      {children}
+    </MetaMaskProvider>
+  );
+}
 
 // Eagerly load critical email-linked pages to prevent blank page on first load
 import PasswordSetup from "@/pages/password-setup";
@@ -227,6 +250,19 @@ function Router() {
   );
 }
 
+function AppContent() {
+  const { isAuthenticated } = useAuth();
+  
+  return (
+    <MetaMaskWrapper enabled={isAuthenticated}>
+      <div>
+        <Toaster />
+        <Router />
+      </div>
+    </MetaMaskWrapper>
+  );
+}
+
 function App() {
   // Initialize analytics on app mount - captures UTM params, referrer, and tracks landing
   useEffect(() => {
@@ -238,10 +274,7 @@ function App() {
       <ThemeProvider>
         <ActivityProvider>
           <TooltipProvider>
-            <div>
-              <Toaster />
-              <Router />
-            </div>
+            <AppContent />
           </TooltipProvider>
         </ActivityProvider>
       </ThemeProvider>
