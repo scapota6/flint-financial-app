@@ -2440,13 +2440,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Create account records for each connected account
       for (const account of accounts) {
+        // For credit cards: use ledger (amount owed), for other accounts: use available
+        const isCreditCard = account.type === 'credit' || account.subtype === 'credit_card';
+        const balanceValue = isCreditCard 
+          ? parseFloat(account.balance?.ledger || account.balance?.available || "0.00")
+          : parseFloat(account.balance?.available || account.balance?.ledger || "0.00");
+        
         const accountData = {
           userId,
           provider: 'teller',
           externalAccountId: account.id,
           accountName: account.name || 'Bank Account',
-          accountType: 'bank',
-          balance: parseFloat(account.balance?.available || "0.00"),
+          accountType: isCreditCard ? 'credit' : 'bank',
+          balance: balanceValue,
           accessToken: encryptedToken, // Store encrypted token
           lastUpdated: new Date()
         };
@@ -2530,13 +2536,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Create account records for each connected account
       for (const account of accounts) {
+        // For credit cards: use ledger (amount owed), for other accounts: use available
+        const isCreditCard = account.type === 'credit' || account.subtype === 'credit_card';
+        const balanceValue = isCreditCard 
+          ? parseFloat(account.balance?.ledger || account.balance?.available || "0.00")
+          : parseFloat(account.balance?.available || account.balance?.ledger || "0.00");
+        
         const accountData = {
           userId,
           provider: 'teller',
           externalAccountId: account.id,
           accountName: account.name || 'Bank Account',
-          accountType: 'bank',
-          balance: parseFloat(account.balance?.available || "0.00"),
+          accountType: isCreditCard ? 'credit' : 'bank',
+          balance: balanceValue,
           accessToken: encryptedToken, // Store encrypted token
           lastUpdated: new Date()
         };

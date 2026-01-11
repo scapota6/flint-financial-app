@@ -112,12 +112,19 @@ router.get("/accounts/:accountId/details", async (req: any, res) => {
         // const statements = await teller.statements?.list(externalId).catch(() => []);
         
         // Update stored balance in database if we successfully fetched fresh balance
-        if (balances?.available && dbId) {
+        // For credit cards: use ledger (amount owed), for other accounts: use available
+        const isCreditCard = account.type === 'credit' || account.subtype === 'credit_card';
+        const balanceToStore = isCreditCard 
+          ? (balances?.ledger || balances?.available) 
+          : (balances?.available || balances?.ledger);
+        
+        if (balanceToStore && dbId) {
           try {
-            await storage.updateAccountBalance(dbId, balances.available.toString());
+            await storage.updateAccountBalance(dbId, balanceToStore.toString());
             console.log('[Account Details API] Updated stored balance:', {
               accountId: dbId,
-              newBalance: balances.available,
+              isCreditCard,
+              newBalance: balanceToStore,
               lastSynced: new Date().toISOString()
             });
           } catch (error) {
