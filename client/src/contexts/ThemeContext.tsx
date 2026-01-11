@@ -21,12 +21,8 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     const savedTheme = localStorage.getItem('theme') as Theme | null;
     if (savedTheme) return savedTheme;
     
-    // Check system preference
-    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-      return 'dark';
-    }
-    
-    return 'dark'; // Default to dark theme for financial app
+    // Default to light theme for cream design
+    return 'light';
   });
 
   useEffect(() => {
