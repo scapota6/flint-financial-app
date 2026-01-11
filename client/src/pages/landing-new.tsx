@@ -978,44 +978,32 @@ export default function LandingNew() {
             </span>
           </h2>
           <div className="md:grid md:grid-cols-2 gap-8 max-w-4xl">
-            <div className="flex items-start my-6 mr-10">
-              <DollarSign className="h-7 w-7 mr-4 flex-shrink-0 text-yellow-500" />
-              <div>
-                <h3 className="font-semibold text-2xl mb-2">Cut Hidden Fees</h3>
-                <p className="text-gray-600">
-                  We find and alert you to unnecessary bank charges so you keep more of your money.
-                </p>
-              </div>
+            <div className="my-6 mr-10">
+              <h3 className="font-semibold text-2xl mb-2">Cut Hidden Fees</h3>
+              <p className="text-gray-600">
+                We find and alert you to unnecessary bank charges so you keep more of your money.
+              </p>
             </div>
 
-            <div className="flex items-start my-6 mr-10">
-              <TrendingUp className="h-7 w-7 mr-4 flex-shrink-0 text-yellow-500" />
-              <div>
-                <h3 className="font-semibold text-2xl mb-2">Grow Net Worth</h3>
-                <p className="text-gray-600">
-                  See the big picture and make smarter money moves with all your accounts in one place.
-                </p>
-              </div>
+            <div className="my-6 mr-10">
+              <h3 className="font-semibold text-2xl mb-2">Grow Net Worth</h3>
+              <p className="text-gray-600">
+                See the big picture and make smarter money moves with all your accounts in one place.
+              </p>
             </div>
 
-            <div className="flex items-start my-6 mr-10">
-              <Wallet className="h-7 w-7 mr-4 flex-shrink-0 text-yellow-500" />
-              <div>
-                <h3 className="font-semibold text-2xl mb-2">All Your Money</h3>
-                <p className="text-gray-600">
-                  See your bank accounts, credit cards, stocks, and crypto all together in one dashboard.
-                </p>
-              </div>
+            <div className="my-6 mr-10">
+              <h3 className="font-semibold text-2xl mb-2">All Your Money</h3>
+              <p className="text-gray-600">
+                See your bank accounts, credit cards, stocks, and crypto all together in one dashboard.
+              </p>
             </div>
 
-            <div className="flex items-start my-6 mr-10">
-              <Shield className="h-7 w-7 mr-4 flex-shrink-0 text-yellow-500" />
-              <div>
-                <h3 className="font-semibold text-2xl mb-2">Bank-Level Security</h3>
-                <p className="text-gray-600">
-                  Your data is encrypted and protected with the same security banks use.
-                </p>
-              </div>
+            <div className="my-6 mr-10">
+              <h3 className="font-semibold text-2xl mb-2">Bank-Level Security</h3>
+              <p className="text-gray-600">
+                Your data is encrypted and protected with the same security banks use.
+              </p>
             </div>
           </div>
         </section>
@@ -1057,8 +1045,8 @@ export default function LandingNew() {
           </div>
         </section>
 
-        {/* Interactive Demo Section - Template Style */}
-        <section className="py-20 bg-[#F4F2ED]">
+        {/* Interactive Demo Section - Template Style - HIDDEN FOR NOW */}
+        <section className="py-20 bg-[#F4F2ED] hidden">
           <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="mb-12">
               <p className="text-sm font-semibold text-[#1a56db] uppercase tracking-wide mb-3">Demo</p>
