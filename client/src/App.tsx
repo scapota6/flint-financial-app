@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, type ReactNode } from "react";
+import { lazy, Suspense, useEffect, useState, type ReactNode } from "react";
 import { Switch, Route } from "wouter";
 import { AnimatePresence } from "framer-motion";
 import { queryClient } from "./lib/queryClient";
@@ -10,9 +10,13 @@ import { ActivityProvider } from "@/contexts/ActivityContext";
 import { ActivityTimeoutModal } from "@/components/ActivityTimeoutModal";
 import { FloatingHeader } from "@/components/ui/floating-header";
 import { UpgradeBanner } from "@/components/ui/upgrade-banner";
+import { MobileNav } from "@/components/ui/mobile-nav";
 import { useAuth } from "@/hooks/useAuth";
 import { initializeAnalytics } from "@/lib/analytics";
 import { MetaMaskProvider } from "@metamask/sdk-react";
+import { Capacitor } from "@capacitor/core";
+import { StatusBar, Style } from "@capacitor/status-bar";
+import { App as CapacitorApp } from "@capacitor/app";
 
 // Conditional MetaMask wrapper - only loads for authenticated users
 function MetaMaskWrapper({ children, enabled }: { children: ReactNode; enabled: boolean }) {
@@ -107,6 +111,16 @@ function PublicRoute({ component: Component }: { component: React.ComponentType 
 
 function Router() {
   const { isAuthenticated, isLoading } = useAuth();
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768 || Capacitor.isNativePlatform());
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   if (isLoading) {
     return <PageLoader />;
@@ -121,7 +135,7 @@ function Router() {
       )}
       {isAuthenticated && <UpgradeBanner />}
       {isAuthenticated && <ActivityTimeoutModal />}
-      <div className={isAuthenticated ? "authenticated-content px-4 relative pt-20 z-10" : ""}>
+      <div className={isAuthenticated ? `authenticated-content px-4 relative pt-20 z-10 ${isMobile ? 'pb-20' : ''}` : ""}>
         {isAuthenticated && <FloatingHeader />}
         <AnimatePresence mode="wait">
           <Suspense fallback={<PageLoader />}>
@@ -243,6 +257,7 @@ function Router() {
           </Suspense>
         </AnimatePresence>
       </div>
+      {isAuthenticated && isMobile && <MobileNav />}
     </>
   );
 }
@@ -264,6 +279,34 @@ function App() {
   // Initialize analytics on app mount - captures UTM params, referrer, and tracks landing
   useEffect(() => {
     initializeAnalytics();
+  }, []);
+
+  // Initialize Capacitor plugins for native platforms
+  useEffect(() => {
+    const initCapacitor = async () => {
+      if (Capacitor.isNativePlatform()) {
+        try {
+          await StatusBar.setStyle({ style: Style.Dark });
+          await StatusBar.setBackgroundColor({ color: '#F4F2ED' });
+        } catch (e) {
+        }
+
+        CapacitorApp.addListener('backButton', ({ canGoBack }) => {
+          if (canGoBack) {
+            window.history.back();
+          } else {
+            CapacitorApp.exitApp();
+          }
+        });
+      }
+    };
+    initCapacitor();
+    
+    return () => {
+      if (Capacitor.isNativePlatform()) {
+        CapacitorApp.removeAllListeners();
+      }
+    };
   }, []);
 
   return (

@@ -5,6 +5,28 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Safe area insets for iOS notch and home indicator */
+:root {
+  --sat: env(safe-area-inset-top);
+  --sar: env(safe-area-inset-right);
+  --sab: env(safe-area-inset-bottom);
+  --sal: env(safe-area-inset-left);
+}
+
+/* Safe area utility classes */
+.pt-safe {
+  padding-top: max(env(safe-area-inset-top), 0px);
+}
+
+.pb-safe {
+  padding-bottom: max(env(safe-area-inset-bottom), 0px);
+}
+
+.px-safe {
+  padding-left: max(env(safe-area-inset-left), 0px);
+  padding-right: max(env(safe-area-inset-right), 0px);
+}
+
 /* Smooth scrolling behavior */
 html {
   scroll-behavior: smooth;
