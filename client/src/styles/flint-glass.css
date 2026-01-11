@@ -142,14 +142,13 @@ body {
   }
 }
 
-/* 4. Cards */
+/* 4. Cards - Cream Theme */
 .card {
-  background: var(--glass);
-  backdrop-filter: blur(var(--blur)) saturate(var(--sat));
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
   padding: 18px;
-  box-shadow: var(--shadow-md);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 .card-title {
   font-size: 16px;
@@ -264,7 +263,7 @@ body {
   box-shadow: inset 0 -2px 0 var(--blue);
 }
 
-/* 8. Modal */
+/* 8. Modal - Cream Theme */
 .modal-shell {
   position: fixed;
   inset: 0;
@@ -278,21 +277,17 @@ body {
   width: min(980px, 94vw);
   max-height: 88vh;
   overflow: auto;
-  border-radius: var(--radius-lg);
-  background: rgb(28, 31, 36);
-  border: 1px solid var(--border);
-  box-shadow: var(--shadow-xl);
+  border-radius: 12px;
+  background: white;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
 }
 .modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 18px 20px;
-  background: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.06),
-    rgba(255, 255, 255, 0)
-  );
+  background: transparent;
   position: sticky;
   top: 0;
   z-index: 2;
@@ -300,20 +295,20 @@ body {
 .modal-title {
   font-size: 20px;
   font-weight: 600;
+  color: #111827;
 }
 
-/* 9. Dropdown menu */
+/* 9. Dropdown menu - Cream Theme */
 .menu {
   position: absolute;
   z-index: 70;
   min-width: 320px;
   max-height: 360px;
   overflow: auto;
-  border-radius: 18px;
-  border: 1px solid var(--border);
-  background: var(--glass-strong);
-  backdrop-filter: blur(var(--blur)) saturate(var(--sat));
-  box-shadow: var(--shadow-md);
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  background: white;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
   padding: 8px;
   animation: menuIn 0.18s ease;
 }
@@ -321,11 +316,7 @@ body {
   position: sticky;
   top: 0;
   padding: 8px;
-  background: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.06),
-    rgba(255, 255, 255, 0)
-  );
+  background: white;
 }
 .menu-item {
   display: flex;
@@ -333,13 +324,13 @@ body {
   justify-content: space-between;
   gap: 12px;
   padding: 10px 12px;
-  border-radius: 12px;
+  border-radius: 8px;
   cursor: pointer;
   transition: background 0.16s ease;
-  color: var(--txt);
+  color: #111827;
 }
 .menu-item:hover {
-  background: rgba(255, 255, 255, 0.08);
+  background: #f3f4f6;
 }
 .menu-item .logo {
   width: 24px;
@@ -348,7 +339,7 @@ body {
   object-fit: cover;
 }
 
-/* 10. Table */
+/* 10. Table - Cream Theme */
 .table {
   width: 100%;
 }
@@ -362,26 +353,25 @@ body {
 .thead {
   position: sticky;
   top: 0;
-  background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(6px);
+  background: #f9fafb;
   padding: 10px;
-  border-bottom: 1px solid var(--divider);
+  border-bottom: 1px solid #e5e7eb;
 }
 .tbody .tr {
   padding: 10px;
-  border-bottom: 1px solid var(--divider);
+  border-bottom: 1px solid #e5e7eb;
 }
 .td.right {
   text-align: right;
 }
 .amount-pos {
-  color: var(--green);
+  color: #16a34a;
 }
 .amount-neg {
-  color: var(--red);
+  color: #dc2626;
 }
 
-/* 11. Badges */
+/* 11. Badges - Cream Theme */
 .badge {
   display: inline-flex;
   align-items: center;
@@ -391,22 +381,22 @@ body {
   padding: 0 10px;
   border-radius: 999px;
   font-size: 12px;
-  border: 1px solid var(--border);
-  background: rgba(255, 255, 255, 0.06);
-  color: #fff;
+  border: 1px solid #e5e7eb;
+  background: #f9fafb;
+  color: #111827;
 }
 .badge.pending {
-  background: rgba(255, 196, 0, 0.18);
-  color: #ffe07a;
-  border-color: rgba(255, 196, 0, 0.4);
+  background: #fef3c7;
+  color: #92400e;
+  border-color: #fcd34d;
 }
 .badge.failed {
-  background: rgba(255, 107, 107, 0.18);
-  color: #ff9a9a;
-  border-color: rgba(255, 107, 107, 0.4);
+  background: #fee2e2;
+  color: #991b1b;
+  border-color: #fca5a5;
 }
 
-/* 12. Toasts */
+/* 12. Toasts - Cream Theme */
 .toast {
   position: fixed;
   top: 18px;
@@ -415,21 +405,20 @@ body {
   min-width: 320px;
   max-width: 540px;
   padding: 12px 14px;
-  border-radius: 14px;
-  border: 1px solid var(--border);
-  background: var(--glass);
-  backdrop-filter: blur(var(--blur));
-  box-shadow: var(--shadow-md);
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  background: white;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
   z-index: 90;
   display: flex;
   gap: 10px;
   align-items: center;
 }
 .toast.success {
-  border-left: 4px solid var(--green);
+  border-left: 4px solid #16a34a;
 }
 .toast.error {
-  border-left: 4px solid var(--red);
+  border-left: 4px solid #dc2626;
 }
 
 /* 13. Spinner / success ring */
@@ -450,16 +439,16 @@ body {
   place-items: center;
 }
 
-/* 14. Skeletons */
+/* 14. Skeletons - Cream Theme */
 .skeleton {
   position: relative;
   overflow: hidden;
-  border-radius: 10px;
+  border-radius: 8px;
   background: linear-gradient(
     90deg,
-    rgba(255, 255, 255, 0.06),
-    rgba(255, 255, 255, 0.09),
-    rgba(255, 255, 255, 0.06)
+    #e5e7eb,
+    #f3f4f6,
+    #e5e7eb
   );
   background-size: 200% 100%;
   animation: shimmer 1.2s ease-in-out infinite;
@@ -532,7 +521,7 @@ body {
   }
 }
 
-/* 18. Typography System (Apple Style) */
+/* 18. Typography System - Cream Theme */
 
 /* Headings */
 .h1,
@@ -542,7 +531,7 @@ h1 {
   font-size: clamp(2.5rem, 5vw, 3.5rem);
   line-height: 1.1;
   letter-spacing: -0.03em;
-  color: var(--txt);
+  color: #111827;
 }
 
 .h2,
@@ -552,7 +541,7 @@ h2 {
   font-size: clamp(1.75rem, 3vw, 2.25rem);
   line-height: 1.2;
   letter-spacing: -0.02em;
-  color: var(--txt);
+  color: #111827;
 }
 
 .h3,
@@ -561,7 +550,7 @@ h3 {
   font-weight: 600;
   font-size: 1.5rem;
   letter-spacing: -0.015em;
-  color: var(--txt);
+  color: #111827;
 }
 
 /* Subheaders / Supporting Text */
@@ -569,7 +558,7 @@ h3 {
   font-family: var(--font);
   font-weight: 400;
   font-size: 1.1rem;
-  color: var(--txt-2);
+  color: #6b7280;
   line-height: 1.6;
   letter-spacing: -0.01em;
 }
@@ -581,21 +570,40 @@ p,
   font-weight: 400;
   font-size: 1rem;
   line-height: 1.6;
-  color: var(--txt-2);
+  color: #6b7280;
 }
 
 /* Strong emphasis */
 strong,
 b {
   font-weight: 600;
-  color: var(--txt);
+  color: #111827;
 }
 
 /* Caption / small */
 .small {
   font-size: 0.875rem;
-  color: var(--txt-3);
+  color: #9ca3af;
   letter-spacing: 0.01em;
+}
+
+/* Stat numbers */
+.stat-number {
+  font-family: var(--font);
+  font-weight: 700;
+  font-size: 2.5rem;
+  letter-spacing: -0.02em;
+  color: #111827;
+}
+
+/* Section titles */
+.section-title {
+  font-family: var(--font);
+  font-weight: 700;
+  font-size: 2rem;
+  letter-spacing: -0.02em;
+  color: #111827;
+  margin-bottom: 12px;
 }
 
 /* Hero Gradient Text */

@@ -348,7 +348,7 @@ export default function Analytics() {
           transition={{ duration: 0.4 }}
         >
           <div className="mb-8">
-            <h1 className="text-3xl font-semibold tracking-tight mb-2">
+            <h1 className="text-3xl font-bold tracking-tight mb-2 text-gray-900">
               Spending Analytics
             </h1>
             <p className="text-gray-600">
@@ -371,16 +371,15 @@ export default function Analytics() {
               )}
             </div>
             <Button
-              variant="outline"
               size="sm"
               onClick={() => setIsFilterOpen(true)}
-              className="border-gray-300 hover:bg-gray-50 flex items-center gap-2"
+              className="bg-gray-900 hover:bg-gray-800 text-white flex items-center gap-2"
               data-testid="button-open-filters"
             >
               <Filter className="w-4 h-4" />
               <span className="hidden sm:inline">Filters</span>
               {(selectedAccountIds.length > 0 || viewMode !== "1") && (
-                <span className="w-2 h-2 rounded-full bg-yellow-600" />
+                <span className="w-2 h-2 rounded-full bg-yellow-400" />
               )}
             </Button>
           </div>
@@ -573,7 +572,7 @@ export default function Analytics() {
           >
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
-                <h2 className="text-xl font-semibold flex items-center gap-2">
+                <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
                   <Target className="w-5 h-5 text-yellow-600" />
                   Financial Goals
                 </h2>
@@ -681,7 +680,7 @@ export default function Analytics() {
                             )}
                           </div>
                           <div>
-                            <h3 className="font-medium">{goal.name}</h3>
+                            <h3 className="font-semibold text-gray-900">{goal.name}</h3>
                             <p className="text-xs text-gray-600 capitalize">
                               {goal.goalType.replace('_', ' ')}
                               {goal.linkedAccount && ` • ${goal.linkedAccount.accountName}`}
