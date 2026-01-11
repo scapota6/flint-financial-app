@@ -56,7 +56,10 @@ import {
   ChevronLeft,
   ChevronRight,
   Eye,
-  CheckCircle
+  CheckCircle,
+  Link2,
+  BarChart3,
+  MousePointerClick
 } from "lucide-react";
 import { Link } from "wouter";
 import flintLogo from "@assets/flint-logo.png";
@@ -885,28 +888,40 @@ export default function LandingNew() {
               <span className="absolute bottom-0 left-0 w-full h-1 bg-yellow-400"></span>
             </span>
           </h2>
-          <div className="flex flex-col md:flex-row w-full max-w-4xl">
-            <div className="flex-1 mx-4 flex flex-col items-center my-6 text-center">
-              <div className="border-2 border-gray-800 rounded-full bg-gray-900 text-white h-14 w-14 flex justify-center items-center mb-4 text-xl font-bold">
-                1
+          <div className="flex flex-col md:flex-row w-full max-w-4xl gap-8">
+            <div className="flex-1 flex flex-col items-center text-center group">
+              <div className="relative mb-6">
+                <div className="absolute inset-0 bg-gradient-to-br from-yellow-400 to-amber-500 rounded-2xl blur-lg opacity-30 group-hover:opacity-50 transition-opacity"></div>
+                <div className="relative bg-white border border-gray-200 rounded-2xl h-20 w-20 flex flex-col justify-center items-center shadow-lg">
+                  <Link2 className="h-6 w-6 text-amber-500 mb-1" />
+                  <span className="font-serif text-2xl text-gray-900">1</span>
+                </div>
               </div>
               <h3 className="font-semibold text-xl mb-2 text-gray-900">Connect</h3>
               <p className="text-gray-600">
                 Link banks, Coinbase, 401(k), Robinhood, and more. All in one place.
               </p>
             </div>
-            <div className="flex-1 mx-4 flex flex-col items-center my-6 text-center">
-              <div className="border-2 border-gray-800 rounded-full bg-gray-900 text-white h-14 w-14 flex justify-center items-center mb-4 text-xl font-bold">
-                2
+            <div className="flex-1 flex flex-col items-center text-center group">
+              <div className="relative mb-6">
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-400 to-indigo-500 rounded-2xl blur-lg opacity-30 group-hover:opacity-50 transition-opacity"></div>
+                <div className="relative bg-white border border-gray-200 rounded-2xl h-20 w-20 flex flex-col justify-center items-center shadow-lg">
+                  <BarChart3 className="h-6 w-6 text-blue-500 mb-1" />
+                  <span className="font-serif text-2xl text-gray-900">2</span>
+                </div>
               </div>
               <h3 className="font-semibold text-xl mb-2 text-gray-900">Track</h3>
               <p className="text-gray-600">
                 See all your money together. Balances, spending, and growth at a glance.
               </p>
             </div>
-            <div className="flex-1 mx-4 flex flex-col items-center my-6 text-center">
-              <div className="border-2 border-gray-800 rounded-full bg-gray-900 text-white h-14 w-14 flex justify-center items-center mb-4 text-xl font-bold">
-                3
+            <div className="flex-1 flex flex-col items-center text-center group">
+              <div className="relative mb-6">
+                <div className="absolute inset-0 bg-gradient-to-br from-green-400 to-emerald-500 rounded-2xl blur-lg opacity-30 group-hover:opacity-50 transition-opacity"></div>
+                <div className="relative bg-white border border-gray-200 rounded-2xl h-20 w-20 flex flex-col justify-center items-center shadow-lg">
+                  <MousePointerClick className="h-6 w-6 text-emerald-500 mb-1" />
+                  <span className="font-serif text-2xl text-gray-900">3</span>
+                </div>
               </div>
               <h3 className="font-semibold text-xl mb-2 text-gray-900">Act</h3>
               <p className="text-gray-600">
