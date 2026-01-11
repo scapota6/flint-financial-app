@@ -33,29 +33,31 @@ const posthogOptions = {
   },
 };
 
-// Render app with error boundary, MetaMask provider outside PostHog to prevent cyclic serialization
+// Render app with error boundary wrapping MetaMask to prevent cyclic serialization crashes
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <MetaMaskProvider
-      sdkOptions={{
-        dappMetadata: {
-          name: "Flint",
-          url: window.location.href,
-        },
-        infuraAPIKey: import.meta.env.VITE_INFURA_API_KEY,
-        enableAnalytics: false,
-      }}
-    >
-      <PostHogProvider 
-        apiKey={import.meta.env.VITE_PUBLIC_POSTHOG_KEY || 'phc_ucEZRx85Wj0m5hW2b8BEpf0C9GfwoFzWCXs1R2tUyyJ'} 
-        options={posthogOptions}
+    <ErrorBoundary>
+      <MetaMaskProvider
+        sdkOptions={{
+          dappMetadata: {
+            name: "Flint",
+            url: window.location.href,
+          },
+          infuraAPIKey: import.meta.env.VITE_INFURA_API_KEY,
+          enableAnalytics: false,
+        }}
       >
-        <ErrorBoundary>
-          <HelmetProvider>
-            <App />
-          </HelmetProvider>
-        </ErrorBoundary>
-      </PostHogProvider>
-    </MetaMaskProvider>
+        <PostHogProvider 
+          apiKey={import.meta.env.VITE_PUBLIC_POSTHOG_KEY || 'phc_ucEZRx85Wj0m5hW2b8BEpf0C9GfwoFzWCXs1R2tUyyJ'} 
+          options={posthogOptions}
+        >
+          <ErrorBoundary>
+            <HelmetProvider>
+              <App />
+            </HelmetProvider>
+          </ErrorBoundary>
+        </PostHogProvider>
+      </MetaMaskProvider>
+    </ErrorBoundary>
   </StrictMode>
 );
