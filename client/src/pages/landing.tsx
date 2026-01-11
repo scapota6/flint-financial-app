@@ -200,7 +200,7 @@ function Landing() {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white relative overflow-hidden">
+    <div className="min-h-screen bg-[#FAFBFC] text-gray-900 relative overflow-hidden">
       <Helmet>
         <title>Flint - See All Your Money in One Place | Financial Dashboard</title>
         <meta name="description" content="Flint is a free financial dashboard that connects all your bank accounts, investments, and credit cards in one place. Track your net worth, monitor spending, pay down debt, and reach your money goals. Connect over 10,000 financial institutions securely." />
@@ -210,152 +210,164 @@ function Landing() {
         <meta property="og:type" content="website" />
         <link rel="canonical" href="https://flint-investing.com/" />
       </Helmet>
-
-      {/* Animated gradient background */}
-      <div className="fixed inset-0 bg-gradient-to-br from-blue-900/30 via-black to-blue-900/30 pointer-events-none" />
-      
-      {/* Animated floating orbs */}
-      <div className="fixed inset-0 pointer-events-none">
-        {/* Blue orb - top left */}
-        <div className="absolute top-20 left-10 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl animate-pulse" 
-             style={{ animationDuration: '4s' }} />
-        
-        {/* Blue orb - top right */}
-        <div className="absolute top-40 right-20 w-80 h-80 bg-blue-500/20 rounded-full blur-3xl animate-pulse" 
-             style={{ animationDuration: '5s', animationDelay: '1s' }} />
-        
-        {/* Cyan orb - middle */}
-        <div className="absolute top-1/2 left-1/3 w-72 h-72 bg-cyan-500/15 rounded-full blur-3xl animate-pulse" 
-             style={{ animationDuration: '6s', animationDelay: '2s' }} />
-        
-        {/* Cyan orb - bottom left */}
-        <div className="absolute bottom-40 left-20 w-64 h-64 bg-cyan-500/20 rounded-full blur-3xl animate-pulse" 
-             style={{ animationDuration: '5s', animationDelay: '1.5s' }} />
-        
-        {/* Blue orb - bottom right */}
-        <div className="absolute bottom-20 right-32 w-96 h-96 bg-blue-600/15 rounded-full blur-3xl animate-pulse" 
-             style={{ animationDuration: '7s', animationDelay: '0.5s' }} />
-      </div>
-      
-      {/* Subtle grid overlay */}
-      <div className="fixed inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0icmdiYSgyNTUsMjU1LDI1NSwwLjAzKSIgc3Ryb2tlLXdpZHRoPSIxIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2dyaWQpIi8+PC9zdmc+')] opacity-40 pointer-events-none" />
-      {/* Sticky Header */}
-      <header 
-        className="sticky top-0 z-50 px-4 lg:px-8 py-4 border-b border-gray-800"
-        style={{ background: 'var(--surface-glass)', backdropFilter: 'blur(16px) saturate(140%)' }}
-      >
+      {/* Sticky Header - Light Theme */}
+      <header className="sticky top-0 z-50 px-4 lg:px-8 py-4 bg-white/80 backdrop-blur-md border-b border-gray-200">
         <nav className="mx-auto flex max-w-7xl items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <img 
-              src={flintLogo} 
-              alt="Flint Logo" 
-              className="h-10 w-auto"
-              style={{ mixBlendMode: 'screen' }}
-            />
-          </div>
-          <div className="flex items-center space-x-4">
-            <div className="flex flex-col items-end space-y-1 bg-gray-800/50 border border-blue-600/30 rounded-lg px-4 py-3">
-              <Link href="/login">
-                <Button 
-                  variant="ghost" 
-                  className="text-white hover:text-blue-300 hover:bg-blue-600/20"
-                  data-testid="button-login"
-                >
-                  Log in
-                </Button>
-              </Link>
-              <Link 
-                href="/reset-password"
-                className="text-xs text-gray-400 hover:text-blue-400 transition-colors"
-                data-testid="link-forgot-password"
+          <div className="flex items-center space-x-8">
+            <Link href="/">
+              <div className="flex items-center space-x-2 cursor-pointer">
+                <img 
+                  src={flintLogo} 
+                  alt="Flint Logo" 
+                  className="h-8 w-auto"
+                />
+                <span className="font-semibold text-gray-900 text-lg">Flint</span>
+              </div>
+            </Link>
+            {/* Navigation Links */}
+            <div className="hidden md:flex items-center space-x-1">
+              <button 
+                onClick={() => document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' })}
+                className="text-gray-600 hover:text-gray-900 px-3 py-2 text-sm font-medium transition-colors"
               >
-                Forgot password?
-              </Link>
+                Features
+              </button>
+              <button 
+                onClick={() => document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' })}
+                className="text-gray-600 hover:text-gray-900 px-3 py-2 text-sm font-medium transition-colors"
+              >
+                Pricing
+              </button>
+              <button 
+                onClick={() => document.getElementById('faq')?.scrollIntoView({ behavior: 'smooth' })}
+                className="text-gray-600 hover:text-gray-900 px-3 py-2 text-sm font-medium transition-colors"
+              >
+                FAQ
+              </button>
             </div>
+          </div>
+          <div className="flex items-center space-x-3">
+            <Link href="/login">
+              <Button 
+                variant="ghost" 
+                className="text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+                data-testid="button-login"
+              >
+                Sign In
+              </Button>
+            </Link>
+            <Button 
+              onClick={() => setCheckoutModalOpen(true)}
+              className="bg-[#1a56db] hover:bg-[#1e40af] text-white rounded-lg px-5"
+              data-testid="button-get-started-header"
+            >
+              Get Started
+            </Button>
           </div>
         </nav>
       </header>
 
-      {/* Value Proposition Section */}
+      {/* Hero Section - Clean SaaS Style */}
       <main className="mx-auto max-w-7xl px-4 lg:px-8 relative z-10">
-        <section className="py-20 text-center space-y-8">
+        <section className="py-16 md:py-24 grid lg:grid-cols-2 gap-12 items-center">
+          {/* Left side - Content */}
           <div className="space-y-6">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight">
-              See all your money in one place.{' '}
-              <span className="bg-gradient-to-r from-blue-400 via-cyan-400 to-blue-500 bg-clip-text text-transparent">
-                Save money. Reach your goals.
-              </span>
+            <p className="text-[#1a56db] font-medium text-sm flex items-center gap-2">
+              <span className="text-lg">🔥</span> Flint is one of the best options for you.
+            </p>
+            <h1 className="text-4xl md:text-5xl lg:text-[3.5rem] font-bold tracking-tight text-gray-900 leading-[1.1]">
+              See All Your Money in One Place
             </h1>
-            <p className="text-xl lg:text-2xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
-              Flint brings all your accounts together, helps you cut hidden fees, and grow toward your goals{' '}
-              <span className="text-white font-semibold">simply and clearly.</span>
+            <p className="text-lg text-gray-600 max-w-lg leading-relaxed">
+              Flint brings all your accounts together, helps you cut hidden fees, and grow toward your goals simply and clearly.
             </p>
             
-            {/* Visual elements */}
-            <div className="flex items-center justify-center gap-6 md:gap-8 pt-8">
-              <div className="flex items-center gap-2 md:gap-3 text-gray-300">
-                <span className="text-sm md:text-base font-medium">Track Growth</span>
+            {/* Email + Get Started CTA */}
+            <div className="flex flex-col sm:flex-row gap-3 max-w-md pt-4">
+              <Input
+                type="email"
+                placeholder="Enter your email address"
+                value={checkoutEmail}
+                onChange={(e) => setCheckoutEmail(e.target.value)}
+                className="flex-1 h-12 px-4 bg-white border-gray-300 text-gray-900 placeholder:text-gray-400 rounded-lg focus:ring-2 focus:ring-[#1a56db] focus:border-transparent"
+              />
+              <Button 
+                onClick={() => setCheckoutModalOpen(true)}
+                className="h-12 px-6 bg-[#1a56db] hover:bg-[#1e40af] text-white font-medium rounded-lg whitespace-nowrap"
+                data-testid="button-get-started-hero"
+              >
+                Get Started
+              </Button>
+            </div>
+            
+            <p className="text-sm text-gray-500">
+              Try for free. No credit card required.
+            </p>
+          </div>
+          
+          {/* Right side - Dashboard Preview */}
+          <div className="relative">
+            <div className="bg-white rounded-2xl shadow-2xl border border-gray-200 overflow-hidden">
+              <img 
+                src={dashboardPreview} 
+                alt="Flint Dashboard" 
+                className="w-full h-auto"
+                loading="eager"
+              />
+            </div>
+            {/* Floating badges */}
+            <div className="absolute -top-4 -right-4 bg-white rounded-xl shadow-lg border border-gray-200 px-4 py-3 flex items-center gap-2">
+              <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                <Shield className="h-4 w-4 text-[#1a56db]" />
               </div>
-              <div className="flex items-center gap-2 md:gap-3 text-gray-300">
-                <span className="text-sm md:text-base font-medium">Cut Fees</span>
-              </div>
-              <div className="flex items-center gap-2 md:gap-3 text-gray-300">
-                <span className="text-sm md:text-base font-medium">Stay Secure</span>
-              </div>
+              <span className="text-sm font-medium text-gray-700">Bank-level Security</span>
             </div>
           </div>
         </section>
 
-        {/* As Seen On Section */}
-        <section className="py-16 border-y border-gray-800/50 bg-gray-900/30" data-section="as-seen-on">
-          <div className="max-w-6xl mx-auto space-y-12 px-4">
-            <div className="text-center">
-              <h3 className="text-sm uppercase tracking-wider text-gray-400 font-semibold" data-testid="text-as-seen-on">AS FEATURED ON</h3>
-            </div>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-12 items-center justify-items-center">
+        {/* Trust Logos Strip - Light Theme */}
+        <section className="py-12 border-t border-gray-200" data-section="as-seen-on">
+          <div className="max-w-6xl mx-auto space-y-8 px-4">
+            <div className="flex flex-wrap items-center justify-center gap-8 md:gap-16 opacity-60 grayscale">
               {/* Forbes */}
-              <div className="transition-all duration-300 opacity-70 hover:opacity-100 w-full flex justify-center">
+              <div className="transition-all duration-300 hover:opacity-100 hover:grayscale-0">
                 <img 
                   src={forbesLogo}
                   alt="Forbes"
-                  className="h-16 w-auto object-contain"
-                  style={{ mixBlendMode: 'lighten' }}
+                  className="h-8 w-auto object-contain invert"
                   loading="lazy"
                   decoding="async"
                   data-testid="logo-forbes"
                 />
               </div>
               {/* Wall Street Journal */}
-              <div className="transition-all duration-300 opacity-70 hover:opacity-100 w-full flex justify-center">
+              <div className="transition-all duration-300 hover:opacity-100 hover:grayscale-0">
                 <img 
                   src={wsjLogo}
                   alt="Wall Street Journal"
-                  className="h-16 w-auto object-contain"
-                  style={{ mixBlendMode: 'lighten' }}
+                  className="h-8 w-auto object-contain invert"
                   loading="lazy"
                   decoding="async"
                   data-testid="logo-wsj"
                 />
               </div>
               {/* Entrepreneur */}
-              <div className="transition-all duration-300 opacity-70 hover:opacity-100 w-full flex justify-center">
+              <div className="transition-all duration-300 hover:opacity-100 hover:grayscale-0">
                 <img 
                   src={entrepreneurLogo}
                   alt="Entrepreneur"
-                  className="h-16 w-auto object-contain"
-                  style={{ mixBlendMode: 'lighten' }}
+                  className="h-8 w-auto object-contain invert"
                   loading="lazy"
                   decoding="async"
                   data-testid="logo-entrepreneur"
                 />
               </div>
               {/* Bloomberg */}
-              <div className="transition-all duration-300 opacity-70 hover:opacity-100 w-full flex justify-center">
+              <div className="transition-all duration-300 hover:opacity-100 hover:grayscale-0">
                 <img 
                   src={bloombergLogo}
                   alt="Bloomberg"
-                  className="h-16 w-auto object-contain"
-                  style={{ mixBlendMode: 'lighten' }}
+                  className="h-8 w-auto object-contain invert"
                   loading="lazy"
                   decoding="async"
                   data-testid="logo-bloomberg"
@@ -366,24 +378,24 @@ function Landing() {
         </section>
 
         {/* Supported Institutions Scrolling Banner */}
-        <section className="py-12 bg-gradient-to-b from-gray-900/30 to-transparent overflow-hidden" data-section="institutions">
+        <section className="py-12 bg-gray-50 overflow-hidden" data-section="institutions">
           <div className="max-w-6xl mx-auto space-y-6">
             <div className="text-center">
-              <h3 className="text-sm uppercase tracking-wider text-gray-400 font-semibold" data-testid="text-connect-accounts">PARTNERS SUPPORTED</h3>
+              <h3 className="text-sm uppercase tracking-wider text-gray-500 font-semibold" data-testid="text-connect-accounts">PARTNERS SUPPORTED</h3>
             </div>
             
             {/* Scrolling container */}
             <div className="relative">
               {/* Gradient overlays for smooth edges */}
-              <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-black to-transparent z-10 pointer-events-none" />
-              <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-black to-transparent z-10 pointer-events-none" />
+              <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-gray-50 to-transparent z-10 pointer-events-none" />
+              <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-gray-50 to-transparent z-10 pointer-events-none" />
               
               {/* Scrolling track - seamless infinite scroll */}
               <div className="flex gap-6 animate-scroll-seamless" data-testid="scrolling-institutions">
                 {/* First set of logos */}
                 {INSTITUTIONS.map((institution, idx) => (
                   <div key={`logo-${idx}`} className="flex-shrink-0 flex items-center justify-center" data-testid={`institution-${institution.name.toLowerCase().replace(/[^a-z0-9]/g, '-')}`}>
-                    <div className="h-16 w-16 rounded-full bg-gray-800/60 border border-gray-700/50 flex items-center justify-center overflow-hidden hover:border-blue-500/50 transition-all duration-300">
+                    <div className="h-16 w-16 rounded-full bg-white border border-gray-200 shadow-sm flex items-center justify-center overflow-hidden hover:border-[#1a56db]/50 hover:shadow-md transition-all duration-300">
                       <img 
                         src={`https://cdn.brandfetch.io/${institution.domain}?c=${import.meta.env.VITE_BRANDFETCH_CLIENT_ID || ''}`}
                         alt={institution.name}
@@ -410,7 +422,7 @@ function Landing() {
                 {/* Second set for seamless loop */}
                 {INSTITUTIONS.map((institution, idx) => (
                   <div key={`logo-dup-${idx}`} className="flex-shrink-0 flex items-center justify-center">
-                    <div className="h-16 w-16 rounded-full bg-gray-800/60 border border-gray-700/50 flex items-center justify-center overflow-hidden hover:border-blue-500/50 transition-all duration-300">
+                    <div className="h-16 w-16 rounded-full bg-white border border-gray-200 shadow-sm flex items-center justify-center overflow-hidden hover:border-[#1a56db]/50 hover:shadow-md transition-all duration-300">
                       <img 
                         src={`https://cdn.brandfetch.io/${institution.domain}?c=${import.meta.env.VITE_BRANDFETCH_CLIENT_ID || ''}`}
                         alt={institution.name}
@@ -437,7 +449,7 @@ function Landing() {
                 {/* Third set for longer scroll */}
                 {INSTITUTIONS.map((institution, idx) => (
                   <div key={`logo-dup2-${idx}`} className="flex-shrink-0 flex items-center justify-center">
-                    <div className="h-16 w-16 rounded-full bg-gray-800/60 border border-gray-700/50 flex items-center justify-center overflow-hidden hover:border-blue-500/50 transition-all duration-300">
+                    <div className="h-16 w-16 rounded-full bg-white border border-gray-200 shadow-sm flex items-center justify-center overflow-hidden hover:border-[#1a56db]/50 hover:shadow-md transition-all duration-300">
                       <img 
                         src={`https://cdn.brandfetch.io/${institution.domain}?c=${import.meta.env.VITE_BRANDFETCH_CLIENT_ID || ''}`}
                         alt={institution.name}
@@ -471,67 +483,67 @@ function Landing() {
         </section>
 
         {/* The Problem Section */}
-        <section className="py-20 bg-gradient-to-b from-red-950/20 to-transparent border-y border-red-900/30" data-section="problem">
+        <section className="py-20 bg-white border-y border-gray-200" data-section="problem">
           <div className="max-w-6xl mx-auto space-y-12">
             <div className="text-center space-y-4">
-              <h2 className="h2 tracking-tight text-white">
+              <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-gray-900">
                 Your money is spread out.
               </h2>
-              <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
                 This costs you time and money.
               </p>
             </div>
 
             <div className="grid md:grid-cols-3 gap-4 md:gap-8">
               {/* Time Wasted */}
-              <Card className="bg-gray-900/80 border-red-900/50">
+              <Card className="bg-white border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                 <CardContent className="p-4 md:p-8 text-center space-y-3 md:space-y-4">
                   <div className="flex justify-center">
-                    <div className="h-12 w-12 md:h-16 md:w-16 rounded-full bg-gradient-to-br from-red-500 to-red-700 flex items-center justify-center">
-                      <Users className="h-6 w-6 md:h-8 md:w-8 text-white" />
+                    <div className="h-12 w-12 md:h-16 md:w-16 rounded-full bg-red-100 flex items-center justify-center">
+                      <Users className="h-6 w-6 md:h-8 md:w-8 text-red-600" />
                     </div>
                   </div>
                   <div className="space-y-1 md:space-y-2">
-                    <div className="stat-number text-red-400 text-3xl md:text-4xl">3+ hours</div>
-                    <div className="text-gray-400 text-base md:text-lg">wasted every week</div>
+                    <div className="text-3xl md:text-4xl font-bold text-red-600">3+ hours</div>
+                    <div className="text-gray-500 text-base md:text-lg">wasted every week</div>
                   </div>
-                  <p className="text-gray-300 text-sm md:text-base">
+                  <p className="text-gray-600 text-sm md:text-base">
                     Switching between 5-8 different banking apps, brokerages, and spreadsheets just to check your finances
                   </p>
                 </CardContent>
               </Card>
 
               {/* Money Lost */}
-              <Card className="bg-gray-900/80 border-red-900/50">
+              <Card className="bg-white border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                 <CardContent className="p-4 md:p-8 text-center space-y-3 md:space-y-4">
                   <div className="flex justify-center">
-                    <div className="h-12 w-12 md:h-16 md:w-16 rounded-full bg-gradient-to-br from-orange-500 to-orange-700 flex items-center justify-center">
-                      <DollarSign className="h-6 w-6 md:h-8 md:w-8 text-white" />
+                    <div className="h-12 w-12 md:h-16 md:w-16 rounded-full bg-orange-100 flex items-center justify-center">
+                      <DollarSign className="h-6 w-6 md:h-8 md:w-8 text-orange-600" />
                     </div>
                   </div>
                   <div className="space-y-1 md:space-y-2">
-                    <div className="stat-number text-orange-400 text-3xl md:text-4xl">$1,847</div>
-                    <div className="text-gray-400 text-base md:text-lg">lost per year</div>
+                    <div className="text-3xl md:text-4xl font-bold text-orange-600">$1,847</div>
+                    <div className="text-gray-500 text-base md:text-lg">lost per year</div>
                   </div>
-                  <p className="text-gray-300 text-sm md:text-base">
+                  <p className="text-gray-600 text-sm md:text-base">
                     Hidden fees, forgotten subscriptions, and missed opportunities across disconnected accounts
                   </p>
                 </CardContent>
               </Card>
 
               {/* Financial Confusion */}
-              <Card className="bg-gray-900/80 border-red-900/50">
+              <Card className="bg-white border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                 <CardContent className="p-4 md:p-8 text-center space-y-3 md:space-y-4">
                   <div className="flex justify-center">
-                    <div className="h-12 w-12 md:h-16 md:w-16 rounded-full bg-gradient-to-br from-yellow-500 to-yellow-700 flex items-center justify-center">
-                      <Shield className="h-6 w-6 md:h-8 md:w-8 text-white" />
+                    <div className="h-12 w-12 md:h-16 md:w-16 rounded-full bg-yellow-100 flex items-center justify-center">
+                      <Shield className="h-6 w-6 md:h-8 md:w-8 text-yellow-600" />
                     </div>
                   </div>
                   <div className="space-y-1 md:space-y-2">
-                    <div className="text-4xl md:text-5xl font-bold text-yellow-400">68%</div>
-                    <div className="text-gray-400 text-base md:text-lg">don't know their net worth</div>
+                    <div className="text-4xl md:text-5xl font-bold text-yellow-600">68%</div>
+                    <div className="text-gray-500 text-base md:text-lg">don't know their net worth</div>
                   </div>
-                  <p className="text-gray-300 text-sm md:text-base">
+                  <p className="text-gray-600 text-sm md:text-base">
                     Because their money is too scattered across banks, brokerages, and crypto wallets to track
                   </p>
                 </CardContent>
@@ -539,102 +551,102 @@ function Landing() {
             </div>
 
             <div className="text-center pt-8">
-              <p className="text-2xl text-gray-200 font-semibold">
-                There's a <span className="text-blue-400">better way</span>
+              <p className="text-2xl text-gray-700 font-semibold">
+                There's a <span className="text-[#1a56db]">better way</span>
               </p>
             </div>
           </div>
         </section>
 
         {/* Features Section */}
-        <section className="py-20" data-section="features">
+        <section className="py-20 bg-gray-50" data-section="features" id="features">
           <div className="max-w-6xl mx-auto space-y-12">
             <div className="text-center space-y-4">
-              <h2 className="text-4xl lg:text-5xl font-bold tracking-tight">
+              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-gray-900">
                 Everything in{' '}
-                <span className="bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">
+                <span className="text-[#1a56db]">
                   one place
                 </span>
               </h2>
-              <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
                 Stop jumping between apps. See all your money at once.
               </p>
             </div>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6">
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
               {/* Money In/Out Flow */}
-              <Card className="bg-gray-900/80 border-gray-700 hover:border-blue-500/50 transition-all duration-300">
+              <Card className="bg-white border-gray-200 shadow-sm hover:shadow-lg hover:border-[#1a56db]/30 transition-all duration-300">
                 <CardHeader className="p-4 md:p-6">
-                  <div className="h-10 w-10 md:h-12 md:w-12 rounded-lg bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center mb-2 md:mb-4">
-                    <ArrowUpDown className="h-5 w-5 md:h-6 md:w-6 text-white" />
+                  <div className="h-10 w-10 md:h-12 md:w-12 rounded-lg bg-blue-100 flex items-center justify-center mb-2 md:mb-4">
+                    <ArrowUpDown className="h-5 w-5 md:h-6 md:w-6 text-[#1a56db]" />
                   </div>
-                  <CardTitle className="text-white text-base md:text-lg">Money In/Out Flow</CardTitle>
-                  <CardDescription className="text-gray-400 text-sm md:text-base">
+                  <CardTitle className="text-gray-900 text-base md:text-lg">Money In/Out Flow</CardTitle>
+                  <CardDescription className="text-gray-600 text-sm md:text-base">
                     Track where your money comes from and where it goes.
                   </CardDescription>
                 </CardHeader>
               </Card>
 
               {/* Recurring Subscriptions */}
-              <Card className="bg-gray-900/80 border-gray-700 hover:border-blue-500/50 transition-all duration-300">
+              <Card className="bg-white border-gray-200 shadow-sm hover:shadow-lg hover:border-purple-300 transition-all duration-300">
                 <CardHeader className="p-4 md:p-6">
-                  <div className="h-10 w-10 md:h-12 md:w-12 rounded-lg bg-gradient-to-br from-purple-500 to-purple-700 flex items-center justify-center mb-2 md:mb-4">
-                    <RefreshCcw className="h-5 w-5 md:h-6 md:w-6 text-white" />
+                  <div className="h-10 w-10 md:h-12 md:w-12 rounded-lg bg-purple-100 flex items-center justify-center mb-2 md:mb-4">
+                    <RefreshCcw className="h-5 w-5 md:h-6 md:w-6 text-purple-600" />
                   </div>
-                  <CardTitle className="text-white">Recurring Subscriptions</CardTitle>
-                  <CardDescription className="text-gray-400">
+                  <CardTitle className="text-gray-900">Recurring Subscriptions</CardTitle>
+                  <CardDescription className="text-gray-600">
                     See all your subscriptions across every account.
                   </CardDescription>
                 </CardHeader>
               </Card>
 
               {/* Investment P&L */}
-              <Card className="bg-gray-900/80 border-gray-700 hover:border-green-500/50 transition-all duration-300">
+              <Card className="bg-white border-gray-200 shadow-sm hover:shadow-lg hover:border-green-300 transition-all duration-300">
                 <CardHeader className="p-4 md:p-6">
-                  <div className="h-10 w-10 md:h-12 md:w-12 rounded-lg bg-gradient-to-br from-green-500 to-green-700 flex items-center justify-center mb-2 md:mb-4">
-                    <TrendingUp className="h-5 w-5 md:h-6 md:w-6 text-white" />
+                  <div className="h-10 w-10 md:h-12 md:w-12 rounded-lg bg-green-100 flex items-center justify-center mb-2 md:mb-4">
+                    <TrendingUp className="h-5 w-5 md:h-6 md:w-6 text-green-600" />
                   </div>
-                  <CardTitle className="text-white text-base md:text-lg">Investment Profit/Loss</CardTitle>
-                  <CardDescription className="text-gray-400 text-sm md:text-base">
+                  <CardTitle className="text-gray-900 text-base md:text-lg">Investment Profit/Loss</CardTitle>
+                  <CardDescription className="text-gray-600 text-sm md:text-base">
                     Full view of gains and losses across all investments.
                   </CardDescription>
                 </CardHeader>
               </Card>
 
               {/* Transaction Review */}
-              <Card className="bg-gray-900/80 border-gray-700 hover:border-cyan-500/50 transition-all duration-300">
+              <Card className="bg-white border-gray-200 shadow-sm hover:shadow-lg hover:border-cyan-300 transition-all duration-300">
                 <CardHeader className="p-4 md:p-6">
-                  <div className="h-10 w-10 md:h-12 md:w-12 rounded-lg bg-gradient-to-br from-cyan-500 to-cyan-700 flex items-center justify-center mb-2 md:mb-4">
-                    <Receipt className="h-5 w-5 md:h-6 md:w-6 text-white" />
+                  <div className="h-10 w-10 md:h-12 md:w-12 rounded-lg bg-cyan-100 flex items-center justify-center mb-2 md:mb-4">
+                    <Receipt className="h-5 w-5 md:h-6 md:w-6 text-cyan-600" />
                   </div>
-                  <CardTitle className="text-white text-base md:text-lg">Transaction History</CardTitle>
-                  <CardDescription className="text-gray-400 text-sm md:text-base">
+                  <CardTitle className="text-gray-900 text-base md:text-lg">Transaction History</CardTitle>
+                  <CardDescription className="text-gray-600 text-sm md:text-base">
                     Browse and analyze every transaction from all accounts.
                   </CardDescription>
                 </CardHeader>
               </Card>
 
               {/* Stock Charts */}
-              <Card className="bg-gray-900/80 border-gray-700 hover:border-blue-500/50 transition-all duration-300">
+              <Card className="bg-white border-gray-200 shadow-sm hover:shadow-lg hover:border-indigo-300 transition-all duration-300">
                 <CardHeader className="p-4 md:p-6">
-                  <div className="h-10 w-10 md:h-12 md:w-12 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-700 flex items-center justify-center mb-2 md:mb-4">
-                    <LineChart className="h-5 w-5 md:h-6 md:w-6 text-white" />
+                  <div className="h-10 w-10 md:h-12 md:w-12 rounded-lg bg-indigo-100 flex items-center justify-center mb-2 md:mb-4">
+                    <LineChart className="h-5 w-5 md:h-6 md:w-6 text-indigo-600" />
                   </div>
-                  <CardTitle className="text-white text-base md:text-lg">Smart Stock Charts</CardTitle>
-                  <CardDescription className="text-gray-400 text-sm md:text-base">
+                  <CardTitle className="text-gray-900 text-base md:text-lg">Smart Stock Charts</CardTitle>
+                  <CardDescription className="text-gray-600 text-sm md:text-base">
                     Make informed investment decisions with detailed charts.
                   </CardDescription>
                 </CardHeader>
               </Card>
 
               {/* Credit Card Utilization */}
-              <Card className="bg-gray-900/80 border-gray-700 hover:border-orange-500/50 transition-all duration-300">
+              <Card className="bg-white border-gray-200 shadow-sm hover:shadow-lg hover:border-orange-300 transition-all duration-300">
                 <CardHeader className="p-4 md:p-6">
-                  <div className="h-10 w-10 md:h-12 md:w-12 rounded-lg bg-gradient-to-br from-orange-500 to-orange-700 flex items-center justify-center mb-2 md:mb-4">
-                    <CreditCard className="h-5 w-5 md:h-6 md:w-6 text-white" />
+                  <div className="h-10 w-10 md:h-12 md:w-12 rounded-lg bg-orange-100 flex items-center justify-center mb-2 md:mb-4">
+                    <CreditCard className="h-5 w-5 md:h-6 md:w-6 text-orange-600" />
                   </div>
-                  <CardTitle className="text-white text-base md:text-lg">Credit Card Management</CardTitle>
-                  <CardDescription className="text-gray-400 text-sm md:text-base">
+                  <CardTitle className="text-gray-900 text-base md:text-lg">Credit Card Management</CardTitle>
+                  <CardDescription className="text-gray-600 text-sm md:text-base">
                     Monitor and manage your credit card utilization.
                   </CardDescription>
                 </CardHeader>
@@ -644,63 +656,63 @@ function Landing() {
         </section>
 
         {/* How It Works Section */}
-        <section className="py-20 bg-gray-900/30" data-section="how-it-works">
+        <section className="py-20 bg-white" data-section="how-it-works">
           <div className="max-w-6xl mx-auto space-y-12">
             <div className="text-center space-y-4">
-              <h2 className="text-4xl lg:text-5xl font-bold tracking-tight text-white">
+              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-gray-900">
                 How it works
               </h2>
-              <p className="text-xl text-gray-300 max-w-2xl mx-auto">
+              <p className="text-xl text-gray-600 max-w-2xl mx-auto">
                 Get started in just 3 minutes.
               </p>
             </div>
 
-            <div className="grid md:grid-cols-3 gap-4 md:gap-8 lg:gap-12">
+            <div className="grid md:grid-cols-5 gap-4 md:gap-8 items-center">
               {/* Step 1 */}
               <div className="relative space-y-3 md:space-y-4 text-center">
                 <div className="flex items-center justify-center mb-4 md:mb-6">
-                  <div className="h-16 w-16 md:h-20 md:w-20 rounded-full bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center">
+                  <div className="h-16 w-16 md:h-20 md:w-20 rounded-full bg-[#1a56db] flex items-center justify-center shadow-lg">
                     <span className="text-2xl md:text-3xl font-bold text-white">1</span>
                   </div>
                 </div>
-                <h3 className="text-xl md:text-2xl font-bold text-white">Connect Your Accounts</h3>
-                <p className="text-gray-400 text-sm md:text-base">
+                <h3 className="text-xl md:text-2xl font-bold text-gray-900">Connect Your Accounts</h3>
+                <p className="text-gray-600 text-sm md:text-base">
                   Connect your accounts in seconds.
                 </p>
               </div>
 
               {/* Arrow */}
               <div className="hidden md:flex items-center justify-center">
-                <ArrowRight className="h-8 w-8 text-blue-400" />
+                <ArrowRight className="h-8 w-8 text-gray-300" />
               </div>
 
               {/* Step 2 */}
               <div className="relative space-y-3 md:space-y-4 text-center">
                 <div className="flex items-center justify-center mb-4 md:mb-6">
-                  <div className="h-16 w-16 md:h-20 md:w-20 rounded-full bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center">
+                  <div className="h-16 w-16 md:h-20 md:w-20 rounded-full bg-[#1a56db] flex items-center justify-center shadow-lg">
                     <span className="text-2xl md:text-3xl font-bold text-white">2</span>
                   </div>
                 </div>
-                <h3 className="text-xl md:text-2xl font-bold text-white">See Everything Unified</h3>
-                <p className="text-gray-400 text-sm md:text-base">
+                <h3 className="text-xl md:text-2xl font-bold text-gray-900">See Everything Unified</h3>
+                <p className="text-gray-600 text-sm md:text-base">
                   See all your money in one place.
                 </p>
               </div>
 
               {/* Arrow */}
               <div className="hidden md:flex items-center justify-center">
-                <ArrowRight className="h-8 w-8 text-blue-400" />
+                <ArrowRight className="h-8 w-8 text-gray-300" />
               </div>
 
               {/* Step 3 */}
               <div className="relative space-y-4 text-center">
                 <div className="flex items-center justify-center mb-6">
-                  <div className="h-20 w-20 rounded-full bg-gradient-to-br from-green-500 to-green-700 flex items-center justify-center">
-                    <span className="text-3xl font-bold text-white">3</span>
+                  <div className="h-16 w-16 md:h-20 md:w-20 rounded-full bg-green-600 flex items-center justify-center shadow-lg">
+                    <span className="text-2xl md:text-3xl font-bold text-white">3</span>
                   </div>
                 </div>
-                <h3 className="text-2xl font-bold text-white">Analyze & Optimize</h3>
-                <p className="text-gray-400">
+                <h3 className="text-xl md:text-2xl font-bold text-gray-900">Analyze & Optimize</h3>
+                <p className="text-gray-600">
                   Make smarter financial decisions with powerful insights.
                 </p>
               </div>
@@ -709,99 +721,99 @@ function Landing() {
         </section>
 
         {/* Dashboard Preview Section */}
-        <section className="py-16 bg-gray-900/50">
+        <section className="py-16 bg-gray-50">
           <div className="max-w-6xl mx-auto">
             <div className="grid lg:grid-cols-2 gap-8 items-center">
               <div className="space-y-4">
-                <div className="text-sm text-blue-400 font-semibold">Dashboard Preview</div>
-                <h3 className="text-2xl font-bold text-white">See Your Complete Financial Picture</h3>
-                <p className="text-gray-300">
+                <div className="text-sm text-[#1a56db] font-semibold">Dashboard Preview</div>
+                <h3 className="text-2xl font-bold text-gray-900">See Your Complete Financial Picture</h3>
+                <p className="text-gray-600">
                   See all your accounts in one place. Track your total worth. Stay on top of your money.
                 </p>
                 <button
                   onClick={() => setDashboardPreviewOpen(true)}
-                  className="relative group cursor-pointer overflow-hidden rounded-lg border border-gray-700 hover:border-blue-500 transition-all duration-300"
+                  className="relative group cursor-pointer overflow-hidden rounded-xl border border-gray-200 shadow-lg hover:shadow-xl hover:border-[#1a56db]/30 transition-all duration-300"
                   data-testid="button-dashboard-preview"
                 >
                   <img 
                     src={dashboardPreview} 
                     alt="Flint Dashboard Preview" 
-                    className="w-full h-auto rounded-lg transition-transform duration-300 group-hover:scale-105"
+                    className="w-full h-auto rounded-xl transition-transform duration-300 group-hover:scale-[1.02]"
                     loading="lazy"
                     decoding="async"
                   />
-                  <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-300 flex items-center justify-center">
-                    <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-blue-600 text-white px-4 py-2 rounded-lg">
+                  <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center rounded-xl">
+                    <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-[#1a56db] text-white px-4 py-2 rounded-lg">
                       Click to enlarge
                     </div>
                   </div>
                 </button>
               </div>
-              <blockquote className="space-y-4">
-                <p className="text-xl italic text-gray-300">
+              <blockquote className="space-y-4 bg-white rounded-xl p-8 border border-gray-200 shadow-sm">
+                <p className="text-xl italic text-gray-700">
                   "Flint is the only place where my banks, cards, and brokerages just… add up."
                 </p>
-                <cite className="text-sm text-gray-400">— Emily T.</cite>
+                <cite className="text-sm text-gray-500">— Emily T.</cite>
               </blockquote>
             </div>
           </div>
         </section>
 
         {/* CTA 6: Free Application Form */}
-        <section id="apply" data-section="apply" className="py-20 bg-gray-900/50">
+        <section id="apply" data-section="apply" className="py-20 bg-white">
           <div className="max-w-2xl mx-auto">
             <div className="text-center space-y-6 mb-12">
-              <h2 className="h2">
-                Try <span className="text-blue-400">Flint for free</span>
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900">
+                Try <span className="text-[#1a56db]">Flint for free</span>
               </h2>
-              <p className="text-xl text-gray-300">
+              <p className="text-xl text-gray-600">
                 Tell us what you want to connect.
               </p>
             </div>
 
             {!formSubmitted ? (
-              <Card className="bg-gray-800 border-gray-700">
+              <Card className="bg-white border-gray-200 shadow-lg">
                 <CardContent className="p-8">
                   <form onSubmit={handleFormSubmit} className="space-y-6">
                     <div className="space-y-2">
-                      <Label htmlFor="firstName" className="text-white">First Name *</Label>
+                      <Label htmlFor="firstName" className="text-gray-700">First Name *</Label>
                       <Input
                         id="firstName"
                         type="text"
                         required
                         value={formData.firstName}
                         onChange={(e) => setFormData({...formData, firstName: e.target.value})}
-                        className="bg-gray-700 border-gray-600 text-white"
+                        className="bg-white border-gray-300 text-gray-900"
                         placeholder="Enter your first name"
                         data-testid="input-first-name"
                       />
                     </div>
                     
                     <div className="space-y-2">
-                      <Label htmlFor="email" className="text-white">Email *</Label>
+                      <Label htmlFor="email" className="text-gray-700">Email *</Label>
                       <Input
                         id="email"
                         type="email"
                         required
                         value={formData.email}
                         onChange={(e) => setFormData({...formData, email: e.target.value})}
-                        className="bg-gray-700 border-gray-600 text-white"
+                        className="bg-white border-gray-300 text-gray-900"
                         placeholder="Enter your email"
                         data-testid="input-email"
                       />
                     </div>
                     
                     <div className="space-y-2">
-                      <Label className="text-white">How many accounts are you looking to connect? *</Label>
+                      <Label className="text-gray-700">How many accounts are you looking to connect? *</Label>
                       <Select
                         value={formData.accountCount}
                         onValueChange={(value) => setFormData({...formData, accountCount: value})}
                         required
                       >
-                        <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
+                        <SelectTrigger className="bg-white border-gray-300 text-gray-900">
                           <SelectValue placeholder="Select number of accounts" />
                         </SelectTrigger>
-                        <SelectContent className="bg-gray-700 border-gray-600">
+                        <SelectContent className="bg-white border-gray-200">
                           <SelectItem value="1">1</SelectItem>
                           <SelectItem value="2">2</SelectItem>
                           <SelectItem value="3">3</SelectItem>
@@ -811,51 +823,51 @@ function Landing() {
                     </div>
                     
                     <div className="space-y-4">
-                      <Label className="text-white">What will you connect? *</Label>
+                      <Label className="text-gray-700">What will you connect? *</Label>
                       <RadioGroup
                         value={formData.connectType}
                         onValueChange={(value) => setFormData({...formData, connectType: value})}
                         className="space-y-3"
                       >
                         <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="banks" id="banks" className="border-gray-600" />
-                          <Label htmlFor="banks" className="text-white cursor-pointer">Banks</Label>
+                          <RadioGroupItem value="banks" id="banks" className="border-gray-300" />
+                          <Label htmlFor="banks" className="text-gray-700 cursor-pointer">Banks</Label>
                         </div>
                         <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="brokerages" id="brokerages" className="border-gray-600" />
-                          <Label htmlFor="brokerages" className="text-white cursor-pointer">Brokerages</Label>
+                          <RadioGroupItem value="brokerages" id="brokerages" className="border-gray-300" />
+                          <Label htmlFor="brokerages" className="text-gray-700 cursor-pointer">Brokerages</Label>
                         </div>
                         <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="both" id="both" className="border-gray-600" />
-                          <Label htmlFor="both" className="text-white cursor-pointer">Both</Label>
+                          <RadioGroupItem value="both" id="both" className="border-gray-300" />
+                          <Label htmlFor="both" className="text-gray-700 cursor-pointer">Both</Label>
                         </div>
                       </RadioGroup>
                     </div>
                     
                     <Button 
                       type="submit" 
-                      className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3"
+                      className="w-full bg-[#1a56db] hover:bg-[#1e40af] text-white py-3"
                       disabled={!formData.firstName || !formData.email || !formData.accountCount || !formData.connectType}
                       data-testid="button-submit-application"
                     >
                       Submit Application
                     </Button>
                     
-                    <p className="text-xs text-gray-400 text-center">
+                    <p className="text-xs text-gray-500 text-center">
                       We'll never sell your data. Privacy policy applies.
                     </p>
                   </form>
                 </CardContent>
               </Card>
             ) : (
-              <Card className="bg-gray-800 border-gray-700">
+              <Card className="bg-white border-gray-200 shadow-lg">
                 <CardContent className="p-8 text-center space-y-6">
                   <div className="text-6xl">✅</div>
-                  <h3 className="text-2xl font-bold text-green-400">Application Submitted!</h3>
-                  <p className="text-gray-300">We'll review your application and email you within 24 hours.</p>
+                  <h3 className="text-2xl font-bold text-green-600">Application Submitted!</h3>
+                  <p className="text-gray-600">We'll review your application and email you within 24 hours.</p>
                   <Button 
                     variant="outline"
-                    className="mt-4"
+                    className="mt-4 border-gray-300 text-gray-700"
                     onClick={() => setFormSubmitted(false)}
                   >
                     Submit Another Application
@@ -867,25 +879,25 @@ function Landing() {
         </section>
 
         {/* Hero Section - CTA 1: Pro Annual */}
-        <section id="annual" data-section="annual" className="grid lg:grid-cols-2 gap-12 py-20 items-center">
+        <section id="annual" data-section="annual" className="grid lg:grid-cols-2 gap-12 py-20 items-center bg-gray-50">
           <div className="space-y-8">
             <div className="space-y-4">
-              <p className="text-xl text-gray-300 leading-relaxed">
-                Or get started right now and <strong>save $80</strong> 
+              <p className="text-xl text-gray-600 leading-relaxed">
+                Or get started right now and <strong className="text-gray-900">save $80</strong> 
                 when you pay yearly for Flint Pro.
               </p>
             </div>
             
             <div className="space-y-6">
               <div className="flex items-baseline space-x-2">
-                <span className="text-5xl font-bold text-white">$399.99</span>
+                <span className="text-5xl font-bold text-gray-900">$399.99</span>
                 <span className="text-lg text-gray-400 line-through">$480</span>
-                <span className="text-lg text-gray-300">/year</span>
+                <span className="text-lg text-gray-600">/year</span>
               </div>
               
               <Button 
                 size="lg" 
-                className="w-full lg:w-auto bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 text-lg"
+                className="w-full lg:w-auto bg-[#1a56db] hover:bg-[#1e40af] text-white px-8 py-4 text-lg"
                 data-cta="annual-pro"
                 data-testid="button-get-pro-yearly"
                 onClick={() => handleCTAClick('pro', 'yearly')}
@@ -893,7 +905,7 @@ function Landing() {
                 Start with Pro Annual – $399.99
               </Button>
               
-              <p className="text-sm text-gray-400">
+              <p className="text-sm text-gray-500">
                 Founding Member pricing. Renews at same rate if you keep your plan.
               </p>
             </div>
@@ -902,19 +914,19 @@ function Landing() {
           {/* Trust badges */}
           <div className="space-y-8">
             <div className="grid grid-cols-1 gap-6">
-              <Card className="bg-gray-900 border-gray-700">
+              <Card className="bg-white border-gray-200 shadow-sm">
                 <CardContent className="p-6">
                   <div className="flex items-center space-x-3 mb-4">
-                    <Shield className="h-6 w-6 text-green-400" />
-                    <span className="font-semibold">Bank-grade encryption</span>
+                    <Shield className="h-6 w-6 text-green-600" />
+                    <span className="font-semibold text-gray-900">Bank-grade encryption</span>
                   </div>
                   <div className="flex items-center space-x-3 mb-4">
-                    <Building className="h-6 w-6 text-blue-400" />
-                    <span className="font-semibold">Trusted financial infrastructure</span>
+                    <Building className="h-6 w-6 text-[#1a56db]" />
+                    <span className="font-semibold text-gray-900">Trusted financial infrastructure</span>
                   </div>
                   <div className="flex items-center space-x-3">
-                    <Lock className="h-6 w-6 text-blue-400" />
-                    <span className="font-semibold">No ads or selling data</span>
+                    <Lock className="h-6 w-6 text-[#1a56db]" />
+                    <span className="font-semibold text-gray-900">No ads or selling data</span>
                   </div>
                 </CardContent>
               </Card>
@@ -924,20 +936,20 @@ function Landing() {
 
         {/* Social Proof Block #1 - Hidden for 24 hours, will auto-show after Oct 22, 2025 01:05 UTC */}
         {Date.now() >= SHOW_SOCIAL_PROOF_AFTER && (
-          <section className="py-16 border-y border-gray-800">
+          <section className="py-16 border-y border-gray-200 bg-white">
             <div className="max-w-4xl mx-auto text-center space-y-6">
               <div className="flex items-center justify-center space-x-2">
                 <div className="flex -space-x-2">
-                  <img src={avatar1} alt="User avatar" className="w-10 h-10 rounded-full border-2 border-black object-cover" loading="lazy" decoding="async" />
-                  <img src={avatar2} alt="User avatar" className="w-10 h-10 rounded-full border-2 border-black object-cover" loading="lazy" decoding="async" />
-                  <img src={avatar3} alt="User avatar" className="w-10 h-10 rounded-full border-2 border-black object-cover" loading="lazy" decoding="async" />
-                  <img src={avatar4} alt="User avatar" className="w-10 h-10 rounded-full border-2 border-black object-cover" loading="lazy" decoding="async" />
-                  <img src={avatar5} alt="User avatar" className="w-10 h-10 rounded-full border-2 border-black object-cover" loading="lazy" decoding="async" />
+                  <img src={avatar1} alt="User avatar" className="w-10 h-10 rounded-full border-2 border-white object-cover shadow-sm" loading="lazy" decoding="async" />
+                  <img src={avatar2} alt="User avatar" className="w-10 h-10 rounded-full border-2 border-white object-cover shadow-sm" loading="lazy" decoding="async" />
+                  <img src={avatar3} alt="User avatar" className="w-10 h-10 rounded-full border-2 border-white object-cover shadow-sm" loading="lazy" decoding="async" />
+                  <img src={avatar4} alt="User avatar" className="w-10 h-10 rounded-full border-2 border-white object-cover shadow-sm" loading="lazy" decoding="async" />
+                  <img src={avatar5} alt="User avatar" className="w-10 h-10 rounded-full border-2 border-white object-cover shadow-sm" loading="lazy" decoding="async" />
                 </div>
-                <span className="text-lg font-semibold">2,847+ users</span>
+                <span className="text-lg font-semibold text-gray-900">2,847+ users</span>
               </div>
-              <p className="text-xl text-gray-300 leading-relaxed">
-                Over <strong>2,847 users</strong> already upgraded Flint and are managing 12+ accounts, 
+              <p className="text-xl text-gray-600 leading-relaxed">
+                Over <strong className="text-gray-900">2,847 users</strong> already upgraded Flint and are managing 12+ accounts, 
                 paying off credit cards faster, and cutting hours of financial stress each week.
               </p>
             </div>
@@ -973,18 +985,18 @@ function Landing() {
         </Dialog>
 
         {/* Social Proof Block #3 - Savings Chart */}
-        <section className="py-16 bg-gray-900/30">
+        <section className="py-16 bg-white">
           <div className="max-w-5xl mx-auto text-center space-y-8">
             <div className="space-y-3">
-              <h3 className="text-2xl font-bold text-white">Total Savings Over Time</h3>
-              <p className="text-xl text-gray-300">
-                Flint Basic users save on average <strong className="text-green-400">$127/month</strong> by tracking 
+              <h3 className="text-2xl font-bold text-gray-900">Total Savings Over Time</h3>
+              <p className="text-xl text-gray-600">
+                Flint Basic users save on average <strong className="text-green-600">$127/month</strong> by tracking 
                 subscriptions and reducing hidden fees.
               </p>
             </div>
             
             {/* Cumulative Savings Bar Chart */}
-            <div className="bg-gray-800/50 rounded-xl p-8 border border-gray-700">
+            <div className="bg-gray-50 rounded-xl p-8 border border-gray-200 shadow-sm">
               <div className="space-y-6">
                 <div className="relative flex items-end justify-center gap-2 h-80">
                   {/* SVG Line Overlay */}
@@ -1020,20 +1032,20 @@ function Landing() {
                           />
                         </div>
                         {/* Value Label Below Bar */}
-                        <div className="text-base font-bold text-white">
+                        <div className="text-base font-bold text-gray-900">
                           {bar.label}
                         </div>
-                        <span className="text-sm text-gray-400 font-medium">{bar.month}</span>
+                        <span className="text-sm text-gray-500 font-medium">{bar.month}</span>
                       </div>
                     );
                   })}
                 </div>
                 
                 {/* Chart Legend */}
-                <div className="flex items-center justify-center gap-6 pt-4 border-t border-gray-700">
+                <div className="flex items-center justify-center gap-6 pt-4 border-t border-gray-200">
                   <div className="flex items-center gap-2">
                     <div className="w-4 h-4 bg-gradient-to-t from-blue-600 to-cyan-400 rounded"></div>
-                    <span className="text-sm text-gray-400">Total Saved</span>
+                    <span className="text-sm text-gray-500">Total Saved</span>
                   </div>
                 </div>
               </div>
@@ -1042,24 +1054,24 @@ function Landing() {
         </section>
 
         {/* CTA 4: Monthly Pricing Options */}
-        <section id="monthly" data-section="monthly" className="py-20 bg-gray-900/30">
+        <section id="pricing" data-section="monthly" className="py-20 bg-gray-50">
           <div className="max-w-6xl mx-auto space-y-12">
             <div className="text-center space-y-6">
-              <h2 className="text-4xl lg:text-5xl font-bold">
-                Choose your <span className="text-blue-400">plan</span>
+              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900">
+                Choose your <span className="text-[#1a56db]">plan</span>
               </h2>
               
               {/* Monthly/Yearly Toggle */}
               <div className="flex items-center justify-center space-x-4">
-                <span className={`text-lg ${!isYearly ? 'text-white font-semibold' : 'text-gray-400'}`}>
+                <span className={`text-lg ${!isYearly ? 'text-gray-900 font-semibold' : 'text-gray-400'}`}>
                   Monthly
                 </span>
                 <Switch 
                   checked={isYearly} 
                   onCheckedChange={setIsYearly}
-                  className="data-[state=checked]:bg-blue-600 data-[state=unchecked]:bg-gray-600 border-2 border-gray-500"
+                  className="data-[state=checked]:bg-[#1a56db] data-[state=unchecked]:bg-gray-300"
                 />
-                <span className={`text-lg ${isYearly ? 'text-white font-semibold' : 'text-gray-400'}`}>
+                <span className={`text-lg ${isYearly ? 'text-gray-900 font-semibold' : 'text-gray-400'}`}>
                   Yearly
                 </span>
                 {isYearly && (
@@ -1071,24 +1083,24 @@ function Landing() {
             {/* Pricing Cards */}
             <div className="grid md:grid-cols-3 gap-8">
               {/* Free */}
-              <Card className="bg-gray-800 border-gray-700">
+              <Card className="bg-white border-gray-200 shadow-sm">
                 <CardHeader className="text-center space-y-4">
-                  <CardTitle className="text-2xl">Flint Free</CardTitle>
+                  <CardTitle className="text-2xl text-gray-900">Flint Free</CardTitle>
                   <div className="space-y-2">
-                    <div className="text-4xl font-bold">
+                    <div className="text-4xl font-bold text-gray-900">
                       $0
                     </div>
-                    <div className="text-gray-400">
+                    <div className="text-gray-500">
                       forever
                     </div>
                   </div>
-                  <CardDescription className="text-gray-300">
+                  <CardDescription className="text-gray-600">
                     Perfect for getting started with your financial overview.
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="text-center">
                   <Button 
-                    className="w-full bg-gray-700 hover:bg-gray-600 text-white"
+                    className="w-full bg-gray-100 hover:bg-gray-200 text-gray-900 border border-gray-300"
                     data-cta="free"
                     onClick={() => {
                       document.getElementById('apply')?.scrollIntoView({ behavior: 'smooth' });
@@ -1100,27 +1112,27 @@ function Landing() {
               </Card>
               
               {/* Basic - Most Popular */}
-              <Card className="bg-blue-900 border-blue-600 relative">
-                <Badge className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-yellow-500 text-black">
-                  ⭐ Most Popular
+              <Card className="bg-[#1a56db] border-[#1a56db] relative shadow-lg">
+                <Badge className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-yellow-400 text-gray-900">
+                  Most Popular
                 </Badge>
                 <CardHeader className="text-center space-y-4 pt-8">
-                  <CardTitle className="text-2xl">Flint Basic</CardTitle>
+                  <CardTitle className="text-2xl text-white">Flint Basic</CardTitle>
                   <div className="space-y-2">
-                    <div className="text-4xl font-bold">
+                    <div className="text-4xl font-bold text-white">
                       ${isYearly ? '16.67' : '19.99'}
                     </div>
-                    <div className="text-gray-300">
+                    <div className="text-blue-100">
                       {isYearly ? '/mo (billed $199.99/year)' : '/month'}
                     </div>
                   </div>
-                  <CardDescription className="text-gray-300">
+                  <CardDescription className="text-blue-100">
                     Best for managing unlimited accounts and subscriptions.
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="text-center">
                   <Button 
-                    className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                    className="w-full bg-white hover:bg-gray-100 text-[#1a56db] font-semibold"
                     data-cta={isYearly ? 'basic-yearly' : 'basic-monthly'}
                     data-testid={isYearly ? 'button-get-basic-yearly' : 'button-get-basic'}
                     onClick={() => handleCTAClick('basic', isYearly ? 'yearly' : 'monthly')}
@@ -1131,24 +1143,24 @@ function Landing() {
               </Card>
               
               {/* Pro */}
-              <Card className="bg-gray-800 border-gray-700">
+              <Card className="bg-white border-gray-200 shadow-sm">
                 <CardHeader className="text-center space-y-4">
-                  <CardTitle className="text-2xl">Flint Pro</CardTitle>
+                  <CardTitle className="text-2xl text-gray-900">Flint Pro</CardTitle>
                   <div className="space-y-2">
-                    <div className="text-4xl font-bold">
+                    <div className="text-4xl font-bold text-gray-900">
                       ${isYearly ? '33.33' : '39.99'}
                     </div>
-                    <div className="text-gray-400">
+                    <div className="text-gray-500">
                       {isYearly ? '/mo (billed $399.99/year)' : '/month'}
                     </div>
                   </div>
-                  <CardDescription className="text-gray-300">
+                  <CardDescription className="text-gray-600">
                     Complete control with advanced analytics and automation features.
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="text-center">
                   <Button 
-                    className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                    className="w-full bg-[#1a56db] hover:bg-[#1e40af] text-white"
                     data-cta={isYearly ? 'pro-yearly' : 'pro-monthly'}
                     data-testid={isYearly ? 'button-get-pro-yearly' : 'button-get-pro'}
                     onClick={() => handleCTAClick('pro', isYearly ? 'yearly' : 'monthly')}
@@ -1160,7 +1172,7 @@ function Landing() {
             </div>
             
             <div className="text-center space-y-2">
-              <Badge variant="outline" className="border-yellow-500 text-yellow-400">
+              <Badge variant="outline" className="border-[#1a56db] text-[#1a56db]">
                 Founding Member Pricing — lock this in before new features launch
               </Badge>
             </div>
@@ -1168,11 +1180,11 @@ function Landing() {
         </section>
 
         {/* Feature Comparison Table */}
-        <section id="feature-comparison" data-section="feature-comparison" className="py-20">
+        <section id="feature-comparison" data-section="feature-comparison" className="py-20 bg-white">
           <div className="max-w-6xl mx-auto">
-            <Card className="bg-gray-800 border-gray-700">
+            <Card className="bg-white border-gray-200 shadow-sm">
               <CardHeader>
-                <CardTitle className="text-2xl font-semibold text-white text-center">
+                <CardTitle className="text-2xl font-semibold text-gray-900 text-center">
                   Feature Comparison
                 </CardTitle>
               </CardHeader>
@@ -1180,91 +1192,91 @@ function Landing() {
                 <div className="overflow-x-auto">
                   <table className="w-full" data-testid="table-feature-comparison">
                     <thead>
-                      <tr className="border-b border-gray-700">
-                        <th className="text-left py-3 text-gray-400">Feature</th>
-                        <th className="text-center py-3 text-gray-400">Free</th>
-                        <th className="text-center py-3 text-gray-400">Basic</th>
-                        <th className="text-center py-3 text-gray-400">Pro</th>
+                      <tr className="border-b border-gray-200">
+                        <th className="text-left py-3 text-gray-500">Feature</th>
+                        <th className="text-center py-3 text-gray-500">Free</th>
+                        <th className="text-center py-3 text-gray-500">Basic</th>
+                        <th className="text-center py-3 text-gray-500">Pro</th>
                       </tr>
                     </thead>
                     <tbody>
-                      <tr className="border-b border-gray-800">
-                        <td className="py-3 text-white">Account Connections</td>
-                        <td className="text-center py-3 text-gray-400">4</td>
-                        <td className="text-center py-3 text-gray-400">Unlimited</td>
-                        <td className="text-center py-3 text-gray-400">Unlimited</td>
+                      <tr className="border-b border-gray-100">
+                        <td className="py-3 text-gray-900">Account Connections</td>
+                        <td className="text-center py-3 text-gray-600">4</td>
+                        <td className="text-center py-3 text-gray-600">Unlimited</td>
+                        <td className="text-center py-3 text-gray-600">Unlimited</td>
                       </tr>
-                      <tr className="border-b border-gray-800">
-                        <td className="py-3 text-white">Money In/Out Flow</td>
+                      <tr className="border-b border-gray-100">
+                        <td className="py-3 text-gray-900">Money In/Out Flow</td>
                         <td className="text-center py-3">
-                          <Check className="h-5 w-5 text-green-500 mx-auto" />
+                          <Check className="h-5 w-5 text-green-600 mx-auto" />
                         </td>
                         <td className="text-center py-3">
-                          <Check className="h-5 w-5 text-green-500 mx-auto" />
+                          <Check className="h-5 w-5 text-green-600 mx-auto" />
                         </td>
                         <td className="text-center py-3">
-                          <Check className="h-5 w-5 text-green-500 mx-auto" />
-                        </td>
-                      </tr>
-                      <tr className="border-b border-gray-800">
-                        <td className="py-3 text-white">Dashboard & Transaction History</td>
-                        <td className="text-center py-3">
-                          <Check className="h-5 w-5 text-green-500 mx-auto" />
-                        </td>
-                        <td className="text-center py-3">
-                          <Check className="h-5 w-5 text-green-500 mx-auto" />
-                        </td>
-                        <td className="text-center py-3">
-                          <Check className="h-5 w-5 text-green-500 mx-auto" />
+                          <Check className="h-5 w-5 text-green-600 mx-auto" />
                         </td>
                       </tr>
-                      <tr className="border-b border-gray-800">
-                        <td className="py-3 text-white">Recurring Subscription Management</td>
-                        <td className="text-center py-3 text-gray-600">-</td>
+                      <tr className="border-b border-gray-100">
+                        <td className="py-3 text-gray-900">Dashboard & Transaction History</td>
                         <td className="text-center py-3">
-                          <Check className="h-5 w-5 text-green-500 mx-auto" />
+                          <Check className="h-5 w-5 text-green-600 mx-auto" />
                         </td>
                         <td className="text-center py-3">
-                          <Check className="h-5 w-5 text-green-500 mx-auto" />
-                        </td>
-                      </tr>
-                      <tr className="border-b border-gray-800">
-                        <td className="py-3 text-white">Credit Card Management</td>
-                        <td className="text-center py-3 text-gray-600">-</td>
-                        <td className="text-center py-3">
-                          <Check className="h-5 w-5 text-green-500 mx-auto" />
+                          <Check className="h-5 w-5 text-green-600 mx-auto" />
                         </td>
                         <td className="text-center py-3">
-                          <Check className="h-5 w-5 text-green-500 mx-auto" />
+                          <Check className="h-5 w-5 text-green-600 mx-auto" />
                         </td>
                       </tr>
-                      <tr className="border-b border-gray-800">
-                        <td className="py-3 text-white">Stock Charts (Coming Soon)</td>
-                        <td className="text-center py-3 text-gray-600">-</td>
+                      <tr className="border-b border-gray-100">
+                        <td className="py-3 text-gray-900">Recurring Subscription Management</td>
+                        <td className="text-center py-3 text-gray-400">-</td>
                         <td className="text-center py-3">
-                          <Check className="h-5 w-5 text-green-500 mx-auto" />
+                          <Check className="h-5 w-5 text-green-600 mx-auto" />
                         </td>
                         <td className="text-center py-3">
-                          <Check className="h-5 w-5 text-green-500 mx-auto" />
+                          <Check className="h-5 w-5 text-green-600 mx-auto" />
+                        </td>
+                      </tr>
+                      <tr className="border-b border-gray-100">
+                        <td className="py-3 text-gray-900">Credit Card Management</td>
+                        <td className="text-center py-3 text-gray-400">-</td>
+                        <td className="text-center py-3">
+                          <Check className="h-5 w-5 text-green-600 mx-auto" />
+                        </td>
+                        <td className="text-center py-3">
+                          <Check className="h-5 w-5 text-green-600 mx-auto" />
+                        </td>
+                      </tr>
+                      <tr className="border-b border-gray-100">
+                        <td className="py-3 text-gray-900">Stock Charts (Coming Soon)</td>
+                        <td className="text-center py-3 text-gray-400">-</td>
+                        <td className="text-center py-3">
+                          <Check className="h-5 w-5 text-green-600 mx-auto" />
+                        </td>
+                        <td className="text-center py-3">
+                          <Check className="h-5 w-5 text-green-600 mx-auto" />
                         </td>
                       </tr>
                       {SHOW_TRADING_FEATURES && (
-                        <tr className="border-b border-gray-800">
-                          <td className="py-3 text-white">Trading (Coming Soon)</td>
-                          <td className="text-center py-3 text-gray-600">-</td>
-                          <td className="text-center py-3 text-gray-600">-</td>
+                        <tr className="border-b border-gray-100">
+                          <td className="py-3 text-gray-900">Trading (Coming Soon)</td>
+                          <td className="text-center py-3 text-gray-400">-</td>
+                          <td className="text-center py-3 text-gray-400">-</td>
                           <td className="text-center py-3">
-                            <Check className="h-5 w-5 text-green-500 mx-auto" />
+                            <Check className="h-5 w-5 text-green-600 mx-auto" />
                           </td>
                         </tr>
                       )}
                       {SHOW_TRADING_FEATURES && (
                         <tr>
-                          <td className="py-3 text-white">Transfer Funds (Coming Soon)</td>
-                          <td className="text-center py-3 text-gray-600">-</td>
-                          <td className="text-center py-3 text-gray-600">-</td>
+                          <td className="py-3 text-gray-900">Transfer Funds (Coming Soon)</td>
+                          <td className="text-center py-3 text-gray-400">-</td>
+                          <td className="text-center py-3 text-gray-400">-</td>
                           <td className="text-center py-3">
-                            <Check className="h-5 w-5 text-green-500 mx-auto" />
+                            <Check className="h-5 w-5 text-green-600 mx-auto" />
                           </td>
                         </tr>
                       )}
@@ -1277,81 +1289,81 @@ function Landing() {
         </section>
 
         {/* FAQ Section */}
-        <section id="faq" data-section="faq" className="py-20">
+        <section id="faq" data-section="faq" className="py-20 bg-gray-50">
           <div className="max-w-3xl mx-auto">
             <div className="text-center space-y-4 mb-12">
-              <h2 className="text-3xl lg:text-4xl font-bold text-white">
+              <h2 className="text-3xl lg:text-4xl font-bold text-gray-900">
                 Frequently Asked Questions
               </h2>
-              <p className="text-xl text-gray-300">
+              <p className="text-xl text-gray-600">
                 Everything you need to know about Flint
               </p>
             </div>
 
-            <Card className="bg-gray-800 border-gray-700">
+            <Card className="bg-white border-gray-200 shadow-sm">
               <CardContent className="p-6">
                 <Accordion type="single" collapsible className="w-full">
-                  <AccordionItem value="item-1" className="border-gray-700">
-                    <AccordionTrigger className="text-white hover:text-blue-400">
+                  <AccordionItem value="item-1" className="border-gray-200">
+                    <AccordionTrigger className="text-gray-900 hover:text-[#1a56db]">
                       Is my financial data secure?
                     </AccordionTrigger>
-                    <AccordionContent className="text-gray-300">
+                    <AccordionContent className="text-gray-600">
                       Yes! We use bank-level encryption to protect your data. We never store your bank login credentials - we use secure, read-only connections through industry-standard providers. Your information is encrypted both in transit and at rest.
                     </AccordionContent>
                   </AccordionItem>
 
-                  <AccordionItem value="item-2" className="border-gray-700">
-                    <AccordionTrigger className="text-white hover:text-blue-400">
+                  <AccordionItem value="item-2" className="border-gray-200">
+                    <AccordionTrigger className="text-gray-900 hover:text-[#1a56db]">
                       How many accounts can I connect?
                     </AccordionTrigger>
-                    <AccordionContent className="text-gray-300">
+                    <AccordionContent className="text-gray-600">
                       It depends on your plan. Free allows 4 connections, while Basic and Pro both offer unlimited account connections. You can connect banks, credit cards, investment accounts, and crypto wallets.
                     </AccordionContent>
                   </AccordionItem>
 
-                  <AccordionItem value="item-3" className="border-gray-700">
-                    <AccordionTrigger className="text-white hover:text-blue-400">
+                  <AccordionItem value="item-3" className="border-gray-200">
+                    <AccordionTrigger className="text-gray-900 hover:text-[#1a56db]">
                       Can I cancel my monthly subscription anytime?
                     </AccordionTrigger>
-                    <AccordionContent className="text-gray-300">
+                    <AccordionContent className="text-gray-600">
                       Absolutely. You can cancel your monthly subscription at any time from your account settings with no cancellation fees. If you have a yearly subscription, you can cancel anytime, but we cannot provide refunds for the unused portion of your annual plan.
                     </AccordionContent>
                   </AccordionItem>
 
-                  <AccordionItem value="item-4" className="border-gray-700">
-                    <AccordionTrigger className="text-white hover:text-blue-400">
+                  <AccordionItem value="item-4" className="border-gray-200">
+                    <AccordionTrigger className="text-gray-900 hover:text-[#1a56db]">
                       What banks and brokerages do you support?
                     </AccordionTrigger>
-                    <AccordionContent className="text-gray-300">
+                    <AccordionContent className="text-gray-600">
                       We support over 12,000 financial institutions including Chase, Bank of America, Fidelity, Schwab, Robinhood, Coinbase, and many more. Most major US banks, credit unions, brokerages, and crypto exchanges are supported.
                     </AccordionContent>
                   </AccordionItem>
 
                   {SHOW_TRADING_FEATURES && (
-                    <AccordionItem value="item-5" className="border-gray-700">
-                      <AccordionTrigger className="text-white hover:text-blue-400">
+                    <AccordionItem value="item-5" className="border-gray-200">
+                      <AccordionTrigger className="text-gray-900 hover:text-[#1a56db]">
                         How does trading work?
                       </AccordionTrigger>
-                      <AccordionContent className="text-gray-300">
+                      <AccordionContent className="text-gray-600">
                         With the Pro plan, you can buy and sell stocks directly through your connected brokerage accounts. We provide real-time quotes, market data, and a simple trading interface. Trading is available for only supported brokerages.
                       </AccordionContent>
                     </AccordionItem>
                   )}
 
-                  <AccordionItem value="item-6" className="border-gray-700">
-                    <AccordionTrigger className="text-white hover:text-blue-400">
+                  <AccordionItem value="item-6" className="border-gray-200">
+                    <AccordionTrigger className="text-gray-900 hover:text-[#1a56db]">
                       Is there a free plan?
                     </AccordionTrigger>
-                    <AccordionContent className="text-gray-300">
+                    <AccordionContent className="text-gray-600">
                       Yes! Flint Free allows you to connect up to 4 accounts and includes money flow tracking, dashboard, and transaction history at no cost. It's a great way to get started with Flint.
                     </AccordionContent>
                   </AccordionItem>
 
-                  <AccordionItem value="item-7" className="border-gray-700 border-b-0">
-                    <AccordionTrigger className="text-white hover:text-blue-400">
+                  <AccordionItem value="item-7" className="border-gray-200 border-b-0">
+                    <AccordionTrigger className="text-gray-900 hover:text-[#1a56db]">
                       What's the difference between the plans?
                     </AccordionTrigger>
-                    <AccordionContent className="text-gray-300">
+                    <AccordionContent className="text-gray-600">
                       Free (4 connections) includes money flow tracking, dashboard, and transaction history. Basic (unlimited connections) adds recurring subscriptions, credit card management, and stock charts. Pro (unlimited connections) includes everything in Basic plus advanced analytics and automation features.
                     </AccordionContent>
                   </AccordionItem>
@@ -1364,55 +1376,50 @@ function Landing() {
       </main>
 
       {/* Legal Footer */}
-      <footer 
-        className="mt-20 border-t border-gray-700 relative z-10"
-        style={{ background: 'var(--surface-glass)', backdropFilter: 'blur(16px) saturate(140%)' }}
-      >
+      <footer className="mt-20 border-t border-gray-200 bg-white relative z-10">
         <div className="mx-auto max-w-7xl px-4 py-12 lg:px-8">
           <div className="grid md:grid-cols-4 gap-8">
             <div className="space-y-4">
               <div className="flex items-center space-x-2">
-                <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                  <span className="text-white font-bold text-lg">F</span>
-                </div>
-                <span className="text-white font-bold text-xl">Flint</span>
+                <img src={flintLogo} alt="Flint Logo" className="h-8 w-auto" />
+                <span className="text-gray-900 font-bold text-xl">Flint</span>
               </div>
-              <p className="text-gray-300 text-sm max-w-md">
+              <p className="text-gray-600 text-sm max-w-md">
                 Connect all your financial accounts in one secure platform. 
                 Take control of your money with bank-grade security.
               </p>
             </div>
             
             <div className="space-y-4">
-              <h4 className="text-white font-semibold">Product</h4>
+              <h4 className="text-gray-900 font-semibold">Product</h4>
               <div className="flex flex-col gap-2 text-sm">
-                <Link href="/banking" className="text-gray-300 hover:text-blue-400 transition-colors">Bank Account Tracker</Link>
-                <Link href="/investing" className="text-gray-300 hover:text-blue-400 transition-colors">Stock Portfolio Tracker</Link>
-                <Link href="/crypto" className="text-gray-300 hover:text-blue-400 transition-colors">Crypto Portfolio Tracker</Link>
-                <Link href="/blog" className="text-gray-300 hover:text-blue-400 transition-colors">Blog</Link>
+                <Link href="/banking" className="text-gray-600 hover:text-[#1a56db] transition-colors">Bank Account Tracker</Link>
+                <Link href="/investing" className="text-gray-600 hover:text-[#1a56db] transition-colors">Stock Portfolio Tracker</Link>
+                <Link href="/crypto" className="text-gray-600 hover:text-[#1a56db] transition-colors">Crypto Portfolio Tracker</Link>
+                <Link href="/blog" className="text-gray-600 hover:text-[#1a56db] transition-colors">Blog</Link>
               </div>
             </div>
             
             <div className="space-y-4">
-              <h4 className="text-white font-semibold">Account</h4>
+              <h4 className="text-gray-900 font-semibold">Account</h4>
               <div className="flex flex-col gap-2 text-sm">
-                <Link href="/login" className="text-gray-300 hover:text-blue-400 transition-colors">Log In</Link>
-                <Link href="/reset-password" className="text-gray-300 hover:text-blue-400 transition-colors">Reset Password</Link>
+                <Link href="/login" className="text-gray-600 hover:text-[#1a56db] transition-colors">Log In</Link>
+                <Link href="/reset-password" className="text-gray-600 hover:text-[#1a56db] transition-colors">Reset Password</Link>
               </div>
             </div>
             
             <div className="space-y-4">
-              <h4 className="text-white font-semibold">Legal</h4>
+              <h4 className="text-gray-900 font-semibold">Legal</h4>
               <div className="flex flex-col gap-2 text-sm">
-                <a href="/tos" className="text-gray-300 hover:text-blue-400 transition-colors">Terms of Service</a>
-                <a href="/privacy-policy" className="text-gray-300 hover:text-blue-400 transition-colors">Privacy Policy</a>
-                <a href="mailto:support@flint-investing.com" className="text-blue-400 hover:text-blue-300 transition-colors">support@flint-investing.com</a>
+                <a href="/tos" className="text-gray-600 hover:text-[#1a56db] transition-colors">Terms of Service</a>
+                <a href="/privacy-policy" className="text-gray-600 hover:text-[#1a56db] transition-colors">Privacy Policy</a>
+                <a href="mailto:support@flint-investing.com" className="text-[#1a56db] hover:text-[#1e40af] transition-colors">support@flint-investing.com</a>
               </div>
             </div>
           </div>
           
-          <div className="border-t border-gray-700 pt-8 mt-8">
-            <p className="text-sm text-gray-300 text-center">
+          <div className="border-t border-gray-200 pt-8 mt-8">
+            <p className="text-sm text-gray-500 text-center">
               &copy; 2025 Flint Tech Inc. All rights reserved.
             </p>
           </div>
