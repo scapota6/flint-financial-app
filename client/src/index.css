@@ -315,7 +315,6 @@ img {
   font-size: 0.875rem; /* 14px */
   font-weight: 400;
   line-height: 1.4;
-  opacity: 0.7;
 }
 
 /* Apple Layout System - Optimized for screen utilization */
@@ -428,16 +427,16 @@ img {
   --sell-color: #ef4444;  /* Red */
   --warning-color: #FFD60A; /* Apple yellow */
   
-  /* Shadcn theme variables - Light mode */
+  /* Shadcn theme variables - Light mode (Cream theme) */
   --background: 0 0% 100%;    /* white */
   --foreground: 0 0% 10%;     /* dark text */
-  --card: 0 0% 96%;           /* light gray */
+  --card: 0 0% 100%;          /* white cards */
   --card-foreground: 0 0% 10%;
   --popover: 0 0% 100%;
   --popover-foreground: 0 0% 10%;
   --primary: 211 100% 52%;    /* Apple blue #0A84FF */
   --primary-foreground: 0 0% 100%;
-  --secondary: 0 0% 96%;
+  --secondary: 0 0% 100%;     /* white */
   --secondary-foreground: 0 0% 10%;
   --muted: 0 0% 96%;
   --muted-foreground: 0 0% 40%;
