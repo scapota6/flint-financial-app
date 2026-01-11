@@ -81,7 +81,7 @@ export default function QuickTrade() {
                 </div>
                 <Button
                   onClick={() => handleTradeClick(trade)}
-                  className="bg-gray-900 hover:bg-gray-800 text-white px-4 py-2 rounded-lg text-sm font-medium"
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium"
                 >
                   Buy
                 </Button>

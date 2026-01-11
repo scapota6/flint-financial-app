@@ -125,7 +125,7 @@ export default function ConnectedAccounts({
             <Button 
               onClick={handleConnectBank}
               disabled={loadingConnect === 'bank'}
-              className="btn-standard flex-1 bg-gray-900 hover:bg-gray-800 text-white"
+              className="btn-standard flex-1 bg-blue-600 hover:bg-blue-700 text-white"
             >
               {loadingConnect === 'bank' ? (
                 <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -140,7 +140,7 @@ export default function ConnectedAccounts({
             <Button 
               onClick={handleConnectBrokerage}
               disabled={loadingConnect === 'brokerage'}
-              className="btn-standard flex-1 bg-gray-900 hover:bg-gray-800 text-white"
+              className="btn-standard flex-1 bg-blue-600 hover:bg-blue-700 text-white"
             >
               {loadingConnect === 'brokerage' ? (
                 <Loader2 className="h-4 w-4 mr-2 animate-spin" />

@@ -46,7 +46,6 @@ export function FloatingHeader({ variant = 'authenticated', onSignupClick }: Flo
     return [
       { label: 'Dashboard', href: '/dashboard', comingSoon: false },
       { label: 'Analytics', href: '/analytics', comingSoon: false },
-      { label: 'Portfolio', href: '/portfolio', comingSoon: false },
       { label: 'Accounts', href: '/accounts', comingSoon: false },
     ];
   }, []);
@@ -86,16 +85,16 @@ export function FloatingHeader({ variant = 'authenticated', onSignupClick }: Flo
     <header
       className={cn(
         'fixed top-5 left-0 right-0 z-50',
-        'mx-auto w-full max-w-5xl rounded-xl border border-gray-800 shadow-2xl',
-        'bg-[#1a1a1a]/95 supports-[backdrop-filter]:bg-[#1a1a1a]/80 backdrop-blur-lg',
+        'mx-auto w-full max-w-5xl rounded-xl border border-gray-200 shadow-sm',
+        'bg-white supports-[backdrop-filter]:bg-white/95 backdrop-blur-lg',
       )}
     >
       <nav className="mx-auto flex items-center justify-between p-2">
         {/* Logo */}
         <Link href={variant === 'landing' ? '/' : '/dashboard'}>
-          <div className="hover:bg-gray-800/50 flex cursor-pointer items-center gap-2 rounded-md px-3 py-1.5 duration-100">
+          <div className="hover:bg-gray-100 flex cursor-pointer items-center gap-2 rounded-md px-3 py-1.5 duration-100">
             <img src={flintLogo} alt="Flint" className="h-7 w-auto" />
-            <span className="font-semibold text-sm">Flint</span>
+            <span className="font-semibold text-sm text-gray-900">Flint</span>
           </div>
         </Link>
 
@@ -122,7 +121,7 @@ export function FloatingHeader({ variant = 'authenticated', onSignupClick }: Flo
                   onClick={() => handleSectionScroll(sectionId)}
                   className={cn(
                     buttonVariants({ variant: 'ghost', size: 'sm' }),
-                    'text-gray-300 hover:text-white'
+                    'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
                   )}
                 >
                   {link.label}
@@ -137,8 +136,8 @@ export function FloatingHeader({ variant = 'authenticated', onSignupClick }: Flo
                   className={cn(
                     buttonVariants({ variant: 'ghost', size: 'sm' }),
                     isActiveLink(link.href)
-                      ? 'text-white bg-blue-600/20'
-                      : 'text-gray-300 hover:text-white'
+                      ? 'text-gray-900 bg-gray-100'
+                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
                   )}
                 >
                   {link.label}
@@ -154,7 +153,7 @@ export function FloatingHeader({ variant = 'authenticated', onSignupClick }: Flo
                 <button
                   className={cn(
                     buttonVariants({ variant: 'ghost', size: 'sm' }),
-                    'text-gray-300 hover:text-white flex items-center gap-1'
+                    'text-gray-600 hover:text-gray-900 hover:bg-gray-100 flex items-center gap-1'
                   )}
                   data-testid="dropdown-use-cases"
                 >
@@ -163,7 +162,7 @@ export function FloatingHeader({ variant = 'authenticated', onSignupClick }: Flo
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent
-                className="w-56 bg-[#1e1e1e] border-gray-700 z-[200]"
+                className="w-56 bg-white border-gray-200 z-[200]"
                 sideOffset={8}
               >
                 {USE_CASES.map((useCase) => (
@@ -173,8 +172,8 @@ export function FloatingHeader({ variant = 'authenticated', onSignupClick }: Flo
                       data-testid={`link-usecase-${useCase.label.toLowerCase()}`}
                     >
                       <div>
-                        <div className="font-medium text-white">{useCase.label}</div>
-                        <div className="text-xs text-gray-400">{useCase.description}</div>
+                        <div className="font-medium text-gray-900">{useCase.label}</div>
+                        <div className="text-xs text-gray-500">{useCase.description}</div>
                       </div>
                     </DropdownMenuItem>
                   </Link>
@@ -190,7 +189,7 @@ export function FloatingHeader({ variant = 'authenticated', onSignupClick }: Flo
           {variant === 'landing' && (
             <div className="hidden lg:flex items-center gap-2">
               <Link href="/login">
-                <Button variant="ghost" size="sm" className="text-gray-300 hover:text-white">
+                <Button variant="ghost" size="sm" className="text-gray-600 hover:text-gray-900 hover:bg-gray-100">
                   Log In
                 </Button>
               </Link>
@@ -214,25 +213,25 @@ export function FloatingHeader({ variant = 'authenticated', onSignupClick }: Flo
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent 
-                  className="w-56 bg-[#1e1e1e] border-gray-700 z-[200]" 
+                  className="w-56 bg-white border-gray-200 z-[200]" 
                   side="bottom" 
                   align="end" 
                   sideOffset={8}
                 >
                   <div className="flex items-center justify-start gap-2 p-2">
                     <div className="flex flex-col space-y-1 leading-none">
-                      <p className="font-medium text-white">{user?.email}</p>
-                      <p className="text-xs text-gray-400">Free Plan</p>
+                      <p className="font-medium text-gray-900">{user?.email}</p>
+                      <p className="text-xs text-gray-500">Free Plan</p>
                     </div>
                   </div>
-                  <DropdownMenuSeparator className="bg-gray-700" />
+                  <DropdownMenuSeparator className="bg-gray-200" />
                   <Link href="/profile">
                     <DropdownMenuItem>
                       <User className="h-4 w-4" />
                       Profile
                     </DropdownMenuItem>
                   </Link>
-                  <DropdownMenuSeparator className="bg-gray-700" />
+                  <DropdownMenuSeparator className="bg-gray-200" />
                   <DropdownMenuItem onClick={handleLogout}>
                     <LogOut className="h-4 w-4" />
                     Sign out
@@ -248,12 +247,12 @@ export function FloatingHeader({ variant = 'authenticated', onSignupClick }: Flo
               size="icon"
               variant="outline"
               onClick={() => setOpen(!open)}
-              className="lg:hidden border-gray-700"
+              className="lg:hidden border-gray-200"
             >
-              <MenuIcon className="size-4" />
+              <MenuIcon className="size-4 text-gray-900" />
             </Button>
             <SheetContent
-              className="bg-[#1a1a1a]/95 supports-[backdrop-filter]:bg-[#1a1a1a]/80 gap-0 backdrop-blur-lg border-gray-800"
+              className="bg-white gap-0 border-gray-200"
               showClose={false}
               side="right"
             >
@@ -285,7 +284,7 @@ export function FloatingHeader({ variant = 'authenticated', onSignupClick }: Flo
                             variant: 'ghost',
                             className: 'justify-start w-full',
                           }),
-                          'text-gray-300 hover:text-white'
+                          'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
                         )}
                       >
                         {link.label}
@@ -303,8 +302,8 @@ export function FloatingHeader({ variant = 'authenticated', onSignupClick }: Flo
                             className: 'justify-start w-full',
                           }),
                           isActiveLink(link.href)
-                            ? 'text-white bg-blue-600/20'
-                            : 'text-gray-300 hover:text-white'
+                            ? 'text-gray-900 bg-gray-100'
+                            : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
                         )}
                       >
                         {link.label}
@@ -315,7 +314,7 @@ export function FloatingHeader({ variant = 'authenticated', onSignupClick }: Flo
                 
                 {/* Use Cases - Mobile Landing */}
                 {variant === 'landing' && (
-                  <div className="border-t border-gray-700 pt-4 mt-4">
+                  <div className="border-t border-gray-200 pt-4 mt-4">
                     <p className="text-xs text-gray-500 uppercase tracking-wider px-3 mb-2">Use Cases</p>
                     {USE_CASES.map((useCase) => (
                       <Link key={useCase.href} href={useCase.href}>
@@ -326,7 +325,7 @@ export function FloatingHeader({ variant = 'authenticated', onSignupClick }: Flo
                               variant: 'ghost',
                               className: 'justify-start w-full',
                             }),
-                            'text-gray-300 hover:text-white'
+                            'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
                           )}
                         >
                           {useCase.label}
@@ -340,7 +339,7 @@ export function FloatingHeader({ variant = 'authenticated', onSignupClick }: Flo
                 {variant === 'landing' ? (
                   <>
                     <Link href="/login">
-                      <Button variant="outline" className="w-full border-gray-700">
+                      <Button variant="outline" className="w-full border-gray-200 text-gray-900">
                         Log In
                       </Button>
                     </Link>
@@ -351,12 +350,12 @@ export function FloatingHeader({ variant = 'authenticated', onSignupClick }: Flo
                 ) : (
                   <>
                     <Link href="/profile">
-                      <Button variant="outline" className="w-full border-gray-700">
+                      <Button variant="outline" className="w-full border-gray-200 text-gray-900">
                         <User className="h-4 w-4 mr-2" />
                         Profile
                       </Button>
                     </Link>
-                    <Button onClick={handleLogout} className="w-full bg-red-600 hover:bg-red-700">
+                    <Button onClick={handleLogout} className="w-full bg-red-600 hover:bg-red-700 text-white">
                       <LogOut className="h-4 w-4 mr-2" />
                       Sign Out
                     </Button>

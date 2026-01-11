@@ -373,7 +373,7 @@ export default function Analytics() {
             <Button
               size="sm"
               onClick={() => setIsFilterOpen(true)}
-              className="bg-gray-900 hover:bg-gray-800 text-white flex items-center gap-2"
+              className="bg-blue-600 hover:bg-blue-700 text-white flex items-center gap-2"
               data-testid="button-open-filters"
             >
               <Filter className="w-4 h-4" />

@@ -76,7 +76,7 @@ export default function QuickTransfer({ accounts }: QuickTransferProps) {
                   </div>
                   <Button
                     onClick={() => setIsModalOpen(true)}
-                    className="bg-gray-900 hover:bg-gray-800 text-white px-4 py-2 rounded-lg text-sm font-medium"
+                    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium"
                   >
                     Transfer
                   </Button>
