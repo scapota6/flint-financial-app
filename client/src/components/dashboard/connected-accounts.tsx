@@ -187,9 +187,23 @@ export default function ConnectedAccounts({
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className="text-lg font-semibold text-gray-900">
-                      ${parseFloat(account.balance).toLocaleString()}
-                    </div>
+                    {(() => {
+                      const balance = parseFloat(account.balance);
+                      const isBalanceEmpty = !account.balance || isNaN(balance) || balance === 0;
+                      if (isBalanceEmpty) {
+                        return (
+                          <div className="flex items-center gap-2 text-gray-500">
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                            <span className="text-sm">Syncing...</span>
+                          </div>
+                        );
+                      }
+                      return (
+                        <div className="text-lg font-semibold text-gray-900">
+                          ${balance.toLocaleString()}
+                        </div>
+                      );
+                    })()}
                     {account.needsReconnection ? (
                       <Tooltip content="Reconnect account" position="top">
                         <Button 
