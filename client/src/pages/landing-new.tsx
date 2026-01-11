@@ -708,10 +708,10 @@ export default function LandingNew() {
             </button>
             <div className="absolute top-full left-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
               <div className="py-2">
-                <Link href="/use-cases/personal" className="block px-4 py-2 text-gray-700 hover:bg-gray-50 hover:text-gray-900">Personal Finance</Link>
-                <Link href="/use-cases/founders" className="block px-4 py-2 text-gray-700 hover:bg-gray-50 hover:text-gray-900">For Founders</Link>
-                <Link href="/use-cases/advisors" className="block px-4 py-2 text-gray-700 hover:bg-gray-50 hover:text-gray-900">Financial Advisors</Link>
-                <Link href="/use-cases/families" className="block px-4 py-2 text-gray-700 hover:bg-gray-50 hover:text-gray-900">Families</Link>
+                <Link href="/banking" className="block px-4 py-2 text-gray-700 hover:bg-gray-50 hover:text-gray-900">Banking</Link>
+                <Link href="/investing" className="block px-4 py-2 text-gray-700 hover:bg-gray-50 hover:text-gray-900">Investing</Link>
+                <Link href="/crypto" className="block px-4 py-2 text-gray-700 hover:bg-gray-50 hover:text-gray-900">Crypto</Link>
+                <Link href="/business" className="block px-4 py-2 text-gray-700 hover:bg-gray-50 hover:text-gray-900">Business</Link>
               </div>
             </div>
           </li>
@@ -765,10 +765,10 @@ export default function LandingNew() {
               <li>
                 <p className="text-sm text-gray-500 mb-2">Use Cases</p>
                 <div className="pl-3 space-y-2 mb-4">
-                  <Link href="/use-cases/personal" className="block py-1 text-gray-700 hover:text-gray-900" onClick={() => setMobileMenuOpen(false)}>Personal Finance</Link>
-                  <Link href="/use-cases/founders" className="block py-1 text-gray-700 hover:text-gray-900" onClick={() => setMobileMenuOpen(false)}>For Founders</Link>
-                  <Link href="/use-cases/advisors" className="block py-1 text-gray-700 hover:text-gray-900" onClick={() => setMobileMenuOpen(false)}>Financial Advisors</Link>
-                  <Link href="/use-cases/families" className="block py-1 text-gray-700 hover:text-gray-900" onClick={() => setMobileMenuOpen(false)}>Families</Link>
+                  <Link href="/banking" className="block py-1 text-gray-700 hover:text-gray-900" onClick={() => setMobileMenuOpen(false)}>Banking</Link>
+                  <Link href="/investing" className="block py-1 text-gray-700 hover:text-gray-900" onClick={() => setMobileMenuOpen(false)}>Investing</Link>
+                  <Link href="/crypto" className="block py-1 text-gray-700 hover:text-gray-900" onClick={() => setMobileMenuOpen(false)}>Crypto</Link>
+                  <Link href="/business" className="block py-1 text-gray-700 hover:text-gray-900" onClick={() => setMobileMenuOpen(false)}>Business</Link>
                 </div>
               </li>
               <li>
@@ -892,7 +892,7 @@ export default function LandingNew() {
               </div>
               <h3 className="font-semibold text-xl mb-2 text-gray-900">Connect</h3>
               <p className="text-gray-600">
-                Securely link your bank accounts, credit cards, investments, and crypto wallets.
+                Link banks, Coinbase, 401(k), Robinhood, and more. All in one place.
               </p>
             </div>
             <div className="flex-1 mx-4 flex flex-col items-center my-6 text-center">
@@ -901,16 +901,16 @@ export default function LandingNew() {
               </div>
               <h3 className="font-semibold text-xl mb-2 text-gray-900">Track</h3>
               <p className="text-gray-600">
-                See all your money in one dashboard. Track spending, net worth, and goals.
+                See all your money together. Balances, spending, and growth at a glance.
               </p>
             </div>
             <div className="flex-1 mx-4 flex flex-col items-center my-6 text-center">
               <div className="border-2 border-gray-800 rounded-full bg-gray-900 text-white h-14 w-14 flex justify-center items-center mb-4 text-xl font-bold">
                 3
               </div>
-              <h3 className="font-semibold text-xl mb-2 text-gray-900">Grow</h3>
+              <h3 className="font-semibold text-xl mb-2 text-gray-900">Act</h3>
               <p className="text-gray-600">
-                Find hidden fees, optimize spending, and make smarter money decisions.
+                Buy stocks, sell crypto, or send money. Take action right from Flint.
               </p>
             </div>
           </div>
@@ -979,30 +979,30 @@ export default function LandingNew() {
           </h2>
           <div className="md:grid md:grid-cols-2 gap-8 max-w-4xl">
             <div className="my-6 mr-10">
-              <h3 className="font-semibold text-2xl mb-2">Cut Hidden Fees</h3>
+              <h3 className="font-semibold text-2xl mb-2 text-gray-900">Savings</h3>
               <p className="text-gray-600">
-                We find and alert you to unnecessary bank charges so you keep more of your money.
+                Find hidden fees and keep more of your money.
               </p>
             </div>
 
             <div className="my-6 mr-10">
-              <h3 className="font-semibold text-2xl mb-2">Grow Net Worth</h3>
+              <h3 className="font-semibold text-2xl mb-2 text-gray-900">Growth</h3>
               <p className="text-gray-600">
-                See the big picture and make smarter money moves with all your accounts in one place.
+                Watch your net worth grow over time.
               </p>
             </div>
 
             <div className="my-6 mr-10">
-              <h3 className="font-semibold text-2xl mb-2">All Your Money</h3>
+              <h3 className="font-semibold text-2xl mb-2 text-gray-900">Coverage</h3>
               <p className="text-gray-600">
-                See your bank accounts, credit cards, stocks, and crypto all together in one dashboard.
+                Banks, cards, stocks, and crypto in one place.
               </p>
             </div>
 
             <div className="my-6 mr-10">
-              <h3 className="font-semibold text-2xl mb-2">Bank-Level Security</h3>
+              <h3 className="font-semibold text-2xl mb-2 text-gray-900">Security</h3>
               <p className="text-gray-600">
-                Your data is encrypted and protected with the same security banks use.
+                Bank-level encryption keeps your data safe.
               </p>
             </div>
           </div>
@@ -1695,9 +1695,9 @@ export default function LandingNew() {
           </div>
         </section>
 
-        {/* FAQ Section - Black Background Template Style */}
-        <section id="faq" className="lg:px-48 md:px-12 px-4 py-20 flex flex-col items-start bg-black text-white">
-          <h2 className="font-serif text-3xl mb-12 self-center">
+        {/* FAQ Section - Cream Background */}
+        <section id="faq" className="lg:px-48 md:px-12 px-4 py-20 flex flex-col items-start bg-[#F4F2ED]">
+          <h2 className="font-serif text-3xl mb-12 self-center text-gray-900">
             <span className="relative inline-block px-4">
               FAQ
               <span className="absolute bottom-0 left-0 w-full h-1 bg-yellow-400"></span>
@@ -1705,49 +1705,49 @@ export default function LandingNew() {
           </h2>
 
           <div className="w-full max-w-3xl mx-auto">
-            <div className="w-full py-4 border-b border-white/20">
+            <div className="w-full py-4 border-b border-gray-300">
               <Accordion type="single" collapsible className="w-full">
-                <AccordionItem value="security" className="border-b border-white/20">
-                  <AccordionTrigger className="text-left hover:no-underline text-white py-4 font-medium">
+                <AccordionItem value="security" className="border-b border-gray-300">
+                  <AccordionTrigger className="text-left hover:no-underline text-gray-900 py-4 font-medium">
                     Is my money safe?
                   </AccordionTrigger>
-                  <AccordionContent className="text-gray-300 pb-4">
+                  <AccordionContent className="text-gray-600 pb-4">
                     Yes! We use bank-level security to keep everything secure and private.
                   </AccordionContent>
                 </AccordionItem>
 
-                <AccordionItem value="accounts" className="border-b border-white/20">
-                  <AccordionTrigger className="text-left hover:no-underline text-white py-4 font-medium">
+                <AccordionItem value="accounts" className="border-b border-gray-300">
+                  <AccordionTrigger className="text-left hover:no-underline text-gray-900 py-4 font-medium">
                     How many accounts are free?
                   </AccordionTrigger>
-                  <AccordionContent className="text-gray-300 pb-4">
+                  <AccordionContent className="text-gray-600 pb-4">
                     You can connect 4 accounts for free. This means banks, cards, stocks, or crypto.
                   </AccordionContent>
                 </AccordionItem>
 
-                <AccordionItem value="cancel" className="border-b border-white/20">
-                  <AccordionTrigger className="text-left hover:no-underline text-white py-4 font-medium">
+                <AccordionItem value="cancel" className="border-b border-gray-300">
+                  <AccordionTrigger className="text-left hover:no-underline text-gray-900 py-4 font-medium">
                     Can I cancel?
                   </AccordionTrigger>
-                  <AccordionContent className="text-gray-300 pb-4">
+                  <AccordionContent className="text-gray-600 pb-4">
                     Yes. You can stop paying anytime. No long contracts.
                   </AccordionContent>
                 </AccordionItem>
 
-                <AccordionItem value="revenue" className="border-b border-white/20">
-                  <AccordionTrigger className="text-left hover:no-underline text-white py-4 font-medium">
+                <AccordionItem value="revenue" className="border-b border-gray-300">
+                  <AccordionTrigger className="text-left hover:no-underline text-gray-900 py-4 font-medium">
                     How do you make money?
                   </AccordionTrigger>
-                  <AccordionContent className="text-gray-300 pb-4">
+                  <AccordionContent className="text-gray-600 pb-4">
                     We make money when people pay for Pro. We never sell your info.
                   </AccordionContent>
                 </AccordionItem>
 
-                <AccordionItem value="upgrade" className="border-b border-white/20">
-                  <AccordionTrigger className="text-left hover:no-underline text-white py-4 font-medium">
+                <AccordionItem value="upgrade" className="border-b border-gray-300">
+                  <AccordionTrigger className="text-left hover:no-underline text-gray-900 py-4 font-medium">
                     Why go Pro?
                   </AccordionTrigger>
-                  <AccordionContent className="text-gray-300 pb-4">
+                  <AccordionContent className="text-gray-600 pb-4">
                     Go Pro if you want more than 4 accounts, better charts, or fast help. Free works great for most people!
                   </AccordionContent>
                 </AccordionItem>
