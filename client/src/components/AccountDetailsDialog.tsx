@@ -2060,10 +2060,6 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
                     <Clock className="h-4 w-4 text-gray-700" />
                     <span className="font-medium">Updated: {fmtTime(data.metadata?.fetched_at || new Date().toISOString())}</span>
                   </div>
-                  <div className="flex items-center gap-2 bg-white px-3 py-2 rounded-lg border border-gray-200">
-                    <Calendar className="h-4 w-4 text-gray-700" />
-                    <span className="font-medium">Created: {fmtTime(data.metadata?.account_created || 'N/A')}</span>
-                  </div>
                 </div>
               </div>
             </div>
