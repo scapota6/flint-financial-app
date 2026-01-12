@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import { loadStripe } from "@stripe/stripe-js";
+import { loadStripe, Stripe } from "@stripe/stripe-js";
 import {
   EmbeddedCheckoutProvider,
   EmbeddedCheckout,
@@ -13,6 +13,69 @@ import {
 import { Button } from "@/components/ui/button";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { Loader2 } from "lucide-react";
+
+interface StripeCheckoutWrapperProps {
+  stripePromise: Promise<Stripe | null>;
+  clientSecret: string;
+  onComplete: () => void;
+  onError: () => void;
+  onClose: () => void;
+}
+
+function StripeCheckoutWrapper({ 
+  stripePromise, 
+  clientSecret, 
+  onComplete,
+  onError,
+  onClose 
+}: StripeCheckoutWrapperProps) {
+  const [stripeLoaded, setStripeLoaded] = useState<Stripe | null | 'loading'>('loading');
+
+  useEffect(() => {
+    stripePromise.then((stripe) => {
+      setStripeLoaded(stripe);
+      if (!stripe) {
+        onError();
+      }
+    });
+  }, [stripePromise, onError]);
+
+  if (stripeLoaded === 'loading') {
+    return (
+      <div className="w-full h-full flex items-center justify-center bg-gray-900/50 rounded-lg" data-testid="checkout-loading">
+        <div className="flex flex-col items-center gap-3">
+          <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
+          <p className="text-gray-400">Loading payment service...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!stripeLoaded) {
+    return (
+      <div className="flex flex-col items-center justify-center p-8 space-y-4">
+        <p className="text-red-500">Payment service unavailable. Please try again later.</p>
+        <Button variant="outline" onClick={onClose}>
+          Close
+        </Button>
+      </div>
+    );
+  }
+
+  return (
+    <div data-testid="stripe-checkout-container" className="w-full h-full">
+      <EmbeddedCheckoutProvider
+        stripe={stripeLoaded}
+        options={{ 
+          clientSecret,
+          onComplete
+        }}
+      >
+        <EmbeddedCheckout />
+      </EmbeddedCheckoutProvider>
+    </div>
+  );
+}
 
 interface EmbeddedCheckoutModalProps {
   open: boolean;
@@ -33,11 +96,18 @@ export function EmbeddedCheckoutModal({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Initialize Stripe
-  const stripePromise = useMemo(
-    () => loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY),
-    []
-  );
+  // Initialize Stripe with error handling for iOS WebView
+  const stripePromise = useMemo(() => {
+    const stripeKey = import.meta.env.VITE_STRIPE_PUBLIC_KEY;
+    if (!stripeKey) {
+      console.error('Stripe public key not configured');
+      return Promise.resolve(null);
+    }
+    return loadStripe(stripeKey).catch((err) => {
+      console.error('Failed to load Stripe.js:', err);
+      return null;
+    });
+  }, []);
 
   useEffect(() => {
     if (open) {
@@ -137,22 +207,18 @@ export function EmbeddedCheckoutModal({
               </div>
             </div>
           ) : (
-            <div data-testid="stripe-checkout-container" className="w-full h-full">
-              <EmbeddedCheckoutProvider
-                stripe={stripePromise}
-                options={{ 
-                  clientSecret,
-                  onComplete: () => {
-                    setClientSecret(null);
-                    setLoading(false);
-                    onOpenChange(false);
-                    window.location.href = '/checkout-success';
-                  }
-                }}
-              >
-                <EmbeddedCheckout />
-              </EmbeddedCheckoutProvider>
-            </div>
+            <StripeCheckoutWrapper
+              stripePromise={stripePromise}
+              clientSecret={clientSecret}
+              onComplete={() => {
+                setClientSecret(null);
+                setLoading(false);
+                onOpenChange(false);
+                window.location.href = '/checkout-success';
+              }}
+              onError={() => setError("Payment service unavailable. Please try again later.")}
+              onClose={() => onOpenChange(false)}
+            />
           )}
         </div>
       </DialogContent>

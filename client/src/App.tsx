@@ -363,9 +363,13 @@ function App() {
     const initCapacitor = async () => {
       if (Capacitor.isNativePlatform()) {
         try {
-          await StatusBar.setStyle({ style: Style.Dark });
+          // Ensure status bar is visible and properly styled for cream background
+          await StatusBar.show();
+          await StatusBar.setOverlaysWebView({ overlay: false });
+          await StatusBar.setStyle({ style: Style.Dark }); // Dark content on light background
           await StatusBar.setBackgroundColor({ color: '#F4F2ED' });
         } catch (e) {
+          console.log('StatusBar initialization error:', e);
         }
 
         CapacitorApp.addListener('backButton', ({ canGoBack }) => {
