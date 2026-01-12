@@ -21,17 +21,33 @@ import {
   Server
 } from 'lucide-react';
 
+interface SecurityStatus {
+  score: number;
+  encryptionStatus: any;
+  lastKeyRotation: string | null;
+  userTier: string;
+  permissions: string[];
+  auditLog: Array<{
+    type: string;
+    action: string;
+    timestamp: string;
+  }>;
+}
+
 export default function Security() {
   const [rotatingKeys, setRotatingKeys] = useState(false);
 
   // Fetch security status from backend
-  const { data: securityStatus, isLoading } = useQuery({
+  const { data: securityStatus, isLoading, isError, error } = useQuery<SecurityStatus>({
     queryKey: ['/api/security/status'],
+    retry: 1,
+    staleTime: 30000,
   });
 
   // Fetch compliance status
   const { data: complianceStatus } = useQuery({
     queryKey: ['/api/security/compliance'],
+    retry: 1,
   });
 
   const handleKeyRotation = async () => {
@@ -66,6 +82,19 @@ export default function Security() {
           <div className="h-8 bg-gray-200 dark:bg-gray-800 rounded w-1/3"></div>
           <div className="h-64 bg-gray-200 dark:bg-gray-800 rounded"></div>
         </div>
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="container mx-auto p-4 max-w-6xl">
+        <Alert variant="destructive">
+          <AlertTriangle className="h-4 w-4" />
+          <AlertDescription>
+            Failed to load security information. Please try refreshing the page.
+          </AlertDescription>
+        </Alert>
       </div>
     );
   }
