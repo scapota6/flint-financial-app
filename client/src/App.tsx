@@ -30,10 +30,16 @@ function MetaMaskWrapper({ children, enabled }: { children: ReactNode; enabled: 
       sdkOptions={{
         dappMetadata: {
           name: "Flint",
-          url: typeof window !== 'undefined' ? window.location.href : '',
+          url: typeof window !== 'undefined' ? window.location.origin : '',
         },
         infuraAPIKey: import.meta.env.VITE_INFURA_API_KEY,
         enableAnalytics: false,
+        logging: {
+          developerMode: false,
+        },
+        storage: {
+          enabled: false,
+        },
       }}
     >
       {children}
