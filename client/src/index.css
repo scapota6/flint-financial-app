@@ -18,11 +18,37 @@
   padding-top: max(env(safe-area-inset-top), 0px);
 }
 
-/* iOS status bar cream background for Capacitor native (light mode only) */
+/* iOS status bar cream background - ensures safe area is cream colored */
 @supports (padding-top: env(safe-area-inset-top)) {
   html:not(.dark),
   html:not(.dark) body {
     background-color: #F4F2ED;
+  }
+  
+  /* Fixed pseudo-element to fill iOS status bar area with cream (light mode only) */
+  html:not(.dark)::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: env(safe-area-inset-top);
+    background-color: #F4F2ED;
+    z-index: 99999;
+    pointer-events: none;
+  }
+  
+  /* Dark mode status bar background */
+  html.dark::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: env(safe-area-inset-top);
+    background-color: #0a0a0a;
+    z-index: 99999;
+    pointer-events: none;
   }
 }
 

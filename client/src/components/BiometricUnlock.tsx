@@ -198,8 +198,12 @@ export async function saveSessionForBiometric(userId: string): Promise<void> {
       password: 'session_active',
       server: 'flint.app'
     });
-  } catch (e) {
-    console.error('Failed to save biometric session:', e);
+  } catch (e: any) {
+    if (e?.code === 'UNIMPLEMENTED' || e?.message?.includes('UNIMPLEMENTED')) {
+      console.log('Biometric credential storage not available on this device');
+    } else {
+      console.error('Failed to save biometric session:', e);
+    }
   }
 }
 
@@ -210,8 +214,12 @@ export async function clearBiometricSession(): Promise<void> {
     await NativeBiometric.deleteCredentials({
       server: 'flint.app'
     });
-  } catch (e) {
-    console.error('Failed to clear biometric session:', e);
+  } catch (e: any) {
+    if (e?.code === 'UNIMPLEMENTED' || e?.message?.includes('UNIMPLEMENTED')) {
+      console.log('Biometric credential deletion not available on this device');
+    } else {
+      console.error('Failed to clear biometric session:', e);
+    }
   }
 }
 

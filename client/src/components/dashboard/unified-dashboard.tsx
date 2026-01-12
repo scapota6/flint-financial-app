@@ -396,7 +396,11 @@ export default function UnifiedDashboard() {
                   <div className={`text-lg font-bold text-right ${
                     account.type === 'credit' ? 'text-red-500' : 'text-green-600'
                   }`}>
-                    {formatCurrency(account.balance)}
+                    {formatCurrency(
+                      account.type === 'credit' 
+                        ? (account.amountSpent || Math.abs(account.balance) || 0)
+                        : account.balance
+                    )}
                   </div>
                   <ChevronRight className="w-5 h-5 text-gray-400" />
                 </div>

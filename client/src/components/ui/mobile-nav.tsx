@@ -13,7 +13,7 @@ const navItems: NavItem[] = [
   { path: '/dashboard', icon: LayoutGrid, label: 'Home' },
   { path: '/accounts', icon: CreditCard, label: 'Accounts' },
   { path: '/analytics', icon: TrendingUp, label: 'Analytics' },
-  { path: '/settings', icon: Cog, label: 'Settings' },
+  { path: '/profile', icon: Cog, label: 'Profile' },
 ];
 
 export function MobileNav() {

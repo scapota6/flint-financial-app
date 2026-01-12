@@ -1130,7 +1130,7 @@ export default function Analytics() {
 
       <Dialog open={isFilterOpen} onOpenChange={setIsFilterOpen}>
         <DialogContent 
-          className="bg-white border border-gray-200 max-w-md w-[95vw] sm:w-full"
+          className="bg-white border border-gray-200 max-w-md w-[calc(100vw-2rem)] mx-4 sm:mx-auto sm:w-full max-h-[85vh] overflow-y-auto"
           onPointerDownOutside={(e) => e.preventDefault()}
           onInteractOutside={(e) => e.preventDefault()}
         >

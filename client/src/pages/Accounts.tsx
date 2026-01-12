@@ -285,19 +285,19 @@ export default function Accounts() {
                     return (
                       <Card key={account.id} className="bg-white border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
                         <CardHeader className="pb-3">
-                          <div className="flex justify-between items-center">
-                            <div className="flex items-center gap-3">
-                              <div className="w-12 h-12 rounded-lg bg-gray-100 border border-gray-200 flex items-center justify-center overflow-hidden hover:border-gray-300 transition-all duration-300">
+                          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
+                            <div className="flex items-center gap-3 min-w-0 flex-1">
+                              <div className="w-12 h-12 rounded-lg bg-gray-100 border border-gray-200 flex items-center justify-center overflow-hidden hover:border-gray-300 transition-all duration-300 flex-shrink-0">
                                 {logo}
                               </div>
-                              <div>
-                                <CardTitle className="text-lg text-gray-900">
+                              <div className="min-w-0 flex-1">
+                                <CardTitle className="text-lg text-gray-900 truncate">
                                   {account.institutionName}
                                 </CardTitle>
-                                <p className="text-sm text-gray-600">
+                                <p className="text-sm text-gray-600 truncate">
                                   {account.accountNumber} • {account.type}
                                 </p>
-                                <div className="flex items-center gap-2 mt-1">
+                                <div className="flex items-center gap-2 mt-1 flex-wrap">
                                   <Badge variant={account.status === 'open' ? 'default' : 'secondary'} className="text-xs">
                                     {account.status || 'open'}
                                   </Badge>
@@ -315,7 +315,7 @@ export default function Accounts() {
                                 variant="outline"
                                 onClick={() => handleDisconnectAccount(account.id, 'brokerage')}
                                 disabled={disconnecting === account.id}
-                                className="text-gray-600 border-gray-300 hover:bg-gray-100 hover:text-gray-900"
+                                className="text-gray-600 border-gray-300 hover:bg-gray-100 hover:text-gray-900 flex-shrink-0 w-full sm:w-auto"
                                 data-testid={`button-disconnect-${account.id}`}
                               >
                                 <Unlink className="h-4 w-4 mr-2" />
@@ -366,13 +366,13 @@ export default function Accounts() {
                     return (
                       <Card key={account.id} className="bg-white border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
                         <CardHeader className="pb-3">
-                          <div className="flex justify-between items-center">
-                            <div className="flex items-center gap-3">
-                              <div className="w-12 h-12 rounded-lg bg-gray-100 border border-gray-200 flex items-center justify-center overflow-hidden hover:border-gray-300 transition-all duration-300">
+                          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
+                            <div className="flex items-center gap-3 min-w-0 flex-1">
+                              <div className="w-12 h-12 rounded-lg bg-gray-100 border border-gray-200 flex items-center justify-center overflow-hidden hover:border-gray-300 transition-all duration-300 flex-shrink-0">
                                 {logo}
                               </div>
-                              <div>
-                                <CardTitle className="text-lg text-gray-900">{account.name}</CardTitle>
+                              <div className="min-w-0 flex-1">
+                                <CardTitle className="text-lg text-gray-900 truncate">{account.name}</CardTitle>
                                 <Badge variant="secondary" className="mt-1 text-xs">
                                   {account.type.charAt(0).toUpperCase() + account.type.slice(1)}
                                 </Badge>
@@ -384,7 +384,7 @@ export default function Accounts() {
                                 variant="outline"
                                 onClick={() => handleDisconnectAccount(account.id.toString(), 'bank')}
                                 disabled={disconnecting === account.id.toString()}
-                                className="text-gray-600 border-gray-300 hover:bg-gray-100 hover:text-gray-900"
+                                className="text-gray-600 border-gray-300 hover:bg-gray-100 hover:text-gray-900 flex-shrink-0 w-full sm:w-auto"
                                 data-testid={`button-disconnect-${account.id}`}
                               >
                                 <Unlink className="h-4 w-4 mr-2" />
