@@ -825,8 +825,8 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-2 md:p-4">
-      <div className="w-full max-w-6xl h-[98vh] md:max-h-[95vh] rounded-lg bg-[#F4F2ED] border border-gray-200 shadow-2xl overflow-hidden flex flex-col">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-0 md:p-4">
+      <div className="w-full h-full md:max-w-6xl md:h-auto md:max-h-[95vh] md:rounded-lg bg-[#F4F2ED] border-0 md:border border-gray-200 shadow-2xl overflow-hidden flex flex-col">
         <div className="flex items-center justify-between p-6 border-b border-gray-200 bg-white">
           <div>
             <h2 className="text-2xl font-bold text-gray-900">Account Details</h2>
