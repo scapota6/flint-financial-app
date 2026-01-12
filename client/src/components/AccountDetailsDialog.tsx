@@ -1263,7 +1263,8 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
           </div>
         )}
 
-        {data && (
+        {/* Legacy UI for non-SnapTrade accounts (Teller, MetaMask) */}
+        {data && !isSnapTradeAccount && (
           <div className="space-y-8 overflow-y-auto max-h-[75vh] p-6 bg-[#F4F2ED]">
             
             {/* CREDIT CARD LAYOUT - Teller credit cards get special treatment */}
