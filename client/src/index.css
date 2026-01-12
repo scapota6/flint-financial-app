@@ -18,6 +18,14 @@
   padding-top: max(env(safe-area-inset-top), 0px);
 }
 
+/* iOS status bar cream background for Capacitor native (light mode only) */
+@supports (padding-top: env(safe-area-inset-top)) {
+  html:not(.dark),
+  html:not(.dark) body {
+    background-color: #F4F2ED;
+  }
+}
+
 .pb-safe {
   padding-bottom: max(env(safe-area-inset-bottom), 0px);
 }

@@ -825,8 +825,8 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-      <div className="w-full max-w-6xl max-h-[95vh] rounded-lg bg-[#F4F2ED] border border-gray-200 shadow-2xl overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-2 md:p-4">
+      <div className="w-full max-w-6xl h-[98vh] md:max-h-[95vh] rounded-lg bg-[#F4F2ED] border border-gray-200 shadow-2xl overflow-hidden flex flex-col">
         <div className="flex items-center justify-between p-6 border-b border-gray-200 bg-white">
           <div>
             <h2 className="text-2xl font-bold text-gray-900">Account Details</h2>
@@ -854,7 +854,7 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
         
         {/* SnapTrade Section-Specific Loading and Error States */}
         {isSnapTradeAccount && data && (
-          <div className="p-6 max-h-[calc(95vh-140px)] overflow-y-auto space-y-6 bg-[#F4F2ED]">
+          <div className="p-4 md:p-6 flex-1 overflow-y-auto space-y-4 md:space-y-6 bg-[#F4F2ED]">
             {/* Account Header with skeleton */}
             <section>
               <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
@@ -1036,12 +1036,12 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
               ) : (
                 <Card title="Order History">
                   <List items={data.positionsAndOrders?.orderHistory || []} empty="No recent orders" render={(order: any) => (
-                    <div className="grid grid-cols-5 gap-2 text-gray-700">
+                    <div className="grid grid-cols-3 md:grid-cols-5 gap-2 text-gray-700 text-sm">
                       <span className="font-medium text-gray-900">{order.symbol || '—'}</span>
-                      <span className="text-right">{(order.side || '').toUpperCase()}</span>
-                      <span className="text-right">{fmtNum(order.quantity)}</span>
+                      <span className="text-right">{(order.side || '').toUpperCase()} {fmtNum(order.quantity)}</span>
                       <span className="text-right">{fmtMoney(order.averageFillPrice?.amount)}</span>
-                      <span className="text-right text-gray-500">{fmtTime(order.placedAt)}</span>
+                      <span className="text-right hidden md:block">{fmtNum(order.quantity)}</span>
+                      <span className="text-right text-gray-500 hidden md:block">{fmtTime(order.placedAt)}</span>
                     </div>
                   )}/>
                 </Card>
@@ -1076,12 +1076,12 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
               ) : (
                 <Card title="Recent Activity">
                   <List items={data.activityAndTransactions || []} empty="No recent activity" render={(activity: any) => (
-                    <div className="grid grid-cols-5 gap-2 text-gray-700">
+                    <div className="grid grid-cols-3 md:grid-cols-5 gap-2 text-gray-700 text-sm">
                       <span className="font-medium text-gray-900">{activity.type}</span>
                       <span className="font-medium text-gray-700">{activity.symbol || '—'}</span>
-                      <span className="text-right font-medium">{fmtNum(activity.quantity)}</span>
                       <span className="text-right font-medium">{fmtMoney(activity.amount)}</span>
-                      <span className="text-right text-gray-500">{fmtTime(activity.timestamp)}</span>
+                      <span className="text-right font-medium hidden md:block">{fmtNum(activity.quantity)}</span>
+                      <span className="text-right text-gray-500 hidden md:block">{fmtTime(activity.timestamp)}</span>
                     </div>
                   )}/>
                 </Card>
@@ -2002,12 +2002,12 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
               <div className="mt-4">
                 <Card title="Order History">
                   <List items={data.positionsAndOrders?.orderHistory || []} empty="No order history" render={(o: any) => (
-                    <div className="grid grid-cols-5 gap-2">
+                    <div className="grid grid-cols-3 md:grid-cols-5 gap-2 text-sm">
                       <span>{extractSymbol(o.symbol || o.ticker)}</span>
-                      <span className="text-right">{(o.side || o.action || '').toUpperCase()}</span>
-                      <span className="text-right">{fmtNum(o.quantity || o.qty)}</span>
+                      <span className="text-right">{(o.side || o.action || '').toUpperCase()} {fmtNum(o.quantity || o.qty)}</span>
                       <span className="text-right">{fmtMoney(o.avgFillPrice ?? o.fillPrice ?? o.price)}</span>
-                      <span className="text-right text-gray-500">{fmtTime(o.time || o.timestamp || o.date)}</span>
+                      <span className="text-right hidden md:block">{fmtNum(o.quantity || o.qty)}</span>
+                      <span className="text-right text-gray-500 hidden md:block">{fmtTime(o.time || o.timestamp || o.date)}</span>
                     </div>
                   )}/>
                 </Card>
@@ -2039,12 +2039,12 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
               </h3>
               <Card title="Recent Activity">
                 <List items={data.activityAndTransactions || data.transactions || []} empty="No recent activity" render={(a: any) => (
-                  <div className="grid grid-cols-5 gap-2 text-gray-900">
+                  <div className="grid grid-cols-3 md:grid-cols-5 gap-2 text-gray-900 text-sm">
                     <span className="font-medium text-gray-800">{a.type}</span>
                     <span className="font-medium text-gray-800">{extractSymbol(a.symbol)}</span>
-                    <span className="text-right font-medium text-gray-800">{fmtNum(a.quantity)}</span>
                     <span className="text-right font-medium text-gray-800">{fmtMoney(a.amount)}</span>
-                    <span className="text-right text-gray-600">{fmtTime(a.timestamp)}</span>
+                    <span className="text-right font-medium text-gray-800 hidden md:block">{fmtNum(a.quantity)}</span>
+                    <span className="text-right text-gray-600 hidden md:block">{fmtTime(a.timestamp)}</span>
                   </div>
                 )}/>
               </Card>

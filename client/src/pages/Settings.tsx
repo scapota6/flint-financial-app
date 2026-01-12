@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
+import { Capacitor } from '@capacitor/core';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { queryClient, apiRequest } from '@/lib/queryClient';
 import { Button } from '@/components/ui/button';
@@ -226,28 +227,38 @@ export default function Settings() {
       </h1>
 
       <Tabs defaultValue="profile" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-5 lg:w-[600px]">
-          <TabsTrigger value="profile" className="text-xs sm:text-sm">
-            <User className="w-4 h-4 mr-1 hidden sm:inline" />
-            Profile
-          </TabsTrigger>
-          <TabsTrigger value="notifications" className="text-xs sm:text-sm">
-            <Bell className="w-4 h-4 mr-1 hidden sm:inline" />
-            Alerts
-          </TabsTrigger>
-          <TabsTrigger value="accounts" className="text-xs sm:text-sm">
-            <Link2 className="w-4 h-4 mr-1 hidden sm:inline" />
-            Accounts
-          </TabsTrigger>
-          <TabsTrigger value="data" className="text-xs sm:text-sm">
-            <Download className="w-4 h-4 mr-1 hidden sm:inline" />
-            Data
-          </TabsTrigger>
-          <TabsTrigger value="security" className="text-xs sm:text-sm">
-            <Shield className="w-4 h-4 mr-1 hidden sm:inline" />
-            Security
-          </TabsTrigger>
-        </TabsList>
+        {/* On native mobile (Capacitor), only show Profile tab */}
+        {Capacitor.isNativePlatform() ? (
+          <TabsList className="grid w-full grid-cols-1 lg:w-[200px]">
+            <TabsTrigger value="profile" className="text-xs sm:text-sm">
+              <User className="w-4 h-4 mr-1" />
+              Profile
+            </TabsTrigger>
+          </TabsList>
+        ) : (
+          <TabsList className="grid w-full grid-cols-5 lg:w-[600px]">
+            <TabsTrigger value="profile" className="text-xs sm:text-sm">
+              <User className="w-4 h-4 mr-1 hidden sm:inline" />
+              Profile
+            </TabsTrigger>
+            <TabsTrigger value="notifications" className="text-xs sm:text-sm">
+              <Bell className="w-4 h-4 mr-1 hidden sm:inline" />
+              Alerts
+            </TabsTrigger>
+            <TabsTrigger value="accounts" className="text-xs sm:text-sm">
+              <Link2 className="w-4 h-4 mr-1 hidden sm:inline" />
+              Accounts
+            </TabsTrigger>
+            <TabsTrigger value="data" className="text-xs sm:text-sm">
+              <Download className="w-4 h-4 mr-1 hidden sm:inline" />
+              Data
+            </TabsTrigger>
+            <TabsTrigger value="security" className="text-xs sm:text-sm">
+              <Shield className="w-4 h-4 mr-1 hidden sm:inline" />
+              Security
+            </TabsTrigger>
+          </TabsList>
+        )}
 
         {/* Profile Tab */}
         <TabsContent value="profile">

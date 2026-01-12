@@ -27,6 +27,10 @@ const MERCHANT_TO_DOMAIN: Record<string, string> = {
   'burlington': 'burlington.com',
   'big lots': 'biglots.com',
   'five below': 'fivebelow.com',
+  'dicks': 'dickssportinggoods.com',
+  'dicks sporting goods': 'dickssportinggoods.com',
+  "dick's": 'dickssportinggoods.com',
+  "dick's sporting goods": 'dickssportinggoods.com',
   
   // Restaurants & Food
   'starbucks': 'starbucks.com',
