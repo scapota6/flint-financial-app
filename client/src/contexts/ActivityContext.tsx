@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useState, useCallback, useRef, ReactNode } from 'react';
+import { Capacitor } from '@capacitor/core';
 import { setActivityResetCallback } from '@/lib/queryClient';
 
 interface ActivityContextType {
@@ -7,6 +8,9 @@ interface ActivityContextType {
   showWarningModal: boolean;
   countdownSeconds: number;
   closeWarningModal: () => void;
+  isLocked: boolean;
+  lockApp: () => void;
+  unlockApp: () => void;
 }
 
 const ActivityContext = createContext<ActivityContextType | undefined>(undefined);
@@ -19,6 +23,9 @@ export function ActivityProvider({ children }: { children: ReactNode }) {
   const [lastActivityTime, setLastActivityTime] = useState<number>(Date.now());
   const [showWarningModal, setShowWarningModal] = useState(false);
   const [countdownSeconds, setCountdownSeconds] = useState(WARNING_COUNTDOWN_TIME);
+  const [isLocked, setIsLocked] = useState(false);
+  
+  const isNative = Capacitor.isNativePlatform();
   
   const warningTimerRef = useRef<NodeJS.Timeout | null>(null);
   const countdownTimerRef = useRef<NodeJS.Timeout | null>(null);
@@ -55,8 +62,20 @@ export function ActivityProvider({ children }: { children: ReactNode }) {
     };
   }, [resetActivity]);
 
-  // Main inactivity timer - triggers warning at 19 minutes
+  const lockApp = useCallback(() => {
+    setIsLocked(true);
+  }, []);
+
+  const unlockApp = useCallback(() => {
+    setIsLocked(false);
+    resetActivity();
+  }, [resetActivity]);
+
+  // Main inactivity timer - triggers warning at 19 minutes (only on web, not native iOS)
   useEffect(() => {
+    // Skip inactivity timeout on native platforms - use biometric lock instead
+    if (isNative) return;
+
     if (warningTimerRef.current) {
       clearTimeout(warningTimerRef.current);
     }
@@ -71,7 +90,7 @@ export function ActivityProvider({ children }: { children: ReactNode }) {
         clearTimeout(warningTimerRef.current);
       }
     };
-  }, [lastActivityTime]);
+  }, [lastActivityTime, isNative]);
 
   // Countdown timer - runs when warning modal is shown
   useEffect(() => {
@@ -105,6 +124,9 @@ export function ActivityProvider({ children }: { children: ReactNode }) {
         showWarningModal,
         countdownSeconds,
         closeWarningModal,
+        isLocked,
+        lockApp,
+        unlockApp,
       }}
     >
       {children}

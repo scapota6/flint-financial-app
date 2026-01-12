@@ -16,6 +16,27 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { User, Bell, Link2, Download, Trash2, Shield, Clock, Mail, Smartphone, CheckCircle, XCircle, AlertCircle, CreditCard } from 'lucide-react';
 import { format } from 'date-fns';
 
+interface ProfileData {
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+}
+
+interface NotificationPreferences {
+  emailAlerts?: boolean;
+  pushAlerts?: boolean;
+  quietHoursStart?: string;
+  quietHoursEnd?: string;
+}
+
+interface ConnectedAccount {
+  id: string;
+  name: string;
+  type: string;
+  status: string;
+  connectedAt: string;
+}
+
 export default function Settings() {
   const { user, isLoading: authLoading } = useAuth();
   const { toast } = useToast();
@@ -26,19 +47,19 @@ export default function Settings() {
   });
 
   // Fetch user profile
-  const { data: profile, isLoading: profileLoading } = useQuery({
+  const { data: profile, isLoading: profileLoading } = useQuery<ProfileData>({
     queryKey: ['/api/settings/profile'],
     enabled: !!user
   });
 
   // Fetch notification preferences
-  const { data: notifications, isLoading: notifLoading } = useQuery({
+  const { data: notifications, isLoading: notifLoading } = useQuery<NotificationPreferences>({
     queryKey: ['/api/settings/notifications'],
     enabled: !!user
   });
 
   // Fetch connected accounts
-  const { data: connectedAccounts, isLoading: accountsLoading } = useQuery({
+  const { data: connectedAccounts, isLoading: accountsLoading } = useQuery<ConnectedAccount[]>({
     queryKey: ['/api/settings/connected-accounts'],
     enabled: !!user
   });

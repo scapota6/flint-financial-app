@@ -1,13 +1,14 @@
 import { lazy, Suspense, useEffect, useState, useCallback, type ReactNode } from "react";
-import { Switch, Route } from "wouter";
+import { Switch, Route, useLocation } from "wouter";
 import { AnimatePresence } from "framer-motion";
-import { queryClient, setGlobalLogoutCallback } from "./lib/queryClient";
+import { queryClient, setGlobalLogoutCallback, apiRequest } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/contexts/ThemeContext";
-import { ActivityProvider } from "@/contexts/ActivityContext";
+import { ActivityProvider, useActivity } from "@/contexts/ActivityContext";
 import { ActivityTimeoutModal } from "@/components/ActivityTimeoutModal";
+import { BiometricUnlock, hasBiometricSession, saveSessionForBiometric, clearBiometricSession } from "@/components/BiometricUnlock";
 import { FloatingHeader } from "@/components/ui/floating-header";
 import { UpgradeBanner } from "@/components/ui/upgrade-banner";
 import { MobileNav } from "@/components/ui/mobile-nav";
@@ -283,12 +284,75 @@ function Router() {
 }
 
 function AppContent() {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
+  const { isLocked, lockApp, unlockApp } = useActivity();
+  const [, setLocation] = useLocation();
+  const isNative = Capacitor.isNativePlatform();
+
+  // Save biometric session when user authenticates on native
+  useEffect(() => {
+    if (isNative && isAuthenticated && user?.id) {
+      saveSessionForBiometric(user.id.toString());
+    }
+  }, [isNative, isAuthenticated, user?.id]);
+
+  // Listen for app resume on native to trigger biometric lock
+  useEffect(() => {
+    if (!isNative || !isAuthenticated) return;
+
+    let listenerHandle: { remove: () => Promise<void> } | null = null;
+
+    const setupListener = async () => {
+      listenerHandle = await CapacitorApp.addListener('appStateChange', async ({ isActive }: { isActive: boolean }) => {
+        if (isActive) {
+          const hasSession = await hasBiometricSession();
+          if (hasSession && !isLocked) {
+            lockApp();
+          }
+        }
+      });
+    };
+
+    setupListener();
+    
+    return () => {
+      if (listenerHandle) {
+        listenerHandle.remove();
+      }
+    };
+  }, [isNative, isAuthenticated, isLocked, lockApp]);
+
+  const handleBiometricUnlock = () => {
+    unlockApp();
+  };
+
+  const handleFallbackToLogin = async () => {
+    // SECURITY: Never call unlockApp() here - the lock must stay active
+    // until the page fully reloads. The page reload will clear auth state
+    // and the lock will naturally disappear because isAuthenticated becomes false.
+    try {
+      await apiRequest('/api/auth/logout', { method: 'POST' });
+    } catch (e) {
+      // Continue with cleanup even if logout API fails
+    }
+    // Clear biometric session and query cache
+    await clearBiometricSession();
+    queryClient.clear();
+    // Force full page reload - lock stays active until reload completes
+    // After reload, isAuthenticated will be false so BiometricUnlock won't render
+    window.location.href = '/login';
+  };
   
   return (
     <MetaMaskWrapper enabled={isAuthenticated}>
       <div>
         <Toaster />
+        {isNative && isLocked && isAuthenticated && (
+          <BiometricUnlock 
+            onUnlock={handleBiometricUnlock}
+            onFallbackToLogin={handleFallbackToLogin}
+          />
+        )}
         <Router />
       </div>
     </MetaMaskWrapper>

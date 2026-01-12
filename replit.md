@@ -58,6 +58,7 @@ The platform features a clean "Cream Startup Template" aesthetic with a cream ba
 -   **Betterstack Logtail**: Real-time error monitoring and logging.
 -   **Grafana**: Dashboarding and metrics visualization.
 -   **Capacitor**: Native mobile app wrapper for iOS and Android, enabling distribution of the React web app as native mobile applications.
+-   **@capgo/capacitor-native-biometric**: Face ID/Touch ID support for secure app unlock on iOS (replaces web-style inactivity timeout on native platforms).
 
 ### Technical Libraries/Frameworks
 -   **@neondatabase/serverless**: PostgreSQL connectivity.

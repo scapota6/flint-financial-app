@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useLocation } from 'wouter';
 import { useMutation } from '@tanstack/react-query';
+import { Capacitor } from '@capacitor/core';
 import { useActivity } from '@/contexts/ActivityContext';
 import { apiRequest } from '@/lib/queryClient';
 import {
@@ -17,6 +18,12 @@ import { Clock } from 'lucide-react';
 export function ActivityTimeoutModal() {
   const { showWarningModal, countdownSeconds, resetActivity, closeWarningModal } = useActivity();
   const [, setLocation] = useLocation();
+  const isNative = Capacitor.isNativePlatform();
+
+  // Skip showing modal on native platforms - use biometric lock instead
+  if (isNative) {
+    return null;
+  }
 
   const refreshMutation = useMutation({
     mutationFn: async () => {
