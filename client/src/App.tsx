@@ -1,7 +1,7 @@
-import { lazy, Suspense, useEffect, useState, type ReactNode } from "react";
+import { lazy, Suspense, useEffect, useState, useCallback, type ReactNode } from "react";
 import { Switch, Route } from "wouter";
 import { AnimatePresence } from "framer-motion";
-import { queryClient } from "./lib/queryClient";
+import { queryClient, setGlobalLogoutCallback } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -112,6 +112,23 @@ function PublicRoute({ component: Component }: { component: React.ComponentType 
 function Router() {
   const { isAuthenticated, isLoading } = useAuth();
   const [isMobile, setIsMobile] = useState(false);
+  const isNative = Capacitor.isNativePlatform();
+
+  // Set up global logout handler for 401/auth errors
+  const handleGlobalLogout = useCallback(async () => {
+    try {
+      await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
+    } catch (e) {
+      // Ignore logout API errors
+    }
+    queryClient.clear();
+    window.location.href = isNative ? '/login' : '/';
+  }, [isNative]);
+
+  useEffect(() => {
+    setGlobalLogoutCallback(handleGlobalLogout);
+    return () => setGlobalLogoutCallback(null);
+  }, [handleGlobalLogout]);
 
   useEffect(() => {
     const checkMobile = () => {
@@ -142,7 +159,8 @@ function Router() {
             <Switch>
             {!isAuthenticated ? (
               <>
-                <Route path="/" component={LandingNew} />
+                {/* On native iOS/Android, skip landing page and show login directly */}
+                <Route path="/" component={isNative ? Login : LandingNew} />
                 <Route path="/landing" component={LandingNew} />
                 <Route path="/new" component={LandingNew} />
                 <Route path="/legacy" component={LandingLegacy} />

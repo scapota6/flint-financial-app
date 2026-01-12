@@ -1,8 +1,32 @@
 import { QueryClient, QueryFunction } from "@tanstack/react-query";
 
+// Global logout callback - set by App component to handle 401s
+let globalLogoutCallback: (() => void) | null = null;
+
+export function setGlobalLogoutCallback(callback: (() => void) | null) {
+  globalLogoutCallback = callback;
+}
+
+function handleAuthError(status: number, text: string) {
+  // Check if this is an auth error that should trigger logout
+  const isAuthError = status === 401 || 
+    text.toLowerCase().includes('sign in again') ||
+    text.toLowerCase().includes('please sign in') ||
+    text.toLowerCase().includes('session expired') ||
+    text.toLowerCase().includes('unauthorized');
+  
+  if (isAuthError && globalLogoutCallback) {
+    globalLogoutCallback();
+  }
+}
+
 async function throwIfResNotOk(res: Response) {
   if (!res.ok) {
     const text = (await res.text()) || res.statusText;
+    
+    // Handle auth errors globally
+    handleAuthError(res.status, text);
+    
     throw new Error(`${res.status}: ${text}`);
   }
 }
@@ -82,6 +106,18 @@ export async function apiRequest(path: string, options: ApiRequestInit = {}) {
     invalidateCsrf();
   }
 
+  // Handle auth errors (401 or auth-related error messages)
+  if (!resp.ok) {
+    try {
+      const clonedResp = resp.clone();
+      const text = await clonedResp.text();
+      handleAuthError(resp.status, text);
+    } catch (e) {
+      // If we can't read the body, just check status
+      handleAuthError(resp.status, '');
+    }
+  }
+
   // Track activity on successful API responses
   if (resp.ok) {
     notifyActivity();
@@ -118,11 +154,18 @@ export const getQueryFn: <T>(options: {
       credentials: "include",
     });
 
+    // For the auth check endpoint, just return null on 401 (don't trigger logout)
+    // This prevents infinite loops during initial auth check
     if (unauthorizedBehavior === "returnNull" && res.status === 401) {
       return null;
     }
 
-    await throwIfResNotOk(res);
+    // For non-auth endpoints, check for auth errors in response body
+    if (!res.ok) {
+      const text = (await res.text()) || res.statusText;
+      handleAuthError(res.status, text);
+      throw new Error(`${res.status}: ${text}`);
+    }
     
     // Track activity on successful API responses
     if (res.ok) {
