@@ -37,6 +37,7 @@ import {
 import { Link } from "wouter";
 
 import { useAuth } from "@/hooks/useAuth";
+import { useToast } from "@/hooks/use-toast";
 import { apiGet, apiRequest, queryClient } from "@/lib/queryClient";
 import { getInstitutionLogo } from "@/lib/bank-logos";
 import { Button } from "@/components/ui/button";
@@ -143,6 +144,7 @@ function formatDate(dateString: string): string {
 
 export default function Analytics() {
   const { user, isLoading: isAuthLoading } = useAuth();
+  const { toast } = useToast();
   const [selectedMonth, setSelectedMonth] = useState(() => startOfMonth(new Date()));
   const [viewMode, setViewMode] = useState<"1" | "3">("1");
   const [selectedAccountIds, setSelectedAccountIds] = useState<string[]>([]);
@@ -241,7 +243,12 @@ export default function Analytics() {
   const deleteGoalMutation = useMutation({
     mutationFn: async (goalId: number) => {
       setDeletingGoalId(goalId);
-      return apiRequest(`/api/goals/${goalId}`, { method: 'DELETE' });
+      const response = await apiRequest(`/api/goals/${goalId}`, { method: 'DELETE' });
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ message: 'Failed to delete goal' }));
+        throw new Error(errorData.message || 'Failed to delete goal');
+      }
+      return response;
     },
     onMutate: async (goalId: number) => {
       await queryClient.cancelQueries({ queryKey: ["/api/goals"] });
@@ -255,10 +262,21 @@ export default function Analytics() {
       });
       return { previousGoals };
     },
-    onError: (_err, _goalId, context) => {
+    onError: (err, _goalId, context) => {
       if (context?.previousGoals) {
         queryClient.setQueryData(["/api/goals"], context.previousGoals);
       }
+      toast({
+        title: "Failed to delete goal",
+        description: err instanceof Error ? err.message : "Please try again",
+        variant: "destructive",
+      });
+    },
+    onSuccess: () => {
+      toast({
+        title: "Goal deleted",
+        description: "Your financial goal has been removed",
+      });
     },
     onSettled: () => {
       setDeletingGoalId(null);

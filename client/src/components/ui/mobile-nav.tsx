@@ -1,19 +1,19 @@
 import { useLocation, Link } from 'wouter';
-import { Home, Wallet, BarChart3, Settings } from 'lucide-react';
+import { LayoutGrid, CreditCard, TrendingUp, Cog } from 'lucide-react';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import { Capacitor } from '@capacitor/core';
 
 interface NavItem {
   path: string;
-  icon: typeof Home;
+  icon: typeof LayoutGrid;
   label: string;
 }
 
 const navItems: NavItem[] = [
-  { path: '/dashboard', icon: Home, label: 'Home' },
-  { path: '/accounts', icon: Wallet, label: 'Accounts' },
-  { path: '/analytics', icon: BarChart3, label: 'Analytics' },
-  { path: '/settings', icon: Settings, label: 'Settings' },
+  { path: '/dashboard', icon: LayoutGrid, label: 'Home' },
+  { path: '/accounts', icon: CreditCard, label: 'Accounts' },
+  { path: '/analytics', icon: TrendingUp, label: 'Analytics' },
+  { path: '/settings', icon: Cog, label: 'Settings' },
 ];
 
 export function MobileNav() {

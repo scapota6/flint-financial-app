@@ -135,8 +135,8 @@ function Router() {
       )}
       {isAuthenticated && <UpgradeBanner />}
       {isAuthenticated && <ActivityTimeoutModal />}
-      <div className={isAuthenticated ? `authenticated-content px-4 relative pt-20 z-10 ${isMobile ? 'pb-20' : ''}` : ""}>
-        {isAuthenticated && <FloatingHeader />}
+      <div className={isAuthenticated ? `authenticated-content px-4 relative z-10 ${Capacitor.isNativePlatform() ? 'pt-safe pt-4 pb-20' : 'pt-20'} ${isMobile && !Capacitor.isNativePlatform() ? 'pb-20' : ''}` : ""}>
+        {isAuthenticated && !Capacitor.isNativePlatform() && <FloatingHeader />}
         <AnimatePresence mode="wait">
           <Suspense fallback={<PageLoader />}>
             <Switch>
