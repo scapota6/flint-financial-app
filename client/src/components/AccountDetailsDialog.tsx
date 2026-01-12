@@ -723,13 +723,8 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
   } : null;
   
   // Compute loading, error states for SnapTrade
-  const snapTradeIsLoading = isSnapTradeAccount && (
-    snapTradeQueries.details.isLoading ||
-    snapTradeQueries.balances.isLoading ||
-    snapTradeQueries.positions.isLoading ||
-    snapTradeQueries.orders.isLoading ||
-    snapTradeQueries.activities.isLoading
-  );
+  // Only block on the initial details query - allow other sections to load progressively
+  const snapTradeIsLoading = isSnapTradeAccount && snapTradeQueries.details.isLoading;
   
   const snapTradeHasError = isSnapTradeAccount && (
     snapTradeQueries.details.isError ||
