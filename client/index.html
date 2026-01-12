@@ -19,7 +19,18 @@
     <script type="module" src="/src/main.tsx"></script>
     <!-- Teller Connect SDK -->
     <script src="https://cdn.teller.io/connect/connect.js"></script>
-    <!-- This is a replit script which adds a banner on the top of the page when opened in development mode outside the replit environment -->
-    <script type="text/javascript" src="https://replit.com/public/js/replit-dev-banner.js"></script>
+    <!-- Replit dev banner - only load in web browser, not native Capacitor apps -->
+    <script>
+      (function() {
+        // Don't load Replit dev banner on native iOS/Android apps
+        var isCapacitor = window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform();
+        var isNativeUserAgent = /ionic|capacitor/i.test(navigator.userAgent);
+        if (!isCapacitor && !isNativeUserAgent) {
+          var script = document.createElement('script');
+          script.src = 'https://replit.com/public/js/replit-dev-banner.js';
+          document.body.appendChild(script);
+        }
+      })();
+    </script>
   </body>
 </html>

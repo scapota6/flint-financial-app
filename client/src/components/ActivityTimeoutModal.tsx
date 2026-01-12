@@ -15,15 +15,11 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Clock } from 'lucide-react';
 
+const isNative = Capacitor.isNativePlatform();
+
 export function ActivityTimeoutModal() {
   const { showWarningModal, countdownSeconds, resetActivity, closeWarningModal } = useActivity();
   const [, setLocation] = useLocation();
-  const isNative = Capacitor.isNativePlatform();
-
-  // Skip showing modal on native platforms - use biometric lock instead
-  if (isNative) {
-    return null;
-  }
 
   const refreshMutation = useMutation({
     mutationFn: async () => {
@@ -77,6 +73,11 @@ export function ActivityTimeoutModal() {
       handleLogout();
     }
   }, [showWarningModal, countdownSeconds]);
+
+  // Skip showing modal on native platforms - use biometric lock instead
+  if (isNative) {
+    return null;
+  }
 
   return (
     <AlertDialog open={showWarningModal}>

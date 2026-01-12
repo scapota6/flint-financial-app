@@ -326,20 +326,13 @@ function AppContent() {
     unlockApp();
   };
 
-  const handleFallbackToLogin = async () => {
-    // SECURITY: Never call unlockApp() here - the lock must stay active
-    // until the page fully reloads. The page reload will clear auth state
-    // and the lock will naturally disappear because isAuthenticated becomes false.
+  const handleBiometricLogout = async () => {
     try {
       await apiRequest('/api/auth/logout', { method: 'POST' });
     } catch (e) {
-      // Continue with cleanup even if logout API fails
     }
-    // Clear biometric session and query cache
     await clearBiometricSession();
     queryClient.clear();
-    // Force full page reload - lock stays active until reload completes
-    // After reload, isAuthenticated will be false so BiometricUnlock won't render
     window.location.href = '/login';
   };
   
@@ -350,7 +343,7 @@ function AppContent() {
         {isNative && isLocked && isAuthenticated && (
           <BiometricUnlock 
             onUnlock={handleBiometricUnlock}
-            onFallbackToLogin={handleFallbackToLogin}
+            onLogout={handleBiometricLogout}
           />
         )}
         <Router />
