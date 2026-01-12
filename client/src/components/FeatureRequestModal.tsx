@@ -104,7 +104,7 @@ export default function FeatureRequestModal({ open, onOpenChange }: FeatureReque
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
       
       {/* Modal Content */}
-      <div className="relative bg-[#18181B] border border-[#27272A] rounded-lg shadow-xl max-w-[600px] w-full mx-4 max-h-[90vh] overflow-y-auto">
+      <div className="relative !bg-[#18181B] border !border-[#27272A] rounded-lg shadow-xl max-w-[600px] w-full mx-4 max-h-[90vh] overflow-y-auto" style={{ backgroundColor: '#18181B' }}>
         {/* Close button */}
         <button
           onClick={() => onOpenChange(false)}
@@ -115,10 +115,10 @@ export default function FeatureRequestModal({ open, onOpenChange }: FeatureReque
           <span className="sr-only">Close</span>
         </button>
 
-        <div className="p-6">
+        <div className="p-6" style={{ backgroundColor: '#18181B' }}>
           <div className="space-y-2 mb-6">
-            <h2 className="text-2xl font-bold text-white">Request a Feature</h2>
-            <p className="text-gray-400">
+            <h2 className="text-2xl font-bold !text-white" style={{ color: 'white' }}>Request a Feature</h2>
+            <p className="!text-gray-400" style={{ color: '#9CA3AF' }}>
               Have an idea to improve Flint? We'd love to hear it! Share your feature request below.
             </p>
           </div>
@@ -131,20 +131,21 @@ export default function FeatureRequestModal({ open, onOpenChange }: FeatureReque
                 name="type"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-white">What are you submitting?</FormLabel>
+                    <FormLabel className="!text-white" style={{ color: 'white' }}>What are you submitting?</FormLabel>
                     <Select 
                       onValueChange={field.onChange} 
                       defaultValue={field.value}
                     >
                       <FormControl>
                         <SelectTrigger 
-                          className="bg-[#27272A] border-[#3F3F46] text-white"
+                          className="!bg-[#27272A] !border-[#3F3F46] !text-white"
+                          style={{ backgroundColor: '#27272A', borderColor: '#3F3F46', color: 'white' }}
                           data-testid="select-submission-type"
                         >
                           <SelectValue placeholder="Select type" />
                         </SelectTrigger>
                       </FormControl>
-                      <SelectContent className="bg-[#27272A] border-[#3F3F46] text-white">
+                      <SelectContent className="!bg-[#27272A] !border-[#3F3F46] !text-white" style={{ backgroundColor: '#27272A', borderColor: '#3F3F46', color: 'white' }}>
                         <SelectItem value="feature_request" data-testid="type-feature-request">
                           <span className="flex items-center gap-2">
                             <Lightbulb className="w-4 h-4 text-yellow-500" />
@@ -170,12 +171,13 @@ export default function FeatureRequestModal({ open, onOpenChange }: FeatureReque
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-white">Name</FormLabel>
+                    <FormLabel className="!text-white" style={{ color: 'white' }}>Name</FormLabel>
                     <FormControl>
                       <Input
                         {...field}
                         placeholder="Your full name"
-                        className="bg-[#27272A] border-[#3F3F46] text-white placeholder:text-gray-500"
+                        className="!bg-[#27272A] !border-[#3F3F46] !text-white placeholder:text-gray-500"
+                        style={{ backgroundColor: '#27272A', borderColor: '#3F3F46', color: 'white' }}
                         data-testid="input-feature-request-name"
                       />
                     </FormControl>
@@ -190,13 +192,14 @@ export default function FeatureRequestModal({ open, onOpenChange }: FeatureReque
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-white">Email</FormLabel>
+                    <FormLabel className="!text-white" style={{ color: 'white' }}>Email</FormLabel>
                     <FormControl>
                       <Input
                         {...field}
                         type="email"
                         placeholder="your@email.com"
-                        className="bg-[#27272A] border-[#3F3F46] text-white placeholder:text-gray-500"
+                        className="!bg-[#27272A] !border-[#3F3F46] !text-white placeholder:text-gray-500"
+                        style={{ backgroundColor: '#27272A', borderColor: '#3F3F46', color: 'white' }}
                         data-testid="input-feature-request-email"
                       />
                     </FormControl>
@@ -211,13 +214,14 @@ export default function FeatureRequestModal({ open, onOpenChange }: FeatureReque
                 name="phone"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-white">Phone Number <span className="text-gray-500">(optional)</span></FormLabel>
+                    <FormLabel className="!text-white" style={{ color: 'white' }}>Phone Number <span className="!text-gray-500" style={{ color: '#6B7280' }}>(optional)</span></FormLabel>
                     <FormControl>
                       <Input
                         {...field}
                         type="tel"
                         placeholder="+1 (555) 123-4567"
-                        className="bg-[#27272A] border-[#3F3F46] text-white placeholder:text-gray-500"
+                        className="!bg-[#27272A] !border-[#3F3F46] !text-white placeholder:text-gray-500"
+                        style={{ backgroundColor: '#27272A', borderColor: '#3F3F46', color: 'white' }}
                         data-testid="input-feature-request-phone"
                       />
                     </FormControl>
@@ -232,20 +236,21 @@ export default function FeatureRequestModal({ open, onOpenChange }: FeatureReque
                 name="priority"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-white">Priority</FormLabel>
+                    <FormLabel className="!text-white" style={{ color: 'white' }}>Priority</FormLabel>
                     <Select 
                       onValueChange={field.onChange} 
                       defaultValue={field.value}
                     >
                       <FormControl>
                         <SelectTrigger 
-                          className="bg-[#27272A] border-[#3F3F46] text-white"
+                          className="!bg-[#27272A] !border-[#3F3F46] !text-white"
+                          style={{ backgroundColor: '#27272A', borderColor: '#3F3F46', color: 'white' }}
                           data-testid="select-feature-request-priority"
                         >
                           <SelectValue placeholder="Select priority" />
                         </SelectTrigger>
                       </FormControl>
-                      <SelectContent className="bg-[#27272A] border-[#3F3F46] text-white">
+                      <SelectContent className="!bg-[#27272A] !border-[#3F3F46] !text-white" style={{ backgroundColor: '#27272A', borderColor: '#3F3F46', color: 'white' }}>
                         <SelectItem value="low" data-testid="priority-low">
                           <span className="flex items-center gap-2">
                             <span className="w-2 h-2 rounded-full bg-green-500"></span>
@@ -283,12 +288,13 @@ export default function FeatureRequestModal({ open, onOpenChange }: FeatureReque
                 name="description"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-white">Feature Description</FormLabel>
+                    <FormLabel className="!text-white" style={{ color: 'white' }}>Feature Description</FormLabel>
                     <FormControl>
                       <Textarea
                         {...field}
                         placeholder="Describe the feature you'd like to see in Flint. Be as detailed as possible!"
-                        className="bg-[#27272A] border-[#3F3F46] text-white placeholder:text-gray-500 min-h-[120px] resize-y"
+                        className="!bg-[#27272A] !border-[#3F3F46] !text-white placeholder:text-gray-500 min-h-[120px] resize-y"
+                        style={{ backgroundColor: '#27272A', borderColor: '#3F3F46', color: 'white' }}
                         data-testid="textarea-feature-request-description"
                       />
                     </FormControl>
