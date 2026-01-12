@@ -27,7 +27,7 @@
     "@jridgewell/trace-mapping": "^0.3.25",
     "@logtail/node": "^0.5.6",
     "@metamask/sdk": "^0.34.0",
-    "@metamask/sdk-react": "^0.14.1",
+    "@metamask/sdk-react": "^0.33.1",
     "@neondatabase/serverless": "^0.10.4",
     "@playwright/test": "^1.54.2",
     "@radix-ui/react-accordion": "^1.2.4",
@@ -80,8 +80,10 @@
     "@uppy/react": "^5.1.1",
     "@whop/api": "^0.0.51",
     "@whop/checkout": "^0.0.44",
+    "ansi-regex": "^6.0.1",
     "argon2": "^0.44.0",
     "bcrypt": "^6.0.0",
+    "braces": "^3.0.3",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
@@ -90,7 +92,8 @@
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "cron": "^4.3.3",
-    "csurf": "^1.2.2",
+    "cross-spawn": "^7.0.6",
+    "csurf": "^1.11.0",
     "csv-parse": "^6.1.0",
     "csv-writer": "^1.6.0",
     "cypress": "^14.5.4",
@@ -107,16 +110,20 @@
     "express-session": "^1.18.1",
     "form-data": "^4.0.4",
     "framer-motion": "^11.18.2",
+    "glob-parent": "^6.0.2",
     "google-auth-library": "^10.5.0",
     "helmet": "^8.1.0",
     "idb": "^8.0.3",
     "input-otp": "^1.4.2",
     "jsonwebtoken": "^9.0.2",
     "lightweight-charts": "^5.0.8",
+    "lodash": "^4.17.21",
     "lucide-react": "^0.453.0",
     "mailgun.js": "^12.1.1",
     "memoizee": "^0.4.17",
     "memorystore": "^1.6.7",
+    "minimatch": "^9.0.5",
+    "minimist": "^1.2.8",
     "motion": "^12.23.24",
     "nanoid": "^5.1.5",
     "next-themes": "^0.4.6",
@@ -170,7 +177,7 @@
     "@types/ws": "^8.5.13",
     "@vitejs/plugin-react": "^5.1.2",
     "autoprefixer": "^10.4.20",
-    "drizzle-kit": "^0.18.1",
+    "drizzle-kit": "^0.31.8",
     "esbuild": "^0.25.0",
     "postcss": "^8.4.47",
     "tailwindcss": "^3.4.19",
@@ -182,6 +189,29 @@
     "bufferutil": "^4.0.8"
   },
   "overrides": {
-    "axios": "^1.12.0"
+    "axios": "^1.12.0",
+    "@blakeembrey/template": "^1.2.0",
+    "ansi-regex": "^6.0.1",
+    "braces": "^3.0.3",
+    "cross-spawn": "^7.0.6",
+    "glob-parent": "^6.0.2",
+    "lodash": "^4.17.21",
+    "minimatch": "^9.0.5",
+    "minimist": "^1.2.8",
+    "semver": "^7.7.3",
+    "bl": "^5.1.0",
+    "cookie": "^0.7.2",
+    "elliptic": "^6.6.1",
+    "esbuild": "^0.25.0",
+    "browserify-sign": {
+      "elliptic": "^6.6.1"
+    },
+    "create-ecdh": {
+      "elliptic": "^6.6.1"
+    },
+    "crypto-browserify": {
+      "browserify-sign": "^4.2.3",
+      "create-ecdh": "^4.0.4"
+    }
   }
 }
