@@ -44,6 +44,7 @@ function MetaMaskWrapper({ children, enabled }: { children: ReactNode; enabled: 
 import PasswordSetup from "@/pages/password-setup";
 import ResetPassword from "@/pages/reset-password";
 import Login from "@/pages/login";
+import Signup from "@/pages/signup";
 
 // Code-split remaining pages for optimal bundle size
 const NotFound = lazy(() => import("@/pages/not-found"));
@@ -165,6 +166,7 @@ function Router() {
                 <Route path="/new" component={LandingNew} />
                 <Route path="/legacy" component={LandingLegacy} />
                 <Route path="/login" component={Login} />
+                <Route path="/signup" component={Signup} />
                 <Route path="/success" component={SuccessPage} />
                 <Route path="/landing/success" component={SuccessPage} />
                 <Route path="/payment-success" component={PaymentSuccessPage} />

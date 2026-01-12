@@ -68,7 +68,7 @@ export default function ResetPassword() {
       <Card className="w-full max-w-md bg-white border-gray-200 shadow-sm rounded-xl">
         <CardHeader className="space-y-1">
           <div className="flex items-center justify-center mb-4">
-            <div className="text-2xl font-bold text-blue-600">Flint</div>
+            <div className="text-2xl font-bold text-gray-900">Flint</div>
           </div>
           <CardDescription className="text-center text-gray-600">
             Enter your email address and we'll send you a password reset link
@@ -103,8 +103,8 @@ export default function ResetPassword() {
                 </Button>
                 
                 <a
-                  href="/api/login"
-                  className="flex items-center justify-center w-full h-10 px-4 rounded-lg text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 transition-colors"
+                  href="/login"
+                  className="flex items-center justify-center w-full h-10 px-4 rounded-lg text-sm font-medium bg-gray-900 text-white hover:bg-gray-800 transition-colors"
                   data-testid="link-login"
                 >
                   <ArrowLeft className="mr-2 h-4 w-4" />
@@ -142,7 +142,7 @@ export default function ResetPassword() {
 
                   <Button
                     type="submit"
-                    className="w-full bg-blue-600 hover:bg-blue-700 text-white rounded-lg"
+                    className="w-full bg-gray-900 hover:bg-gray-800 text-white rounded-lg"
                     disabled={isSubmitting}
                     data-testid="button-submit"
                   >
@@ -172,8 +172,8 @@ export default function ResetPassword() {
                   <p className="text-gray-600">
                     Remember your password?{" "}
                     <a 
-                      href="/api/login" 
-                      className="text-blue-600 hover:text-blue-700 font-medium"
+                      href="/login" 
+                      className="text-gray-900 hover:text-gray-700 font-medium underline underline-offset-4"
                       data-testid="link-login-alt"
                     >
                       Log in
@@ -183,10 +183,10 @@ export default function ResetPassword() {
                     Don't have an account?{" "}
                     <a 
                       href="/" 
-                      className="text-blue-600 hover:text-blue-700 font-medium"
+                      className="text-gray-900 hover:text-gray-700 font-medium underline underline-offset-4"
                       data-testid="link-home"
                     >
-                      Go to home
+                      Sign up
                     </a>
                   </p>
                 </div>

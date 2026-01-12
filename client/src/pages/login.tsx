@@ -12,6 +12,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Loader2, Eye, EyeOff, AlertCircle } from "lucide-react";
 import { Link } from "wouter";
 import { apiRequest } from "@/lib/queryClient";
+import { Capacitor } from "@capacitor/core";
 import flintLogo from "@assets/flint-logo.png";
 
 const loginSchema = z.object({
@@ -255,13 +256,23 @@ export default function Login() {
           <div className="text-center">
             <p className="text-sm text-gray-600">
               Don't have an account?{" "}
-              <Link 
-                href="/" 
-                className="text-gray-900 hover:text-gray-700 underline underline-offset-4 font-medium"
-                data-testid="link-landing"
-              >
-                Go to landing page
-              </Link>
+              {Capacitor.isNativePlatform() ? (
+                <Link 
+                  href="/signup" 
+                  className="text-gray-900 hover:text-gray-700 underline underline-offset-4 font-medium"
+                  data-testid="link-signup"
+                >
+                  Create Account
+                </Link>
+              ) : (
+                <Link 
+                  href="/landing" 
+                  className="text-gray-900 hover:text-gray-700 underline underline-offset-4 font-medium"
+                  data-testid="link-landing"
+                >
+                  Go to landing page
+                </Link>
+              )}
             </p>
           </div>
         </CardContent>
