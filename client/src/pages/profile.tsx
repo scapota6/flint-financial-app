@@ -174,23 +174,11 @@ export default function Profile() {
   }
 
   return (
-    <div className="min-h-screen p-6">
+    <div className="min-h-screen p-4 sm:p-6">
       <div className="max-w-4xl mx-auto space-y-6">
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center gap-3">
-            <User className="h-8 w-8 text-gray-900" />
-            <h1 className="text-3xl font-bold text-gray-900">Profile Settings</h1>
-          </div>
-          <Button 
-            onClick={handleLogout}
-            disabled={isLoggingOut}
-            variant="outline"
-            className="border-red-300 text-red-600 hover:bg-red-50 hover:text-red-700"
-            data-testid="button-logout"
-          >
-            <LogOut className="h-4 w-4 mr-2" />
-            {isLoggingOut ? 'Logging out...' : 'Log Out'}
-          </Button>
+        <div className="flex items-center gap-3 mb-6">
+          <User className="h-7 w-7 text-gray-900" />
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Profile Settings</h1>
         </div>
 
         {/* Profile Information */}
@@ -459,15 +447,14 @@ export default function Profile() {
           </CardContent>
         </Card>
 
-        {/* Logout Section - Mobile Friendly */}
-        <Card className="bg-white border-gray-200 md:hidden">
+        {/* Logout Section */}
+        <Card className="bg-white border-gray-200">
           <CardContent className="p-4">
             <Button 
               onClick={handleLogout}
               disabled={isLoggingOut}
-              variant="outline"
-              className="w-full border-red-300 text-red-600 hover:bg-red-50 hover:text-red-700"
-              data-testid="button-logout-mobile"
+              className="w-full bg-red-600 hover:bg-red-700 text-white"
+              data-testid="button-logout"
             >
               <LogOut className="h-4 w-4 mr-2" />
               {isLoggingOut ? 'Logging out...' : 'Log Out'}
