@@ -2,9 +2,7 @@ import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Separator } from '@/components/ui/separator';
 import { User, Settings, Shield, Lock, Share2, Copy, Check, LogOut } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest } from '@/lib/queryClient';
@@ -196,33 +194,33 @@ export default function Profile() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="firstName" className="text-gray-900">First Name</Label>
-                <Input
+                <input
                   id="firstName"
                   value={profileData.firstName}
                   onChange={(e) => setProfileData(prev => ({ ...prev, firstName: e.target.value }))}
                   disabled={!isEditing}
-                  className="bg-gray-50 border-gray-300 text-gray-900"
+                  className="flex h-10 w-full rounded-md border px-3 py-2 text-sm bg-white border-gray-300 text-gray-900 disabled:bg-gray-100 disabled:text-gray-700 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="lastName" className="text-gray-900">Last Name</Label>
-                <Input
+                <input
                   id="lastName"
                   value={profileData.lastName}
                   onChange={(e) => setProfileData(prev => ({ ...prev, lastName: e.target.value }))}
                   disabled={!isEditing}
-                  className="bg-gray-50 border-gray-300 text-gray-900"
+                  className="flex h-10 w-full rounded-md border px-3 py-2 text-sm bg-white border-gray-300 text-gray-900 disabled:bg-gray-100 disabled:text-gray-700 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
             </div>
             <div className="space-y-2">
               <Label htmlFor="email" className="text-gray-900">Email</Label>
-              <Input
+              <input
                 id="email"
                 type="email"
                 value={profileData.email}
                 disabled
-                className="bg-gray-100 border-gray-300 text-gray-500"
+                className="flex h-10 w-full rounded-md border px-3 py-2 text-sm bg-gray-100 border-gray-300 text-gray-700 disabled:cursor-not-allowed focus:outline-none"
               />
               <p className="text-sm text-gray-500">Email cannot be changed</p>
             </div>
@@ -315,10 +313,10 @@ export default function Profile() {
                 <div className="space-y-3">
                   <Label className="text-gray-900">Your Referral Link</Label>
                   <div className="flex gap-2">
-                    <Input
+                    <input
                       value={referralStats?.referralLink || 'Loading...'}
                       readOnly
-                      className="bg-gray-800 border-gray-700 text-white font-mono text-sm"
+                      className="flex h-10 w-full rounded-md border px-3 py-2 text-sm bg-gray-100 border-gray-300 text-gray-800 font-mono focus:outline-none"
                       data-testid="input-referral-link"
                     />
                     <Button 
@@ -345,16 +343,16 @@ export default function Profile() {
                 </div>
 
                 {/* Referral Stats */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-gray-800 rounded-lg">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-gray-100 rounded-lg border border-gray-200">
                   <div>
-                    <Label className="text-gray-300 text-sm">Your Referral Code</Label>
-                    <p className="text-2xl font-bold text-blue-400 mt-1">
+                    <Label className="text-gray-600 text-sm">Your Referral Code</Label>
+                    <p className="text-2xl font-bold text-blue-600 mt-1">
                       {referralStats?.referralCode || 'N/A'}
                     </p>
                   </div>
                   <div>
-                    <Label className="text-gray-300 text-sm">Successful Referrals</Label>
-                    <p className="text-2xl font-bold text-green-400 mt-1">
+                    <Label className="text-gray-600 text-sm">Successful Referrals</Label>
+                    <p className="text-2xl font-bold text-green-600 mt-1">
                       {referralStats?.referralCount || 0}
                     </p>
                   </div>
@@ -404,35 +402,35 @@ export default function Profile() {
           <CardContent className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="currentPassword" className="text-gray-900">Current Password</Label>
-              <Input
+              <input
                 id="currentPassword"
                 type="password"
                 value={passwordData.currentPassword}
                 onChange={(e) => setPasswordData(prev => ({ ...prev, currentPassword: e.target.value }))}
-                className="bg-gray-50 border-gray-300 text-gray-900"
+                className="flex h-10 w-full rounded-md border px-3 py-2 text-sm bg-white border-gray-300 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 data-testid="input-current-password"
               />
             </div>
             <div className="space-y-2">
               <Label htmlFor="newPassword" className="text-gray-900">New Password</Label>
-              <Input
+              <input
                 id="newPassword"
                 type="password"
                 value={passwordData.newPassword}
                 onChange={(e) => setPasswordData(prev => ({ ...prev, newPassword: e.target.value }))}
-                className="bg-gray-50 border-gray-300 text-gray-900"
+                className="flex h-10 w-full rounded-md border px-3 py-2 text-sm bg-white border-gray-300 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 data-testid="input-new-password"
               />
               <p className="text-sm text-gray-500">Must be at least 8 characters long</p>
             </div>
             <div className="space-y-2">
               <Label htmlFor="confirmPassword" className="text-gray-900">Confirm New Password</Label>
-              <Input
+              <input
                 id="confirmPassword"
                 type="password"
                 value={passwordData.confirmPassword}
                 onChange={(e) => setPasswordData(prev => ({ ...prev, confirmPassword: e.target.value }))}
-                className="bg-gray-50 border-gray-300 text-gray-900"
+                className="flex h-10 w-full rounded-md border px-3 py-2 text-sm bg-white border-gray-300 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 data-testid="input-confirm-password"
               />
             </div>
