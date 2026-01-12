@@ -2,7 +2,6 @@ import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import UnifiedDashboard from "@/components/dashboard/unified-dashboard";
 import SimpleConnectButtons from "@/components/dashboard/simple-connect-buttons";
-import AccountDetailModal from "@/components/dashboard/account-detail-modal";
 import AccountCard from "@/components/dashboard/account-card";
 import SnapTradeConnectionAlert from "@/components/dashboard/snaptrade-connection-alert";
 import { FinancialAPI } from "@/lib/financial-api";
@@ -34,8 +33,6 @@ type DashboardResponse = {
 export default function Dashboard() {
   const { user } = useAuth();
   const { toast } = useToast();
-  const [selectedAccount, setSelectedAccount] = useState<any>(null);
-  const [isAccountModalOpen, setIsAccountModalOpen] = useState(false);
   const [featureRequestModalOpen, setFeatureRequestModalOpen] = useState(false);
 
   // Fetch dashboard data with robust error handling
@@ -87,11 +84,6 @@ export default function Dashboard() {
       }
     }
   }, [isLoading]); // Run when loading completes
-
-  const handleAccountDetail = (account: any) => {
-    setSelectedAccount(account);
-    setIsAccountModalOpen(true);
-  };
 
   const handleAddToWatchlist = async (symbol: string, name: string) => {
     try {
@@ -289,13 +281,6 @@ export default function Dashboard() {
           />
         </div>
       </main>
-
-      {/* Account Detail Modal */}
-      <AccountDetailModal
-        isOpen={isAccountModalOpen}
-        onClose={() => setIsAccountModalOpen(false)}
-        account={selectedAccount}
-      />
 
       {/* Floating Feature Request Button - positioned above mobile nav */}
       <button
