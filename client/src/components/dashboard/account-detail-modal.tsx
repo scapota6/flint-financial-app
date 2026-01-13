@@ -25,6 +25,7 @@ import {
 } from 'lucide-react';
 import { formatCurrency } from '@/lib/utils';
 import { apiRequest } from '@/lib/queryClient';
+import { QuickTradeButtons } from '@/components/trading/QuickTradeButtons';
 
 interface AccountDetailModalProps {
   isOpen: boolean;
@@ -236,11 +237,21 @@ export default function AccountDetailModal({ isOpen, onClose, account }: Account
                             </div>
                             <p className="text-sm text-muted-foreground">{holding.name}</p>
                           </div>
-                          <div className="text-right">
-                            <p className="font-semibold">{formatCurrency(holding.value)}</p>
-                            <p className={`text-sm ${holding.change >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                              {holding.change >= 0 ? '+' : ''}{formatCurrency(holding.change)} ({holding.changePct.toFixed(2)}%)
-                            </p>
+                          <div className="flex items-center gap-4">
+                            <div className="text-right">
+                              <p className="font-semibold">{formatCurrency(holding.value)}</p>
+                              <p className={`text-sm ${holding.change >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                                {holding.change >= 0 ? '+' : ''}{formatCurrency(holding.change)} ({holding.changePct.toFixed(2)}%)
+                              </p>
+                            </div>
+                            <QuickTradeButtons
+                              symbol={holding.symbol}
+                              accountId={account.id}
+                              currentHoldings={holding.quantity}
+                              currentPrice={holding.price}
+                              size="sm"
+                              showLabels={true}
+                            />
                           </div>
                         </div>
                       </CardContent>

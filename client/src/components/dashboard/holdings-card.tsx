@@ -8,6 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { TrendingUp, TrendingDown, RefreshCw, ExternalLink } from "lucide-react";
 import { SnapTradeAPI, SnapTradeHolding } from "@/lib/snaptrade-api";
 import { useLocation } from 'wouter';
+import { QuickTradeButtons } from "@/components/trading/QuickTradeButtons";
 
 interface HoldingsCardProps {
   data: any[];
@@ -198,7 +199,17 @@ export const HoldingsCard = memo(function HoldingsCard({ data }: HoldingsCardPro
                   </p>
                 </div>
 
-                <ExternalLink className="h-4 w-4 ml-2 text-gray-400" />
+                <div className="ml-3 flex items-center gap-2">
+                  <QuickTradeButtons
+                    symbol={holding.symbol}
+                    accountId={holding.account_id}
+                    currentHoldings={holding.quantity}
+                    currentPrice={holding.price || 0}
+                    size="sm"
+                    showLabels={false}
+                  />
+                  <ExternalLink className="h-4 w-4 text-gray-400" />
+                </div>
               </div>
             );
           })}

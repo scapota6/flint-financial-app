@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { authApi, accountsApi, tradingApi, searchSymbols, getOrderImpact } from '../lib/snaptrade';
 import { isAuthenticated } from '../replitAuth';
+import { tradingFeatureGate } from '../middleware/tradingFeatureGate';
 import { db } from '../db';
 import { users, snaptradeUsers } from '@shared/schema';
 import { eq } from 'drizzle-orm';
@@ -8,6 +9,14 @@ import { mapSnapTradeError, logSnapTradeError, RateLimitHandler } from '../lib/s
 import type { SymbolInfo, SymbolSearchResponse, ImpactRequest, ImpactResponse, ImpactSummaryLine, PlaceOrderRequest, PlaceOrderResponse, ErrorResponse, ISODate, UUID, Money } from '@shared/types';
 
 const router = Router();
+
+router.get('/trading-enabled', isAuthenticated, (req: any, res) => {
+  const email = req.user?.claims?.email;
+  const enabled = email?.toLowerCase() === 'scapota@flint-investing.com';
+  res.json({ enabled });
+});
+
+router.use(tradingFeatureGate);
 
 // Helper function to get Flint user by auth claims
 async function getFlintUserByAuth(authUser: any) {
