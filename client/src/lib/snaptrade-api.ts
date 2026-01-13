@@ -8,6 +8,7 @@ export interface SnapTradeAccount {
   balance: number;
   currency: string;
   connection_id: string;
+  canTrade?: boolean;
 }
 
 export interface SnapTradeHolding {
@@ -19,6 +20,7 @@ export interface SnapTradeHolding {
   market_value: number;
   type: string;
   account_id: string;
+  canTrade?: boolean;
 }
 
 export interface SnapTradeQuote {
@@ -92,10 +94,38 @@ export class SnapTradeAPI {
     return response.json();
   }
 
+  static async getSnapTradeAccounts(): Promise<SnapTradeAccount[]> {
+    try {
+      const response = await apiRequest("/api/snaptrade/accounts");
+      if (!response.ok) return [];
+      const data = await response.json();
+      return (data.accounts || []).map((acc: any) => ({
+        id: acc.id,
+        name: acc.name,
+        type: acc.accountType || acc.type || 'investment',
+        institution: acc.institutionName,
+        balance: acc.balance?.amount || 0,
+        currency: acc.currency || 'USD',
+        connection_id: acc.brokerageAuthId,
+        canTrade: acc.canTrade ?? false
+      }));
+    } catch (err) {
+      console.error('Failed to get SnapTrade accounts:', err);
+      return [];
+    }
+  }
+
   static async getAllHoldings(): Promise<SnapTradeHolding[]> {
     try {
-      // Get all accounts first
+      // Get all accounts first (with canTrade info)
+      const snaptradeAccounts = await this.getSnapTradeAccounts();
       const accounts = await this.getAccounts();
+      
+      // Create a map of accountId -> canTrade
+      const canTradeMap = new Map<string, boolean>();
+      for (const acc of snaptradeAccounts) {
+        canTradeMap.set(acc.id, acc.canTrade ?? false);
+      }
       
       if (!accounts.length) {
         return []; // No accounts, return empty holdings
@@ -106,7 +136,12 @@ export class SnapTradeAPI {
       for (const account of accounts) {
         try {
           const holdings = await this.getHoldings(account.id);
-          allHoldings.push(...holdings);
+          // Add canTrade to each holding based on its account
+          const holdingsWithTrade = holdings.map(h => ({
+            ...h,
+            canTrade: canTradeMap.get(h.account_id) ?? false
+          }));
+          allHoldings.push(...holdingsWithTrade);
         } catch (err) {
           console.warn(`Failed to get holdings for account ${account.id}:`, err);
           // Continue with other accounts

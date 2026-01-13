@@ -207,6 +207,7 @@ export const HoldingsCard = memo(function HoldingsCard({ data }: HoldingsCardPro
                     currentPrice={holding.price || 0}
                     size="sm"
                     showLabels={false}
+                    canTrade={holding.canTrade}
                   />
                   <ExternalLink className="h-4 w-4 text-gray-400" />
                 </div>

@@ -37,6 +37,7 @@ interface AccountDetailModalProps {
     balance: number;
     type: 'bank' | 'investment' | 'crypto';
     institution: string;
+    canTrade?: boolean;
   };
 }
 
@@ -251,6 +252,7 @@ export default function AccountDetailModal({ isOpen, onClose, account }: Account
                               currentPrice={holding.price}
                               size="sm"
                               showLabels={true}
+                              canTrade={account.canTrade}
                             />
                           </div>
                         </div>

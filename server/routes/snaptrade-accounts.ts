@@ -58,6 +58,23 @@ router.get('/accounts', requireAuth, async (req: any, res) => {
     
     console.log('[SnapTrade Accounts] Fetched', accounts.length, 'accounts');
     
+    // Fetch brokerage authorizations to determine trading capability
+    const { listBrokerageAuthorizations } = await import('../lib/snaptrade');
+    const connections = await listBrokerageAuthorizations(
+      credentials.snaptradeUserId!,
+      credentials.userSecret
+    ) || [];
+    
+    // Create a map of connection ID -> trading capability
+    const connectionTradingMap = new Map<string, boolean>();
+    for (const conn of connections) {
+      // Connection type "trade" means trading is enabled, "read" means read-only
+      connectionTradingMap.set(conn.id, conn.type === 'trade' && !conn.disabled);
+    }
+    
+    console.log('[SnapTrade Accounts] Connection trading map:', 
+      Object.fromEntries(connectionTradingMap));
+    
     // Transform accounts to normalized DTO
     const transformedAccounts: AccountSummary[] = accounts.map((account: any) => {
       // Extract account number and mask it for display
@@ -74,6 +91,9 @@ router.get('/accounts', requireAuth, async (req: any, res) => {
         status = account.meta.status.toLowerCase() === 'active' ? 'open' : 'unknown';
       }
       
+      // Determine if this account's connection supports trading
+      const canTrade = connectionTradingMap.get(account.brokerage_authorization) ?? false;
+      
       return {
         id: account.id as UUID,
         brokerageAuthId: account.brokerage_authorization as UUID,
@@ -89,7 +109,8 @@ router.get('/accounts', requireAuth, async (req: any, res) => {
           amount: parseFloat(account.balance.total.amount) || 0,
           currency: account.balance.total.currency || 'USD'
         } : null,
-        lastSyncAt: account.sync_status?.holdings?.last_successful_sync || null
+        lastSyncAt: account.sync_status?.holdings?.last_successful_sync || null,
+        canTrade
       };
     });
     

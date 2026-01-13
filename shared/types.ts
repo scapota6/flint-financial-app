@@ -334,6 +334,7 @@ export interface AccountSummary {
   currency: string;                  // default "USD"
   balance?: Money | null;
   lastSyncAt?: ISODate | null;
+  canTrade?: boolean;                // true if connection type is "trade" (not read-only)
 }
 
 export interface AccountDetails extends AccountSummary {

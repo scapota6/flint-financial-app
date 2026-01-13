@@ -12,6 +12,7 @@ interface QuickTradeButtonsProps {
   currentPrice?: number;
   size?: 'sm' | 'default' | 'lg';
   showLabels?: boolean;
+  canTrade?: boolean;
 }
 
 export function QuickTradeButtons({
@@ -21,13 +22,14 @@ export function QuickTradeButtons({
   currentHoldings = 0,
   currentPrice = 0,
   size = 'sm',
-  showLabels = true
+  showLabels = true,
+  canTrade = true
 }: QuickTradeButtonsProps) {
   const tradingEnabled = useTradingEnabled();
   const [tradeModalOpen, setTradeModalOpen] = useState(false);
   const [tradeSide, setTradeSide] = useState<'BUY' | 'SELL'>('BUY');
 
-  if (!tradingEnabled) {
+  if (!tradingEnabled || !canTrade) {
     return null;
   }
 
