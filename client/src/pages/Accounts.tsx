@@ -24,12 +24,8 @@ interface BrokerageAccount {
   accountNumber: string;
   type: string;
   status: string;
-  syncStatus: {
-    holdingsCompleted: boolean;
-    holdingsLastSync?: string;
-    transactionsCompleted: boolean;
-    transactionsLastSync?: string;
-  };
+  lastSyncAt: string | null;
+  canTrade: boolean;
 }
 
 interface BankAccount {
@@ -128,12 +124,8 @@ export default function Accounts() {
         accountNumber: account.numberMasked || 'N/A',
         type: account.accountType || 'Investment',
         status: account.status || 'open',
-        syncStatus: {
-          holdingsCompleted: account.sync_status?.holdings?.initial_sync_completed || false,
-          holdingsLastSync: account.sync_status?.holdings?.last_successful_sync,
-          transactionsCompleted: account.sync_status?.transactions?.initial_sync_completed || false,
-          transactionsLastSync: account.sync_status?.transactions?.last_successful_sync
-        }
+        lastSyncAt: account.lastSyncAt || null,
+        canTrade: account.canTrade || false
       })) || [];
     },
     retry: false
@@ -301,9 +293,14 @@ export default function Accounts() {
                                   <Badge variant={account.status === 'open' ? 'default' : 'secondary'} className="text-xs">
                                     {account.status || 'open'}
                                   </Badge>
-                                  {account.syncStatus.holdingsCompleted && (
+                                  {account.lastSyncAt && (
                                     <Badge variant="outline" className="text-xs text-green-600 border-green-300">
                                       ✓ Synced
+                                    </Badge>
+                                  )}
+                                  {account.canTrade && (
+                                    <Badge variant="outline" className="text-xs text-blue-600 border-blue-300">
+                                      Trading Enabled
                                     </Badge>
                                   )}
                                 </div>
