@@ -706,11 +706,11 @@ export default function LandingNew() {
         </div>
         <ul className="items-center hidden md:flex font-medium">
           <li className="mx-4 relative group">
-            <button className="flex items-center gap-1 hover:underline underline-offset-4">
+            <button className="flex items-center gap-1 hover:underline underline-offset-4 pb-2">
               Use Cases <ChevronDown className="h-4 w-4" />
             </button>
-            <div className="absolute top-full left-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-              <div className="py-2">
+            <div className="absolute top-full left-0 pt-0 w-48 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+              <div className="bg-white rounded-lg shadow-lg border border-gray-100 py-2">
                 <Link href="/banking" className="block px-4 py-2 text-gray-700 hover:bg-gray-50 hover:text-gray-900">Banking</Link>
                 <Link href="/investing" className="block px-4 py-2 text-gray-700 hover:bg-gray-50 hover:text-gray-900">Investing</Link>
                 <Link href="/crypto" className="block px-4 py-2 text-gray-700 hover:bg-gray-50 hover:text-gray-900">Crypto</Link>

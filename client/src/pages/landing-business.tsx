@@ -71,6 +71,7 @@ export default function LandingBusiness() {
         <meta property="og:description" content="Financial management tools for funds, corporations, and teams. Join the waitlist for early access." />
         <meta property="og:type" content="website" />
         <meta name="keywords" content="enterprise financial tools, corporate finance app, employee financial wellness, fund management software, business finance dashboard" />
+        <link href="https://fonts.googleapis.com/css2?family=PT+Serif:wght@400;700&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
       </Helmet>
 
       <div className="min-h-screen bg-[#F4F2ED] overflow-x-hidden">
@@ -85,8 +86,12 @@ export default function LandingBusiness() {
                   Coming Soon
                 </p>
                 
-                <h1 className="text-4xl md:text-5xl lg:text-[3.5rem] font-bold tracking-tight text-gray-900 leading-[1.1] mb-6">
-                  Financial Tools for Your Business
+                <h1 className="font-serif text-4xl md:text-5xl lg:text-[3.5rem] font-bold tracking-tight text-gray-900 leading-[1.1] mb-6">
+                  Financial Tools for{' '}
+                  <span className="relative inline-block px-2">
+                    Your Business
+                    <span className="absolute bottom-1 left-0 w-full h-2 bg-yellow-400 -z-10"></span>
+                  </span>
                 </h1>
                 
                 <p className="text-xl text-gray-600 mb-8">
@@ -210,13 +215,13 @@ export default function LandingBusiness() {
                         <p className="text-red-500 text-sm">{error}</p>
                       )}
                       
-                      <Button 
+                      <button 
                         type="submit" 
                         disabled={isSubmitting} 
-                        className="w-full bg-[#1a56db] hover:bg-[#1e40af] text-white"
+                        className="w-full h-12 bg-black hover:bg-gray-800 text-white font-medium rounded-lg transition-colors disabled:opacity-50"
                       >
                         {isSubmitting ? 'Submitting...' : 'Join Waitlist'}
-                      </Button>
+                      </button>
                       
                       <p className="text-xs text-gray-400 text-center">
                         We'll reach out when Flint for Business is ready.
@@ -244,40 +249,51 @@ export default function LandingBusiness() {
 
         <section className="py-20 px-4">
           <div className="max-w-6xl mx-auto">
-            <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-center mb-4 text-gray-900">Built for Business</h2>
+            <h2 className="font-serif text-3xl text-center mb-4 text-gray-900">
+              <span className="relative inline-block px-4">
+                Built for Business
+                <span className="absolute bottom-0 left-0 w-full h-1 bg-yellow-400"></span>
+              </span>
+            </h2>
             <p className="text-gray-500 text-center mb-12 max-w-2xl mx-auto">
               Whether you manage funds or run a company, Flint helps your team.
             </p>
             
             <div className="grid md:grid-cols-2 gap-4 md:gap-8">
-              <div className="bg-white border border-gray-200 rounded-xl p-4 md:p-8 shadow-sm">
-                <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-blue-100 flex items-center justify-center mb-3 md:mb-4">
-                  <Building2 className="h-5 w-5 md:h-6 md:w-6 text-[#1a56db]" />
+              <div className="relative bg-white rounded-xl border border-gray-200 p-4 md:p-8 shadow-sm overflow-hidden">
+                <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-blue-400/20 via-transparent to-purple-400/20 pointer-events-none"></div>
+                <div className="relative z-10">
+                  <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center mb-3 md:mb-4 shadow-lg">
+                    <Building2 className="h-5 w-5 md:h-6 md:w-6 text-white" />
+                  </div>
+                  <h3 className="text-lg md:text-xl font-semibold mb-2 md:mb-3 text-gray-900">Corporate Wellness</h3>
+                  <p className="text-gray-500 mb-3 md:mb-4 text-sm md:text-base">
+                    Give employees a real financial benefit. Help them see all their accounts, track spending, and reach their money goals.
+                  </p>
+                  <ul className="space-y-2 text-gray-600 text-sm md:text-base">
+                    <li className="flex items-center gap-2"><Check className="h-4 w-4 text-green-500" /> Easy employee onboarding</li>
+                    <li className="flex items-center gap-2"><Check className="h-4 w-4 text-green-500" /> Anonymous usage - you see adoption, not data</li>
+                    <li className="flex items-center gap-2"><Check className="h-4 w-4 text-green-500" /> Bulk pricing for teams</li>
+                  </ul>
                 </div>
-                <h3 className="text-lg md:text-xl font-semibold mb-2 md:mb-3 text-gray-900">Corporate Wellness</h3>
-                <p className="text-gray-500 mb-3 md:mb-4 text-sm md:text-base">
-                  Give employees a real financial benefit. Help them see all their accounts, track spending, and reach their money goals.
-                </p>
-                <ul className="space-y-2 text-gray-600 text-sm md:text-base">
-                  <li className="flex items-center gap-2"><Check className="h-4 w-4 text-green-500" /> Easy employee onboarding</li>
-                  <li className="flex items-center gap-2"><Check className="h-4 w-4 text-green-500" /> Anonymous usage - you see adoption, not data</li>
-                  <li className="flex items-center gap-2"><Check className="h-4 w-4 text-green-500" /> Bulk pricing for teams</li>
-                </ul>
               </div>
               
-              <div className="bg-white border border-gray-200 rounded-xl p-4 md:p-8 shadow-sm">
-                <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-blue-100 flex items-center justify-center mb-3 md:mb-4">
-                  <BarChart3 className="h-5 w-5 md:h-6 md:w-6 text-[#1a56db]" />
+              <div className="relative bg-white rounded-xl border border-gray-200 p-4 md:p-8 shadow-sm overflow-hidden">
+                <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-green-400/20 via-transparent to-blue-400/20 pointer-events-none"></div>
+                <div className="relative z-10">
+                  <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-gradient-to-br from-green-500 to-blue-500 flex items-center justify-center mb-3 md:mb-4 shadow-lg">
+                    <BarChart3 className="h-5 w-5 md:h-6 md:w-6 text-white" />
+                  </div>
+                  <h3 className="text-lg md:text-xl font-semibold mb-2 md:mb-3 text-gray-900">Fund & Wealth Management</h3>
+                  <p className="text-gray-500 mb-3 md:mb-4 text-sm md:text-base">
+                    View client portfolios in one dashboard. We never store passwords or keys, and we are not a custodian.
+                  </p>
+                  <ul className="space-y-2 text-gray-600 text-sm md:text-base">
+                    <li className="flex items-center gap-2"><Check className="h-4 w-4 text-green-500" /> Client invites with one click</li>
+                    <li className="flex items-center gap-2"><Check className="h-4 w-4 text-green-500" /> View-only access - never move money</li>
+                    <li className="flex items-center gap-2"><Check className="h-4 w-4 text-green-500" /> Export reports for clients</li>
+                  </ul>
                 </div>
-                <h3 className="text-lg md:text-xl font-semibold mb-2 md:mb-3 text-gray-900">Fund & Wealth Management</h3>
-                <p className="text-gray-500 mb-3 md:mb-4 text-sm md:text-base">
-                  View client portfolios in one dashboard. We never store passwords or keys, and we are not a custodian.
-                </p>
-                <ul className="space-y-2 text-gray-600 text-sm md:text-base">
-                  <li className="flex items-center gap-2"><Check className="h-4 w-4 text-green-500" /> Client invites with one click</li>
-                  <li className="flex items-center gap-2"><Check className="h-4 w-4 text-green-500" /> View-only access - never move money</li>
-                  <li className="flex items-center gap-2"><Check className="h-4 w-4 text-green-500" /> Export reports for clients</li>
-                </ul>
               </div>
             </div>
           </div>
@@ -286,7 +302,12 @@ export default function LandingBusiness() {
         <section className="py-20 px-4">
           <div className="max-w-4xl mx-auto text-center">
             <Shield className="h-12 w-12 text-[#1a56db] mx-auto mb-6" />
-            <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4 text-gray-900">Enterprise-Grade Security</h2>
+            <h2 className="font-serif text-3xl mb-4 text-gray-900">
+              <span className="relative inline-block px-4">
+                Enterprise-Grade Security
+                <span className="absolute bottom-0 left-0 w-full h-1 bg-yellow-400"></span>
+              </span>
+            </h2>
             <p className="text-gray-500 mb-8 max-w-2xl mx-auto">
               Your data is protected by the same security used by banks. We never store passwords or keys. We are not a custodian and never take custody of your funds.
             </p>
@@ -308,25 +329,49 @@ export default function LandingBusiness() {
           </div>
         </section>
 
-        <footer className="border-t border-gray-200 bg-white py-12">
+        <footer className="border-t border-gray-300 bg-[#F4F2ED] py-12">
           <div className="max-w-7xl mx-auto px-4 sm:px-6">
-            <div className="flex flex-col md:flex-row justify-between items-center gap-6">
-              <div className="flex items-center gap-3">
-                <img src={flintLogo} alt="Flint" className="h-8 w-auto" />
-                <span className="text-xl font-semibold text-gray-900">Flint</span>
+            <div className="grid md:grid-cols-4 gap-8">
+              <div className="space-y-4">
+                <div className="flex items-center gap-3">
+                  <img src={flintLogo} alt="Flint" className="h-8 w-auto" />
+                  <span className="text-xl font-semibold text-gray-900">Flint</span>
+                </div>
+                <p className="text-sm text-gray-500">
+                  Financial tools for your team in one secure platform.
+                </p>
               </div>
 
-              <div className="flex gap-6 text-sm text-gray-500">
-                <Link href="/new" className="hover:text-gray-900 transition-colors">Personal</Link>
-                <Link href="/blog" className="hover:text-gray-900 transition-colors">Blog</Link>
-                <Link href="/terms" className="hover:text-gray-900 transition-colors">Terms</Link>
-                <Link href="/privacy" className="hover:text-gray-900 transition-colors">Privacy</Link>
-                <Link href="/support" className="hover:text-gray-900 transition-colors">Support</Link>
+              <div className="space-y-4">
+                <h4 className="font-semibold text-gray-900">Product</h4>
+                <div className="flex flex-col gap-2 text-sm text-gray-500">
+                  <Link href="/banking" className="hover:underline underline-offset-4">Banking</Link>
+                  <Link href="/investing" className="hover:underline underline-offset-4">Investing</Link>
+                  <Link href="/crypto" className="hover:underline underline-offset-4">Crypto</Link>
+                  <Link href="/blog" className="hover:underline underline-offset-4">Blog</Link>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <h4 className="font-semibold text-gray-900">Account</h4>
+                <div className="flex flex-col gap-2 text-sm text-gray-500">
+                  <Link href="/login" className="hover:underline underline-offset-4">Log In</Link>
+                  <Link href="/reset-password" className="hover:underline underline-offset-4">Reset Password</Link>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <h4 className="font-semibold text-gray-900">Legal</h4>
+                <div className="flex flex-col gap-2 text-sm text-gray-500">
+                  <Link href="/terms" className="hover:underline underline-offset-4">Terms of Service</Link>
+                  <Link href="/privacy-policy" className="hover:underline underline-offset-4">Privacy Policy</Link>
+                  <a href="mailto:support@flint-investing.com" className="hover:underline underline-offset-4">support@flint-investing.com</a>
+                </div>
               </div>
             </div>
 
-            <div className="mt-8 text-center text-sm text-gray-500">
-              <p>Flint is not a broker or bank. Investing and transfers depend on the platforms you connect.</p>
+            <div className="mt-8 pt-8 border-t border-gray-300 text-center text-sm text-gray-500">
+              <p>&copy; 2025 Flint Tech Inc. All rights reserved. Flint is not a broker or bank.</p>
             </div>
           </div>
         </footer>
