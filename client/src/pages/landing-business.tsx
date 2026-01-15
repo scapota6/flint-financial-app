@@ -73,7 +73,7 @@ export default function LandingBusiness() {
         <meta name="keywords" content="enterprise financial tools, corporate finance app, employee financial wellness, fund management software, business finance dashboard" />
       </Helmet>
 
-      <div className="min-h-screen bg-[#FAFBFC] overflow-x-hidden">
+      <div className="min-h-screen bg-[#F4F2ED] overflow-x-hidden">
         <LandingHeader currentPage="business" />
 
         <section className="py-16 md:py-24 px-4">

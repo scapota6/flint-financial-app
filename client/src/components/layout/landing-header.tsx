@@ -51,7 +51,7 @@ export function LandingHeader({ currentPage = 'main', onGetStarted }: LandingHea
   };
 
   return (
-    <header className="sticky top-0 z-50 px-4 lg:px-8 py-4 bg-white/80 backdrop-blur-md border-b border-gray-200">
+    <header className="fixed top-0 left-0 right-0 z-50 px-4 lg:px-48 md:px-12 py-4 md:py-6 bg-[#F4F2ED]">
       <nav className="mx-auto flex max-w-7xl items-center justify-between">
         <div className="flex items-center space-x-8">
           <Link href="/">

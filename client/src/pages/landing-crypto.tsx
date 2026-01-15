@@ -170,7 +170,7 @@ export default function LandingCrypto() {
         <link rel="canonical" href="https://flint-investing.com/crypto" />
       </Helmet>
 
-      <div className="min-h-screen bg-[#FAFBFC] overflow-x-hidden">
+      <div className="min-h-screen bg-[#F4F2ED] overflow-x-hidden">
         <LandingHeader currentPage="crypto" onGetStarted={scrollToSignup} />
 
         <section className="py-16 md:py-24 px-4">

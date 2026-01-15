@@ -174,7 +174,7 @@ export default function LandingBanking() {
         <link rel="canonical" href="https://flint-investing.com/banking" />
       </Helmet>
 
-      <div className="min-h-screen bg-[#FAFBFC] overflow-x-hidden">
+      <div className="min-h-screen bg-[#F4F2ED] overflow-x-hidden">
         <LandingHeader currentPage="banking" onGetStarted={scrollToSignup} />
 
         <section className="py-16 md:py-24 px-4">
