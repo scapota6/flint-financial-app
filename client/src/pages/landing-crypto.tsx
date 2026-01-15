@@ -5,7 +5,6 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { Button } from "@/components/ui/button";
-import { RainbowButton } from "@/components/ui/rainbow-button";
 import { Input } from "@/components/ui/input";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { 
@@ -171,31 +170,31 @@ export default function LandingCrypto() {
         <link rel="canonical" href="https://flint-investing.com/crypto" />
       </Helmet>
 
-      <div className="min-h-screen bg-[#F4F2ED] overflow-x-hidden">
+      <div className="min-h-screen bg-[#FAFBFC] overflow-x-hidden">
         <LandingHeader currentPage="crypto" onGetStarted={scrollToSignup} />
 
-        <section className="pt-28 pb-20 px-4">
+        <section className="py-16 md:py-24 px-4">
           <div className="max-w-4xl mx-auto text-center">
-            <div className="inline-flex items-center gap-2 bg-yellow-400/20 border border-yellow-400/30 rounded-full px-4 py-2 mb-6">
-              <Wallet className="h-4 w-4 text-yellow-600" />
-              <span className="text-sm text-yellow-700">Multi-Exchange Crypto Tracker</span>
-            </div>
+            <p className="text-[#1a56db] font-medium text-sm flex items-center justify-center gap-2 mb-6">
+              <Wallet className="h-4 w-4" />
+              Multi-Exchange Crypto Tracker
+            </p>
             
-            <h1 className="text-4xl md:text-6xl font-bold font-serif mb-6 leading-tight text-gray-900">
-              The <span className="relative inline-block">Crypto Portfolio Tracker<span className="absolute bottom-1 left-0 w-full h-2 bg-yellow-400 -z-10"></span></span> That Lets You Take Action
+            <h1 className="text-4xl md:text-5xl lg:text-[3.5rem] font-bold tracking-tight text-gray-900 leading-[1.1] mb-6">
+              The Crypto Portfolio Tracker That Lets You Take Action
             </h1>
             
-            <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
+            <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto leading-relaxed">
               Track all your crypto and take action from one dashboard. Send crypto, place trades, and manage your entire portfolio.
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-3 justify-center mb-6">
-              <RainbowButton onClick={scrollToSignup} className="h-14 px-8 rounded-xl text-lg" data-testid="button-get-started-hero">
+            <div className="flex flex-col sm:flex-row gap-3 justify-center mb-4">
+              <Button onClick={scrollToSignup} className="h-12 px-6 bg-[#1a56db] hover:bg-[#1e40af] text-white font-medium rounded-lg" data-testid="button-get-started-hero">
                 Get Started Free <ArrowRight className="ml-2 h-5 w-5" />
-              </RainbowButton>
+              </Button>
             </div>
 
-            <p className="text-sm text-gray-500">Free forever. No credit card needed.</p>
+            <p className="text-sm text-gray-500">Try for free. No credit card required.</p>
           </div>
         </section>
 
@@ -203,7 +202,7 @@ export default function LandingCrypto() {
           <div className="max-w-4xl mx-auto">
             <div className="grid md:grid-cols-3 gap-4 md:gap-8 text-center">
               <div>
-                <p className="text-3xl font-bold text-yellow-600 mb-2">50+</p>
+                <p className="text-3xl font-bold text-[#1a56db] mb-2">50+</p>
                 <p className="text-gray-500">Exchanges & Wallets</p>
               </div>
               <div>
@@ -211,7 +210,7 @@ export default function LandingCrypto() {
                 <p className="text-gray-500">Portfolio Tracking</p>
               </div>
               <div>
-                <p className="text-3xl font-bold text-yellow-600 mb-2">Trade & Send</p>
+                <p className="text-3xl font-bold text-[#1a56db] mb-2">Trade & Send</p>
                 <p className="text-gray-500">From One Place</p>
               </div>
             </div>
@@ -249,7 +248,7 @@ export default function LandingCrypto() {
 
         <section id="features" className="py-20 px-4">
           <div className="max-w-6xl mx-auto">
-            <h2 className="text-3xl md:text-4xl font-bold font-serif text-center mb-4 text-gray-900">Why Crypto Traders Love Flint</h2>
+            <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-center mb-4 text-gray-900">Why Crypto Traders Love Flint</h2>
             <p className="text-gray-500 text-center mb-12 max-w-xl mx-auto">
               More than a tracker. A complete crypto command center.
             </p>
@@ -269,7 +268,7 @@ export default function LandingCrypto() {
                 </p>
               </div>
               
-              <div className="bg-gradient-to-b from-yellow-50 to-white rounded-xl border border-yellow-200 p-4 md:p-6 shadow-sm">
+              <div className="bg-gradient-to-b from-blue-50 to-white rounded-xl border border-blue-200 p-4 md:p-6 shadow-sm">
                 <h3 className="text-base md:text-lg font-semibold mb-2 text-gray-900">Trade & Send</h3>
                 <p className="text-gray-500 text-sm">
                   Send crypto and place trades without leaving Flint.
@@ -288,11 +287,11 @@ export default function LandingCrypto() {
 
         <section className="py-20 px-4">
           <div className="max-w-4xl mx-auto">
-            <h2 className="text-3xl md:text-4xl font-bold font-serif text-center mb-12 text-gray-900">How It Works</h2>
+            <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-center mb-12 text-gray-900">How It Works</h2>
             
             <div className="space-y-10">
               <div className="flex items-start gap-4 md:gap-6">
-                <span className="text-3xl md:text-4xl font-black text-yellow-500 flex-shrink-0">1</span>
+                <span className="text-3xl md:text-4xl font-black text-[#1a56db] flex-shrink-0">1</span>
                 <div>
                   <h3 className="text-xl font-bold mb-2 text-gray-900">Connect Your Exchanges and Wallets</h3>
                   <p className="text-gray-500">Link Coinbase, Binance, Kraken, MetaMask, and 50+ more in seconds.</p>
@@ -300,7 +299,7 @@ export default function LandingCrypto() {
               </div>
               
               <div className="flex items-start gap-4 md:gap-6">
-                <span className="text-3xl md:text-4xl font-black text-yellow-500 flex-shrink-0">2</span>
+                <span className="text-3xl md:text-4xl font-black text-[#1a56db] flex-shrink-0">2</span>
                 <div>
                   <h3 className="text-xl font-bold mb-2 text-gray-900">See Your Total Crypto Value in Real Time</h3>
                   <p className="text-gray-500">View your complete portfolio across all connected accounts. Track everything live.</p>
@@ -308,7 +307,7 @@ export default function LandingCrypto() {
               </div>
               
               <div className="flex items-start gap-4 md:gap-6">
-                <span className="text-3xl md:text-4xl font-black text-yellow-500 flex-shrink-0">3</span>
+                <span className="text-3xl md:text-4xl font-black text-[#1a56db] flex-shrink-0">3</span>
                 <div>
                   <h3 className="text-xl font-bold mb-2 text-gray-900">Take Action Without Leaving Flint</h3>
                   <p className="text-gray-500">Send crypto or place trades on your connected accounts. No app switching required.</p>
@@ -320,40 +319,40 @@ export default function LandingCrypto() {
 
         <section className="py-16 px-4">
           <div className="max-w-2xl mx-auto text-center">
-            <h2 className="text-2xl md:text-3xl font-bold font-serif mb-4 text-gray-900">Ready to take control of your crypto?</h2>
+            <h2 className="text-2xl md:text-3xl font-bold tracking-tight mb-4 text-gray-900">Ready to take control of your crypto?</h2>
             <p className="text-gray-500 mb-8">Join thousands of traders managing their portfolios with Flint.</p>
-            <RainbowButton onClick={scrollToSignup} className="h-14 px-12 rounded-xl text-lg" data-testid="button-cta-mid">
+            <Button onClick={scrollToSignup} className="h-12 px-8 bg-[#1a56db] hover:bg-[#1e40af] text-white font-medium rounded-lg" data-testid="button-cta-mid">
               Get Started Free
-            </RainbowButton>
+            </Button>
           </div>
         </section>
 
         <section id="pricing" className="py-20 px-4 bg-white border-y border-gray-200">
           <div className="max-w-5xl mx-auto">
             <div className="text-center mb-12">
-              <h2 className="text-3xl md:text-4xl font-bold font-serif mb-4 text-gray-900">Pick Your Plan</h2>
+              <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4 text-gray-900">Pick Your Plan</h2>
               <p className="text-gray-500 mb-6">Start free. Upgrade for trading and advanced features.</p>
               
               <div className="inline-flex bg-gray-100 rounded-lg p-1">
                 <button
                   onClick={() => setIsAnnual(false)}
-                  className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${!isAnnual ? 'bg-black text-white' : 'text-gray-500 hover:text-gray-900'}`}
+                  className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${!isAnnual ? 'bg-[#1a56db] text-white' : 'text-gray-500 hover:text-gray-900'}`}
                   data-testid="toggle-monthly"
                 >
                   Monthly
                 </button>
                 <button
                   onClick={() => setIsAnnual(true)}
-                  className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${isAnnual ? 'bg-black text-white' : 'text-gray-500 hover:text-gray-900'}`}
+                  className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${isAnnual ? 'bg-[#1a56db] text-white' : 'text-gray-500 hover:text-gray-900'}`}
                   data-testid="toggle-annual"
                 >
-                  Annual <span className="text-green-600 ml-1">Save 17%</span>
+                  Annual <span className={`ml-1 ${isAnnual ? 'text-green-300' : 'text-green-600'}`}>Save 17%</span>
                 </button>
               </div>
             </div>
             
             <div className="grid md:grid-cols-3 gap-3 md:gap-6">
-              <div className="bg-[#F4F2ED] rounded-xl border border-gray-200 p-4 md:p-6 h-full flex flex-col">
+              <div className="bg-gray-50 rounded-xl border border-gray-200 p-4 md:p-6 h-full flex flex-col">
                 <div className="mb-4 md:mb-6">
                   <h3 className="text-xl font-semibold mb-2 text-gray-900">Free</h3>
                   <div className="flex items-baseline gap-2 mb-2">
@@ -367,14 +366,14 @@ export default function LandingCrypto() {
                   <li className="flex items-center gap-2 text-sm text-gray-700"><Check className="h-4 w-4 text-green-500" /> Track all your crypto</li>
                   <li className="flex items-center gap-2 text-sm text-gray-700"><Check className="h-4 w-4 text-green-500" /> Real-time updates</li>
                 </ul>
-                <RainbowButton onClick={scrollToSignup} className="w-full" data-testid="button-free-plan">
+                <Button onClick={scrollToSignup} className="w-full bg-[#1a56db] hover:bg-[#1e40af] text-white" data-testid="button-free-plan">
                   Start Free
-                </RainbowButton>
+                </Button>
               </div>
               
-              <div className="bg-gradient-to-b from-yellow-50 to-white rounded-xl border border-yellow-300 p-4 md:p-6 h-full flex flex-col relative shadow-lg">
+              <div className="bg-gradient-to-b from-blue-50 to-white rounded-xl border border-[#1a56db] p-4 md:p-6 h-full flex flex-col relative shadow-lg">
                 <div className="absolute top-4 right-4">
-                  <span className="bg-yellow-400 text-gray-900 text-xs font-semibold px-2 py-1 rounded">Most Popular</span>
+                  <span className="bg-[#1a56db] text-white text-xs font-semibold px-2 py-1 rounded">Most Popular</span>
                 </div>
                 <div className="mb-4 md:mb-6">
                   <h3 className="text-xl font-semibold mb-2 text-gray-900">Basic</h3>
@@ -386,18 +385,18 @@ export default function LandingCrypto() {
                   <p className="text-sm text-gray-500">For active traders</p>
                 </div>
                 <ul className="space-y-3 mb-8 flex-1">
-                  <li className="flex items-center gap-2 text-sm font-semibold text-gray-700"><Check className="h-4 w-4 text-yellow-500" /> Unlimited accounts</li>
-                  <li className="flex items-center gap-2 text-sm text-gray-700"><Check className="h-4 w-4 text-yellow-500" /> Everything in Free</li>
-                  <li className="flex items-center gap-2 text-sm text-gray-700"><Check className="h-4 w-4 text-yellow-500" /> Recurring subscriptions</li>
-                  <li className="flex items-center gap-2 text-sm text-gray-700"><Check className="h-4 w-4 text-yellow-500" /> Spending analyzer</li>
-                  <li className="flex items-center gap-2 text-sm text-gray-700"><Check className="h-4 w-4 text-yellow-500" /> Goal tracking</li>
+                  <li className="flex items-center gap-2 text-sm font-semibold text-gray-700"><Check className="h-4 w-4 text-[#1a56db]" /> Unlimited accounts</li>
+                  <li className="flex items-center gap-2 text-sm text-gray-700"><Check className="h-4 w-4 text-[#1a56db]" /> Everything in Free</li>
+                  <li className="flex items-center gap-2 text-sm text-gray-700"><Check className="h-4 w-4 text-[#1a56db]" /> Recurring subscriptions</li>
+                  <li className="flex items-center gap-2 text-sm text-gray-700"><Check className="h-4 w-4 text-[#1a56db]" /> Spending analyzer</li>
+                  <li className="flex items-center gap-2 text-sm text-gray-700"><Check className="h-4 w-4 text-[#1a56db]" /> Goal tracking</li>
                 </ul>
-                <RainbowButton className="w-full" onClick={() => openCheckout('basic')} data-testid="button-basic-plan">
+                <Button className="w-full bg-[#1a56db] hover:bg-[#1e40af] text-white" onClick={() => openCheckout('basic')} data-testid="button-basic-plan">
                   Get Basic
-                </RainbowButton>
+                </Button>
               </div>
               
-              <div className="bg-[#F4F2ED] rounded-xl border border-gray-200 p-4 md:p-6 h-full flex flex-col">
+              <div className="bg-gray-50 rounded-xl border border-gray-200 p-4 md:p-6 h-full flex flex-col">
                 <div className="mb-4 md:mb-6">
                   <h3 className="text-xl font-semibold mb-2 text-gray-900">Pro</h3>
                   <div className="flex items-baseline gap-2 mb-2">
@@ -408,15 +407,15 @@ export default function LandingCrypto() {
                   <p className="text-sm text-gray-500">For power users</p>
                 </div>
                 <ul className="space-y-3 mb-8 flex-1">
-                  <li className="flex items-center gap-2 text-sm font-semibold text-gray-700"><Check className="h-4 w-4 text-yellow-500" /> Unlimited accounts</li>
-                  <li className="flex items-center gap-2 text-sm text-gray-700"><Check className="h-4 w-4 text-yellow-500" /> Everything in Basic</li>
-                  <li className="flex items-center gap-2 text-sm font-semibold text-gray-700"><Check className="h-4 w-4 text-yellow-500" /> Trading</li>
-                  <li className="flex items-center gap-2 text-sm font-semibold text-gray-700"><Check className="h-4 w-4 text-yellow-500" /> Transfers <span className="text-gray-400 font-normal">(coming soon)</span></li>
-                  <li className="flex items-center gap-2 text-sm text-gray-700"><Check className="h-4 w-4 text-yellow-500" /> Priority support</li>
+                  <li className="flex items-center gap-2 text-sm font-semibold text-gray-700"><Check className="h-4 w-4 text-[#1a56db]" /> Unlimited accounts</li>
+                  <li className="flex items-center gap-2 text-sm text-gray-700"><Check className="h-4 w-4 text-[#1a56db]" /> Everything in Basic</li>
+                  <li className="flex items-center gap-2 text-sm font-semibold text-gray-700"><Check className="h-4 w-4 text-[#1a56db]" /> Trading</li>
+                  <li className="flex items-center gap-2 text-sm font-semibold text-gray-700"><Check className="h-4 w-4 text-[#1a56db]" /> Transfers <span className="text-gray-400 font-normal">(coming soon)</span></li>
+                  <li className="flex items-center gap-2 text-sm text-gray-700"><Check className="h-4 w-4 text-[#1a56db]" /> Priority support</li>
                 </ul>
-                <RainbowButton className="w-full" onClick={() => openCheckout('pro')} data-testid="button-pro-plan">
+                <Button className="w-full bg-[#1a56db] hover:bg-[#1e40af] text-white" onClick={() => openCheckout('pro')} data-testid="button-pro-plan">
                   Get Pro
-                </RainbowButton>
+                </Button>
               </div>
             </div>
             
@@ -541,18 +540,18 @@ export default function LandingCrypto() {
                   <p className="text-red-500 text-sm text-center">{signupError}</p>
                 )}
 
-                <RainbowButton 
+                <Button 
                   type="submit" 
-                  className="w-full h-12" 
+                  className="w-full h-12 bg-[#1a56db] hover:bg-[#1e40af] text-white" 
                   disabled={signupLoading}
                   data-testid="button-signup-submit"
                 >
                   {signupLoading ? 'Creating Account...' : 'Create Free Account'}
-                </RainbowButton>
+                </Button>
 
                 <p className="text-center text-sm text-gray-500">
                   Already have an account?{' '}
-                  <Link href="/login" className="text-yellow-600 hover:underline">Log in</Link>
+                  <Link href="/login" className="text-[#1a56db] hover:underline">Log in</Link>
                 </p>
               </form>
             ) : (

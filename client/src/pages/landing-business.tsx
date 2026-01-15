@@ -73,20 +73,20 @@ export default function LandingBusiness() {
         <meta name="keywords" content="enterprise financial tools, corporate finance app, employee financial wellness, fund management software, business finance dashboard" />
       </Helmet>
 
-      <div className="min-h-screen bg-[#F4F2ED] overflow-x-hidden">
+      <div className="min-h-screen bg-[#FAFBFC] overflow-x-hidden">
         <LandingHeader currentPage="business" />
 
-        <section className="pt-28 pb-20 px-4">
+        <section className="py-16 md:py-24 px-4">
           <div className="max-w-6xl mx-auto">
             <div className="grid lg:grid-cols-2 gap-12 items-center">
               <div>
-                <div className="inline-flex items-center gap-2 bg-yellow-400/20 border border-yellow-400/30 rounded-full px-4 py-2 mb-6">
-                  <Briefcase className="h-4 w-4 text-yellow-600" />
-                  <span className="text-sm text-yellow-700">Coming Soon</span>
-                </div>
+                <p className="text-[#1a56db] font-medium text-sm flex items-center gap-2 mb-6">
+                  <Briefcase className="h-4 w-4" />
+                  Coming Soon
+                </p>
                 
-                <h1 className="text-4xl md:text-5xl font-bold font-serif mb-6 leading-tight text-gray-900">
-                  Financial Tools for <span className="relative inline-block">Your Business<span className="absolute bottom-1 left-0 w-full h-2 bg-yellow-400 -z-10"></span></span>
+                <h1 className="text-4xl md:text-5xl lg:text-[3.5rem] font-bold tracking-tight text-gray-900 leading-[1.1] mb-6">
+                  Financial Tools for Your Business
                 </h1>
                 
                 <p className="text-xl text-gray-600 mb-8">
@@ -213,7 +213,7 @@ export default function LandingBusiness() {
                       <Button 
                         type="submit" 
                         disabled={isSubmitting} 
-                        className="w-full bg-black hover:bg-gray-800 text-white"
+                        className="w-full bg-[#1a56db] hover:bg-[#1e40af] text-white"
                       >
                         {isSubmitting ? 'Submitting...' : 'Join Waitlist'}
                       </Button>
@@ -244,15 +244,15 @@ export default function LandingBusiness() {
 
         <section className="py-20 px-4">
           <div className="max-w-6xl mx-auto">
-            <h2 className="text-3xl md:text-4xl font-bold font-serif text-center mb-4 text-gray-900">Built for Business</h2>
+            <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-center mb-4 text-gray-900">Built for Business</h2>
             <p className="text-gray-500 text-center mb-12 max-w-2xl mx-auto">
               Whether you manage funds or run a company, Flint helps your team.
             </p>
             
             <div className="grid md:grid-cols-2 gap-4 md:gap-8">
               <div className="bg-white border border-gray-200 rounded-xl p-4 md:p-8 shadow-sm">
-                <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-yellow-100 flex items-center justify-center mb-3 md:mb-4">
-                  <Building2 className="h-5 w-5 md:h-6 md:w-6 text-yellow-600" />
+                <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-blue-100 flex items-center justify-center mb-3 md:mb-4">
+                  <Building2 className="h-5 w-5 md:h-6 md:w-6 text-[#1a56db]" />
                 </div>
                 <h3 className="text-lg md:text-xl font-semibold mb-2 md:mb-3 text-gray-900">Corporate Wellness</h3>
                 <p className="text-gray-500 mb-3 md:mb-4 text-sm md:text-base">
@@ -266,8 +266,8 @@ export default function LandingBusiness() {
               </div>
               
               <div className="bg-white border border-gray-200 rounded-xl p-4 md:p-8 shadow-sm">
-                <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-yellow-100 flex items-center justify-center mb-3 md:mb-4">
-                  <BarChart3 className="h-5 w-5 md:h-6 md:w-6 text-yellow-600" />
+                <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-blue-100 flex items-center justify-center mb-3 md:mb-4">
+                  <BarChart3 className="h-5 w-5 md:h-6 md:w-6 text-[#1a56db]" />
                 </div>
                 <h3 className="text-lg md:text-xl font-semibold mb-2 md:mb-3 text-gray-900">Fund & Wealth Management</h3>
                 <p className="text-gray-500 mb-3 md:mb-4 text-sm md:text-base">
@@ -285,8 +285,8 @@ export default function LandingBusiness() {
 
         <section className="py-20 px-4">
           <div className="max-w-4xl mx-auto text-center">
-            <Shield className="h-12 w-12 text-yellow-600 mx-auto mb-6" />
-            <h2 className="text-3xl md:text-4xl font-bold font-serif mb-4 text-gray-900">Enterprise-Grade Security</h2>
+            <Shield className="h-12 w-12 text-[#1a56db] mx-auto mb-6" />
+            <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4 text-gray-900">Enterprise-Grade Security</h2>
             <p className="text-gray-500 mb-8 max-w-2xl mx-auto">
               Your data is protected by the same security used by banks. We never store passwords or keys. We are not a custodian and never take custody of your funds.
             </p>

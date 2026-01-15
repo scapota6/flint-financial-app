@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
-import { RainbowButton } from '@/components/ui/rainbow-button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import {
   DropdownMenu,
@@ -52,107 +51,111 @@ export function LandingHeader({ currentPage = 'main', onGetStarted }: LandingHea
   };
 
   return (
-    <header
-      className={cn(
-        'fixed top-5 left-0 right-0 z-50',
-        'mx-auto w-[95%] sm:w-full max-w-5xl rounded-xl border border-gray-800 shadow-2xl',
-        'bg-[#1a1a1a]/95 supports-[backdrop-filter]:bg-[#1a1a1a]/80 backdrop-blur-lg',
-      )}
-    >
-      <nav className="mx-auto flex items-center justify-between p-2 px-3 sm:px-4">
-        <Link href="/">
-          <div className="hover:bg-gray-800/50 flex cursor-pointer items-center gap-2 rounded-md px-2 sm:px-3 py-1.5 duration-100">
-            <img src={flintLogo} alt="Flint" className="h-6 sm:h-7 w-auto" />
-            <span className="font-semibold text-sm hidden sm:inline">Flint</span>
-          </div>
-        </Link>
-
-        <div className="hidden lg:flex items-center gap-1">
-          {NAV_LINKS.map((link) => (
-            currentPage === 'main' ? (
-              <button
-                key={link.sectionId}
-                onClick={() => handleNavClick(link.sectionId)}
-                className="text-gray-300 hover:text-white hover:bg-gray-800/50 px-3 py-1.5 rounded-md text-sm transition-colors"
-                data-testid={`link-nav-${link.label.toLowerCase()}`}
-              >
-                {link.label}
-              </button>
-            ) : (
-              <Link key={link.sectionId} href={`/#${link.sectionId}`}>
-                <span
-                  className="text-gray-300 hover:text-white hover:bg-gray-800/50 px-3 py-1.5 rounded-md text-sm transition-colors cursor-pointer"
+    <header className="sticky top-0 z-50 px-4 lg:px-8 py-4 bg-white/80 backdrop-blur-md border-b border-gray-200">
+      <nav className="mx-auto flex max-w-7xl items-center justify-between">
+        <div className="flex items-center space-x-8">
+          <Link href="/">
+            <div className="flex items-center space-x-2 cursor-pointer">
+              <img src={flintLogo} alt="Flint Logo" className="h-8 w-auto" />
+              <span className="font-semibold text-gray-900 text-lg">Flint</span>
+            </div>
+          </Link>
+          <div className="hidden md:flex items-center space-x-1">
+            {NAV_LINKS.map((link) => (
+              currentPage === 'main' ? (
+                <button
+                  key={link.sectionId}
+                  onClick={() => handleNavClick(link.sectionId)}
+                  className="text-gray-600 hover:text-gray-900 px-3 py-2 text-sm font-medium transition-colors"
                   data-testid={`link-nav-${link.label.toLowerCase()}`}
                 >
                   {link.label}
-                </span>
-              </Link>
-            )
-          ))}
+                </button>
+              ) : (
+                <Link key={link.sectionId} href={`/#${link.sectionId}`}>
+                  <span
+                    className="text-gray-600 hover:text-gray-900 px-3 py-2 text-sm font-medium transition-colors cursor-pointer"
+                    data-testid={`link-nav-${link.label.toLowerCase()}`}
+                  >
+                    {link.label}
+                  </span>
+                </Link>
+              )
+            ))}
 
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button
-                className="text-gray-300 hover:text-white hover:bg-gray-800/50 px-3 py-1.5 rounded-md text-sm transition-colors flex items-center gap-1"
-                data-testid="dropdown-use-cases"
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button
+                  className="text-gray-600 hover:text-gray-900 px-3 py-2 text-sm font-medium transition-colors flex items-center gap-1"
+                  data-testid="dropdown-use-cases"
+                >
+                  Use Cases
+                  <ChevronDown className="h-4 w-4" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                className="w-56 bg-white border-gray-200 z-[200]"
+                sideOffset={8}
               >
-                Use Cases
-                <ChevronDown className="h-4 w-4" />
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent
-              className="w-56 bg-[#1e1e1e] border-gray-700 z-[200]"
-              sideOffset={8}
-            >
-              {USE_CASES.map((useCase) => {
-                const isActive = location === useCase.href;
-                return (
-                  <Link key={useCase.href} href={useCase.href}>
-                    <DropdownMenuItem
-                      className={cn(
-                        'cursor-pointer p-3',
-                        isActive && 'bg-blue-600/20'
-                      )}
-                      data-testid={`link-usecase-${useCase.label.toLowerCase()}`}
-                    >
-                      <div>
-                        <div className="font-medium text-white">{useCase.label}</div>
-                        <div className="text-xs text-gray-400">{useCase.description}</div>
-                      </div>
-                    </DropdownMenuItem>
-                  </Link>
-                );
-              })}
-            </DropdownMenuContent>
-          </DropdownMenu>
+                {USE_CASES.map((useCase) => {
+                  const isActive = location === useCase.href;
+                  return (
+                    <Link key={useCase.href} href={useCase.href}>
+                      <DropdownMenuItem
+                        className={cn(
+                          'cursor-pointer p-3',
+                          isActive && 'bg-blue-50'
+                        )}
+                        data-testid={`link-usecase-${useCase.label.toLowerCase()}`}
+                      >
+                        <div>
+                          <div className="font-medium text-gray-900">{useCase.label}</div>
+                          <div className="text-xs text-gray-500">{useCase.description}</div>
+                        </div>
+                      </DropdownMenuItem>
+                    </Link>
+                  );
+                })}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
 
-        <div className="flex items-center gap-2">
-          <div className="hidden sm:flex items-center gap-2">
+        <div className="flex items-center space-x-3">
+          <Link href="/login">
+            <Button 
+              variant="ghost" 
+              className="text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+              data-testid="link-login-header"
+            >
+              Sign In
+            </Button>
+          </Link>
+          {onGetStarted ? (
+            <Button 
+              onClick={onGetStarted}
+              className="bg-[#1a56db] hover:bg-[#1e40af] text-white rounded-lg px-5"
+              data-testid="button-get-started-header"
+            >
+              Get Started
+            </Button>
+          ) : (
             <Link href="/login">
-              <Button variant="ghost" size="sm" className="text-gray-300 hover:text-white" data-testid="link-login-header">
-                Log In
+              <Button 
+                className="bg-[#1a56db] hover:bg-[#1e40af] text-white rounded-lg px-5"
+                data-testid="button-get-started-header"
+              >
+                Get Started
               </Button>
             </Link>
-            {onGetStarted ? (
-              <RainbowButton className="h-9 px-4 text-sm" onClick={onGetStarted} data-testid="button-get-started-header">
-                Get Started
-              </RainbowButton>
-            ) : (
-              <Link href="/login">
-                <RainbowButton className="h-9 px-4 text-sm" data-testid="button-get-started-header">
-                  Get Started
-                </RainbowButton>
-              </Link>
-            )}
-          </div>
+          )}
 
           <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
             <SheetTrigger asChild>
               <Button
                 size="icon"
                 variant="outline"
-                className="lg:hidden border-gray-700"
+                className="md:hidden border-gray-200"
                 data-testid="button-mobile-menu"
               >
                 <Menu className="h-4 w-4" />
@@ -160,12 +163,12 @@ export function LandingHeader({ currentPage = 'main', onGetStarted }: LandingHea
             </SheetTrigger>
             <SheetContent
               side="right"
-              className="bg-[#1a1a1a]/95 supports-[backdrop-filter]:bg-[#1a1a1a]/80 backdrop-blur-lg border-gray-800 w-[280px]"
+              className="bg-white border-gray-200 w-[280px]"
             >
               <div className="flex flex-col gap-4 mt-8">
                 <div className="flex items-center gap-2 px-2 mb-4">
                   <img src={flintLogo} alt="Flint" className="h-7 w-auto" />
-                  <span className="font-semibold">Flint</span>
+                  <span className="font-semibold text-gray-900">Flint</span>
                 </div>
 
                 <div className="space-y-1">
@@ -173,8 +176,14 @@ export function LandingHeader({ currentPage = 'main', onGetStarted }: LandingHea
                     currentPage === 'main' ? (
                       <button
                         key={link.sectionId}
-                        onClick={() => handleNavClick(link.sectionId)}
-                        className="w-full text-left text-gray-300 hover:text-white hover:bg-gray-800/50 px-3 py-2 rounded-md text-sm transition-colors"
+                        onClick={() => {
+                          const element = document.getElementById(link.sectionId);
+                          if (element) {
+                            element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                          }
+                          setMobileOpen(false);
+                        }}
+                        className="w-full text-left text-gray-600 hover:text-gray-900 hover:bg-gray-100 px-3 py-2 rounded-md text-sm transition-colors"
                       >
                         {link.label}
                       </button>
@@ -182,7 +191,7 @@ export function LandingHeader({ currentPage = 'main', onGetStarted }: LandingHea
                       <Link key={link.sectionId} href={`/#${link.sectionId}`}>
                         <button
                           onClick={() => setMobileOpen(false)}
-                          className="w-full text-left text-gray-300 hover:text-white hover:bg-gray-800/50 px-3 py-2 rounded-md text-sm transition-colors"
+                          className="w-full text-left text-gray-600 hover:text-gray-900 hover:bg-gray-100 px-3 py-2 rounded-md text-sm transition-colors"
                         >
                           {link.label}
                         </button>
@@ -191,7 +200,7 @@ export function LandingHeader({ currentPage = 'main', onGetStarted }: LandingHea
                   ))}
                 </div>
 
-                <div className="border-t border-gray-700 pt-4">
+                <div className="border-t border-gray-200 pt-4">
                   <p className="text-xs text-gray-500 uppercase tracking-wider px-3 mb-2">Use Cases</p>
                   <div className="space-y-1">
                     {USE_CASES.map((useCase) => {
@@ -203,8 +212,8 @@ export function LandingHeader({ currentPage = 'main', onGetStarted }: LandingHea
                             className={cn(
                               'w-full text-left px-3 py-2 rounded-md text-sm transition-colors',
                               isActive
-                                ? 'bg-blue-600/20 text-white'
-                                : 'text-gray-300 hover:text-white hover:bg-gray-800/50'
+                                ? 'bg-blue-50 text-[#1a56db]'
+                                : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
                             )}
                           >
                             {useCase.label}
@@ -215,21 +224,27 @@ export function LandingHeader({ currentPage = 'main', onGetStarted }: LandingHea
                   </div>
                 </div>
 
-                <div className="border-t border-gray-700 pt-4 space-y-2">
+                <div className="border-t border-gray-200 pt-4 space-y-2">
                   <Link href="/login">
-                    <Button variant="outline" className="w-full border-gray-700" onClick={() => setMobileOpen(false)}>
-                      Log In
+                    <Button variant="outline" className="w-full border-gray-200" onClick={() => setMobileOpen(false)}>
+                      Sign In
                     </Button>
                   </Link>
                   {onGetStarted ? (
-                    <RainbowButton className="w-full" onClick={() => { onGetStarted(); setMobileOpen(false); }}>
+                    <Button 
+                      className="w-full bg-[#1a56db] hover:bg-[#1e40af] text-white" 
+                      onClick={() => { onGetStarted(); setMobileOpen(false); }}
+                    >
                       Get Started
-                    </RainbowButton>
+                    </Button>
                   ) : (
                     <Link href="/login">
-                      <RainbowButton className="w-full" onClick={() => setMobileOpen(false)}>
+                      <Button 
+                        className="w-full bg-[#1a56db] hover:bg-[#1e40af] text-white" 
+                        onClick={() => setMobileOpen(false)}
+                      >
                         Get Started
-                      </RainbowButton>
+                      </Button>
                     </Link>
                   )}
                 </div>
