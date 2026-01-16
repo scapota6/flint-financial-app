@@ -45,8 +45,9 @@ router.post('/', requireAuth, async (req, res) => {
     const user = req.user!;
     const data = OrderPreviewSchema.parse(req.body);
 
-    const userId = (user as any).id || (user as any).sub;
-    const userEmail = (user as any).email || userId;
+    // Access user ID from JWT claims structure (claims.sub)
+    const userId = (user as any).claims?.sub || (user as any).id || (user as any).sub;
+    const userEmail = (user as any).email || (user as any).claims?.email || userId;
     console.log('Order preview request for user:', userEmail, 'userId:', userId);
     console.log('Preview details:', data);
 
@@ -197,8 +198,9 @@ router.post('/confirm', async (req, res) => {
     const user = req.user!;
     const data = ConfirmOrderSchema.parse(req.body);
 
-    const userId = (user as any).id || (user as any).sub;
-    const userEmail = (user as any).email || userId;
+    // Access user ID from JWT claims structure (claims.sub)
+    const userId = (user as any).claims?.sub || (user as any).id || (user as any).sub;
+    const userEmail = (user as any).email || (user as any).claims?.email || userId;
     console.log('Order confirmation request for user:', userEmail, 'userId:', userId);
     console.log('Confirmation details:', { symbol: data.symbol, action: data.action, quantity: data.quantity });
 
