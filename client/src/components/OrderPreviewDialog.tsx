@@ -17,6 +17,7 @@ interface OrderPreviewDialogProps {
   onClose: () => void;
   accountId: string;
   accountName: string;
+  institutionName?: string; // To detect crypto exchanges (Coinbase, Kraken, Binance)
   cashBalance?: number;
   initialSymbol?: string;
   initialAction?: 'BUY' | 'SELL';
@@ -39,7 +40,9 @@ interface OrderPreview {
   currency: string;
   buyingPowerRequired?: number;
   buyingPowerAfter?: number;
-  universalSymbolId: string;
+  universalSymbolId?: string; // Optional for crypto
+  cryptoPairSymbol?: string;  // For crypto orders (e.g., "XLM-USD")
+  isCrypto?: boolean;
   previewId: string;
   warnings: string[];
   canProceed: boolean;
@@ -58,6 +61,7 @@ export default function OrderPreviewDialog({
   onClose, 
   accountId, 
   accountName, 
+  institutionName = '',
   cashBalance = 0,
   initialSymbol = '',
   initialAction = 'BUY',
@@ -100,7 +104,11 @@ export default function OrderPreviewDialog({
     }),
     onSuccess: (data: any) => {
       if (data.success && data.preview) {
-        setPreview(data.preview);
+        // Include isCrypto flag from the response
+        setPreview({
+          ...data.preview,
+          isCrypto: data.isCrypto,
+        });
         setStep('preview');
       } else {
         toast({
@@ -131,9 +139,10 @@ export default function OrderPreviewDialog({
         setStep('success');
         queryClient.invalidateQueries({ queryKey: ['/api/accounts'] });
         queryClient.invalidateQueries({ queryKey: ['/api/dashboard'] });
+        const unitType = data.isCrypto ? '' : ' shares of';
         toast({
           title: 'Order Placed',
-          description: `${data.action} order for ${data.quantity} shares of ${data.symbol} placed successfully`,
+          description: `${data.action} order for ${data.quantity}${unitType} ${data.symbol} placed successfully`,
         });
       } else {
         toast({
@@ -170,6 +179,7 @@ export default function OrderPreviewDialog({
       quantity: parseFloat(quantity),
       limitPrice: orderType === 'Limit' ? parseFloat(limitPrice) : undefined,
       timeInForce,
+      institutionName, // For crypto exchange detection (Coinbase, Kraken, Binance)
     };
 
     previewMutation.mutate(orderData);
@@ -187,6 +197,8 @@ export default function OrderPreviewDialog({
       limitPrice: preview.limitPrice,
       timeInForce: preview.timeInForce,
       universalSymbolId: preview.universalSymbolId,
+      cryptoPairSymbol: preview.cryptoPairSymbol, // For crypto orders
+      isCrypto: preview.isCrypto, // To route to correct endpoint
       previewData: {
         estimatedCost: preview.estimatedCost,
         estimatedFees: preview.estimatedFees,

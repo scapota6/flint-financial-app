@@ -440,6 +440,216 @@ export async function placeOrder(
   }
 }
 
+// ============================================
+// CRYPTO TRADING FUNCTIONS (Coinbase, Kraken, Binance)
+// These use different endpoints than equity trading per SnapTrade docs
+// ============================================
+
+/**
+ * Search for tradable cryptocurrency pairs for a given account
+ * Per SnapTrade docs: GET /accounts/{accountId}/trading/instruments/cryptocurrencyPairs
+ */
+export async function searchCryptoPairs(
+  userId: string,
+  userSecret: string,
+  accountId: string,
+  base?: string,
+  quote?: string
+): Promise<{ items: Array<{ symbol: string; base: string; quote: string; increment?: string | null }> }> {
+  try {
+    console.log('[SnapTrade Crypto] Searching crypto pairs:', { accountId: accountId.slice(-6), base, quote });
+    
+    if (hasFn(tradingApi, 'searchCryptocurrencyPairInstruments')) {
+      const response = await (tradingApi as any).searchCryptocurrencyPairInstruments({
+        userId,
+        userSecret,
+        accountId,
+        base,
+        quote,
+      });
+      console.log('[SnapTrade Crypto] Found pairs:', response.data?.items?.length || 0);
+      return response.data || { items: [] };
+    }
+    
+    console.log('[SnapTrade Crypto] searchCryptocurrencyPairInstruments method not available');
+    return { items: [] };
+  } catch (e: any) {
+    console.error('[SnapTrade Crypto] searchCryptoPairs error:', e?.responseBody || e?.message || e);
+    throw e;
+  }
+}
+
+/**
+ * Preview a crypto order before placement
+ * Per SnapTrade docs: POST /accounts/{accountId}/trading/crypto/preview
+ */
+export async function previewCryptoOrder(
+  userId: string,
+  userSecret: string,
+  accountId: string,
+  params: {
+    symbol: string;        // e.g., "XLM-USD"
+    side: 'BUY' | 'SELL';
+    type: 'MARKET' | 'LIMIT' | 'STOP_LOSS_MARKET' | 'STOP_LOSS_LIMIT' | 'TAKE_PROFIT_MARKET' | 'TAKE_PROFIT_LIMIT';
+    amount: string;        // Amount of base currency (as string for precision)
+    time_in_force: 'GTC' | 'FOK' | 'IOC' | 'GTD';
+    limit_price?: string;
+    stop_price?: string;
+    post_only?: boolean;
+    expiration_date?: string;
+  }
+) {
+  try {
+    // SnapTrade crypto API expects lowercase side values
+    const normalizedSide = params.side.toLowerCase();
+    
+    console.log('[SnapTrade Crypto] Previewing crypto order:', {
+      accountId: accountId.slice(-6),
+      symbol: params.symbol,
+      side: normalizedSide,
+      type: params.type,
+      amount: params.amount
+    });
+    
+    if (hasFn(tradingApi, 'previewCryptoOrder')) {
+      const response = await (tradingApi as any).previewCryptoOrder({
+        userId,
+        userSecret,
+        accountId,
+        instrument: {
+          symbol: params.symbol,
+          type: 'CRYPTOCURRENCY_PAIR'
+        },
+        side: normalizedSide,
+        type: params.type,
+        amount: params.amount,
+        time_in_force: params.time_in_force,
+        limit_price: params.limit_price,
+        stop_price: params.stop_price,
+        post_only: params.post_only,
+        expiration_date: params.expiration_date,
+      });
+      
+      console.log('[SnapTrade Crypto] Preview response:', response.data);
+      return response.data;
+    }
+    
+    throw new Error('previewCryptoOrder method not available in SDK');
+  } catch (e: any) {
+    console.error('[SnapTrade Crypto] previewCryptoOrder error:', e?.responseBody || e?.message || e);
+    throw e;
+  }
+}
+
+/**
+ * Place a crypto order
+ * Per SnapTrade docs: POST /accounts/{accountId}/trading/crypto
+ */
+export async function placeCryptoOrder(
+  userId: string,
+  userSecret: string,
+  accountId: string,
+  params: {
+    symbol: string;        // e.g., "XLM-USD"
+    side: 'BUY' | 'SELL';
+    type: 'MARKET' | 'LIMIT' | 'STOP_LOSS_MARKET' | 'STOP_LOSS_LIMIT' | 'TAKE_PROFIT_MARKET' | 'TAKE_PROFIT_LIMIT';
+    amount: string;        // Amount of base currency (as string for precision)
+    time_in_force: 'GTC' | 'FOK' | 'IOC' | 'GTD';
+    limit_price?: string;
+    stop_price?: string;
+    post_only?: boolean;
+    expiration_date?: string;
+  }
+) {
+  try {
+    // SnapTrade crypto API expects lowercase side values
+    const normalizedSide = params.side.toLowerCase();
+    
+    console.log('[SnapTrade Crypto] Placing crypto order:', {
+      accountId: accountId.slice(-6),
+      symbol: params.symbol,
+      side: normalizedSide,
+      type: params.type,
+      amount: params.amount
+    });
+    
+    if (hasFn(tradingApi, 'placeCryptoOrder')) {
+      const response = await (tradingApi as any).placeCryptoOrder({
+        userId,
+        userSecret,
+        accountId,
+        instrument: {
+          symbol: params.symbol,
+          type: 'CRYPTOCURRENCY_PAIR'
+        },
+        side: normalizedSide,
+        type: params.type,
+        amount: params.amount,
+        time_in_force: params.time_in_force,
+        limit_price: params.limit_price,
+        stop_price: params.stop_price,
+        post_only: params.post_only,
+        expiration_date: params.expiration_date,
+      });
+      
+      console.log('[SnapTrade Crypto] Order placed:', {
+        orderId: response.data?.brokerage_order_id,
+        status: response.data?.order?.status
+      });
+      return response.data;
+    }
+    
+    throw new Error('placeCryptoOrder method not available in SDK');
+  } catch (e: any) {
+    console.error('[SnapTrade Crypto] placeCryptoOrder error:', e?.responseBody || e?.message || e);
+    throw e;
+  }
+}
+
+/**
+ * Get a quote for a cryptocurrency pair
+ * Per SnapTrade docs: GET /accounts/{accountId}/trading/instruments/cryptocurrencyPairs/{symbol}/quote
+ */
+export async function getCryptoPairQuote(
+  userId: string,
+  userSecret: string,
+  accountId: string,
+  symbol: string
+) {
+  try {
+    console.log('[SnapTrade Crypto] Getting quote for:', { accountId: accountId.slice(-6), symbol });
+    
+    if (hasFn(tradingApi, 'getCryptocurrencyPairQuote')) {
+      const response = await (tradingApi as any).getCryptocurrencyPairQuote({
+        userId,
+        userSecret,
+        accountId,
+        symbol,
+      });
+      
+      console.log('[SnapTrade Crypto] Quote:', response.data);
+      return response.data;
+    }
+    
+    console.log('[SnapTrade Crypto] getCryptocurrencyPairQuote method not available');
+    return null;
+  } catch (e: any) {
+    console.error('[SnapTrade Crypto] getCryptoPairQuote error:', e?.responseBody || e?.message || e);
+    throw e;
+  }
+}
+
+/**
+ * Check if an account is a crypto exchange (Coinbase, Kraken, Binance)
+ * These require different trading endpoints
+ */
+export function isCryptoExchange(institutionName: string): boolean {
+  const cryptoExchanges = ['coinbase', 'kraken', 'binance'];
+  return cryptoExchanges.some(exchange => 
+    institutionName.toLowerCase().includes(exchange)
+  );
+}
+
 export async function cancelOrder(
   userId: string,
   userSecret: string,

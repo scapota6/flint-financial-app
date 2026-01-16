@@ -2,12 +2,21 @@ import { Router } from 'express';
 import { z } from 'zod';
 import { randomUUID } from 'crypto';
 import { getSnapUser } from '../store/snapUsers.js';
-import { getOrderImpact, searchSymbols, placeOrder } from '../lib/snaptrade.js';
+import { 
+  getOrderImpact, 
+  searchSymbols, 
+  placeOrder,
+  searchCryptoPairs,
+  previewCryptoOrder,
+  placeCryptoOrder,
+  getCryptoPairQuote,
+  isCryptoExchange
+} from '../lib/snaptrade.js';
 import { requireAuth } from '../middleware/jwt-auth';
 
 const router = Router();
 
-// Validation schemas
+// Validation schemas - Updated to support both equity and crypto
 const OrderPreviewSchema = z.object({
   accountId: z.string(),
   symbol: z.string(),
@@ -15,7 +24,8 @@ const OrderPreviewSchema = z.object({
   orderType: z.enum(['Market', 'Limit']),
   quantity: z.number().positive(),
   limitPrice: z.number().positive().optional(),
-  timeInForce: z.enum(['Day', 'GTC']).optional().default('Day'),
+  timeInForce: z.enum(['Day', 'GTC']).optional().default('GTC'), // Crypto uses GTC by default
+  institutionName: z.string().optional(), // To detect crypto exchanges
 });
 
 const ConfirmOrderSchema = z.object({
@@ -25,8 +35,10 @@ const ConfirmOrderSchema = z.object({
   orderType: z.enum(['Market', 'Limit']),
   quantity: z.number().positive(),
   limitPrice: z.number().positive().optional(),
-  timeInForce: z.enum(['Day', 'GTC']).optional().default('Day'),
-  universalSymbolId: z.string(),
+  timeInForce: z.enum(['Day', 'GTC']).optional().default('GTC'),
+  universalSymbolId: z.string().optional(), // Optional for crypto
+  cryptoPairSymbol: z.string().optional(), // For crypto orders (e.g., "XLM-USD")
+  isCrypto: z.boolean().optional(),
   previewData: z.object({
     estimatedCost: z.number(),
     estimatedFees: z.number(),
@@ -39,6 +51,7 @@ const ConfirmOrderSchema = z.object({
 /**
  * POST /api/order-preview
  * Preview an order before placement - Step 1 of SnapTrade's two-step process
+ * Supports both equity (stocks/ETFs) and crypto (Coinbase, Kraken, Binance) orders
  */
 router.post('/', requireAuth, async (req, res) => {
   try {
@@ -59,6 +72,142 @@ router.post('/', requireAuth, async (req, res) => {
         message: 'SnapTrade account not connected. Please connect your brokerage account first.' 
       });
     }
+
+    // Detect if this is a crypto exchange based on institution name
+    const isCrypto = data.institutionName ? isCryptoExchange(data.institutionName) : false;
+    console.log('Order type detection:', { institutionName: data.institutionName, isCrypto });
+
+    if (isCrypto) {
+      // ============================================
+      // CRYPTO ORDER PREVIEW (Coinbase, Kraken, Binance)
+      // Uses different endpoints per SnapTrade docs
+      // ============================================
+      console.log('[Crypto Order] Using crypto trading endpoints');
+
+      // Step 1: Search for the crypto pair (e.g., XLM -> XLM-USD)
+      const cryptoPairs = await searchCryptoPairs(
+        snapUser.userId || userId,
+        snapUser.userSecret,
+        data.accountId,
+        data.symbol,  // base (e.g., "XLM")
+        'USD'         // quote (default to USD)
+      );
+
+      if (!cryptoPairs.items || cryptoPairs.items.length === 0) {
+        return res.status(404).json({ 
+          message: `Crypto pair ${data.symbol}-USD not found or not tradable on this exchange` 
+        });
+      }
+
+      const cryptoPair = cryptoPairs.items[0];
+      const pairSymbol = cryptoPair.symbol; // e.g., "XLM-USD"
+      console.log('[Crypto Order] Found tradable pair:', pairSymbol);
+
+      // Step 2: Get a quote for the pair to determine current price
+      let currentPrice = 0;
+      try {
+        const quote = await getCryptoPairQuote(
+          snapUser.userId || userId,
+          snapUser.userSecret,
+          data.accountId,
+          pairSymbol
+        );
+        currentPrice = parseFloat(quote?.bid || quote?.ask || quote?.last || '0');
+      } catch (quoteError) {
+        console.log('[Crypto Order] Quote fetch failed, will estimate price');
+      }
+
+      // Step 3: Preview the crypto order
+      const cryptoTimeInForce = data.timeInForce === 'Day' ? 'GTC' : data.timeInForce; // Crypto uses GTC
+      const cryptoOrderType = data.orderType === 'Market' ? 'MARKET' : 'LIMIT';
+      // SnapTrade crypto API expects lowercase side values
+      const cryptoSide = data.action.toLowerCase() as 'buy' | 'sell';
+      
+      let previewResult: any = null;
+      let estimatedFees = 0;
+      
+      try {
+        previewResult = await previewCryptoOrder(
+          snapUser.userId || userId,
+          snapUser.userSecret,
+          data.accountId,
+          {
+            symbol: pairSymbol,
+            side: cryptoSide.toUpperCase() as 'BUY' | 'SELL', // SDK types expect uppercase but will transform
+            type: cryptoOrderType,
+            amount: data.quantity.toString(), // Quantity = amount in base currency for crypto
+            time_in_force: cryptoTimeInForce as 'GTC' | 'FOK' | 'IOC' | 'GTD',
+            limit_price: data.limitPrice?.toString(),
+          }
+        );
+        
+        // Extract fee from preview
+        if (previewResult?.estimated_fee) {
+          estimatedFees = parseFloat(previewResult.estimated_fee.amount || '0');
+        }
+      } catch (previewError: any) {
+        console.log('[Crypto Order] Preview endpoint not available, generating estimate');
+        // If preview endpoint fails, we'll estimate the order impact
+      }
+
+      // Calculate estimated costs
+      const executionPrice = data.orderType === 'Limit' && data.limitPrice ? data.limitPrice : currentPrice;
+      const estimatedCost = executionPrice * data.quantity;
+      const estimatedTotal = data.action === 'BUY' 
+        ? estimatedCost + estimatedFees 
+        : estimatedCost - estimatedFees;
+
+      // Prepare crypto preview response
+      const preview = {
+        success: true,
+        isCrypto: true,
+        preview: {
+          symbol: data.symbol,
+          symbolName: `${cryptoPair.base}/${cryptoPair.quote}`,
+          action: data.action,
+          orderType: data.orderType,
+          quantity: data.quantity,
+          limitPrice: data.limitPrice,
+          timeInForce: cryptoTimeInForce,
+          
+          currentPrice,
+          executionPrice,
+          
+          estimatedCost,
+          estimatedFees,
+          estimatedTotal,
+          currency: cryptoPair.quote || 'USD',
+          
+          // Crypto-specific confirmation data
+          cryptoPairSymbol: pairSymbol,
+          increment: cryptoPair.increment,
+          previewId: `crypto_preview_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+          
+          rawPreviewData: previewResult,
+        },
+        
+        warnings: [] as string[],
+        canProceed: true,
+      };
+
+      if (estimatedTotal < 1) {
+        preview.warnings.push('Order value is very small and may not execute');
+      }
+
+      console.log('[Crypto Order] Preview generated:', {
+        pair: pairSymbol,
+        estimatedTotal,
+        fees: estimatedFees,
+      });
+
+      return res.json(preview);
+    }
+
+    // ============================================
+    // EQUITY ORDER PREVIEW (Stocks, ETFs)
+    // Uses standard SnapTrade trading endpoints
+    // ============================================
+    console.log('[Equity Order] Using standard trading endpoints');
 
     // Search for the symbol to get universal symbol ID
     const symbols = await searchSymbols(snapUser.userId || userEmail, snapUser.userSecret, data.accountId, data.symbol);
@@ -98,8 +247,8 @@ router.post('/', requireAuth, async (req, res) => {
     // Prepare preview response
     const preview = {
       success: true,
+      isCrypto: false,
       preview: {
-        // Order details
         symbol: data.symbol,
         symbolName: symbolInfo.description || symbolInfo.symbol,
         action: data.action,
@@ -108,33 +257,27 @@ router.post('/', requireAuth, async (req, res) => {
         limitPrice: data.limitPrice,
         timeInForce: data.timeInForce,
         
-        // Price information
         currentPrice,
         executionPrice,
         impactPrice: orderImpact.price,
         bidPrice: orderImpact.bid_price,
         askPrice: orderImpact.ask_price,
         
-        // Cost breakdown
         estimatedCost,
         estimatedFees,
         estimatedTotal,
         currency: orderImpact.currency || 'USD',
         
-        // Risk and impact information
         buyingPowerRequired: orderImpact.buying_power_required,
         buyingPowerAfter: orderImpact.buying_power_after,
         accountValue: orderImpact.account_value,
         
-        // Confirmation data for step 2
         universalSymbolId,
         previewId: `preview_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
         
-        // Raw SnapTrade data for debugging
         rawImpactData: orderImpact,
       },
       
-      // Warnings and validations
       warnings: [] as string[],
       canProceed: true,
     };
@@ -147,7 +290,7 @@ router.post('/', requireAuth, async (req, res) => {
 
     if (data.orderType === 'Limit' && data.limitPrice) {
       const priceDifference = Math.abs(data.limitPrice - currentPrice) / currentPrice;
-      if (priceDifference > 0.05) { // 5% difference
+      if (priceDifference > 0.05) {
         preview.warnings.push(`Limit price is ${(priceDifference * 100).toFixed(1)}% away from current market price`);
       }
     }
@@ -156,7 +299,7 @@ router.post('/', requireAuth, async (req, res) => {
       preview.warnings.push('Order value is very small and may not execute');
     }
 
-    console.log('Order preview generated successfully:', {
+    console.log('[Equity Order] Preview generated:', {
       symbol: data.symbol,
       estimatedTotal,
       fees: estimatedFees,
@@ -188,6 +331,7 @@ router.post('/', requireAuth, async (req, res) => {
 /**
  * POST /api/order-preview/confirm
  * Confirm and place order - Step 2 of SnapTrade's two-step process
+ * Supports both equity and crypto orders
  */
 router.post('/confirm', async (req, res) => {
   if (!req.isAuthenticated()) {
@@ -202,7 +346,12 @@ router.post('/confirm', async (req, res) => {
     const userId = (user as any).claims?.sub || (user as any).id || (user as any).sub;
     const userEmail = (user as any).email || (user as any).claims?.email || userId;
     console.log('Order confirmation request for user:', userEmail, 'userId:', userId);
-    console.log('Confirmation details:', { symbol: data.symbol, action: data.action, quantity: data.quantity });
+    console.log('Confirmation details:', { 
+      symbol: data.symbol, 
+      action: data.action, 
+      quantity: data.quantity,
+      isCrypto: data.isCrypto 
+    });
 
     // Get user's SnapTrade credentials (use user ID, not email)
     const snapUser = await getSnapUser(userId);
@@ -212,50 +361,105 @@ router.post('/confirm', async (req, res) => {
       });
     }
 
-    // Generate idempotency key for safe retries (industry best practice)
-    const idempotencyKey = randomUUID();
-    
-    console.log('Placing order with idempotency key:', idempotencyKey);
+    let order: any;
 
-    // Place the order using the confirmed preview data
-    const order = await placeOrder(
-      snapUser.userId || userEmail,
-      snapUser.userSecret,
-      data.accountId,
-      {
+    if (data.isCrypto && data.cryptoPairSymbol) {
+      // ============================================
+      // CRYPTO ORDER PLACEMENT
+      // ============================================
+      console.log('[Crypto Order] Placing crypto order:', data.cryptoPairSymbol);
+
+      const cryptoTimeInForce = data.timeInForce === 'Day' ? 'GTC' : data.timeInForce;
+      const cryptoOrderType = data.orderType === 'Market' ? 'MARKET' : 'LIMIT';
+
+      order = await placeCryptoOrder(
+        snapUser.userId || userId,
+        snapUser.userSecret,
+        data.accountId,
+        {
+          symbol: data.cryptoPairSymbol,
+          side: data.action,
+          type: cryptoOrderType,
+          amount: data.quantity.toString(),
+          time_in_force: cryptoTimeInForce as 'GTC' | 'FOK' | 'IOC' | 'GTD',
+          limit_price: data.limitPrice?.toString(),
+        }
+      );
+
+      console.log('[Crypto Order] Order placed successfully:', {
+        orderId: order.brokerage_order_id || order.order?.brokerage_order_id,
+        symbol: data.cryptoPairSymbol,
+        status: order.order?.status,
+      });
+
+      res.json({
+        success: true,
+        isCrypto: true,
+        orderId: order.brokerage_order_id || order.order?.brokerage_order_id,
+        status: order.order?.status || 'PENDING',
+        symbol: data.symbol,
+        cryptoPairSymbol: data.cryptoPairSymbol,
         action: data.action,
-        universal_symbol_id: data.universalSymbolId,
-        order_type: data.orderType,
-        time_in_force: data.timeInForce,
-        units: data.quantity,
-        price: data.limitPrice,
+        quantity: data.quantity,
+        orderType: data.orderType,
+        limitPrice: data.limitPrice,
+        estimatedCost: data.previewData.estimatedCost,
+        estimatedFees: data.previewData.estimatedFees,
+        estimatedTotal: data.previewData.estimatedTotal,
+        placedAt: new Date().toISOString(),
+        message: `${data.action} order for ${data.quantity} ${data.symbol} placed successfully`,
+        rawOrderData: order,
+      });
+    } else {
+      // ============================================
+      // EQUITY ORDER PLACEMENT
+      // ============================================
+      console.log('[Equity Order] Placing equity order');
+
+      // Generate idempotency key for safe retries (industry best practice)
+      const idempotencyKey = randomUUID();
+      console.log('Placing order with idempotency key:', idempotencyKey);
+
+      order = await placeOrder(
+        snapUser.userId || userEmail,
+        snapUser.userSecret,
+        data.accountId,
+        {
+          action: data.action,
+          universal_symbol_id: data.universalSymbolId!,
+          order_type: data.orderType,
+          time_in_force: data.timeInForce,
+          units: data.quantity,
+          price: data.limitPrice,
+          idempotencyKey,
+        }
+      );
+
+      console.log('[Equity Order] Order placed successfully:', {
+        orderId: order.brokerage_order_id || order.id,
+        symbol: data.symbol,
+        status: order.status,
+      });
+
+      res.json({
+        success: true,
+        isCrypto: false,
+        orderId: order.brokerage_order_id || order.id,
+        status: order.status,
+        symbol: data.symbol,
+        action: data.action,
+        quantity: data.quantity,
+        orderType: data.orderType,
+        limitPrice: data.limitPrice,
+        estimatedCost: data.previewData.estimatedCost,
+        estimatedFees: data.previewData.estimatedFees,
+        estimatedTotal: data.previewData.estimatedTotal,
+        placedAt: new Date().toISOString(),
         idempotencyKey,
-      }
-    );
-
-    console.log('Order placed successfully:', {
-      orderId: order.brokerage_order_id || order.id,
-      symbol: data.symbol,
-      status: order.status,
-    });
-
-    res.json({
-      success: true,
-      orderId: order.brokerage_order_id || order.id,
-      status: order.status,
-      symbol: data.symbol,
-      action: data.action,
-      quantity: data.quantity,
-      orderType: data.orderType,
-      limitPrice: data.limitPrice,
-      estimatedCost: data.previewData.estimatedCost,
-      estimatedFees: data.previewData.estimatedFees,
-      estimatedTotal: data.previewData.estimatedTotal,
-      placedAt: new Date().toISOString(),
-      idempotencyKey,
-      message: `${data.action} order for ${data.quantity} shares of ${data.symbol} placed successfully`,
-      rawOrderData: order,
-    });
+        message: `${data.action} order for ${data.quantity} shares of ${data.symbol} placed successfully`,
+        rawOrderData: order,
+      });
+    }
 
   } catch (error: any) {
     console.error('Error confirming order:', error);

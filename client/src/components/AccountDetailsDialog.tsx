@@ -2106,6 +2106,7 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
         onClose={() => setOrderDialogOpen(false)}
         accountId={accountId}
         accountName={data?.accountInformation?.name || 'Unknown Account'}
+        institutionName={data?.accountOverview?.institution?.name || data?.account?.institution?.name || ''}
         cashBalance={data?.balancesAndHoldings?.cash || 0}
         initialSymbol={tradeSymbol}
         initialAction={tradeAction}
