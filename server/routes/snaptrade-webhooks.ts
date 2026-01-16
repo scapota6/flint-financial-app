@@ -15,6 +15,7 @@ import {
 import { eq, sql, inArray, and } from 'drizzle-orm';
 import type { WebhookEvent, WebhookAck, WebhookType, ISODate, UUID } from '@shared/types';
 import { logger } from '@shared/logger';
+import { syncAccountsForConnection } from '../lib/snaptrade-persistence';
 
 const router = Router();
 
@@ -280,8 +281,9 @@ router.post('/webhooks', async (req, res) => {
         break;
         
       case 'connection.added':
-        console.log('[SnapTrade Webhook] Connection added - marking authorization as active');
+        console.log('[SnapTrade Webhook] Connection added - syncing accounts to database');
         if (webhookEvent.authorizationId) {
+          // Mark connection as active
           await db
             .update(snaptradeConnections)
             .set({
@@ -289,6 +291,25 @@ router.post('/webhooks', async (req, res) => {
               updatedAt: new Date()
             })
             .where(eq(snaptradeConnections.brokerageAuthorizationId, webhookEvent.authorizationId));
+          
+          // Get SnapTrade credentials and sync accounts
+          const [snapUserForAdd] = await db
+            .select()
+            .from(snaptradeUsers)
+            .where(eq(snaptradeUsers.flintUserId, webhookEvent.userId))
+            .limit(1);
+          
+          if (snapUserForAdd) {
+            const syncResult = await syncAccountsForConnection(
+              webhookEvent.userId,
+              snapUserForAdd.snaptradeUserId,
+              snapUserForAdd.userSecret,
+              webhookEvent.authorizationId
+            );
+            console.log('[SnapTrade Webhook] Account sync result:', syncResult);
+          } else {
+            console.warn('[SnapTrade Webhook] SnapTrade user not found for sync:', webhookEvent.userId);
+          }
           
           console.log('[SnapTrade Webhook] Authorization activated:', webhookEvent.authorizationId);
         }

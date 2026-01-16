@@ -12,10 +12,12 @@ import {
   snaptradePositions,
   snaptradeOrders,
   snaptradeActivities,
-  snaptradeWebhooks
+  snaptradeWebhooks,
+  connectedAccounts
 } from '../../shared/schema';
 import { eq, and, gte, lte, desc, asc } from 'drizzle-orm';
 import { nanoid } from 'nanoid';
+import { accountsApi } from './snaptrade';
 
 /**
  * User Management
@@ -564,5 +566,198 @@ export async function logSnapTradeWebhook(data: {
   } catch (error) {
     console.error('[SnapTrade Persistence] Error logging webhook:', error);
     throw error;
+  }
+}
+
+/**
+ * Sync accounts for a SnapTrade connection
+ * Fetches accounts from SnapTrade API and upserts to both snaptradeAccounts and connectedAccounts tables
+ * This ensures the dashboard can display newly connected accounts
+ */
+export async function syncAccountsForConnection(
+  flintUserId: string,
+  snaptradeUserId: string,
+  userSecret: string,
+  authorizationId?: string
+): Promise<{ success: boolean; accountsSynced: number; error?: string }> {
+  try {
+    console.log('[SnapTrade Sync] Starting account sync for user:', flintUserId);
+
+    // Fetch all accounts from SnapTrade
+    const accountsResponse = await accountsApi.listUserAccounts({
+      userId: snaptradeUserId,
+      userSecret: userSecret,
+    });
+
+    const accounts = accountsResponse.data || [];
+    console.log(`[SnapTrade Sync] Fetched ${accounts.length} accounts from SnapTrade`);
+
+    // Filter by authorizationId if provided
+    const filteredAccounts = authorizationId
+      ? accounts.filter((acc: any) => acc.brokerage_authorization === authorizationId)
+      : accounts;
+
+    console.log(`[SnapTrade Sync] Processing ${filteredAccounts.length} accounts${authorizationId ? ` for authorization ${authorizationId}` : ''}`);
+
+    let syncedCount = 0;
+
+    for (const account of filteredAccounts) {
+      try {
+        // Find the connection record for this account
+        const [connection] = await db
+          .select()
+          .from(snaptradeConnections)
+          .where(eq(snaptradeConnections.brokerageAuthorizationId, account.brokerage_authorization))
+          .limit(1);
+
+        if (!connection) {
+          // Create the connection if it doesn't exist
+          const [newConnection] = await db
+            .insert(snaptradeConnections)
+            .values({
+              flintUserId,
+              brokerageAuthorizationId: account.brokerage_authorization,
+              brokerageName: account.institution_name || 'Unknown',
+              disabled: false,
+              createdAt: new Date(),
+              updatedAt: new Date(),
+              lastSyncAt: new Date()
+            })
+            .returning();
+
+          console.log('[SnapTrade Sync] Created new connection:', newConnection.id);
+
+          // Use the new connection ID
+          await upsertAccountToTables(flintUserId, newConnection.id, account);
+        } else {
+          // Use existing connection ID
+          await upsertAccountToTables(flintUserId, connection.id, account);
+        }
+
+        syncedCount++;
+      } catch (accountError: any) {
+        console.error(`[SnapTrade Sync] Error syncing account ${account.id}:`, accountError.message);
+      }
+    }
+
+    console.log(`[SnapTrade Sync] Successfully synced ${syncedCount} accounts`);
+
+    return {
+      success: true,
+      accountsSynced: syncedCount
+    };
+  } catch (error: any) {
+    console.error('[SnapTrade Sync] Error syncing accounts:', error.message);
+    return {
+      success: false,
+      accountsSynced: 0,
+      error: error.message
+    };
+  }
+}
+
+/**
+ * Helper to upsert account to both snaptradeAccounts and connectedAccounts tables
+ */
+async function upsertAccountToTables(
+  flintUserId: string,
+  connectionId: number,
+  account: any
+): Promise<void> {
+  const accountId = account.id;
+  const institutionName = account.institution_name || 'Unknown';
+  const accountName = account.name || `${institutionName} Account`;
+  const balance = account.balance?.total?.amount || 0;
+  const currency = account.balance?.total?.currency || 'USD';
+  const accountType = account.meta?.type || account.raw_type || 'investment';
+
+  // 1. Upsert to snaptradeAccounts
+  const existingSnapAccount = await db
+    .select()
+    .from(snaptradeAccounts)
+    .where(eq(snaptradeAccounts.id, accountId))
+    .limit(1);
+
+  const snapAccountValues = {
+    id: accountId,
+    connectionId,
+    brokerageAuthId: account.brokerage_authorization,
+    brokerageName: institutionName,
+    institution: institutionName,
+    name: accountName,
+    number: account.number,
+    numberMasked: account.number ? `****${account.number.slice(-4)}` : null,
+    accountType: account.meta?.brokerage_account_type || accountType,
+    rawType: account.raw_type,
+    status: account.status || 'open',
+    currency,
+    totalBalanceAmount: String(balance),
+    cashRestrictions: account.cash_restrictions || [],
+    meta: account.meta || {},
+    holdingsLastSync: account.sync_status?.holdings?.last_successful_sync
+      ? new Date(account.sync_status.holdings.last_successful_sync)
+      : null,
+    initialSyncCompleted: account.sync_status?.holdings?.initial_sync_completed || false,
+    updatedAt: new Date()
+  };
+
+  if (existingSnapAccount.length > 0) {
+    await db
+      .update(snaptradeAccounts)
+      .set(snapAccountValues)
+      .where(eq(snaptradeAccounts.id, accountId));
+  } else {
+    await db
+      .insert(snaptradeAccounts)
+      .values({
+        ...snapAccountValues,
+        createdAt: new Date()
+      });
+  }
+
+  // 2. Upsert to connectedAccounts (for dashboard display)
+  const existingConnected = await db
+    .select()
+    .from(connectedAccounts)
+    .where(
+      and(
+        eq(connectedAccounts.userId, flintUserId),
+        eq(connectedAccounts.provider, 'snaptrade'),
+        eq(connectedAccounts.externalAccountId, accountId)
+      )
+    )
+    .limit(1);
+
+  const connectedAccountValues = {
+    userId: flintUserId,
+    accountType: 'brokerage',
+    provider: 'snaptrade',
+    institutionName,
+    accountName,
+    accountNumber: account.number ? `****${account.number.slice(-4)}` : null,
+    balance: String(balance),
+    currency,
+    isActive: true,
+    status: 'connected',
+    lastSynced: new Date(),
+    externalAccountId: accountId,
+    connectionId: account.brokerage_authorization,
+    updatedAt: new Date()
+  };
+
+  if (existingConnected.length > 0) {
+    await db
+      .update(connectedAccounts)
+      .set(connectedAccountValues)
+      .where(eq(connectedAccounts.id, existingConnected[0].id));
+    console.log(`[SnapTrade Sync] Updated connected account: ${accountName}`);
+  } else {
+    await db
+      .insert(connectedAccounts)
+      .values({
+        ...connectedAccountValues,
+        createdAt: new Date()
+      });
+    console.log(`[SnapTrade Sync] Created connected account: ${accountName}`);
   }
 }
