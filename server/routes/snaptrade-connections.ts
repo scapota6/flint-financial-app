@@ -5,6 +5,7 @@ import { db } from '../db';
 import { users, snaptradeUsers, snaptradeConnections } from '@shared/schema';
 import { eq, and } from 'drizzle-orm';
 import { mapSnapTradeError, logSnapTradeError, checkConnectionStatus, RateLimitHandler } from '../lib/snaptrade-errors';
+import { syncAccountsForConnection } from '../lib/snaptrade-persistence';
 import type { Connection, ListConnectionsResponse, RefreshConnectionResponse, DisableConnectionResponse, RemoveConnectionResponse, PortalUrlRequest, PortalUrlResponse, ErrorResponse, ListResponse, DetailsResponse, ISODate, UUID } from '@shared/types';
 
 const router = Router();
@@ -429,6 +430,46 @@ router.delete('/connections/:id', isAuthenticated, async (req: any, res) => {
     res.status(500).json({
       success: false,
       message: error?.message || 'Failed to delete connection'
+    });
+  }
+});
+
+/**
+ * POST /api/snaptrade/sync-accounts
+ * Manually sync accounts to local database after OAuth success
+ * Called by frontend after OAuth callback to ensure accounts appear in dashboard
+ */
+router.post('/sync-accounts', isAuthenticated, async (req: any, res) => {
+  try {
+    const flintUser = await getFlintUserByAuth(req.user);
+    const credentials = await getSnaptradeCredentials(flintUser.id);
+    const { authorizationId } = req.body;
+    
+    console.log('[SnapTrade Connections] Manual account sync requested:', {
+      flintUserId: flintUser.id,
+      authorizationId: authorizationId || 'all'
+    });
+    
+    const syncResult = await syncAccountsForConnection(
+      flintUser.id,
+      credentials.snaptradeUserId,
+      credentials.userSecret,
+      authorizationId
+    );
+    
+    console.log('[SnapTrade Connections] Manual sync completed:', syncResult);
+    
+    res.json({
+      success: syncResult.success,
+      accountsSynced: syncResult.accountsSynced,
+      error: syncResult.error
+    });
+    
+  } catch (error: any) {
+    console.error('[SnapTrade Connections] Sync accounts error:', error?.message || error);
+    res.status(500).json({
+      success: false,
+      message: error?.message || 'Failed to sync accounts'
     });
   }
 });

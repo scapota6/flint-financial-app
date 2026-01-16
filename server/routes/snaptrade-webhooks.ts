@@ -292,23 +292,30 @@ router.post('/webhooks', async (req, res) => {
             })
             .where(eq(snaptradeConnections.brokerageAuthorizationId, webhookEvent.authorizationId));
           
-          // Get SnapTrade credentials and sync accounts
-          const [snapUserForAdd] = await db
-            .select()
-            .from(snaptradeUsers)
-            .where(eq(snaptradeUsers.flintUserId, webhookEvent.userId))
-            .limit(1);
+          // webhookEvent.userId is the SnapTrade user ID, we need to find the Flint user
+          const flintUserIdForAdd = await getFlintUserBySnapTradeId(webhookEvent.userId);
           
-          if (snapUserForAdd) {
-            const syncResult = await syncAccountsForConnection(
-              webhookEvent.userId,
-              snapUserForAdd.snaptradeUserId,
-              snapUserForAdd.userSecret,
-              webhookEvent.authorizationId
-            );
-            console.log('[SnapTrade Webhook] Account sync result:', syncResult);
+          if (flintUserIdForAdd) {
+            // Get SnapTrade credentials
+            const [snapUserForAdd] = await db
+              .select()
+              .from(snaptradeUsers)
+              .where(eq(snaptradeUsers.flintUserId, flintUserIdForAdd))
+              .limit(1);
+            
+            if (snapUserForAdd) {
+              const syncResult = await syncAccountsForConnection(
+                flintUserIdForAdd,
+                snapUserForAdd.snaptradeUserId,
+                snapUserForAdd.userSecret,
+                webhookEvent.authorizationId
+              );
+              console.log('[SnapTrade Webhook] Account sync result:', syncResult);
+            } else {
+              console.warn('[SnapTrade Webhook] SnapTrade credentials not found for Flint user:', flintUserIdForAdd);
+            }
           } else {
-            console.warn('[SnapTrade Webhook] SnapTrade user not found for sync:', webhookEvent.userId);
+            console.warn('[SnapTrade Webhook] Could not resolve Flint user from SnapTrade user:', webhookEvent.userId);
           }
           
           console.log('[SnapTrade Webhook] Authorization activated:', webhookEvent.authorizationId);
@@ -319,6 +326,14 @@ router.post('/webhooks', async (req, res) => {
         console.log('[SnapTrade Webhook] Connection updated/holdings synced - invalidating cache and refreshing data');
         if (webhookEvent.authorizationId) {
           try {
+            // webhookEvent.userId is the SnapTrade user ID, we need to find the Flint user
+            const flintUserIdForUpdate = await getFlintUserBySnapTradeId(webhookEvent.userId);
+            
+            if (!flintUserIdForUpdate) {
+              console.warn('[SnapTrade Webhook] Could not resolve Flint user from SnapTrade user:', webhookEvent.userId);
+              break;
+            }
+            
             // Find the connection to get account IDs and SnapTrade credentials
             const [connection] = await db
               .select()
@@ -335,11 +350,11 @@ router.post('/webhooks', async (req, res) => {
                   snaptradeUserSecret: snaptradeUsers.userSecret,
                 })
                 .from(snaptradeUsers)
-                .where(eq(snaptradeUsers.flintUserId, webhookEvent.userId))
+                .where(eq(snaptradeUsers.flintUserId, flintUserIdForUpdate))
                 .limit(1);
               
               if (!snapUser) {
-                console.warn('[SnapTrade Webhook] SnapTrade user not found for Flint user:', webhookEvent.userId);
+                console.warn('[SnapTrade Webhook] SnapTrade user not found for Flint user:', flintUserIdForUpdate);
                 break;
               }
               

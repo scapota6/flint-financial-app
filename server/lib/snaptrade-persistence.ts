@@ -670,6 +670,13 @@ async function upsertAccountToTables(
   const balance = account.balance?.total?.amount || 0;
   const currency = account.balance?.total?.currency || 'USD';
   const accountType = account.meta?.type || account.raw_type || 'investment';
+  
+  // Normalize account status
+  const rawStatus = (account.status || 'open').toLowerCase();
+  const isActive = rawStatus === 'open' || rawStatus === 'active';
+  const normalizedStatus = isActive ? 'connected' : 
+    rawStatus === 'closed' ? 'disconnected' : 
+    rawStatus === 'archived' ? 'expired' : 'disconnected';
 
   // 1. Upsert to snaptradeAccounts
   const existingSnapAccount = await db
@@ -737,8 +744,8 @@ async function upsertAccountToTables(
     accountNumber: account.number ? `****${account.number.slice(-4)}` : null,
     balance: String(balance),
     currency,
-    isActive: true,
-    status: 'connected',
+    isActive,
+    status: normalizedStatus,
     lastSynced: new Date(),
     externalAccountId: accountId,
     connectionId: account.brokerage_authorization,
