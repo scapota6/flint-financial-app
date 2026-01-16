@@ -16,6 +16,7 @@ import { getInstitutionLogo } from "@/lib/bank-logos";
 import { useToast } from "@/hooks/use-toast";
 import ConnectionLimitAlert from "@/components/dashboard/connection-limit-alert";
 import { getCsrfToken } from "@/lib/csrf";
+import { queryClient } from "@/lib/queryClient";
 
 interface BrokerageAccount {
   id: string;
@@ -86,12 +87,12 @@ export default function Accounts() {
         });
       }
       
-      // If any connections were accepted, trigger sync
+      // If any connections were accepted, trigger sync and refresh UI
       if (accepted > 0) {
-        const syncAccounts = async () => {
+        const syncAndRefresh = async () => {
           try {
             const csrfToken = await getCsrfToken();
-            await fetch('/api/snaptrade/sync-accounts', {
+            const response = await fetch('/api/snaptrade/sync-accounts', {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
@@ -100,22 +101,25 @@ export default function Accounts() {
               credentials: 'include',
               body: JSON.stringify({})
             });
-            console.log('[Accounts] Post-OAuth account sync triggered for limit case');
+            if (response.ok) {
+              console.log('[Accounts] Post-OAuth account sync completed, invalidating cache');
+              queryClient.invalidateQueries({ queryKey: ['/api/snaptrade/accounts'] });
+            }
           } catch (e) {
             console.error('[Accounts] Post-OAuth sync failed:', e);
           }
         };
-        syncAccounts();
+        syncAndRefresh();
       }
       
       // Clean URL without reloading page
       window.history.replaceState({}, '', '/accounts');
     } else if (snaptradeStatus === 'success') {
       // All connections successful - trigger manual sync to ensure accounts are in database
-      const syncAccounts = async () => {
+      const syncAndRefresh = async () => {
         try {
           const csrfToken = await getCsrfToken();
-          await fetch('/api/snaptrade/sync-accounts', {
+          const response = await fetch('/api/snaptrade/sync-accounts', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -124,12 +128,15 @@ export default function Accounts() {
             credentials: 'include',
             body: JSON.stringify({})
           });
-          console.log('[Accounts] Post-OAuth account sync triggered');
+          if (response.ok) {
+            console.log('[Accounts] Post-OAuth account sync completed, invalidating cache');
+            queryClient.invalidateQueries({ queryKey: ['/api/snaptrade/accounts'] });
+          }
         } catch (e) {
           console.error('[Accounts] Post-OAuth sync failed:', e);
         }
       };
-      syncAccounts();
+      syncAndRefresh();
       
       toast({
         title: "Connection Successful",
