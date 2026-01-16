@@ -5,7 +5,7 @@
  * Protected by feature flag - only shows for internal testers
  */
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { MetaMaskSDK } from "@metamask/sdk";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -13,6 +13,7 @@ import { Wallet, ExternalLink, Copy, Check, AlertCircle, Loader2 } from "lucide-
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { canAccessFeature } from "@/lib/feature-flags";
+import { getStoredConnection, updateConnectionAccount, disconnectConnection } from "@/lib/metamask/connection-store";
 
 interface MetaMaskConnectProps {
   onConnect?: (account: string) => void;
@@ -23,12 +24,34 @@ interface MetaMaskConnectProps {
 export function MetaMaskConnect({ onConnect, onDisconnect, compact = false }: MetaMaskConnectProps) {
   const [account, setAccount] = useState<string | null>(null);
   const [isConnecting, setIsConnecting] = useState(false);
+  const [isInitialized, setIsInitialized] = useState(false);
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
   const { user } = useAuth();
 
-  // Only show for internal testers when feature flag is enabled
+  useEffect(() => {
+    const loadStoredConnection = async () => {
+      try {
+        const stored = await getStoredConnection();
+        if (stored.isConnected && stored.account) {
+          setAccount(stored.account);
+          onConnect?.(stored.account);
+        }
+      } catch (err) {
+        console.error('[MetaMask] Error loading stored connection:', err);
+      } finally {
+        setIsInitialized(true);
+      }
+    };
+    
+    loadStoredConnection();
+  }, []);
+
+  if (!isInitialized) {
+    return null;
+  }
+
   if (!canAccessFeature('metamask', user?.email)) {
     return null;
   }
@@ -53,6 +76,9 @@ export function MetaMaskConnect({ onConnect, onDisconnect, compact = false }: Me
       if (accounts && accounts.length > 0) {
         const connectedAccount = accounts[0];
         setAccount(connectedAccount);
+        
+        await updateConnectionAccount(connectedAccount);
+        
         onConnect?.(connectedAccount);
         
         toast({
@@ -75,8 +101,9 @@ export function MetaMaskConnect({ onConnect, onDisconnect, compact = false }: Me
     }
   }, [infuraApiKey, onConnect, toast]);
 
-  const disconnectWallet = useCallback(() => {
+  const disconnectWallet = useCallback(async () => {
     setAccount(null);
+    await disconnectConnection();
     onDisconnect?.();
     toast({
       title: "Wallet Disconnected",

@@ -107,12 +107,17 @@ export default function Connections() {
     setError(null);
     
     try {
-      // Get authenticated user data first
+      const { openInAppBrowser, getSnapTradeCallbackUrl } = await import('@/lib/mobile-browser');
+      const { isMobileApp } = await import('@/lib/platform');
+      
       const userResp = await fetch('/api/auth/user');
       if (!userResp.ok) throw new Error("Authentication required");
       const currentUser = await userResp.json();
       
       if (!currentUser.id) throw new Error("User ID not available");
+
+      const isMobile = isMobileApp();
+      const callbackUrl = getSnapTradeCallbackUrl();
 
       const response = await fetch('/api/connections/snaptrade/register', {
         method: 'POST',
@@ -120,7 +125,11 @@ export default function Connections() {
           'Content-Type': 'application/json',
           'x-user-id': currentUser.id
         },
-        body: JSON.stringify({ userId: currentUser.id })
+        body: JSON.stringify({ 
+          userId: currentUser.id,
+          isMobile,
+          callbackUrl 
+        })
       });
 
       if (!response.ok) {
@@ -131,36 +140,25 @@ export default function Connections() {
       const data = await response.json();
       const redirectUrl = data?.connect?.url;
       
-      // Open SnapTrade connection portal in popup window
       if (redirectUrl) {
-        // Calculate center position for popup
         const width = 500;
         const height = 700;
         const left = (window.screen.width / 2) - (width / 2);
         const top = (window.screen.height / 2) - (height / 2);
         
-        const popup = window.open(
-          redirectUrl,
-          'SnapTradeConnect',
-          `width=${width},height=${height},left=${left},top=${top},resizable=yes,scrollbars=yes,status=yes`
-        );
-        
-        // Check if popup was blocked
-        if (!popup || popup.closed || typeof popup.closed === 'undefined') {
-          setError('Please allow popups for this site to connect your account');
-          setIsConnecting(false);
-          return;
-        }
-        
-        // Monitor popup for closure
-        const checkClosed = setInterval(() => {
-          if (popup.closed) {
-            clearInterval(checkClosed);
+        openInAppBrowser({
+          url: redirectUrl,
+          onComplete: () => {
             setIsConnecting(false);
-            // Refresh the page to check if connection was successful
             window.location.reload();
-          }
-        }, 1000);
+          },
+          onError: (err) => {
+            setError(err.message || 'Please allow popups for this site to connect your account');
+            setIsConnecting(false);
+          },
+          windowName: 'SnapTradeConnect',
+          windowFeatures: `width=${width},height=${height},left=${left},top=${top},resizable=yes,scrollbars=yes,status=yes`
+        });
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Connection failed');

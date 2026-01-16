@@ -4,6 +4,8 @@ import { Button } from '@/components/ui/button';
 import { apiRequest } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
 import { useState } from 'react';
+import { openInAppBrowser, getSnapTradeCallbackUrl } from '@/lib/mobile-browser';
+import { isMobileApp } from '@/lib/platform';
 
 interface SnapTradeConnectionAlertProps {
   snapTradeStatus?: {
@@ -23,28 +25,44 @@ export default function SnapTradeConnectionAlert({ snapTradeStatus }: SnapTradeC
   const handleConnect = async () => {
     setIsConnecting(true);
     try {
+      const isMobile = isMobileApp();
+      const callbackUrl = getSnapTradeCallbackUrl();
+      
       const response = await apiRequest('/api/snaptrade/register', {
-        method: 'POST'
+        method: 'POST',
+        body: JSON.stringify({ isMobile, callbackUrl }),
+        headers: { 'Content-Type': 'application/json' }
       });
       
       const data = await response.json();
       
       if (data.redirectUrl) {
-        // Open SnapTrade connection portal in a popup
         const width = 800;
         const height = 700;
         const left = (window.innerWidth - width) / 2;
         const top = (window.innerHeight - height) / 2;
         
-        window.open(
-          data.redirectUrl,
-          'SnapTradeConnect',
-          `width=${width},height=${height},left=${left},top=${top},toolbar=no,menubar=no,scrollbars=yes,resizable=yes`
-        );
+        openInAppBrowser({
+          url: data.redirectUrl,
+          onComplete: () => {
+            setIsConnecting(false);
+            window.location.reload();
+          },
+          onError: () => {
+            toast({
+              title: "Connection Failed",
+              description: "Unable to open connection portal",
+              variant: "destructive"
+            });
+            setIsConnecting(false);
+          },
+          windowName: 'SnapTradeConnect',
+          windowFeatures: `width=${width},height=${height},left=${left},top=${top},toolbar=no,menubar=no,scrollbars=yes,resizable=yes`
+        });
         
         toast({
           title: "Connection Portal Opened",
-          description: "Complete the connection in the popup window"
+          description: isMobile ? "Complete the connection in the browser" : "Complete the connection in the popup window"
         });
       }
     } catch (error) {
@@ -53,7 +71,6 @@ export default function SnapTradeConnectionAlert({ snapTradeStatus }: SnapTradeC
         description: "Unable to start brokerage connection",
         variant: "destructive"
       });
-    } finally {
       setIsConnecting(false);
     }
   };

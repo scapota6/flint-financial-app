@@ -1,4 +1,6 @@
 import { apiRequest } from "@/lib/queryClient";
+import { openInAppBrowser, getSnapTradeCallbackUrl } from "@/lib/mobile-browser";
+import { isMobileApp } from "@/lib/platform";
 
 export interface SnapTradeAccount {
   id: string;
@@ -205,7 +207,19 @@ export class SnapTradeService {
   // Connection Management
   static async connectBrokerage() {
     try {
-      const response = await apiRequest('POST', '/api/snaptrade/register');
+      const isMobile = isMobileApp();
+      const callbackUrl = getSnapTradeCallbackUrl();
+      
+      const response = await apiRequest('POST', '/api/snaptrade/register', {
+        body: JSON.stringify({ 
+          isMobile,
+          callbackUrl 
+        }),
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      
       if (!response.ok) {
         const error = await response.json();
         throw new Error(error.message || 'Failed to register with SnapTrade');
@@ -214,27 +228,22 @@ export class SnapTradeService {
       const data = await response.json();
       
       if (data.url) {
-        // Open connection portal in popup
-        const popup = window.open(
-          data.url,
-          'snaptrade_connect',
-          'width=800,height=600,scrollbars=yes,resizable=yes'
-        );
-
         return new Promise((resolve, reject) => {
-          const checkClosed = setInterval(() => {
-            if (popup?.closed) {
-              clearInterval(checkClosed);
+          openInAppBrowser({
+            url: data.url,
+            onComplete: () => {
+              console.log('[SnapTrade] Connection flow completed');
               resolve(true);
-            }
-          }, 1000);
+            },
+            onError: (error) => {
+              console.error('[SnapTrade] Connection error:', error);
+              reject(error);
+            },
+            windowName: 'snaptrade_connect',
+            windowFeatures: 'width=800,height=600,scrollbars=yes,resizable=yes'
+          });
 
-          // Timeout after 10 minutes
           setTimeout(() => {
-            clearInterval(checkClosed);
-            if (popup && !popup.closed) {
-              popup.close();
-            }
             reject(new Error('Connection timeout'));
           }, 600000);
         });

@@ -47,5 +47,20 @@
         <true/>
         <key>NSFaceIDUsageDescription</key>
         <string>Flint uses Face ID to securely unlock the app and protect your financial data</string>
+        <key>CFBundleURLTypes</key>
+        <array>
+                <dict>
+                        <key>CFBundleURLName</key>
+                        <string>com.flint.investing</string>
+                        <key>CFBundleURLSchemes</key>
+                        <array>
+                                <string>flint</string>
+                        </array>
+                </dict>
+        </array>
+        <key>LSApplicationQueriesSchemes</key>
+        <array>
+                <string>metamask</string>
+        </array>
 </dict>
 </plist>
