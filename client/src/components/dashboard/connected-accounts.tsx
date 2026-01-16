@@ -209,11 +209,17 @@ export default function ConnectedAccounts({
                         <Button 
                           variant="outline" 
                           size="sm" 
-                          className="text-red-500 hover:text-red-600 border-red-300 hover:border-red-400"
-                          onClick={handleConnectBrokerage}
+                          className="text-amber-500 hover:text-amber-600 border-amber-300 hover:border-amber-400"
+                          onClick={() => {
+                            // Scroll to connect section for re-authentication
+                            const connectSection = document.getElementById('quick-connect-section');
+                            if (connectSection) {
+                              connectSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                            }
+                          }}
                         >
                           <RefreshCw className="h-3 w-3 mr-1" />
-                          Resync
+                          Reconnect
                         </Button>
                       </Tooltip>
                     ) : (

@@ -15,7 +15,7 @@ const OrderPreviewSchema = z.object({
   orderType: z.enum(['Market', 'Limit']),
   quantity: z.number().positive(),
   limitPrice: z.number().positive().optional(),
-  timeInForce: z.enum(['Day', 'GTC', 'IOC', 'FOK']).optional().default('Day'),
+  timeInForce: z.enum(['Day', 'GTC']).optional().default('Day'),
 });
 
 const ConfirmOrderSchema = z.object({
@@ -25,7 +25,7 @@ const ConfirmOrderSchema = z.object({
   orderType: z.enum(['Market', 'Limit']),
   quantity: z.number().positive(),
   limitPrice: z.number().positive().optional(),
-  timeInForce: z.enum(['Day', 'GTC', 'IOC', 'FOK']).optional().default('Day'),
+  timeInForce: z.enum(['Day', 'GTC']).optional().default('Day'),
   universalSymbolId: z.string(),
   previewData: z.object({
     estimatedCost: z.number(),
@@ -45,13 +45,15 @@ router.post('/', requireAuth, async (req, res) => {
     const user = req.user!;
     const data = OrderPreviewSchema.parse(req.body);
 
-    const userEmail = (user as any).email || user.id;
-    console.log('Order preview request for user:', userEmail);
+    const userId = (user as any).id || (user as any).sub;
+    const userEmail = (user as any).email || userId;
+    console.log('Order preview request for user:', userEmail, 'userId:', userId);
     console.log('Preview details:', data);
 
-    // Get user's SnapTrade credentials
-    const snapUser = await getSnapUser(userEmail);
+    // Get user's SnapTrade credentials (use user ID, not email)
+    const snapUser = await getSnapUser(userId);
     if (!snapUser?.userSecret) {
+      console.log('SnapTrade user not found for userId:', userId);
       return res.status(400).json({ 
         message: 'SnapTrade account not connected. Please connect your brokerage account first.' 
       });
@@ -75,9 +77,9 @@ router.post('/', requireAuth, async (req, res) => {
       data.accountId,
       {
         action: data.action,
-        universalSymbolId,
-        orderType: data.orderType,
-        timeInForce: data.timeInForce,
+        universal_symbol_id: universalSymbolId,
+        order_type: data.orderType,
+        time_in_force: data.timeInForce,
         units: data.quantity,
         price: data.limitPrice,
       }
@@ -132,7 +134,7 @@ router.post('/', requireAuth, async (req, res) => {
       },
       
       // Warnings and validations
-      warnings: [],
+      warnings: [] as string[],
       canProceed: true,
     };
 
@@ -195,12 +197,13 @@ router.post('/confirm', async (req, res) => {
     const user = req.user!;
     const data = ConfirmOrderSchema.parse(req.body);
 
-    const userEmail = (user as any).email || user.id;
-    console.log('Order confirmation request for user:', userEmail);
+    const userId = (user as any).id || (user as any).sub;
+    const userEmail = (user as any).email || userId;
+    console.log('Order confirmation request for user:', userEmail, 'userId:', userId);
     console.log('Confirmation details:', { symbol: data.symbol, action: data.action, quantity: data.quantity });
 
-    // Get user's SnapTrade credentials
-    const snapUser = await getSnapUser(userEmail);
+    // Get user's SnapTrade credentials (use user ID, not email)
+    const snapUser = await getSnapUser(userId);
     if (!snapUser?.userSecret) {
       return res.status(400).json({ 
         message: 'SnapTrade account not connected' 
@@ -219,9 +222,9 @@ router.post('/confirm', async (req, res) => {
       data.accountId,
       {
         action: data.action,
-        universalSymbolId: data.universalSymbolId,
-        orderType: data.orderType,
-        timeInForce: data.timeInForce,
+        universal_symbol_id: data.universalSymbolId,
+        order_type: data.orderType,
+        time_in_force: data.timeInForce,
         units: data.quantity,
         price: data.limitPrice,
         idempotencyKey,

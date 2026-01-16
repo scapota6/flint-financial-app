@@ -30,7 +30,7 @@ interface OrderPreview {
   orderType: 'Market' | 'Limit';
   quantity: number;
   limitPrice?: number;
-  timeInForce: 'Day' | 'GTC' | 'IOC' | 'FOK';
+  timeInForce: 'Day' | 'GTC';
   currentPrice: number;
   executionPrice: number;
   estimatedCost: number;
@@ -69,21 +69,25 @@ export default function OrderPreviewDialog({
   const [orderType, setOrderType] = useState<'Market' | 'Limit'>('Market');
   const [quantity, setQuantity] = useState(initialQuantity ? String(initialQuantity) : '');
   const [limitPrice, setLimitPrice] = useState('');
-  const [timeInForce, setTimeInForce] = useState<'Day' | 'GTC' | 'IOC' | 'FOK'>('Day');
+  const [timeInForce, setTimeInForce] = useState<'Day' | 'GTC'>('Day');
   const [preview, setPreview] = useState<OrderPreview | null>(null);
   const [placedOrder, setPlacedOrder] = useState<any>(null);
+  
+  // Track if symbol was pre-filled (should be locked)
+  const isSymbolLocked = Boolean(initialSymbol);
   
   // Reset form when dialog opens with new initial values
   useEffect(() => {
     if (isOpen) {
       setSymbol(initialSymbol);
       setAction(initialAction);
-      setQuantity(initialQuantity ? String(initialQuantity) : '');
+      // Always start quantity at 0, never pre-fill
+      setQuantity('');
       setStep('form');
       setPreview(null);
       setPlacedOrder(null);
     }
-  }, [isOpen, initialSymbol, initialAction, initialQuantity]);
+  }, [isOpen, initialSymbol, initialAction]);
 
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -213,9 +217,11 @@ export default function OrderPreviewDialog({
           <Input
             id="symbol"
             value={symbol}
-            onChange={(e) => setSymbol(e.target.value.toUpperCase())}
+            onChange={(e) => !isSymbolLocked && setSymbol(e.target.value.toUpperCase())}
             placeholder="AAPL"
-            className="font-mono"
+            className={`font-mono ${isSymbolLocked ? 'bg-gray-100 cursor-not-allowed' : ''}`}
+            readOnly={isSymbolLocked}
+            disabled={isSymbolLocked}
           />
         </div>
         <div className="space-y-2">
@@ -281,10 +287,8 @@ export default function OrderPreviewDialog({
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="Day">Day</SelectItem>
+            <SelectItem value="Day">Day Order</SelectItem>
             <SelectItem value="GTC">Good Till Canceled</SelectItem>
-            <SelectItem value="IOC">Immediate or Cancel</SelectItem>
-            <SelectItem value="FOK">Fill or Kill</SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -292,7 +296,7 @@ export default function OrderPreviewDialog({
       <div className="pt-4">
         <Button 
           onClick={handlePreview} 
-          className="w-full"
+          className="w-full bg-black text-white hover:bg-gray-800"
           disabled={previewMutation.isPending || !symbol || !quantity}
         >
           {previewMutation.isPending ? 'Generating Preview...' : 'Preview Order'}

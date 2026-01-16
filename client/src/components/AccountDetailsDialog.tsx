@@ -757,10 +757,11 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
   const [showErrorDetails, setShowErrorDetails] = useState(false);
   
   // Handler for opening trade dialog with pre-filled values
-  const handleOpenTrade = (symbol: string, action: 'BUY' | 'SELL', quantity?: number) => {
+  // Note: quantity is intentionally not passed - user always enters quantity fresh
+  const handleOpenTrade = (symbol: string, action: 'BUY' | 'SELL') => {
     setTradeSymbol(symbol);
     setTradeAction(action);
-    setTradeQuantity(quantity);
+    setTradeQuantity(undefined);
     setOrderDialogOpen(true);
   };
   
@@ -1020,7 +1021,7 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
                                   size="sm"
                                   variant="outline"
                                   className="h-7 px-2 text-xs bg-red-50 border-red-200 text-red-700 hover:bg-red-100"
-                                  onClick={() => handleOpenTrade(holding.symbol, 'SELL', holding.quantity)}
+                                  onClick={() => handleOpenTrade(holding.symbol, 'SELL')}
                                 >
                                   Sell
                                 </Button>

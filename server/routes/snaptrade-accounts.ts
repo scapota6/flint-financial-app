@@ -67,11 +67,14 @@ router.get('/accounts', requireAuth, async (req: any, res) => {
     // Extract data array from response - API returns { data: [...] }
     const connections = connectionsResponse?.data || [];
     
-    // Create a map of connection ID -> trading capability
+    // Create maps for connection trading capability and health status
     const connectionTradingMap = new Map<string, boolean>();
+    const connectionDisabledMap = new Map<string, boolean>();
     for (const conn of connections) {
       // Connection type "trade" means trading is enabled, "read" means read-only
       connectionTradingMap.set(conn.id, conn.type === 'trade' && !conn.disabled);
+      // Track if connection is disabled (needs reconnection)
+      connectionDisabledMap.set(conn.id, conn.disabled === true);
     }
     
     console.log('[SnapTrade Accounts] Connection trading map:', 
@@ -95,6 +98,8 @@ router.get('/accounts', requireAuth, async (req: any, res) => {
       
       // Determine if this account's connection supports trading
       const canTrade = connectionTradingMap.get(account.brokerage_authorization) ?? false;
+      // Determine if connection is disabled (needs reconnection)
+      const needsReconnection = connectionDisabledMap.get(account.brokerage_authorization) ?? false;
       
       return {
         id: account.id as UUID,
@@ -112,7 +117,8 @@ router.get('/accounts', requireAuth, async (req: any, res) => {
           currency: account.balance.total.currency || 'USD'
         } : null,
         lastSyncAt: account.sync_status?.holdings?.last_successful_sync || null,
-        canTrade
+        canTrade,
+        needsReconnection
       };
     });
     

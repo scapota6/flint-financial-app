@@ -248,38 +248,19 @@ export default function AccountCard({ account }: AccountCardProps) {
               {/* View Details or Resync Button */}
               {account.needsReconnection ? (
                 <Button
-                  onClick={async () => {
-                    // Trigger SnapTrade reconnection
-                    try {
-                      const response = await fetch('/api/snaptrade/register', {
-                        method: 'POST',
-                        credentials: 'include'
-                      });
-                      const data = await response.json();
-                      
-                      if (data.redirectUrl) {
-                        // Open SnapTrade connection portal in a popup
-                        const width = 800;
-                        const height = 700;
-                        const left = (window.innerWidth - width) / 2;
-                        const top = (window.innerHeight - height) / 2;
-                        
-                        window.open(
-                          data.redirectUrl,
-                          'SnapTradeConnect',
-                          `width=${width},height=${height},left=${left},top=${top},toolbar=no,menubar=no,scrollbars=yes,resizable=yes`
-                        );
-                      }
-                    } catch (error) {
-                      console.error('Failed to start SnapTrade connection:', error);
+                  onClick={() => {
+                    // Scroll to connect section for re-authentication
+                    const connectSection = document.getElementById('quick-connect-section');
+                    if (connectSection) {
+                      connectSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
                     }
                   }}
                   variant="outline"
                   size="sm"
-                  className="border-red-500/50 text-red-400 hover:bg-red-500/10 hover:text-red-300 transition-colors"
+                  className="border-amber-500/50 text-amber-500 hover:bg-amber-500/10 hover:text-amber-400 transition-colors"
                 >
                   <RefreshCw className="h-4 w-4 mr-1" />
-                  Resync
+                  Reconnect
                 </Button>
               ) : (
                 <Button

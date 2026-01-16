@@ -335,6 +335,7 @@ export interface AccountSummary {
   balance?: Money | null;
   lastSyncAt?: ISODate | null;
   canTrade?: boolean;                // true if connection type is "trade" (not read-only)
+  needsReconnection?: boolean;       // true if connection is disabled/broken
 }
 
 export interface AccountDetails extends AccountSummary {
