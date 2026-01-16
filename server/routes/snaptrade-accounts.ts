@@ -60,10 +60,12 @@ router.get('/accounts', requireAuth, async (req: any, res) => {
     
     // Fetch brokerage authorizations to determine trading capability
     const { listBrokerageAuthorizations } = await import('../lib/snaptrade');
-    const connections = await listBrokerageAuthorizations(
+    const connectionsResponse = await listBrokerageAuthorizations(
       credentials.snaptradeUserId!,
       credentials.userSecret
-    ) || [];
+    );
+    // Extract data array from response - API returns { data: [...] }
+    const connections = connectionsResponse?.data || [];
     
     // Create a map of connection ID -> trading capability
     const connectionTradingMap = new Map<string, boolean>();
