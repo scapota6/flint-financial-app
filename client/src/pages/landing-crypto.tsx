@@ -501,7 +501,6 @@ export default function LandingCrypto() {
           
           <div className="text-center mt-8">
             <p className="text-gray-500 text-sm">
-              <Shield className="h-4 w-4 inline mr-2 text-green-500" />
               Cancel anytime. No risk.
             </p>
           </div>
