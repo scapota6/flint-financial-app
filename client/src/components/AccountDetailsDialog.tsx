@@ -263,6 +263,9 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
   const [orderStatusDialogOpen, setOrderStatusDialogOpen] = useState(false);
   const [showPaymentDialog, setShowPaymentDialog] = useState(false);
   const [customPaymentAmount, setCustomPaymentAmount] = useState('');
+  const [tradeSymbol, setTradeSymbol] = useState('');
+  const [tradeAction, setTradeAction] = useState<'BUY' | 'SELL'>('BUY');
+  const [tradeQuantity, setTradeQuantity] = useState<number | undefined>(undefined);
   const { toast } = useToast();
   const { user: currentUser, isLoading: authLoading, isAuthenticated } = useAuth();
   
@@ -753,6 +756,14 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
   const isDev = process.env.NODE_ENV === 'development';
   const [showErrorDetails, setShowErrorDetails] = useState(false);
   
+  // Handler for opening trade dialog with pre-filled values
+  const handleOpenTrade = (symbol: string, action: 'BUY' | 'SELL', quantity?: number) => {
+    setTradeSymbol(symbol);
+    setTradeAction(action);
+    setTradeQuantity(quantity);
+    setOrderDialogOpen(true);
+  };
+  
   // Universal reconnection handler for both Teller and SnapTrade
   const handleReconnectAccount = async () => {
     setIsReconnecting(true);
@@ -960,6 +971,9 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
                         <th className="text-right p-3 font-semibold text-gray-900">Current Price</th>
                         <th className="text-right p-3 font-semibold text-gray-900">Market Value</th>
                         <th className="text-right p-3 font-semibold text-gray-900">P&L</th>
+                        {data.tradingActions?.canPlaceOrders && isSnapTradeAccount && (
+                          <th className="text-center p-3 font-semibold text-gray-900">Trade</th>
+                        )}
                       </tr>
                     </thead>
                     <tbody>
@@ -991,6 +1005,28 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
                               {fmtMoney(holding.unrealized)}
                             </span>
                           </td>
+                          {data.tradingActions?.canPlaceOrders && isSnapTradeAccount && (
+                            <td className="p-3 text-center">
+                              <div className="flex gap-1 justify-center">
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  className="h-7 px-2 text-xs bg-green-50 border-green-200 text-green-700 hover:bg-green-100"
+                                  onClick={() => handleOpenTrade(holding.symbol, 'BUY')}
+                                >
+                                  Buy
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  className="h-7 px-2 text-xs bg-red-50 border-red-200 text-red-700 hover:bg-red-100"
+                                  onClick={() => handleOpenTrade(holding.symbol, 'SELL', holding.quantity)}
+                                >
+                                  Sell
+                                </Button>
+                              </div>
+                            </td>
+                          )}
                         </tr>
                       ))}
                     </tbody>
@@ -2070,6 +2106,9 @@ export default function AccountDetailsDialog({ accountId, open, onClose, current
         accountId={accountId}
         accountName={data?.accountInformation?.name || 'Unknown Account'}
         cashBalance={data?.balancesAndHoldings?.cash || 0}
+        initialSymbol={tradeSymbol}
+        initialAction={tradeAction}
+        initialQuantity={tradeQuantity}
       />
       
       {/* Order Status Dialog */}

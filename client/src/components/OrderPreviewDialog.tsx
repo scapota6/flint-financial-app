@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -18,6 +18,9 @@ interface OrderPreviewDialogProps {
   accountId: string;
   accountName: string;
   cashBalance?: number;
+  initialSymbol?: string;
+  initialAction?: 'BUY' | 'SELL';
+  initialQuantity?: number;
 }
 
 interface OrderPreview {
@@ -55,17 +58,32 @@ export default function OrderPreviewDialog({
   onClose, 
   accountId, 
   accountName, 
-  cashBalance = 0 
+  cashBalance = 0,
+  initialSymbol = '',
+  initialAction = 'BUY',
+  initialQuantity
 }: OrderPreviewDialogProps) {
   const [step, setStep] = useState<'form' | 'preview' | 'success'>('form');
-  const [symbol, setSymbol] = useState('');
-  const [action, setAction] = useState<'BUY' | 'SELL'>('BUY');
+  const [symbol, setSymbol] = useState(initialSymbol);
+  const [action, setAction] = useState<'BUY' | 'SELL'>(initialAction);
   const [orderType, setOrderType] = useState<'Market' | 'Limit'>('Market');
-  const [quantity, setQuantity] = useState('');
+  const [quantity, setQuantity] = useState(initialQuantity ? String(initialQuantity) : '');
   const [limitPrice, setLimitPrice] = useState('');
   const [timeInForce, setTimeInForce] = useState<'Day' | 'GTC' | 'IOC' | 'FOK'>('Day');
   const [preview, setPreview] = useState<OrderPreview | null>(null);
   const [placedOrder, setPlacedOrder] = useState<any>(null);
+  
+  // Reset form when dialog opens with new initial values
+  useEffect(() => {
+    if (isOpen) {
+      setSymbol(initialSymbol);
+      setAction(initialAction);
+      setQuantity(initialQuantity ? String(initialQuantity) : '');
+      setStep('form');
+      setPreview(null);
+      setPlacedOrder(null);
+    }
+  }, [isOpen, initialSymbol, initialAction, initialQuantity]);
 
   const { toast } = useToast();
   const queryClient = useQueryClient();

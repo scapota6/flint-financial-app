@@ -85,7 +85,14 @@ export default function Dashboard() {
     }
   }, [isLoading]); // Run when loading completes
 
-  const handleAddToWatchlist = async (symbol: string, name: string) => {
+  // Watchlist functionality disabled - feature not yet ready
+  const handleHoldingClick = async (symbol: string, name: string) => {
+    // No-op: watchlist feature is not yet available
+    // TODO: Re-enable when watchlist feature ships
+    console.log('[Dashboard] Holding clicked:', symbol, name, '- watchlist feature coming soon');
+  };
+
+  const handleAddToWatchlist_DISABLED = async (symbol: string, name: string) => {
     try {
       await FinancialAPI.addToWatchlist(symbol, name, 'stock');
       toast({
@@ -259,7 +266,7 @@ export default function Dashboard() {
         {/* Portfolio Holdings Section - Robinhood Style */}
         <div className="mt-12">
           <h3 className="apple-h3 mb-6">Portfolio Holdings</h3>
-          <RobinhoodHoldings onHoldingClick={handleAddToWatchlist} />
+          <RobinhoodHoldings onHoldingClick={handleHoldingClick} />
         </div>
 
         {/* Recurring Subscriptions Section */}
