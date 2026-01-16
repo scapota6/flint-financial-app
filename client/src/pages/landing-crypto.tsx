@@ -1,5 +1,5 @@
 /**
- * Flint Crypto Landing Page - SEO optimized for "crypto portfolio tracker"
+ * Flint Crypto Landing Page - "The Apple Wallet For Crypto Apps"
  * Route: /crypto
  */
 
@@ -164,12 +164,12 @@ export default function LandingCrypto() {
   return (
     <>
       <Helmet>
-        <title>Crypto Portfolio Tracker - Track and Trade All Your Crypto in One Place | Flint</title>
-        <meta name="description" content="Track all your crypto exchanges and wallets in one dashboard. Connect Coinbase, Binance, Kraken, MetaMask and more. Send crypto and place trades without leaving Flint. Free to start." />
-        <meta property="og:title" content="Crypto Portfolio Tracker - Track and Trade Crypto in One Place | Flint" />
-        <meta property="og:description" content="The multi-exchange crypto tracker that lets you take action. Connect all your wallets, see real-time values, send crypto and place trades from one dashboard." />
+        <title>The Apple Wallet For Crypto Apps - Manage All Your Crypto in One Place | Flint</title>
+        <meta name="description" content="Flint is the Apple Wallet for crypto apps. Connect all your exchanges and wallets in one place. Send crypto, place trades, and manage everything from one dashboard. Free to start." />
+        <meta property="og:title" content="The Apple Wallet For Crypto Apps | Flint" />
+        <meta property="og:description" content="One app for all your crypto. Connect your exchanges and wallets, send crypto, and place trades from one beautiful dashboard." />
         <meta property="og:type" content="website" />
-        <meta name="keywords" content="crypto portfolio tracker, multi-exchange crypto tracker, track all your wallets and exchanges, track and trade crypto in one place, cryptocurrency dashboard, DeFi portfolio tracker, bitcoin tracker, ethereum portfolio" />
+        <meta name="keywords" content="crypto wallet app, all crypto in one place, crypto dashboard, manage crypto wallets, cryptocurrency app, DeFi wallet, bitcoin wallet, ethereum wallet" />
         <link rel="canonical" href="https://flint-investing.com/crypto" />
         <link href="https://fonts.googleapis.com/css2?family=PT+Serif:wght@400;700&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
       </Helmet>
@@ -181,19 +181,19 @@ export default function LandingCrypto() {
           <div className="max-w-4xl mx-auto text-center">
             <p className="text-[#1a56db] font-medium text-sm flex items-center justify-center gap-2 mb-6">
               <Wallet className="h-4 w-4" />
-              Multi-Exchange Crypto Tracker
+              All Your Crypto, One App
             </p>
             
             <h1 className="font-serif text-4xl md:text-5xl lg:text-[3.5rem] font-bold tracking-tight text-gray-900 leading-[1.1] mb-6">
-              The Crypto Portfolio Tracker That{' '}
+              The Apple Wallet{' '}
               <span className="relative inline-block px-2">
-                Lets You Take Action
+                For Crypto Apps
                 <span className="absolute bottom-1 left-0 w-full h-2 bg-yellow-400 -z-10"></span>
               </span>
             </h1>
             
             <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto leading-relaxed">
-              Track all your crypto and take action from one dashboard. Send crypto, place trades, and manage your entire portfolio.
+              One app for all your crypto. Connect your exchanges and wallets, send crypto, place trades, and manage everything in one place.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-3 justify-center mb-4">
@@ -263,7 +263,7 @@ export default function LandingCrypto() {
               </span>
             </h2>
             <p className="text-gray-500 text-center mb-12 max-w-xl mx-auto">
-              More than a tracker. A complete crypto command center.
+              One app. All your crypto. Complete control.
             </p>
             
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
@@ -525,9 +525,9 @@ export default function LandingCrypto() {
               </AccordionItem>
               
               <AccordionItem value="2" className="border-b border-gray-300">
-                <AccordionTrigger className="text-left hover:no-underline text-gray-900 py-4 font-medium">Is there a crypto portfolio tracker that lets me trade?</AccordionTrigger>
+                <AccordionTrigger className="text-left hover:no-underline text-gray-900 py-4 font-medium">Can I trade and send crypto from Flint?</AccordionTrigger>
                 <AccordionContent className="text-gray-600 pb-4">
-                  Yes - that's what makes Flint different. Most portfolio trackers are read-only, but Flint lets you place trades on your connected exchange accounts and send crypto directly from your connected wallet.
+                  Yes - that's what makes Flint different. Most apps are read-only, but Flint lets you place trades on your connected exchange accounts and send crypto directly from your connected wallet.
                 </AccordionContent>
               </AccordionItem>
               
@@ -546,7 +546,7 @@ export default function LandingCrypto() {
               </AccordionItem>
               
               <AccordionItem value="5" className="border-b border-gray-300">
-                <AccordionTrigger className="text-left hover:no-underline text-gray-900 py-4 font-medium">Is there a free crypto portfolio tracker plan?</AccordionTrigger>
+                <AccordionTrigger className="text-left hover:no-underline text-gray-900 py-4 font-medium">Is there a free plan?</AccordionTrigger>
                 <AccordionContent className="text-gray-600 pb-4">
                   Yes! Flint offers a free plan that lets you connect up to 4 accounts and track your crypto portfolio with real-time updates. It's free forever with no credit card required.
                 </AccordionContent>
