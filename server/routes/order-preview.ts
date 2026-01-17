@@ -36,7 +36,7 @@ const ConfirmOrderSchema = z.object({
   orderType: z.enum(['Market', 'Limit']),
   quantity: z.number().positive(),
   limitPrice: z.number().positive().optional(),
-  timeInForce: z.enum(['Day', 'GTC']).optional().default('GTC'),
+  timeInForce: z.enum(['Day', 'GTC', 'IOC', 'FOK', 'GTD']).optional().default('GTC'), // Includes crypto time_in_force options
   universalSymbolId: z.string().optional(), // Optional for crypto
   cryptoPairSymbol: z.string().optional(), // For crypto orders (e.g., "XLM-USD")
   isCrypto: z.boolean().optional(),
@@ -453,6 +453,9 @@ router.post('/confirm', async (req, res) => {
       const idempotencyKey = randomUUID();
       console.log('Placing order with idempotency key:', idempotencyKey);
 
+      // For equity orders, only Day/GTC are valid (IOC/FOK are rare, GTD not supported)
+      const equityTimeInForce = (data.timeInForce === 'GTD' ? 'GTC' : data.timeInForce) as 'Day' | 'GTC' | 'IOC' | 'FOK';
+      
       order = await placeOrder(
         snapUser.userId || userEmail,
         snapUser.userSecret,
@@ -461,7 +464,7 @@ router.post('/confirm', async (req, res) => {
           action: data.action,
           universal_symbol_id: data.universalSymbolId!,
           order_type: data.orderType,
-          time_in_force: data.timeInForce,
+          time_in_force: equityTimeInForce,
           units: data.quantity,
           price: data.limitPrice,
           idempotencyKey,
