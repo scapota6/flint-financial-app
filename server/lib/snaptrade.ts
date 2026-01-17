@@ -493,16 +493,16 @@ export async function searchCryptoPairs(
 
 /**
  * Preview a crypto order before placement
- * Per SnapTrade docs: POST /accounts/{accountId}/trading/crypto/preview
- * instrument.symbol = pair symbol like "ETH-EUR" or "XLM-USD"
- * instrument.type = "CRYPTOCURRENCY_PAIR"
+ * Per SnapTrade TypeScript SDK docs: POST /accounts/{accountId}/trading/crypto/preview
+ * instrument.symbol = base currency like "BTC" or "XLM" (not the full pair)
+ * instrument.type = "CRYPTOCURRENCY" (per TypeScript SDK examples)
  */
 export async function previewCryptoOrder(
   userId: string,
   userSecret: string,
   accountId: string,
   params: {
-    symbol: string;        // Pair symbol, e.g., "XLM-USD" (per SnapTrade docs)
+    symbol: string;        // Full pair symbol e.g., "XLM-USD" - we extract base currency
     side: 'BUY' | 'SELL';
     type: 'MARKET' | 'LIMIT' | 'STOP_LOSS_MARKET' | 'STOP_LOSS_LIMIT' | 'TAKE_PROFIT_MARKET' | 'TAKE_PROFIT_LIMIT';
     amount: string;        // Amount of base currency (as string for precision)
@@ -514,9 +514,13 @@ export async function previewCryptoOrder(
   }
 ) {
   try {
+    // Extract base currency from pair symbol (e.g., "XLM-USD" -> "XLM")
+    const baseSymbol = params.symbol.includes('-') ? params.symbol.split('-')[0] : params.symbol;
+    
     console.log('[SnapTrade Crypto] Previewing crypto order:', {
       accountId: accountId.slice(-6),
-      symbol: params.symbol,
+      originalSymbol: params.symbol,
+      baseSymbol: baseSymbol,
       side: params.side,
       type: params.type,
       amount: params.amount,
@@ -529,8 +533,8 @@ export async function previewCryptoOrder(
         userSecret,
         accountId,
         instrument: {
-          symbol: params.symbol,       // Pair symbol like "XLM-USD" per SnapTrade docs
-          type: 'CRYPTOCURRENCY_PAIR'  // Per official SnapTrade docs
+          symbol: baseSymbol,       // Base currency only per TypeScript SDK
+          type: 'CRYPTOCURRENCY'    // Per TypeScript SDK examples
         },
         side: params.side,
         type: params.type,
@@ -555,16 +559,16 @@ export async function previewCryptoOrder(
 
 /**
  * Place a crypto order
- * Per SnapTrade docs: POST /accounts/{accountId}/trading/crypto
- * instrument.symbol = pair symbol like "ETH-EUR" or "XLM-USD"
- * instrument.type = "CRYPTOCURRENCY_PAIR"
+ * Per SnapTrade TypeScript SDK docs: POST /accounts/{accountId}/trading/crypto
+ * instrument.symbol = base currency like "BTC" or "XLM" (not the full pair)
+ * instrument.type = "CRYPTOCURRENCY" (per TypeScript SDK examples)
  */
 export async function placeCryptoOrder(
   userId: string,
   userSecret: string,
   accountId: string,
   params: {
-    symbol: string;        // Pair symbol, e.g., "XLM-USD" (per SnapTrade docs)
+    symbol: string;        // Full pair symbol e.g., "XLM-USD" - we extract base currency
     side: 'BUY' | 'SELL';
     type: 'MARKET' | 'LIMIT' | 'STOP_LOSS_MARKET' | 'STOP_LOSS_LIMIT' | 'TAKE_PROFIT_MARKET' | 'TAKE_PROFIT_LIMIT';
     amount: string;        // Amount of base currency (as string for precision)
@@ -576,9 +580,13 @@ export async function placeCryptoOrder(
   }
 ) {
   try {
+    // Extract base currency from pair symbol (e.g., "XLM-USD" -> "XLM")
+    const baseSymbol = params.symbol.includes('-') ? params.symbol.split('-')[0] : params.symbol;
+    
     console.log('[SnapTrade Crypto] Placing crypto order:', {
       accountId: accountId.slice(-6),
-      symbol: params.symbol,
+      originalSymbol: params.symbol,
+      baseSymbol: baseSymbol,
       side: params.side,
       type: params.type,
       amount: params.amount,
@@ -586,13 +594,13 @@ export async function placeCryptoOrder(
     });
     
     if (hasFn(tradingApi, 'placeCryptoOrder')) {
-      const response = await (tradingApi as any).placeCryptoOrder({
+      const requestPayload = {
         userId,
         userSecret,
         accountId,
         instrument: {
-          symbol: params.symbol,       // Pair symbol like "XLM-USD" per SnapTrade docs
-          type: 'CRYPTOCURRENCY_PAIR'  // Per official SnapTrade docs
+          symbol: baseSymbol,       // Base currency only per TypeScript SDK
+          type: 'CRYPTOCURRENCY'    // Per TypeScript SDK examples
         },
         side: params.side,
         type: params.type,
@@ -602,7 +610,11 @@ export async function placeCryptoOrder(
         stop_price: params.stop_price,
         post_only: params.post_only,
         expiration_date: params.expiration_date,
-      });
+      };
+      
+      console.log('[SnapTrade Crypto] Request payload:', JSON.stringify(requestPayload, null, 2));
+      
+      const response = await (tradingApi as any).placeCryptoOrder(requestPayload);
       
       console.log('[SnapTrade Crypto] Order placed:', {
         orderId: response.data?.brokerage_order_id,
@@ -613,7 +625,12 @@ export async function placeCryptoOrder(
     
     throw new Error('placeCryptoOrder method not available in SDK');
   } catch (e: any) {
-    console.error('[SnapTrade Crypto] placeCryptoOrder error:', e?.responseBody || e?.message || e);
+    console.error('[SnapTrade Crypto] placeCryptoOrder error:', {
+      responseBody: e?.responseBody,
+      message: e?.message,
+      status: e?.status,
+      fullError: JSON.stringify(e, Object.getOwnPropertyNames(e), 2)
+    });
     throw e;
   }
 }
