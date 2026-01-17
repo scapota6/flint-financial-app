@@ -154,7 +154,7 @@ router.post('/', requireAuth, async (req, res) => {
           snapUser.userSecret,
           data.accountId,
           {
-            symbol: data.symbol,  // Base currency only per SnapTrade docs (e.g., "XLM", NOT "XLM-USD")
+            symbol: pairSymbol,   // Pair symbol like "XLM-USD" per SnapTrade docs
             side: data.action,    // BUY or SELL (uppercase per SnapTrade docs)
             type: cryptoOrderType,
             amount: data.quantity.toString(),

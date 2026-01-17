@@ -493,16 +493,16 @@ export async function searchCryptoPairs(
 
 /**
  * Preview a crypto order before placement
- * Per SnapTrade docs: POST /accounts/{accountId}/orders/crypto/preview
- * instrument.symbol should be base currency only (e.g., "BTC"), not the pair
- * instrument.type should be "CRYPTOCURRENCY" per docs
+ * Per SnapTrade docs: POST /accounts/{accountId}/trading/crypto/preview
+ * instrument.symbol = pair symbol like "ETH-EUR" or "XLM-USD"
+ * instrument.type = "CRYPTOCURRENCY_PAIR"
  */
 export async function previewCryptoOrder(
   userId: string,
   userSecret: string,
   accountId: string,
   params: {
-    symbol: string;        // Base currency only, e.g., "XLM" (NOT "XLM-USD")
+    symbol: string;        // Pair symbol, e.g., "XLM-USD" (per SnapTrade docs)
     side: 'BUY' | 'SELL';
     type: 'MARKET' | 'LIMIT' | 'STOP_LOSS_MARKET' | 'STOP_LOSS_LIMIT' | 'TAKE_PROFIT_MARKET' | 'TAKE_PROFIT_LIMIT';
     amount: string;        // Amount of base currency (as string for precision)
@@ -529,8 +529,8 @@ export async function previewCryptoOrder(
         userSecret,
         accountId,
         instrument: {
-          symbol: params.symbol,       // Base currency only per SnapTrade docs
-          type: 'CRYPTOCURRENCY'       // Per SnapTrade docs (not CRYPTOCURRENCY_PAIR)
+          symbol: params.symbol,       // Pair symbol like "XLM-USD" per SnapTrade docs
+          type: 'CRYPTOCURRENCY_PAIR'  // Per official SnapTrade docs
         },
         side: params.side,
         type: params.type,
@@ -555,16 +555,16 @@ export async function previewCryptoOrder(
 
 /**
  * Place a crypto order
- * Per SnapTrade docs: POST /accounts/{accountId}/orders/crypto
- * instrument.symbol should be base currency only (e.g., "BTC"), not the pair
- * instrument.type should be "CRYPTOCURRENCY" per docs
+ * Per SnapTrade docs: POST /accounts/{accountId}/trading/crypto
+ * instrument.symbol = pair symbol like "ETH-EUR" or "XLM-USD"
+ * instrument.type = "CRYPTOCURRENCY_PAIR"
  */
 export async function placeCryptoOrder(
   userId: string,
   userSecret: string,
   accountId: string,
   params: {
-    symbol: string;        // Base currency only, e.g., "XLM" (NOT "XLM-USD")
+    symbol: string;        // Pair symbol, e.g., "XLM-USD" (per SnapTrade docs)
     side: 'BUY' | 'SELL';
     type: 'MARKET' | 'LIMIT' | 'STOP_LOSS_MARKET' | 'STOP_LOSS_LIMIT' | 'TAKE_PROFIT_MARKET' | 'TAKE_PROFIT_LIMIT';
     amount: string;        // Amount of base currency (as string for precision)
@@ -591,8 +591,8 @@ export async function placeCryptoOrder(
         userSecret,
         accountId,
         instrument: {
-          symbol: params.symbol,       // Base currency only per SnapTrade docs
-          type: 'CRYPTOCURRENCY'       // Per SnapTrade docs (not CRYPTOCURRENCY_PAIR)
+          symbol: params.symbol,       // Pair symbol like "XLM-USD" per SnapTrade docs
+          type: 'CRYPTOCURRENCY_PAIR'  // Per official SnapTrade docs
         },
         side: params.side,
         type: params.type,
