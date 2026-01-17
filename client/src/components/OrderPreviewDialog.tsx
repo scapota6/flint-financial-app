@@ -101,7 +101,7 @@ export default function OrderPreviewDialog({
     mutationFn: (orderData: any) => apiRequest('/api/order-preview', {
       method: 'POST',
       body: orderData,
-    }),
+    }).then(r => r.json()),
     onSuccess: (data: any) => {
       if (data.success && data.preview) {
         // Include isCrypto flag from the response
@@ -132,7 +132,7 @@ export default function OrderPreviewDialog({
     mutationFn: (confirmData: any) => apiRequest('/api/order-preview/confirm', {
       method: 'POST',
       body: confirmData,
-    }),
+    }).then(r => r.json()),
     onSuccess: (data: any) => {
       if (data.success) {
         setPlacedOrder(data);
