@@ -45,7 +45,7 @@ interface OrderPreview {
   isCrypto?: boolean;
   previewId: string;
   warnings: string[];
-  canProceed: boolean;
+  canProceed?: boolean;
 }
 
 const fmtMoney = (amount: number) => new Intl.NumberFormat('en-US', {
@@ -104,11 +104,12 @@ export default function OrderPreviewDialog({
     }).then(r => r.json()),
     onSuccess: (data: any) => {
       if (data.success && data.preview) {
-        // Include isCrypto flag and ensure warnings array exists
+        // Include isCrypto flag and ensure warnings/canProceed exist
         setPreview({
           ...data.preview,
           isCrypto: data.isCrypto,
           warnings: data.preview.warnings || data.warnings || [],
+          canProceed: data.preview.canProceed ?? data.canProceed ?? true,
         });
         setStep('preview');
       } else {
