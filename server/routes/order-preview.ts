@@ -10,7 +10,8 @@ import {
   previewCryptoOrder,
   placeCryptoOrder,
   getCryptoPairQuote,
-  isCryptoExchange
+  isCryptoExchange,
+  listAccounts
 } from '../lib/snaptrade.js';
 import { requireAuth } from '../middleware/jwt-auth';
 
@@ -74,8 +75,29 @@ router.post('/', requireAuth, async (req, res) => {
     }
 
     // Detect if this is a crypto exchange based on institution name
-    const isCrypto = data.institutionName ? isCryptoExchange(data.institutionName) : false;
-    console.log('Order type detection:', { institutionName: data.institutionName, isCrypto });
+    // If institutionName is empty, look up the account to get the brokerage name
+    let institutionName = data.institutionName || '';
+    
+    if (!institutionName) {
+      console.log('[Order Preview] institutionName empty, looking up account...');
+      try {
+        const accounts = await listAccounts(
+          snapUser.userId || userId, 
+          snapUser.userSecret,
+          userId
+        );
+        const account = accounts?.find((a: any) => a.id === data.accountId);
+        if (account) {
+          institutionName = account.institution_name || account.brokerage?.name || '';
+          console.log('[Order Preview] Found account institution:', institutionName);
+        }
+      } catch (lookupError: any) {
+        console.log('[Order Preview] Account lookup failed:', lookupError.message);
+      }
+    }
+    
+    const isCrypto = institutionName ? isCryptoExchange(institutionName) : false;
+    console.log('Order type detection:', { institutionName, isCrypto });
 
     if (isCrypto) {
       // ============================================
@@ -120,8 +142,6 @@ router.post('/', requireAuth, async (req, res) => {
       // Step 3: Preview the crypto order
       const cryptoTimeInForce = data.timeInForce === 'Day' ? 'GTC' : data.timeInForce; // Crypto uses GTC
       const cryptoOrderType = data.orderType === 'Market' ? 'MARKET' : 'LIMIT';
-      // SnapTrade crypto API expects lowercase side values
-      const cryptoSide = data.action.toLowerCase() as 'buy' | 'sell';
       
       let previewResult: any = null;
       let estimatedFees = 0;
@@ -133,7 +153,7 @@ router.post('/', requireAuth, async (req, res) => {
           data.accountId,
           {
             symbol: pairSymbol,
-            side: cryptoSide.toUpperCase() as 'BUY' | 'SELL', // SDK types expect uppercase but will transform
+            side: data.action, // BUY or SELL (uppercase per SnapTrade docs)
             type: cryptoOrderType,
             amount: data.quantity.toString(), // Quantity = amount in base currency for crypto
             time_in_force: cryptoTimeInForce as 'GTC' | 'FOK' | 'IOC' | 'GTD',

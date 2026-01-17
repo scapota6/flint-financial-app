@@ -500,13 +500,11 @@ export async function previewCryptoOrder(
   }
 ) {
   try {
-    // SnapTrade crypto API expects lowercase side values
-    const normalizedSide = params.side.toLowerCase();
-    
+    // SnapTrade crypto API uses uppercase side values per docs example
     console.log('[SnapTrade Crypto] Previewing crypto order:', {
       accountId: accountId.slice(-6),
       symbol: params.symbol,
-      side: normalizedSide,
+      side: params.side,
       type: params.type,
       amount: params.amount
     });
@@ -520,7 +518,7 @@ export async function previewCryptoOrder(
           symbol: params.symbol,
           type: 'CRYPTOCURRENCY_PAIR'
         },
-        side: normalizedSide,
+        side: params.side,
         type: params.type,
         amount: params.amount,
         time_in_force: params.time_in_force,
@@ -562,13 +560,11 @@ export async function placeCryptoOrder(
   }
 ) {
   try {
-    // SnapTrade crypto API expects lowercase side values
-    const normalizedSide = params.side.toLowerCase();
-    
+    // SnapTrade crypto API uses uppercase side values per docs example
     console.log('[SnapTrade Crypto] Placing crypto order:', {
       accountId: accountId.slice(-6),
       symbol: params.symbol,
-      side: normalizedSide,
+      side: params.side,
       type: params.type,
       amount: params.amount
     });
@@ -582,7 +578,7 @@ export async function placeCryptoOrder(
           symbol: params.symbol,
           type: 'CRYPTOCURRENCY_PAIR'
         },
-        side: normalizedSide,
+        side: params.side,
         type: params.type,
         amount: params.amount,
         time_in_force: params.time_in_force,
