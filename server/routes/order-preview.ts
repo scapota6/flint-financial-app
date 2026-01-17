@@ -140,8 +140,10 @@ router.post('/', requireAuth, async (req, res) => {
       }
 
       // Step 3: Preview the crypto order
-      const cryptoTimeInForce = data.timeInForce === 'Day' ? 'GTC' : data.timeInForce; // Crypto uses GTC
       const cryptoOrderType = data.orderType === 'Market' ? 'MARKET' : 'LIMIT';
+      // Per SnapTrade docs: Coinbase market orders require IOC (Immediate Or Cancel)
+      // For limit orders, use GTC (Good Till Cancelled)
+      const cryptoTimeInForce = cryptoOrderType === 'MARKET' ? 'IOC' : 'GTC';
       
       let previewResult: any = null;
       let estimatedFees = 0;
@@ -152,10 +154,10 @@ router.post('/', requireAuth, async (req, res) => {
           snapUser.userSecret,
           data.accountId,
           {
-            symbol: pairSymbol,
-            side: data.action, // BUY or SELL (uppercase per SnapTrade docs)
+            symbol: data.symbol,  // Base currency only per SnapTrade docs (e.g., "XLM", NOT "XLM-USD")
+            side: data.action,    // BUY or SELL (uppercase per SnapTrade docs)
             type: cryptoOrderType,
-            amount: data.quantity.toString(), // Quantity = amount in base currency for crypto
+            amount: data.quantity.toString(),
             time_in_force: cryptoTimeInForce as 'GTC' | 'FOK' | 'IOC' | 'GTD',
             limit_price: data.limitPrice?.toString(),
           }

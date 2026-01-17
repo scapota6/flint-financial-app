@@ -493,14 +493,16 @@ export async function searchCryptoPairs(
 
 /**
  * Preview a crypto order before placement
- * Per SnapTrade docs: POST /accounts/{accountId}/trading/crypto/preview
+ * Per SnapTrade docs: POST /accounts/{accountId}/orders/crypto/preview
+ * instrument.symbol should be base currency only (e.g., "BTC"), not the pair
+ * instrument.type should be "CRYPTOCURRENCY" per docs
  */
 export async function previewCryptoOrder(
   userId: string,
   userSecret: string,
   accountId: string,
   params: {
-    symbol: string;        // e.g., "XLM-USD"
+    symbol: string;        // Base currency only, e.g., "XLM" (NOT "XLM-USD")
     side: 'BUY' | 'SELL';
     type: 'MARKET' | 'LIMIT' | 'STOP_LOSS_MARKET' | 'STOP_LOSS_LIMIT' | 'TAKE_PROFIT_MARKET' | 'TAKE_PROFIT_LIMIT';
     amount: string;        // Amount of base currency (as string for precision)
@@ -512,13 +514,13 @@ export async function previewCryptoOrder(
   }
 ) {
   try {
-    // SnapTrade crypto API uses uppercase side values per docs example
     console.log('[SnapTrade Crypto] Previewing crypto order:', {
       accountId: accountId.slice(-6),
       symbol: params.symbol,
       side: params.side,
       type: params.type,
-      amount: params.amount
+      amount: params.amount,
+      time_in_force: params.time_in_force
     });
     
     if (hasFn(tradingApi, 'previewCryptoOrder')) {
@@ -527,8 +529,8 @@ export async function previewCryptoOrder(
         userSecret,
         accountId,
         instrument: {
-          symbol: params.symbol,
-          type: 'CRYPTOCURRENCY_PAIR'
+          symbol: params.symbol,       // Base currency only per SnapTrade docs
+          type: 'CRYPTOCURRENCY'       // Per SnapTrade docs (not CRYPTOCURRENCY_PAIR)
         },
         side: params.side,
         type: params.type,
@@ -553,14 +555,16 @@ export async function previewCryptoOrder(
 
 /**
  * Place a crypto order
- * Per SnapTrade docs: POST /accounts/{accountId}/trading/crypto
+ * Per SnapTrade docs: POST /accounts/{accountId}/orders/crypto
+ * instrument.symbol should be base currency only (e.g., "BTC"), not the pair
+ * instrument.type should be "CRYPTOCURRENCY" per docs
  */
 export async function placeCryptoOrder(
   userId: string,
   userSecret: string,
   accountId: string,
   params: {
-    symbol: string;        // e.g., "XLM-USD"
+    symbol: string;        // Base currency only, e.g., "XLM" (NOT "XLM-USD")
     side: 'BUY' | 'SELL';
     type: 'MARKET' | 'LIMIT' | 'STOP_LOSS_MARKET' | 'STOP_LOSS_LIMIT' | 'TAKE_PROFIT_MARKET' | 'TAKE_PROFIT_LIMIT';
     amount: string;        // Amount of base currency (as string for precision)
@@ -572,13 +576,13 @@ export async function placeCryptoOrder(
   }
 ) {
   try {
-    // SnapTrade crypto API uses uppercase side values per docs example
     console.log('[SnapTrade Crypto] Placing crypto order:', {
       accountId: accountId.slice(-6),
       symbol: params.symbol,
       side: params.side,
       type: params.type,
-      amount: params.amount
+      amount: params.amount,
+      time_in_force: params.time_in_force
     });
     
     if (hasFn(tradingApi, 'placeCryptoOrder')) {
@@ -587,8 +591,8 @@ export async function placeCryptoOrder(
         userSecret,
         accountId,
         instrument: {
-          symbol: params.symbol,
-          type: 'CRYPTOCURRENCY_PAIR'
+          symbol: params.symbol,       // Base currency only per SnapTrade docs
+          type: 'CRYPTOCURRENCY'       // Per SnapTrade docs (not CRYPTOCURRENCY_PAIR)
         },
         side: params.side,
         type: params.type,
@@ -616,23 +620,23 @@ export async function placeCryptoOrder(
 
 /**
  * Get a quote for a cryptocurrency pair
- * Per SnapTrade docs: GET /accounts/{accountId}/trading/instruments/cryptocurrencyPairs/{symbol}/quote
+ * Per SnapTrade docs: GET /accounts/{accountId}/trading/instruments/cryptocurrencyPairs/{instrumentSymbol}/quote
  */
 export async function getCryptoPairQuote(
   userId: string,
   userSecret: string,
   accountId: string,
-  symbol: string
+  instrumentSymbol: string  // e.g., "BTC-USD" - the trading pair
 ) {
   try {
-    console.log('[SnapTrade Crypto] Getting quote for:', { accountId: accountId.slice(-6), symbol });
+    console.log('[SnapTrade Crypto] Getting quote for:', { accountId: accountId.slice(-6), instrumentSymbol });
     
     if (hasFn(tradingApi, 'getCryptocurrencyPairQuote')) {
       const response = await (tradingApi as any).getCryptocurrencyPairQuote({
         userId,
         userSecret,
         accountId,
-        symbol,
+        instrumentSymbol,  // Per SnapTrade docs - use instrumentSymbol not symbol
       });
       
       console.log('[SnapTrade Crypto] Quote:', response.data);
