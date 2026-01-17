@@ -358,20 +358,32 @@ export async function searchSymbols(userId: string, userSecret: string, accountI
         accountId,
         query,
       });
-      return response.data || [];
+      const results = response.data || [];
+      console.log('[searchSymbols] symbolsSearchUserAccount results:', {
+        query,
+        count: results.length,
+        firstResult: results[0] ? { id: results[0].id, symbol: results[0].symbol, type: results[0].type } : null
+      });
+      return results;
     }
     
     if (hasFn(snaptrade.referenceData, 'getSymbolsByTicker')) {
       const response = await (snaptrade.referenceData as any).getSymbolsByTicker({
         query,
       });
-      return response.data || [];
+      const results = response.data || [];
+      console.log('[searchSymbols] getSymbolsByTicker results:', {
+        query,
+        count: results.length,
+        firstResult: results[0] ? { id: results[0].id, symbol: results[0].symbol, type: results[0].type } : null
+      });
+      return results;
     }
     
-    console.log('DEBUG: No symbol search methods found');
+    console.log('[searchSymbols] No symbol search methods found');
     return [];
   } catch (e: any) {
-    console.error('SnapTrade searchSymbols error:', e?.responseBody || e?.message || e);
+    console.error('[searchSymbols] Error:', e?.responseBody || e?.message || e);
     return [];
   }
 }

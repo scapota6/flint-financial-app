@@ -237,8 +237,19 @@ router.post('/', requireAuth, async (req, res) => {
       });
     }
 
-    const universalSymbolId = symbols[0].id;
     const symbolInfo = symbols[0];
+    const universalSymbolId = symbolInfo?.id;
+    
+    // Validate symbol has required id field (per SnapTrade docs)
+    if (!universalSymbolId) {
+      console.error('[Equity Order] Symbol found but missing id field:', {
+        symbol: data.symbol,
+        symbolInfo: JSON.stringify(symbolInfo).slice(0, 500)
+      });
+      return res.status(400).json({ 
+        message: `Symbol ${data.symbol} is not available for trading on this account. This may be a crypto-only exchange.`
+      });
+    }
 
     // Get order impact from SnapTrade
     const orderImpact = await getOrderImpact(
