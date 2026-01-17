@@ -104,10 +104,11 @@ export default function OrderPreviewDialog({
     }).then(r => r.json()),
     onSuccess: (data: any) => {
       if (data.success && data.preview) {
-        // Include isCrypto flag from the response
+        // Include isCrypto flag and ensure warnings array exists
         setPreview({
           ...data.preview,
           isCrypto: data.isCrypto,
+          warnings: data.preview.warnings || data.warnings || [],
         });
         setStep('preview');
       } else {
