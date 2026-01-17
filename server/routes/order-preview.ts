@@ -367,7 +367,7 @@ router.post('/', requireAuth, async (req, res) => {
  * Supports both equity and crypto orders
  */
 router.post('/confirm', async (req, res) => {
-  if (!req.isAuthenticated()) {
+  if (!req.user) {
     return res.status(401).json({ message: 'Unauthorized' });
   }
 

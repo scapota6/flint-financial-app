@@ -493,19 +493,19 @@ export async function searchCryptoPairs(
 
 /**
  * Preview a crypto order before placement
- * Per SnapTrade TypeScript SDK docs: POST /accounts/{accountId}/trading/crypto/preview
- * instrument.symbol = base currency like "BTC" or "XLM" (not the full pair)
- * instrument.type = "CRYPTOCURRENCY" (per TypeScript SDK examples)
+ * Per official SnapTrade docs: POST /accounts/{accountId}/trading/crypto/preview
+ * instrument.symbol = pair symbol like "ETH-EUR" or "XLM-USD"
+ * instrument.type = "CRYPTOCURRENCY_PAIR" (per official SnapTrade docs)
  */
 export async function previewCryptoOrder(
   userId: string,
   userSecret: string,
   accountId: string,
   params: {
-    symbol: string;        // Full pair symbol e.g., "XLM-USD" - we extract base currency
+    symbol: string;        // Pair symbol, e.g., "XLM-USD" (per official SnapTrade docs)
     side: 'BUY' | 'SELL';
     type: 'MARKET' | 'LIMIT' | 'STOP_LOSS_MARKET' | 'STOP_LOSS_LIMIT' | 'TAKE_PROFIT_MARKET' | 'TAKE_PROFIT_LIMIT';
-    amount: string;        // Amount of base currency (as string for precision)
+    amount: string;        // Amount of base currency (as decimal string for precision)
     time_in_force: 'GTC' | 'FOK' | 'IOC' | 'GTD';
     limit_price?: string;
     stop_price?: string;
@@ -514,16 +514,15 @@ export async function previewCryptoOrder(
   }
 ) {
   try {
-    // Extract base currency from pair symbol (e.g., "XLM-USD" -> "XLM")
-    const baseSymbol = params.symbol.includes('-') ? params.symbol.split('-')[0] : params.symbol;
+    // Format amount as proper decimal string (e.g., "1" -> "1.00000000")
+    const formattedAmount = formatCryptoAmount(params.amount);
     
     console.log('[SnapTrade Crypto] Previewing crypto order:', {
       accountId: accountId.slice(-6),
-      originalSymbol: params.symbol,
-      baseSymbol: baseSymbol,
+      symbol: params.symbol,
       side: params.side,
       type: params.type,
-      amount: params.amount,
+      amount: formattedAmount,
       time_in_force: params.time_in_force
     });
     
@@ -533,12 +532,12 @@ export async function previewCryptoOrder(
         userSecret,
         accountId,
         instrument: {
-          symbol: baseSymbol,       // Base currency only per TypeScript SDK
-          type: 'CRYPTOCURRENCY'    // Per TypeScript SDK examples
+          symbol: params.symbol,        // Full pair symbol per official docs
+          type: 'CRYPTOCURRENCY_PAIR'   // Per official SnapTrade docs
         },
         side: params.side,
         type: params.type,
-        amount: params.amount,
+        amount: formattedAmount,
         time_in_force: params.time_in_force,
         limit_price: params.limit_price,
         stop_price: params.stop_price,
@@ -557,21 +556,29 @@ export async function previewCryptoOrder(
   }
 }
 
+// Helper to format amount as proper decimal string for SnapTrade API
+function formatCryptoAmount(amount: string): string {
+  const num = parseFloat(amount);
+  if (isNaN(num)) return '0.00000000';
+  // Format with 8 decimal places (standard for crypto)
+  return num.toFixed(8);
+}
+
 /**
  * Place a crypto order
- * Per SnapTrade TypeScript SDK docs: POST /accounts/{accountId}/trading/crypto
- * instrument.symbol = base currency like "BTC" or "XLM" (not the full pair)
- * instrument.type = "CRYPTOCURRENCY" (per TypeScript SDK examples)
+ * Per official SnapTrade docs: POST /accounts/{accountId}/trading/crypto
+ * instrument.symbol = pair symbol like "ETH-EUR" or "XLM-USD"
+ * instrument.type = "CRYPTOCURRENCY_PAIR" (per official SnapTrade docs)
  */
 export async function placeCryptoOrder(
   userId: string,
   userSecret: string,
   accountId: string,
   params: {
-    symbol: string;        // Full pair symbol e.g., "XLM-USD" - we extract base currency
+    symbol: string;        // Pair symbol, e.g., "XLM-USD" (per official SnapTrade docs)
     side: 'BUY' | 'SELL';
     type: 'MARKET' | 'LIMIT' | 'STOP_LOSS_MARKET' | 'STOP_LOSS_LIMIT' | 'TAKE_PROFIT_MARKET' | 'TAKE_PROFIT_LIMIT';
-    amount: string;        // Amount of base currency (as string for precision)
+    amount: string;        // Amount of base currency (as decimal string for precision)
     time_in_force: 'GTC' | 'FOK' | 'IOC' | 'GTD';
     limit_price?: string;
     stop_price?: string;
@@ -580,16 +587,15 @@ export async function placeCryptoOrder(
   }
 ) {
   try {
-    // Extract base currency from pair symbol (e.g., "XLM-USD" -> "XLM")
-    const baseSymbol = params.symbol.includes('-') ? params.symbol.split('-')[0] : params.symbol;
+    // Format amount as proper decimal string (e.g., "1" -> "1.00000000")
+    const formattedAmount = formatCryptoAmount(params.amount);
     
     console.log('[SnapTrade Crypto] Placing crypto order:', {
       accountId: accountId.slice(-6),
-      originalSymbol: params.symbol,
-      baseSymbol: baseSymbol,
+      symbol: params.symbol,
       side: params.side,
       type: params.type,
-      amount: params.amount,
+      amount: formattedAmount,
       time_in_force: params.time_in_force
     });
     
@@ -599,12 +605,12 @@ export async function placeCryptoOrder(
         userSecret,
         accountId,
         instrument: {
-          symbol: baseSymbol,       // Base currency only per TypeScript SDK
-          type: 'CRYPTOCURRENCY'    // Per TypeScript SDK examples
+          symbol: params.symbol,        // Full pair symbol per official docs
+          type: 'CRYPTOCURRENCY_PAIR'   // Per official SnapTrade docs
         },
         side: params.side,
         type: params.type,
-        amount: params.amount,
+        amount: formattedAmount,
         time_in_force: params.time_in_force,
         limit_price: params.limit_price,
         stop_price: params.stop_price,
